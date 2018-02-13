@@ -1,8 +1,7 @@
-'use strict'
+import * as mongoose from 'mongoose';
+import * as mongooseUniqueValidator from 'mongoose-unique-validator';
 
-const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const mongooseUniqueValidator = require('mongoose-unique-validator');
 
 var userdataSchema = new Schema({
   department: {
@@ -36,4 +35,4 @@ var userdataSchema = new Schema({
 
 userdataSchema.plugin(mongooseUniqueValidator);
 
-module.exports = mongoose.model('Userdata', userdataSchema);
+export const userdata = mongoose.model('Userdata', userdataSchema);
