@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
+import * as mongoose from 'mongoose';
+
 const Schema = mongoose.Schema;
-// const mongooseUniqueValidator = require('mongoose-unique-validator');
 
 var resetTokenSchema = new Schema({
   token: {
@@ -12,9 +12,9 @@ var resetTokenSchema = new Schema({
     required: true
   },
   created: {
-     type: Date,
-     default: Date.now,
-     required: true
+    type: Date,
+    default: Date.now,
+    required: true
   },
   updated: {
     type: Date,
@@ -34,4 +34,4 @@ resetTokenSchema.pre('save', (next) => {
   return next();
 })
 
-module.exports = mongoose.model('ResetToken', resetTokenSchema);
+export const resetToken = mongoose.model('ResetToken', resetTokenSchema);

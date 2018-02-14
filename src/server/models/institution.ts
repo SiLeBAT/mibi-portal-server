@@ -1,9 +1,10 @@
-'use strict'
+import * as mongoose from 'mongoose';
+import * as mongooseUniqueValidator from 'mongoose-unique-validator';
+import * as bluebird from 'bluebird';
 
-const mongoose = require('mongoose');
+mongoose.Promise = Promise;
 const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
-const mongooseUniqueValidator = require('mongoose-unique-validator');
 
 var institutionSchema = new Schema({
   short: {
@@ -65,16 +66,4 @@ var institutionSchema = new Schema({
   }
 });
 
-// institutionSchema.plugin(mongooseUniqueValidator);
-
-// does not execute
-// userSchema.pre('update', (next) => {
-//   // update the time stamp
-//   this.updated = Date.now();
-
-//   console.log('userSchema.pre running');
-
-//   return next();
-// })
-
-module.exports = mongoose.model('Institution', institutionSchema);
+export const institution = mongoose.model('Institution', institutionSchema);

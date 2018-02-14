@@ -1,16 +1,19 @@
-const mailConfig = require('./../config/config').mailConfig;
-const nodemailer = require('nodemailer');
-const fs = require('fs');
-const handlebars = require('handlebars');
+// core
+import * as fs from 'fs';
 
-// console.log('mail.js, mailConfig: ', mailConfig);
+// npm
+import * as handlebars from 'handlebars';
+import * as nodemailer from 'nodemailer';
+
+// local
+import { mailConfig } from './../config/config';
 
 const fromAddress = mailConfig.fromAddress;
 const replyToAddress = mailConfig.replyToAddress;
 const host = 'localhost';
 const port = 25;
 
-function sendMail (templateData, templateFile, toAddress, subject) {
+function sendMail(templateData, templateFile, toAddress, subject) {
   let template = handlebars.compile(templateFile);
   let result = template(templateData);
 
@@ -40,7 +43,7 @@ function sendMail (templateData, templateFile, toAddress, subject) {
 
 }
 
-module.exports = {
+export {
   sendMail
 }
 
