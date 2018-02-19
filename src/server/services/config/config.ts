@@ -21,9 +21,11 @@ function configInit() {
 }
 // console.log("config.js: config.mail.fromAddress: ", config.mail.fromAddress);
 const mailConfig = config.mail;
+const knimeConfig = config.knime;
 
 export {
   mailConfig,
+  knimeConfig,
   configInit
 }
 
