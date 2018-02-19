@@ -10,12 +10,13 @@ import * as unirest from 'unirest';
 import { knimeConfig } from './../../services/config/config';
 
 let appRootDir = rootDir.get();
+const uploadDir = 'uploads/';
 
 export const router = express.Router();
 
 let storage = multer.diskStorage({ //multers disk storage settings
   destination: function (req, file, cb) {
-    cb(null, 'uploads/');
+    cb(null, uploadDir);
   },
   filename: function (req, file, cb) {
     console.log('inside storage, file: ', file);
@@ -31,6 +32,12 @@ let multerUpload = multer({ //multer settings
 
 router.post('/', function (req, res) {
 
+  const uploadPath = path.join(appRootDir, uploadDir);
+  if (! fs.existsSync(uploadPath)) {
+    fs.mkdirSync(uploadPath);
+    // console.log('uploadPath does not exists! created...');
+  }
+
    multerUpload(req, res, function (err) {
      if (err) {
        // An error occurred when uploading
@@ -40,14 +47,10 @@ router.post('/', function (req, res) {
        .json({
        });
      }
- 
+
     // file upload went fine, continue knime validation workflow...
     const uploadedFilePath = path.join(appRootDir, req.file.path);
-    // const uploadedFilePath = '/home/bpo/data/projects/workspace/epilab/data/Einsendebogen-v14_TEST.xlsx';
     getKnimeJobId(req, res, uploadedFilePath);
-
-    // const jobId = 'e681e2e3-7902-4538-aa91-30614c0ef20f';
-    // doKnimeValidation(req, res, jobId, uploadedFilePath);
   });
 });
 
