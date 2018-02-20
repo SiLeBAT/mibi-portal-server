@@ -40,3 +40,5 @@ Thumbs.db
 # app
 /config/config.json
 /playground
+/uploads
+server-patch.patch
