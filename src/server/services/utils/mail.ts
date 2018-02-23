@@ -6,7 +6,8 @@ import * as handlebars from 'handlebars';
 import * as nodemailer from 'nodemailer';
 
 // local
-import { mailConfig } from './../config/config';
+// FIXME
+import { mailConfig } from './../../interactors/initializeSystem';
 
 const fromAddress = mailConfig.fromAddress;
 const replyToAddress = mailConfig.replyToAddress;

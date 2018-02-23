@@ -7,10 +7,19 @@ import * as express from 'express';
 import * as multer from 'multer';
 import * as rootDir from 'app-root-dir';
 import * as unirest from 'unirest';
-import { knimeConfig } from './../../services/config/config';
+// local
+import { logger } from './../../aspects/logging';
+// FIXME
+import { knimeConfig } from './../../interactors/initializeSystem';
+import { validateSampleForm } from './../../controllers';
 
 let appRootDir = rootDir.get();
 const uploadDir = 'uploads/';
+
+const uploadPath = path.join(appRootDir, uploadDir);
+if (!fs.existsSync(uploadPath)) {
+  fs.mkdirSync(uploadPath);
+}
 
 export const router = express.Router();
 
@@ -29,65 +38,66 @@ let multerUpload = multer({ //multer settings
   storage: storage
 }).single('myPostName');
 
-
 router.post('/', function (req, res) {
 
-  const uploadPath = path.join(appRootDir, uploadDir);
-  if (! fs.existsSync(uploadPath)) {
-    fs.mkdirSync(uploadPath);
-    // console.log('uploadPath does not exists! created...');
+  logger.info('File POST request received')
+
+  if (req.is('application/json')) {
+    return validateSampleForm(req, res);
+  }
+  else {
+    multerUpload(req, res, function (err) {
+      if (err) {
+        // An error occurred when uploading
+        logger.error('error during upload, err: ', err);
+        return res
+          .status(400)
+          .json({
+          });
+      }
+
+      // file upload went fine, continue knime validation workflow...
+      const uploadedFilePath = path.join(appRootDir, req.file.path);
+      getKnimeJobId(req, res, uploadedFilePath);
+    });
   }
 
-   multerUpload(req, res, function (err) {
-     if (err) {
-       // An error occurred when uploading
-      console.log('error during upload, err: ', err);
-       return res
-       .status(400)
-       .json({
-       });
-     }
-
-    // file upload went fine, continue knime validation workflow...
-    const uploadedFilePath = path.join(appRootDir, req.file.path);
-    getKnimeJobId(req, res, uploadedFilePath);
-  });
 });
 
 function getKnimeJobId(req, res, filePath) {
 
-  console.log('getUnirestKnimeJobId!');
+  logger.info('Retrieving Knime Job ID.')
 
   const urlJobId = knimeConfig.urlJobId;
   const user = knimeConfig.user;
   const pass = knimeConfig.pass;
 
   unirest
-  .post(urlJobId)
-  .auth({
-    user: user,
-    pass: pass
-  })
-  .end((response) => {
-    if (response.error) {
-      console.log('knime id error: ', response.error);
+    .post(urlJobId)
+    .auth({
+      user: user,
+      pass: pass
+    })
+    .end((response) => {
+      if (response.error) {
+        logger.error('knime id error: ', response.error);
 
-      return res
-      .status(400)
-      .json({
-        title: 'knime id error',
-        obj: response.error
-      });
-    }
+        return res
+          .status(400)
+          .json({
+            title: 'knime id error',
+            obj: response.error
+          });
+      }
 
-    console.log(response.raw_body);
-    console.log('going for knime validation...');
-    const jobId = response.body['id'];
+      console.log(response.raw_body);
+      console.log('going for knime validation...');
+      const jobId = response.body['id'];
 
-    console.log('typeof jobId: ', (typeof jobId));
+      console.log('typeof jobId: ', (typeof jobId));
 
-    doKnimeValidation(req, res, jobId, filePath);
-  });
+      doKnimeValidation(req, res, jobId, filePath);
+    });
 
 }
 
@@ -101,37 +111,37 @@ function doKnimeValidation(req, res, jobId, filePath) {
   const pass = knimeConfig.pass;
 
   unirest
-  .post(urlResult)
-  .headers({
-    "content-type": "multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW",
-  })
-  .auth({
-    user: user,
-    pass: pass
-  })
-  .attach({
-    'file-upload-210': fs.createReadStream(filePath)
-  })
-  .end((response) => {
-    if (response.error) {
-      console.log('knime validation error: ', response.error);
+    .post(urlResult)
+    .headers({
+      "content-type": "multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW",
+    })
+    .auth({
+      user: user,
+      pass: pass
+    })
+    .attach({
+      'file-upload-210': fs.createReadStream(filePath)
+    })
+    .end((response) => {
+      if (response.error) {
+        console.log('knime validation error: ', response.error);
+
+        return res
+          .status(400)
+          .json({
+            title: 'knime validation error',
+            obj: response.error
+          });
+      }
+
+      console.log(response.raw_body);
 
       return res
-      .status(400)
-      .json({
-        title: 'knime validation error',
-        obj: response.error
-      });
-    }
-
-    console.log(response.raw_body);
-
-    return res
-      .status(200)
-      .json({
-        title: 'file upload and knime validation ok',
-        obj: response.raw_body
-      });
-  });
+        .status(200)
+        .json({
+          title: 'file upload and knime validation ok',
+          obj: response.raw_body
+        });
+    });
 }
 
