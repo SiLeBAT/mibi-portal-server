@@ -2,23 +2,29 @@
 import * as http from 'http';
 import * as path from 'path';
 
+
 // npm
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as expressJwt from 'express-jwt';
 import * as processenv from 'processenv';
+import * as  moment from 'moment';
+
 
 // local
 import { logger } from './server/aspects/logging';
-import * as database from './server/database/mongoose';
-import { configInit } from './server/services/config/config';
 import { router as user } from './server/routes/user';
 import { router as api } from './server/api';
+import { initializeSystem } from './server/interactors'
+import { DataStoreType, createDataStore } from './server/persistence';
 
+moment.locale("de");
 
+initializeSystem();
 
-configInit();
-database.initialize(processenv('MONGODB_URI'));
+const primaryDataStore = createDataStore(DataStoreType.MONGO);
+primaryDataStore.initialize(processenv('MONGODB_URI'));
+
 const app = express();
 
 logger.info('Runtime Environment', {
@@ -51,7 +57,10 @@ app.use(expressJwt({
     '/users/register',
     '/users/recovery',
     /\/users\/reset\/*/,
-    /\/users\/activate\/*/
+    /\/users\/activate\/*/,
+    // FIXME
+    '/api/v1/upload',
+    '/api/v1/upload/json',
   ]
 }));
 
