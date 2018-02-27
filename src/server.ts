@@ -52,15 +52,18 @@ app.use(expressJwt({
   }
 }).unless({
   path: [
+    '/index.html',
+    { url: '/', methods: ['GET'] },
+    /\/public\/*/,
+    /assets\/*/,
+    /\/*.ico/,
+    /\/*.js/,
     '/api/v1/institutions',
     '/users/login',
     '/users/register',
     '/users/recovery',
     /\/users\/reset\/*/,
-    /\/users\/activate\/*/,
-    // FIXME
-    '/api/v1/upload',
-    '/api/v1/upload/json',
+    /\/users\/activate\/*/
   ]
 }));
 
@@ -68,9 +71,13 @@ app.use(expressJwt({
 app.use((err, req, res, next) => {
   if (err.status === 401) {
     return res
-      .status(401);
+      .status(401)
+      .end();
   }
 });
+
+
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:4200');
@@ -88,7 +95,8 @@ app.use('/api', api);
 
 // Catch all other routes and return the index file, angular handles all errors
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist/index.html'));
+  logger.info("Getting index.html");
+  res.sendFile(path.join(__dirname, 'public/index.html'));
 });
 
 
