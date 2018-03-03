@@ -17,6 +17,7 @@
 *.launch
 .settings/
 *.sublime-workspace
+.vscode
 
 # IDE - VSCode
 .vscode/*
@@ -33,6 +34,8 @@
 npm-debug.log
 testem.log
 /typings
+/config
+/data
 
 # System Files
 .DS_Store
@@ -44,3 +47,4 @@ Thumbs.db
 /uploads
 server-patch.patch
 /tmp
+local-*

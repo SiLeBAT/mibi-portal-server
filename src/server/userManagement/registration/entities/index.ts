@@ -1,0 +1,1 @@
+export { IInstitution } from './institution';

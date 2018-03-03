@@ -1,10 +1,10 @@
 import * as express from 'express';
-import { router as knime } from './knime';
-import { router as upload } from './upload';
-import { router as institutions } from './institutions';
+import { institutionsRouter } from './../../userManagement';
+import { uploadRouter } from './../../sampleManagement';
+import { validationRouter } from './../../sampleManagement';
 
 export const router = express.Router();
 
-router.use('/knime', knime);
-router.use('/upload', upload);
-router.use('/institutions', institutions);
+router.use('/institutions', institutionsRouter);
+router.use('/upload', uploadRouter);
+router.use('/validation', validationRouter);

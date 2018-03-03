@@ -1,13 +1,19 @@
-# EpiLab
+# EpiLab Server
 
-## Development server
+The EpiLab Server
 
+## Installation
 
-## Build
+```shell
+$ yarn install 
+```
 
+## Quick start
+```shell
+$ npm start 
+```
 
-## Running unit tests
-
-
-## Further help
-
+## Running the build
+```shell
+$ npm build 
+```

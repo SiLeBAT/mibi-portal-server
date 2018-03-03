@@ -1,0 +1,1 @@
+export { retrieveInstitutions } from './retrieveInstitutions';
