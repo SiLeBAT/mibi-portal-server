@@ -1,10 +1,12 @@
 import * as  validate from 'validate.js';
 import * as  moment from 'moment';
+import * as  _ from 'lodash';
 
-import { constraints } from './validationConstraints';
-import { IValidationError } from './validationConstraints';
-import { ICatalog } from '../';
+import { getConstraints, ConstraintSet } from './validationConstraints';
+import { ICatalog, ISample } from '../';
 import { ServerError } from './../../../../../aspects';
+import { IValidationError } from './validationErrorProvider';
+import { constants } from 'os';
 
 moment.locale("de");
 
@@ -13,28 +15,6 @@ export interface ICatalogProvider {
 }
 export interface IValidationErrorCollection {
     [key: string]: IValidationError[];
-}
-
-export interface ISampleData {
-    sample_id: string;
-    sample_id_avv: string;
-    pathogen_adv: string;
-    pathogen_text: string;
-    sampling_date: string;
-    isolation_date: string;
-    sampling_location_adv: string;
-    sampling_location_zip: string;
-    sampling_location_text: string;
-    topic_adv: string;
-    matrix_adv: string;
-    matrix_text: string;
-    process_state: string;
-    sampling_reason_adv: string;
-    sampling_reason_text: string;
-    operations_mode_adv: string;
-    operations_mode_text: string;
-    vvvo: string;
-    comment: string;
 }
 
 export interface IValidatorConfig {
@@ -68,12 +48,14 @@ export function initialize(config: IValidatorConfig) {
     isInitalized = true;
 }
 
-export function validateSample(sample: ISampleData): IValidationErrorCollection {
+export function validateSample(sample: ISample): IValidationErrorCollection {
     if (!isInitalized) {
         throw new ServerError("Validator needs to be initialized");
     }
 
-    return validate(sample, constraints);
+    const constraintSet = sample.isZoMo() ? getConstraints(ConstraintSet.ZOMO) : getConstraints(ConstraintSet.STANDARD);
+
+    return validate(sample.getData(), constraintSet);
 }
 
 function registerCustomValidators() {
@@ -87,12 +69,14 @@ function registerCustomValidators() {
     validate.validators.dependentFieldEntry = dependentFieldEntry;
     validate.validators.numbersOnly = numbersOnly;
     validate.validators.inCatalog = inCatalog;
+    validate.validators.registeredZoMo = registeredZoMo;
     validate.validators.nonUniqueEntry = nonUniqueEntry;
 }
 
 function dependentFieldEntry(value, options, key, attributes) {
     const re = new RegExp(options.regex);
-    if (re.test(attributes[options.field]) && !attributes[key]) {
+    const trimmed = ('' + attributes[key]).replace(/\s/g, '');
+    if (re.test(attributes[options.field]) && !trimmed) {
         return options.message;
     }
     return null;
@@ -127,11 +111,40 @@ function inCatalog(value, options, key, attributes) {
     return null;
 }
 
+function registeredZoMo(value, options, key, attributes) {
+    const years = options.year.map(y => {
+        const yearValue = attributes[y];
+        const formattedYear = moment.utc(yearValue, 'DD-MM-YYYY').format('YYYY');
+        return parseInt(formattedYear);
+    });
+    if (years.length > 0) {
+        const yearToCheck = Math.min(...years);
+        const cat: ICatalog<any> = catalogProvider('zsp' + yearToCheck);
+        if (!!cat) {
+            const groupValues = options.group.map(g => attributes[g.attr]);
+            const entry = cat.getEntriesWithKeyValue(options.group[0].code, groupValues[0]);
+            const filtered = _.filter(entry, e => e[options.group[2].code] === groupValues[2]).filter(m => m[options.group[1].code] === groupValues[1]);
+            if (filtered.length < 1) {
+                return options.message;
+            }
+        }
+        else {
+            return options.message;
+        }
+    }
+    else {
+        return options.message;
+    }
+    return null;
+}
+
 function atLeastOneOf(value, options, key, attributes) {
-    if (!attributes[key]) {
+    const trimmed = ('' + attributes[key]).replace(/\s/g, '');
+    if (!trimmed) {
         for (let i = 0; i < options.additionalMembers.length; i++) {
             const element = options.additionalMembers[i];
-            if (!attributes[element]) {
+            const trimmed2 = ('' + attributes[element]).replace(/\s/g, '');
+            if (!trimmed2) {
                 return options.message;
             }
         }

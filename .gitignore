@@ -36,6 +36,7 @@ testem.log
 /typings
 /config
 /data
+/local
 
 # System Files
 .DS_Store

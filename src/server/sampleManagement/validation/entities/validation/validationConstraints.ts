@@ -1,298 +1,117 @@
 import * as _ from 'lodash';
+import { validationErrorProvider as vep } from './validationErrorProvider';
 
-interface IValidationErrorProvider {
-    getError(id: string): IValidationError;
+export enum ConstraintSet {
+    STANDARD = "standard", ZOMO = "ZoMo"
 }
+export function getConstraints(set: ConstraintSet) {
+    switch (set) {
+        case ConstraintSet.ZOMO:
+            const c = { ...standardConstrainst };
+            _.forEach(c, (value: Object, key) => {
+                if (zoMoConstraints.hasOwnProperty(key)) {
+                    c[key] = { ...value, ...zoMoConstraints[key] }
+                }
+            });
+            return c;
+        case ConstraintSet.STANDARD:
+        default:
+            return standardConstrainst;
 
-export interface IValidationError {
-    id: string;
-    code: number;
-    level: number;
-    message: string;
-}
-
-class ValidationErrorProvider implements IValidationErrorProvider {
-    private errors: IValidationError[] = [
-
-        {
-            code: 3,
-            id: "3",
-            level: 2,
-            message: "Probenummer kommt mehrfach vor(bei identischem Erreger)"
-        },
-        {
-            code: 6,
-            id: "6",
-            level: 2,
-            message: "Probenummer nach AVVData kommt mehrfach vor(bei identischem Erreger)"
-        },
-        {
-            code: 8,
-            id: "8",
-            level: 2,
-            message: "Erreger nicht erkannt.Der Eintrag entspricht keinem Text oder Code in ADV - Katalog Nr. 16."
-        },
-        {
-            code: 10,
-            id: "10",
-            level: 2,
-            message: "Kein Erreger eingetragen"
-        },
-        {
-            code: 11,
-            id: "11",
-            level: 1,
-            message: "Datum fehlt"
-        },
-        {
-            code: 12,
-            id: "12",
-            level: 2,
-            message: "Dieses Datum gibt es nicht"
-        },
-        {
-            code: 13,
-            id: "13",
-            level: 2,
-            message: "Datum liegt in der Zukunft"
-        },
-        {
-            code: 15,
-            id: "15",
-            level: 1,
-            message: "Datum fehlt"
-        },
-        {
-            code: 16,
-            id: "16",
-            level: 2,
-            message: "Dieses Datum gibt es nicht"
-        },
-        {
-            code: 17,
-            id: "17",
-            level: 2,
-            message: "Datum liegt in der Zukunft"
-        },
-        {
-            code: 19,
-            id: "19",
-            level: 2,
-            message: "Datum fehlt"
-        },
-        {
-            code: 20,
-            id: "20",
-            level: 2,
-            message: "Probenahme erfolgte nach der Isolierung ?"
-        },
-        {
-            code: 24,
-            id: "24a",
-            level: 2,
-            message: "Code ist nicht im ADV - Katalog Nr. 9 enthalten oder es ist kein Code."
-        },
-        {
-            code: 24,
-            id: "24b",
-            level: 2,
-            message: "Falscher Code.ADV9 - Codes sind maximal 8 Ziffern lang."
-        },
-        {
-            code: 25,
-            id: "25",
-            level: 1,
-            message: "Ortsname ohne PLZ angegeben"
-        },
-        {
-            code: 27,
-            id: "27a",
-            level: 2,
-            message: "Keine Postleitzahl.Postleitzahlen bestehen aus 5 Ziffern."
-        },
-        {
-            code: 27,
-            id: "27b",
-            level: 2,
-            message: "Keine gültige Postleitzahl."
-        },
-        {
-            code: 28,
-            id: "28",
-            level: 1,
-            message: "PLZ ohne Ortsname angegeben"
-        },
-        {
-            code: 30,
-            id: "30a",
-            level: 2,
-            message: "Code ist nicht im ADV - Katalog Nr. 2 enthalten"
-        },
-        {
-            code: 30,
-            id: "30b",
-            level: 2,
-            message: "Falscher Code.ADV2 - Codes bestehen aus 2 Ziffern."
-        },
-        {
-            code: 30,
-            id: "30c",
-            level: 2,
-            message: "Falscher Code.ADV2 - Codes bestehen ausschliesslich aus Ziffern."
-        },
-        {
-            code: 32,
-            id: "32",
-            level: 1,
-            message: "Bitte geben Sie einen ADV - Code f�r die Matrix an!"
-        },
-        {
-            code: 33,
-            id: "33a",
-            level: 2,
-            message: "Code ist nicht im ADV - Katalog Nr. 3 enthalten"
-        },
-        {
-            code: 33,
-            id: "33b",
-            level: 2,
-            message: "Falscher Code.ADV3 - Codes bestehen aus 6 Ziffern."
-        },
-        {
-            code: 33,
-            id: "33c",
-            level: 2,
-            message: "Falscher Code.ADV3 - Codes bestehen ausschliesslich aus Ziffern."
-        },
-        {
-            code: 37,
-            id: "37",
-            level: 2,
-            message: "Bitte geben Sie eine Matrix an!"
-        },
-        {
-            code: 39,
-            id: "39",
-            level: 2,
-            message: "Bitte geben Sie einen ADV - Code für den Verarbeitungszustand an! (Pflicht bei Betriebsart = Einzelhandel)"
-        },
-        {
-            code: 40,
-            id: "40a",
-            level: 2,
-            message: "Code ist nicht im ADV - Katalog Nr. 12 enthalten"
-        },
-        {
-            code: 40,
-            id: "40b",
-            level: 2,
-            message: "Falscher Code.ADV12 - Codes bestehen aus 3 Ziffern."
-        },
-        {
-            code: 40,
-            id: "40c",
-            level: 2,
-            message: "Falscher Code.ADV12 - Codes bestehen ausschliesslich aus Ziffern."
-        },
-        {
-            code: 42,
-            id: "42a",
-            level: 2,
-            message: "Code ist nicht im ADV - Katalog Nr. 4 enthalten"
-        },
-        {
-            code: 42,
-            id: "42b",
-            level: 2,
-            message: "Falscher Code.ADV4 - Codes bestehen aus 2 Ziffern."
-        },
-        {
-            code: 42,
-            id: "42c",
-            level: 2,
-            message: "Falscher Code.ADV4 - Codes bestehen ausschliesslich aus Ziffern."
-        },
-        {
-            code: 44,
-            id: "44",
-            level: 1,
-            message: "Bitte geben Sie einen Probenahme - Grund an!"
-        },
-        {
-            code: 46,
-            id: "46a",
-            level: 2,
-            message: "Code ist nicht im ADV - Katalog Nr. 8 enthalten"
-        },
-        {
-            code: 46,
-            id: "46b",
-            level: 2,
-            message: "Falscher Code.ADV8 - Codes bestehen aus 7 Ziffern."
-        },
-        {
-            code: 46,
-            id: "46c",
-            level: 2,
-            message: "Falscher Code.ADV8 - Codes bestehen ausschliesslich aus Ziffern."
-        },
-        {
-            code: 61,
-            id: "61",
-            level: 1,
-            message: "War die Isolierung wirklich über 1 Jahr nach der Probennahme?"
-        },
-        {
-            code: 62,
-            id: "62",
-            level: 1,
-            message: "Datum liegt über 10 Jahre zurück"
-        },
-        {
-            code: 63,
-            id: "63",
-            level: 1,
-            message: "Datum liegt über 10 Jahre zurück"
-        },
-        {
-            code: 64,
-            id: "64",
-            level: 1,
-            message: "Ortsangabe fehlt"
-        },
-        {
-            code: 68,
-            id: "68",
-            level: 1,
-            message: "Wenn vorhanden, geben Sie bitte auch ihre Probenummer ein"
-        },
-        {
-            code: 69,
-            id: "69",
-            level: 2,
-            message: "Keine Probenummer angegeben"
-        },
-        {
-            code: 70,
-            id: "70",
-            level: 2,
-            message: "Matrix - Code ist nicht eindeutig.Bitte Spalte 'Oberbegriff (Kodiersystem) der Matrizes' ausüllen!" //Entweder 'nn' für '[ADV-Text]' oder 'nn' für '[ADV-Text]'.
-        },
-        {
-            code: 71,
-            id: "71",
-            level: 1,
-            message: "Bitte tragen Sie eine Betriebsart ein!"
-        }
-    ]
-    getError(id: string) {
-        return _.find(this.errors, e => e.id === id);
     }
 }
 
-const vep = new ValidationErrorProvider();
+const zoMoConstraints = {
+    sample_id_avv: {
+        presence: {
+            message: vep.getError("5"),
+            allowEmpty: false
+        }
+    },
+    sampling_date: {
+        presence: {
+            message: vep.getError("14"),
+            allowEmpty: false
+        }
+    },
+    isolation_date: {
+        presence: {
+            message: vep.getError("18"),
+            allowEmpty: false
+        }
+    },
+    matrix_adv: {
+        presence: {
+            message: vep.getError("34"),
+            allowEmpty: false
+        },
+        registeredZoMo: {
+            message: vep.getError("49"),
+            group: [{
+                attr: "operations_mode_adv",
+                code: "ADV8-Kode"
+            }, {
+                attr: "matrix_adv",
+                code: 'ADV3-Kode'
+            }, {
+                attr: "topic_adv",
+                code: 'Kodiersystem'
+            }],
+            year: ["sampling_date", "isolation_date"]
+        }
+    },
+    operations_mode_adv: {
+        atLeastOneOf: {
+            message: vep.getError("48"),
+            additionalMembers: ["operations_mode_text"]
+        },
+        registeredZoMo: {
+            message: vep.getError("49"),
+            group: ["operations_mode_adv", "matrix_adv", "topic_adv"],
+            year: ["sampling_date", "isolation_date"]
+        }
+    },
+    operations_mode_text: {
+        atLeastOneOf: {
+            message: vep.getError("48"),
+            additionalMembers: ["operations_mode_adv"]
+        }
+    },
+    sampling_location_adv: {
+        atLeastOneOf: {
+            message: vep.getError("64b"),
+            additionalMembers: ["sampling_location_zip", "sampling_location_text"]
+        }
+    },
+    sampling_location_zip: {
+        atLeastOneOf: {
+            message: vep.getError("64b"),
+            additionalMembers: ["sampling_location_adv", "sampling_location_text"]
+        }
+    },
+    sampling_location_text: {
+        atLeastOneOf: {
+            message: vep.getError("64b"),
+            additionalMembers: ["sampling_location_adv", "sampling_location_zip"]
+        }
+    },
+    sampling_reason_adv: {
+        registeredZoMo: {
+            message: vep.getError("49"),
+            group: ["operations_mode_adv", "matrix_adv", "topic_adv"],
+            year: ["sampling_date", "isolation_date"]
+        }
+    },
+    sampling_reason_text: {
+        registeredZoMo: {
+            message: vep.getError("49"),
+            group: ["operations_mode_adv", "matrix_adv", "topic_adv"],
+            year: ["sampling_date", "isolation_date"]
+        }
+    },
+}
 
-export const constraints = {
+const standardConstrainst = {
     sample_id: {
         atLeastOneOf: {
             message: vep.getError("69"),
@@ -397,7 +216,7 @@ export const constraints = {
     },
     sampling_location_adv: {
         atLeastOneOf: {
-            message: vep.getError("64"),
+            message: vep.getError("64a"),
             additionalMembers: ["sampling_location_zip", "sampling_location_text"]
         },
         length: {
@@ -411,7 +230,7 @@ export const constraints = {
     },
     sampling_location_zip: {
         atLeastOneOf: {
-            message: vep.getError("64"),
+            message: vep.getError("64a"),
             additionalMembers: ["sampling_location_adv", "sampling_location_text"]
         },
         dependentFields: {
@@ -424,16 +243,16 @@ export const constraints = {
             tokenizer: function (value) {
                 // Necessary to deal with empty strings
                 return value ? value : 'XXXXX'
-            },
-            inCatalog: {
-                message: vep.getError("27b"),
-                catalog: "plz"
             }
+        },
+        inCatalog: {
+            message: vep.getError("27b"),
+            catalog: "plz"
         }
     },
     sampling_location_text: {
         atLeastOneOf: {
-            message: vep.getError("64"),
+            message: vep.getError("64a"),
             additionalMembers: ["sampling_location_adv", "sampling_location_zip"]
         },
         dependentFields: {
@@ -499,7 +318,7 @@ export const constraints = {
         dependentFieldEntry: {
             message: vep.getError("39"),
             field: "operations_mode_adv",
-            regex: "^1"
+            regex: "^4"
         },
         length: {
             message: vep.getError("40b"),
@@ -573,5 +392,4 @@ export const constraints = {
     },
     vvvo: "",
     comment: ""
-
 }

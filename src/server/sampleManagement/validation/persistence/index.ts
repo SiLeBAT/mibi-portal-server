@@ -1,1 +1,1 @@
-export { repository } from './catalogRepository';
+export { create as createRepository } from './catalogRepository';

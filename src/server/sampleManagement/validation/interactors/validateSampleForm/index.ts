@@ -1,3 +1,2 @@
-export { ISample } from './sample';
-export { createSample } from './sample';
+export { createSample, ISample } from './../../entities';
 export { validateSamples } from './formValidator';
