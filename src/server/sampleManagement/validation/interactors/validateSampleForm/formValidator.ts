@@ -1,9 +1,9 @@
 import * as _ from 'lodash';
 
 import { logger } from './../../../../../aspects';
-import { ISampleData, validateSample, initialize, IValidationErrorCollection } from "../../entities/validation";
+import { validateSample, initialize, IValidationErrorCollection } from "../../entities/validation";
 import { getCatalog } from './../provideCatalogData';
-import { ISample } from './sample';
+import { ISample, ISampleCollection } from './../../entities';
 import { ServerError } from './../../../../../aspects';
 
 initialize({
@@ -13,20 +13,20 @@ initialize({
 })
 
 
-function validateSamples(samples: ISample[]): ISample[] {
-    logger.info("Starting Sample validation");
+function validateSamples(sampleCollection: ISampleCollection): ISampleCollection {
+    logger.verbose("Starting Sample validation");
 
-    const results = samples.map(s => {
-        s.errors = validateSample(s.data) || {};
-        s.id_pathogen = (s.data.sample_id + s.data.pathogen_adv + s.data.pathogen_text).replace(/\s+/g, '');
-        s.id_avv_pathogen = (s.data.sample_id_avv + s.data.pathogen_adv + s.data.pathogen_text).replace(/\s+/g, '');
+    const results = sampleCollection.getSamples().map(s => {
+        s.setErrors(validateSample(s));
+
         return s;
     });
 
-    const checkedForDuplicateIds = checkForDuplicateId(results, 'id_pathogen');
-    const allChecked = checkForDuplicateId(checkedForDuplicateIds, 'id_avv_pathogen');
-    logger.info("Finishing Sample validation");
-    return allChecked;
+    const checkedForDuplicateIds = checkForDuplicateId(results, 'pathogenId');
+    const allChecked = checkForDuplicateId(checkedForDuplicateIds, 'pathogenIdAVV');
+    logger.verbose("Finishing Sample validation");
+    sampleCollection.setSamples(allChecked);
+    return sampleCollection;
 
 }
 
@@ -39,10 +39,7 @@ function checkForDuplicateId(samples: ISample[], uniqueId: string): ISample[] {
 
     _.filter(samples, s => _.includes(id_pathogenArray_duplicates, s[uniqueId]))
         .forEach(e => {
-            if (!e.errors[config.sampleId]) {
-                e.errors[config.sampleId] = [];
-            }
-            e.errors[config.sampleId].push(config.error)
+            e.addErrorTo(config.sampleId, config.error);
         });
 
     return [...samples];
@@ -51,7 +48,7 @@ function checkForDuplicateId(samples: ISample[], uniqueId: string): ISample[] {
 function getUniqueIdErrorConfig(uniqueId: string) {
 
     switch (uniqueId) {
-        case 'id_pathogen':
+        case 'pathogenId':
             return {
                 sampleId: 'sample_id',
                 error: {
@@ -61,7 +58,7 @@ function getUniqueIdErrorConfig(uniqueId: string) {
                     message: "Probenummer kommt mehrfach vor (bei identischem Erreger)"
                 }
             }
-        case 'id_avv_pathogen':
+        case 'pathogenIdAVV':
             return {
                 sampleId: 'sample_id_avv',
                 error: {

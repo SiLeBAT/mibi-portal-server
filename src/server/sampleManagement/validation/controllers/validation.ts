@@ -1,7 +1,8 @@
 import * as moment from 'moment';
 import * as _ from 'lodash';
 import { logger, ServerError } from './../../../../aspects';
-import { validateSamples as validate, ISample, createSample } from './../interactors';
+import { validateSamples as validate, createSample } from './../interactors';
+import { ISampleCollection, createSampleCollection, ISample } from './../entities';
 
 moment.locale("de");
 
@@ -20,7 +21,7 @@ interface ISampleDTO {
     topic_adv: string;
     matrix_adv: string;
     matrix_text: string;
-    process_state: string;
+    process_state_adv: string;
     sampling_reason_adv: string;
     sampling_reason_text: string;
     operations_mode_adv: string;
@@ -46,7 +47,7 @@ interface IValidationResponse {
 
 export function validateSamples(req, res) {
     logger.info('JSON POST request received')
-    const samples: ISample[] = fromDTOToSamples(req.body);
+    const samples: ISampleCollection = fromDTOToSamples(req.body);
     const rawValidationResult = validate(samples);
     const formattedValidationResult = fromErrorsToDTO(rawValidationResult);
     return res
@@ -54,11 +55,11 @@ export function validateSamples(req, res) {
         .json(formattedValidationResult);
 }
 
-function fromErrorsToDTO(samples: ISample[]) {
+function fromErrorsToDTO(samples: ISampleCollection) {
 
-    return samples.map((s: ISample) => {
+    return samples.getSamples().map((s: ISample) => {
         let errors = {};
-        _.forEach(s.errors, (e, i) => {
+        _.forEach(s.getErrors(), (e, i) => {
             errors[i] = e.map(f => ({
                 code: f.code,
                 level: f.level,
@@ -66,16 +67,18 @@ function fromErrorsToDTO(samples: ISample[]) {
             }));
         })
         return {
-            data: s.data,
+            data: s.getData(),
             errors: errors
         }
 
     });
 }
 
-function fromDTOToSamples(dto: IValidationRequest): ISample[] {
+function fromDTOToSamples(dto: IValidationRequest): ISampleCollection {
     if (!Array.isArray(dto)) {
         throw new ServerError("Invalid input: Array expected");
     }
-    return dto.map(s => createSample({ ...s }));
+    const samples = dto.map(s => createSample({ ...s }));
+
+    return createSampleCollection(samples);
 }

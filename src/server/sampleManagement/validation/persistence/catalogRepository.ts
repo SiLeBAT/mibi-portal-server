@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as csv from "fast-csv"
 import * as rootDir from 'app-root-dir';
 
-import { logger } from './../../../../aspects';
+import { logger, ServerError } from './../../../../aspects';
 import { Catalog, ICatalog } from './../entities';
 import { ICatalogRepository } from './../interactors';
 
@@ -73,14 +73,21 @@ class FileCatalogRepository implements ICatalogRepository {
     };
 }
 
-function create(): ICatalogRepository {
+function create(): Promise<ICatalogRepository> {
     const repository = new FileCatalogRepository();
-    repository.initialise().then(
-        () => logger.info("Catalog data successfully loaded.")
+    return repository.initialise().then(
+        () => {
+            logger.info("Catalog data successfully loaded.")
+            return repository;
+        }
     ).catch(
-        (error) => logger.error("Repository initialisation failure: Unable to initialise FileCatalogRepository", error)
+        (error) => {
+            logger.error("Repository initialisation failure: Unable to initialise FileCatalogRepository", error)
+            throw new ServerError(error);
+        }
     );
-    return repository;
 }
 
-export const repository: ICatalogRepository = create();
+export {
+    create
+}
