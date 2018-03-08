@@ -1,15 +1,13 @@
-import { tokenRepository } from "./../../persistence";
+import { getRepository, RepositoryType } from '../../../../core';
 import { verifyToken } from './../auth';
-import { logger } from "./../../../../../aspects";
-import { InvalidUserError, InvalidTokenError } from "./../../../../../aspects";
+import { logger, InvalidTokenError } from './../../../../../aspects';
+import { ITokenRepository } from '..';
 
-async function getUserForToken(token: string): Promise<string> {
+async function getUserIdForToken(token: string): Promise<string> {
+    const tokenRepository: ITokenRepository = getRepository(RepositoryType.TOKEN);
     const tokenEntry = await tokenRepository.getToken(token);
-    if (tokenEntry.length === 0) {
-        throw new InvalidTokenError();
-    }
 
-    const resetToken = tokenEntry[0];
+    const resetToken = tokenEntry;
     const userId = String(resetToken.user);
     try {
         await verifyToken(token, userId);
@@ -28,5 +26,5 @@ async function getUserForToken(token: string): Promise<string> {
 }
 
 export {
-    getUserForToken
-}
+    getUserIdForToken
+};

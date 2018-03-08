@@ -1,10 +1,12 @@
-import { IInstitution } from "../../entities";
-import { repository } from "./../../persistence";
+import { IInstitutionEntity } from './../../../shared/entities';
+import { getRepository, RepositoryType } from '../../../../core';
+import { IInstitutionRepository } from '../../../shared/gateway';
 
-function retrieveInstitutions(): Promise<IInstitution[]> {
-    return repository.getAll();
+function retrieveInstitutions(): Promise<IInstitutionEntity[]> {
+    const institutionRepository: IInstitutionRepository = getRepository(RepositoryType.INSTITUTION);
+    return institutionRepository.retrieve();
 }
 
 export {
     retrieveInstitutions
-}
+};

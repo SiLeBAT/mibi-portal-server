@@ -1,1 +1,1 @@
-export { getUserForToken } from './tokenManager';
+export { getUserIdForToken } from './tokenManager';

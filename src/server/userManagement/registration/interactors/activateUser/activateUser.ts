@@ -1,10 +1,10 @@
-import { IUser, IUserExtended } from "./../../../shared/entities";
-import { tokenRepository, userRepository } from "./../../../shared/persistence";
-import { logger } from "./../../../../../aspects";
-import { verifyToken, getUserForToken } from './../../../shared/interactors';
+import { getUserIdForToken, IUserRepository, ITokenRepository } from './../../../shared/interactors';
+import { IUserEntity } from '../../../shared/entities';
+import { logger } from '../../../../../aspects';
+import { getRepository, RepositoryType } from '../../../../core';
 
 export interface IActivationResponse {
-    result: ActivateResult
+    result: ActivateResult;
 }
 
 export enum ActivateResult {
@@ -14,27 +14,26 @@ export enum ActivateResult {
 async function activateUser(token: string): Promise<IActivationResponse> {
 
     try {
-        const userId = await getUserForToken(token);
-        const userModel = await userRepository.updateUser(userId, { enabled: true, updated: Date.now() });
-        // TODO this should probably be elsewhere
-        if (!userModel) {
-            return {
-                result: ActivateResult.EXPIRED
-            }
-        }
+        const userRepository: IUserRepository = getRepository(RepositoryType.USER);
+        const tokenRepository: ITokenRepository = getRepository(RepositoryType.TOKEN);
+        const userId = await getUserIdForToken(token);
+        const user: IUserEntity = await userRepository.getUserById(userId);
+        user.isActivated(true);
+        await userRepository.updateUser(userId, { enabled: true });
         await tokenRepository.deleteTokenForUser(userId);
-
+        logger.verbose('User activation successful');
         return {
             result: ActivateResult.SUCCESS
-        }
+        };
 
     } catch (err) {
+        logger.error('Unable to activate user. Reason:' , err);
         return {
             result: ActivateResult.EXPIRED
-        }
+        };
     }
 }
 
 export {
     activateUser
-}
+};

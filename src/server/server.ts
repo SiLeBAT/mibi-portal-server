@@ -21,7 +21,7 @@ export interface IAppServer {
 
 class AppServer implements IAppServer {
 
-    private server;
+    private server: express.Express;
 
     private publicDir = 'public';
 
@@ -29,7 +29,7 @@ class AppServer implements IAppServer {
         this.initialise(config);
     }
 
-    public start() {
+    start() {
         this.server.listen(this.server.get('port'), () => this.server.get('logger').info('API running', { 'port': this.server.get('port') }));
     }
 
@@ -51,17 +51,18 @@ class AppServer implements IAppServer {
 
         this.server.use(this.errorResponses.bind(this));
 
-        this.server.get('*', (req, res) => {
-            logger.verbose("Getting index.html");
+        routes.init(this.server);
+
+        this.server.get('*', (req: express.Request, res: express.Response) => {
+            logger.verbose('Getting index.html');
             res.sendFile(path.join(__dirname, this.publicDir + '/index.html'));
         });
-
-        routes.init(this.server);
     }
 
-    private errorResponses(err, req, res, next) {
+    // tslint:disable-next-line
+    private errorResponses(err: any, req: express.Request, res: express.Response, next: express.NextFunction) {
         if (err.status === 401) {
-            this.server.get('logger').warn("Log in attempt with invalid credentials");
+            this.server.get('logger').warn('Log in attempt with invalid credentials');
             return res
                 .status(401)
                 .end();
@@ -69,14 +70,13 @@ class AppServer implements IAppServer {
     }
 }
 
-
 function createServer(config: IServerConfig): IAppServer {
 
     const server = new AppServer(config);
 
-    return server
+    return server;
 }
 
 export {
     createServer
-}
+};

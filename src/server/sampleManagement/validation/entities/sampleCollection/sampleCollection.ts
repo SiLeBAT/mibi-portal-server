@@ -5,10 +5,6 @@ export interface ISampleCollection {
     setSamples(samples: ISample[]): void;
 }
 
-function createSampleCollection(data: ISample[]): ISampleCollection {
-    return new SampleCollection(data);
-}
-
 class SampleCollection implements ISampleCollection {
 
     constructor(private samples: ISample[]) { }
@@ -22,6 +18,10 @@ class SampleCollection implements ISampleCollection {
     }
 }
 
+function createSampleCollection(data: ISample[]): ISampleCollection {
+    return new SampleCollection(data);
+}
+
 export {
     createSampleCollection
-}
+};

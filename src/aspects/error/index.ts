@@ -1,5 +1,7 @@
+
 export class ServerError extends Error {
-    constructor(...args) {
+    // tslint:disable-next-line
+    constructor(...args: any[]) {
 
         // Calling parent constructor of base Error class.
         super(...args);
@@ -14,13 +16,29 @@ export class ServerError extends Error {
 }
 
 export class InvalidUserError extends ServerError {
-    constructor(...args) {
+    // tslint:disable-next-line
+    constructor(...args: any[]) {
         super(...args);
     }
 }
 
 export class InvalidTokenError extends ServerError {
-    constructor(...args) {
+    // tslint:disable-next-line
+    constructor(...args: any[]) {
+        super(...args);
+    }
+}
+
+export class InvalidOperationError extends ServerError {
+    // tslint:disable-next-line
+    constructor(...args: any[]) {
+        super(...args);
+    }
+}
+
+export class InvalidRepositoryError extends ServerError {
+    // tslint:disable-next-line
+    constructor(...args: any[]) {
         super(...args);
     }
 }

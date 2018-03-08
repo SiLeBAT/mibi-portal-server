@@ -1,19 +1,25 @@
-import * as path from 'path';
 
-import { ICatalog } from "./../../entities";
-import { logger } from './../../../../../aspects';
-import { createRepository } from "./../../persistence";
+import { ICatalog } from './../../entities';
+import { ServerError } from '../../../../../aspects';
+// FIXME: Catalog data should be in db
+import { createCatalogRepository } from './../../persistence';
+import { ICatalogRepository } from './../../gateways';
 
-let catalogRepository;
+let catalogRepository: ICatalogRepository;
 
-createRepository().then(
-    (repo) => catalogRepository = repo
+createCatalogRepository().then(
+    (repo: ICatalogRepository) => catalogRepository = repo
+). catch(
+    (err: Error) => {
+        throw new ServerError('Unable to retrieve Catalog Repository', err);
+    }
 );
 
+// tslint:disable-next-line
 function getCatalog(catalogName: string): ICatalog<any> {
     return catalogRepository.getCatalog(catalogName);
 }
 
 export {
     getCatalog
-}
+};

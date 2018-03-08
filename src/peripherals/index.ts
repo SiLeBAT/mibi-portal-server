@@ -1,2 +1,1 @@
-export { DataStoreType } from './dataStore';
-export { createDataStore } from './dataStore';
+export { createDataStore, createRepository, DataStoreType } from './persistence';
