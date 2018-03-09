@@ -63,6 +63,7 @@ class AppServer implements IAppServer {
     private errorResponses(err: any, req: express.Request, res: express.Response, next: express.NextFunction) {
         if (err.status === 401) {
             this.server.get('logger').warn('Log in attempt with invalid credentials');
+            this.server.get('logger').error('Log in attempt with invalid credentials 2');
             return res
                 .status(401)
                 .end();
