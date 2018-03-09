@@ -33,7 +33,6 @@
 /libpeerconnection.log
 npm-debug.log
 testem.log
-yarn.lock
 /typings
 /config
 /data
