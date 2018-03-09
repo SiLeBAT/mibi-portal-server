@@ -1,1 +1,1 @@
-export { createSampleCollection, ISampleCollection } from "./sampleCollection";
+export { createSampleCollection, ISampleCollection } from './sampleCollection';

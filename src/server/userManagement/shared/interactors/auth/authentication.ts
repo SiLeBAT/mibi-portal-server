@@ -8,16 +8,15 @@ const defaultHashOptions = {
     type: argon2.argon2id
 };
 
-function verifyPassword(hashedPassword, password) {
+function verifyPassword(hashedPassword: string, password: string) {
     return argon2.verify(hashedPassword, password);
 }
 
-function hashPassword(password, options = defaultHashOptions) {
+function hashPassword(password: string, options = defaultHashOptions) {
     return argon2.hash(password, options);
 }
-
 
 export {
     verifyPassword,
     hashPassword
-}
+};

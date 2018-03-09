@@ -22,16 +22,16 @@ function validateToken(secret: string) {
     return jwt({
         secret,
         getToken: function (req) {
-            if (req.headers.authorization && (<string>req.headers.authorization).split(' ')[0] === 'Bearer') {
-                return (<string>req.headers.authorization).split(' ')[1];
+            if (req.headers.authorization && (req.headers.authorization as string).split(' ')[0] === 'Bearer') {
+                return (req.headers.authorization as string).split(' ')[1];
             }
             return null;
         }
     }).unless({
         path: whiteList
-    })
+    });
 }
 
 export {
     validateToken
-}
+};

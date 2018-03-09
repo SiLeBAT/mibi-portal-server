@@ -3,10 +3,17 @@
         "target": "es6",
         "module": "commonjs",
         "outDir": "lib",
-        "sourceMap": true
+        "sourceMap": true,
+        "strictNullChecks": true,
+        "noImplicitAny": true,
+        "typeRoots": [
+            "./node_modules/@types",
+            "./typings"
+        ]
     },
     "include": [
         "src/**/*.ts",
+        "integrationTests/**/*.ts",
     ],
     "exclude": [
         "node_modules"

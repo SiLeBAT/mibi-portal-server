@@ -1,10 +1,8 @@
 import * as fs from 'fs';
-import { userRepository, tokenRepository } from "./../../../shared/persistence";
-import { logger } from "./../../../../../aspects";
-import { sendNotificationEmail } from './../../../shared/interactors';
-import { hashPassword } from './../../../shared/interactors';
-import { getUserForToken } from './../../../shared/interactors';
-import { IUser } from "./../../../shared/entities";
+import { sendNotificationEmail,hashPassword, getUserIdForToken, IUserRepository, ITokenRepository } from './../../../shared/interactors';
+import { IUserEntity } from './../../../shared/entities';
+import { logger } from '../../../../../aspects';
+import { getRepository, RepositoryType } from '../../../../core';
 
 export interface IResetResponse {
     result: ResetResult;
@@ -17,29 +15,31 @@ export enum ResetResult {
 async function resetPassword(token: string, password: string): Promise<IResetResponse> {
 
     try {
-        const userId = await getUserForToken(token);
-        const hashedPassword = await hashPassword(password);
-        const user: IUser = await userRepository.updateUser(userId, { enabled: true, updated: Date.now() });
+        const userRepository: IUserRepository = getRepository(RepositoryType.USER);
+        const tokenRepository: ITokenRepository = getRepository(RepositoryType.TOKEN);
+        const userId = await getUserIdForToken(token);
+        const hash = await hashPassword(password);
+        const user: IUserEntity = await userRepository.updateUser(userId, { password: hash });
         // TODO this should probably be elsewhere
         if (!user) {
             return {
                 result: ResetResult.EXPIRED
-            }
+            };
         }
         await tokenRepository.deleteTokenForUser(userId);
-        const templateFile = fs.readFileSync(__dirname + '/../views/pwnotification.html').toString('utf-8');
+        const templateFile = fs.readFileSync(__dirname + '/../../views/pwnotification.html').toString('utf-8');
         sendNotificationEmail(user, templateFile);
         return {
             result: ResetResult.SUCCESS
-        }
-    }
-    catch (err) {
+        };
+    } catch (err) {
+        logger.error('Unable to reset password. Reason: ', err);
         return {
             result: ResetResult.EXPIRED
-        }
+        };
     }
 }
 
 export {
     resetPassword
-}
+};

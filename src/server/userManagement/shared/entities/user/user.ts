@@ -1,39 +1,52 @@
-export interface IUser {
-    // Should _id be exposed?
-    _id: string;
+import { isUndefined } from 'util';
+import { IInstitutionEntity } from './../institution';
+
+export interface IUserdata {
+    uniqueId: string;
+    department: string;
+    contact: string;
+    phone: string;
+    email: string;
+}
+
+export interface IUserBase {
     firstName: string;
     lastName: string;
     email: string;
-    isActivated(): boolean;
+    institution: IInstitutionEntity;
+    userdata: IUserdata[];
+    password: string;
+}
+export interface IUserEntity extends IUserBase {
+    uniqueId: string ;
+    isActivated(active?: boolean): boolean;
 }
 
-export interface IUserExtended extends IUser {
-    institution: string;
-    userdata: any[];
-}
-
-
-class User implements IUserExtended {
-    _id: string;
+class User implements IUserEntity {
+    uniqueId: string ;
     firstName: string;
     lastName: string;
     email: string;
-    institution: string;
-    userdata: any[];
+    institution: IInstitutionEntity;
+    userdata: IUserdata[];
+    password: string;
 
-    constructor(id, email, fname, lname, inst, private enabled) {
-        this._id = id;
+    constructor(id: string , email: string, fname: string, lname: string, inst: IInstitutionEntity, private enabled: boolean) {
+        this.uniqueId = id;
         this.email = email;
         this.firstName = fname;
         this.lastName = lname;
         this.institution = inst;
     }
 
-    isActivated() {
+    isActivated(active?: boolean) {
+        if (!isUndefined(active)) {
+            this.enabled = !!active;
+        }
         return this.enabled;
     }
 }
 
-export function createUser(id, email, fname, lname, inst, enabled = false): IUserExtended {
+export function createUser(id: string , email: string, fname: string, lname: string, inst: IInstitutionEntity, enabled: boolean = false): IUserEntity {
     return new User(id, email, fname, lname, inst, enabled);
 }

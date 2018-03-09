@@ -2,7 +2,6 @@
 import * as express from 'express';
 import { loginRouter, registerRouter, recoveryRouter, resetRouter, activateRouter, usersRouter } from './../../userManagement';
 
-
 export const router = express.Router();
 
 router.use('/login', loginRouter);

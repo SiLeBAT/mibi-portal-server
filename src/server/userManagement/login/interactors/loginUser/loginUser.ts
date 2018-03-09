@@ -1,9 +1,9 @@
-import { verifyPassword } from './../../../shared/interactors/auth';
-import { generateToken } from './../../../shared/interactors/auth';
-import { IUser, IUserExtended } from "./../../../shared//entities/user";
-import { userRepository } from "./../../../shared/persistence";
-import { logger } from "./../../../../../aspects/logging";
+import { verifyPassword, generateToken, IUserRepository } from './../../../shared/interactors';
+import { IUserEntity } from './../../../shared//entities';
+import { logger } from './../../../../../aspects/logging';
 import { InvalidUserError } from './../../../../../aspects/error';
+import { getRepository } from '../../../../core';
+import { RepositoryType } from '../../../../core/persistence/repositoryProvider';
 
 export interface IUserCredentials {
     email: string;
@@ -12,7 +12,7 @@ export interface IUserCredentials {
 
 export interface ILoginResponse {
     result: LoginResult;
-    user?: IUserExtended;
+    user?: IUserEntity;
     token?: string;
 
 }
@@ -21,11 +21,10 @@ export enum LoginResult {
 }
 
 async function loginUser(credentials: IUserCredentials): Promise<ILoginResponse> {
-    let user;
 
     try {
-        // FIXME: Should only find user not user with aux data.
-        user = await userRepository.findByUsernameWithAuxilliary(credentials.email);
+        const userRepository: IUserRepository = getRepository(RepositoryType.USER);
+        const user = await userRepository.findByUsername(credentials.email);
 
         if (!user.isActivated()) {
             return rejectInactive();
@@ -35,8 +34,8 @@ async function loginUser(credentials: IUserCredentials): Promise<ILoginResponse>
             return {
                 result: LoginResult.SUCCESS,
                 user: user,
-                token: generateToken(user._id)
-            }
+                token: generateToken(user.uniqueId)
+            };
         }
     } catch (err) {
         return failLogin(err);
@@ -45,9 +44,10 @@ async function loginUser(credentials: IUserCredentials): Promise<ILoginResponse>
     return failLogin(new InvalidUserError());
 }
 
-function checkIfAuthorized(user: IUser, credentials: IUserCredentials): Promise<boolean> {
+function checkIfAuthorized(user: IUserEntity, credentials: IUserCredentials): Promise<boolean> {
+    const userRepository: IUserRepository = getRepository(RepositoryType.USER);
     return userRepository.getPasswordForUser(user.email).then(
-        hashedPassword => {
+        (hashedPassword: string) => {
             return verifyPassword(hashedPassword, credentials.password);
         },
         () => {
@@ -56,22 +56,22 @@ function checkIfAuthorized(user: IUser, credentials: IUserCredentials): Promise<
     );
 }
 
-function failLogin(err): ILoginResponse {
-    logger.info("Failed to log in: ", err);
+function failLogin(err: Error): ILoginResponse {
+    logger.info('Failed to log in: ', err);
     return {
         result: LoginResult.FAIL,
-        user: null
+        user: undefined
     };
 }
 
 function rejectInactive(): ILoginResponse {
-    logger.info("Inactive account failed to log in.");
+    logger.info('Inactive account failed to log in.');
     return {
         result: LoginResult.INACTIVE,
-        user: null
-    }
+        user: undefined
+    };
 }
 
 export {
     loginUser
-}
+};

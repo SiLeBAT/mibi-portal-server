@@ -1,8 +1,8 @@
 import * as fs from 'fs';
-import { IUser, IUserExtended } from "./../../../shared/entities";
-import { tokenRepository, userRepository } from "./../../../shared/persistence";
-import { logger, ServerError } from "./../../../../../aspects";
-import { hashPassword, generateToken, sendActivationEmail } from './../../../shared/interactors';
+import { getRepository, RepositoryType } from '../../../../core';
+import { logger, ServerError } from './../../../../../aspects';
+import { hashPassword, generateToken, sendActivationEmail, IInstitutionRepository, ITokenRepository, IUserRepository } from './../../../shared/interactors';
+import { createUser, TokenType } from '../../../shared/entities';
 
 export interface IUserRegistration {
     firstName: string;
@@ -10,13 +10,13 @@ export interface IUserRegistration {
     email: string;
     password: string;
     institution: string;
-    userAgent: string;
+    userAgent: string | string[] | undefined;
 }
 
 export interface IRegisterResponse {
     result: RegisterResult;
     email?: string;
-    error?: Error
+    error?: Error;
 }
 
 export enum RegisterResult {
@@ -26,49 +26,55 @@ export enum RegisterResult {
 async function registerUser(credentials: IUserRegistration): Promise<IRegisterResponse> {
 
     try {
+        const userRepository: IUserRepository = getRepository(RepositoryType.USER);
+        const tokenRepository: ITokenRepository = getRepository(RepositoryType.TOKEN);
+        const institutionRepository: IInstitutionRepository = getRepository(RepositoryType.INSTITUTION);
         const result = await userRepository.hasUser(credentials.email);
         if (result) {
-            logger.info("Registration failed: User already exists: ", credentials.email);
+            logger.info('Registration failed: User already exists: ', credentials.email);
             return {
                 result: RegisterResult.DUPLICATE
-            }
+            };
         }
-        const hashedPassword = await hashPassword(credentials.password)
-        const user = await userRepository.saveUser({
-            firstName: credentials.firstName,
-            lastName: credentials.lastName,
-            email: credentials.email,
-            password: hashedPassword,
-            institution: credentials.institution
-        });
+        const hashedPassword = await hashPassword(credentials.password);
+        const inst = await institutionRepository.findById(credentials.institution);
+        if (!inst) {
+            logger.error('Institution not found');
+            throw new ServerError('Institution not found');
+        }
+        const newUser = createUser('0000', credentials.email, credentials.firstName,
+            credentials.lastName, inst);
+        newUser.password = hashedPassword;
+        const user = await userRepository.createUser(newUser);
 
-        const oldToken = await tokenRepository.hasTokenForUser(user._id);
-        if (oldToken) {
-            await tokenRepository.deleteTokenForUser(user._id);
+        const hasOldToken = await tokenRepository.tokenForUserExists(user.uniqueId);
+        if (hasOldToken) {
+            await tokenRepository.deleteTokenForUser(user.uniqueId);
         }
-        const token = generateToken(user._id)
+        const token = generateToken(user.uniqueId);
 
         const activationToken = await tokenRepository.saveToken({
             token: token,
-            type: 'activate',
-            user: user._id
+            type: TokenType.ACTIVATE,
+            user: user.uniqueId
         });
         // FIXME
         const templateFile = fs.readFileSync(__dirname + '/../../views/regactivation.html').toString('utf-8');
-        sendActivationEmail(user, activationToken, credentials.userAgent, templateFile);
+        const userAgent =
+            sendActivationEmail(user, activationToken, (credentials.userAgent as string), templateFile);
         return {
             result: RegisterResult.SUCCESS,
             email: user.email
         };
     } catch (err) {
-        logger.error("Registration failed. Reason: ", err);
+        logger.error('Registration failed. Reason: ', err);
         return {
             result: RegisterResult.FAIL,
             error: err
-        }
+        };
     }
 }
 
 export {
     registerUser
-}
+};

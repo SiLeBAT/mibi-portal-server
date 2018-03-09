@@ -1,10 +1,11 @@
+import { Response, Request } from 'express';
 import { multerUpload } from './../middleware';
 import { logger } from './../../../../aspects';
 
-function saveDataset(req, res) {
+function saveDataset(req: Request, res: Response) {
     multerUpload(req, res, function (err) {
         if (err) {
-            logger.error("Unable to save Dataset.");
+            logger.error('Unable to save Dataset.');
             return res
                 .status(400)
                 .end();
@@ -16,4 +17,4 @@ function saveDataset(req, res) {
 
 export {
     saveDataset
-}
+};

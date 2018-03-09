@@ -1,4 +1,4 @@
-import { IValidationErrorCollection, IValidationError } from "../../entities/validation";
+import { IValidationErrorCollection, IValidationError } from '../../entities/validation';
 
 const ZOMO_CODE: number = 81;
 const ZOMO_STRING: string = 'Zoonosen-Monitoring - Planprobe';
@@ -8,7 +8,7 @@ export interface ISample {
     readonly pathogenId: string;
     getData(): ISampleData;
     setErrors(errors: IValidationErrorCollection): void;
-    addErrorTo(id: string, errors: IValidationError): void
+    addErrorTo(id: string, errors: IValidationError): void;
     getErrors(): IValidationErrorCollection;
     isZoMo(): boolean;
 }
@@ -35,20 +35,16 @@ export interface ISampleData {
     comment: string;
 }
 
-function createSample(data: ISampleData): ISample {
-    return new Sample(data);
-}
-
 class Sample implements ISample {
 
     private errors: IValidationErrorCollection;
 
     constructor(private data: ISampleData) {
-        this.errors = {}
-    };
+        this.errors = {};
+    }
 
     getData() {
-        return this.data
+        return this.data;
     }
 
     get pathogenId(): string {
@@ -71,7 +67,7 @@ class Sample implements ISample {
         return this.getData().sampling_reason_adv === ('' + ZOMO_CODE) || this.getData().sampling_reason_text === ZOMO_STRING;
     }
 
-    addErrorTo(id, error) {
+    addErrorTo(id: string, error: IValidationError) {
         if (!this.errors[id]) {
             this.errors[id] = [];
         }
@@ -80,6 +76,10 @@ class Sample implements ISample {
     }
 }
 
+function createSample(data: ISampleData): ISample {
+    return new Sample(data);
+}
+
 export {
     createSample
-}
+};

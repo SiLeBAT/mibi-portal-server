@@ -1,46 +1,39 @@
+import { Request, Response, NextFunction } from 'express';
 import { addUserData, updateUserData, deleteUserData } from './../interactors';
+import { logger } from '../../../../aspects';
 
-async function addUserdata(req, res, next) {
+async function addUserdata(req: Request, res: Response, next: NextFunction) {
     const body = req.body;
-    let response = res
-        .status(400)
-        .json({
-            title: 'Error saving user'
-        })
-        .end();
-
     try {
-        const user_ext = await addUserData(body.user._id, body.userdata);
-        if (!!user_ext) {
-            response = res
-                .status(200)
-                .json({
-                    title: 'Adding userdata ok',
-                    obj: user_ext
-                })
-                .end();
-        }
+        const userExt = await addUserData(body.user._id, body.userdata);
+        return res
+            .status(200)
+            .json({
+                title: 'Adding userdata ok',
+                obj: userExt
+            });
+    } catch (err) {
+        logger.error('Unable to update user data. Reason: ', err);
+        return res
+            .status(400)
+            .json({
+                title: 'Error saving user'
+            }).end();
     }
-    catch (err) {
-        return response;
-    }
-    return response;
 }
 
-async function updateUserdata(req, res, next) {
-    const id = req.params._id;
+async function updateUserdata(req: Request, res: Response, next: NextFunction) {
     const body = req.body;
 
     try {
-        const user_ext = await updateUserData(body.user._id, body.userdata);
+        await updateUserData(body.user._id, body.userdata);
         return res
             .status(200)
             .json({
                 title: 'update userdata ok',
                 obj: body.userdata
             });
-    }
-    catch (err) {
+    } catch (err) {
         return res
             .status(400)
             .json({
@@ -50,8 +43,8 @@ async function updateUserdata(req, res, next) {
     }
 }
 
-async function deleteUserdata(req, res, next) {
-    const ids = req.params.ids;
+async function deleteUserdata(req: Request, res: Response, next: NextFunction) {
+    const ids = req.params.id;
     const entries = ids.split('&');
 
     if (entries.length < 2) {
@@ -72,8 +65,7 @@ async function deleteUserdata(req, res, next) {
                 title: 'delete userdata ok',
                 obj: updatedUser
             });
-    }
-    catch (err) {
+    } catch (err) {
         return res
             .status(400)
             .json({
@@ -87,4 +79,4 @@ export {
     addUserdata,
     updateUserdata,
     deleteUserdata
-}
+};

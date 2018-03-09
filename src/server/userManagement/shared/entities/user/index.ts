@@ -1,1 +1,1 @@
-export { IUser, IUserExtended, createUser } from './user';
+export { IUserEntity, IUserdata, createUser, IUserBase } from './user';
