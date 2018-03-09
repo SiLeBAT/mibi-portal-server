@@ -1521,7 +1521,7 @@ function checkVal(error: any, i: any, isZoMo: any) {
     const actual = getErrorCode(error);
     const expected = getExpCode(i + 1);
     const knimeNotJs = [...diff(expected, actual)];
-    const jsNotKnime = [...diff(actual, expected)];
+    const jsNotKnime = [...diff(actual, expected)];_
 
     //knimeNotJs.length > 0 ? console.log("Zeile " + (i + 1) + ": Caught by Knime not by JS" + (isZoMo ? "(ZOMO)" : "") + ": ", knimeNotJs) : '';
     jsNotKnime.length > 0 ? console.log("Zeile " + (i + 1) + ": Caught by JS not by Knime: ", jsNotKnime) : '';
