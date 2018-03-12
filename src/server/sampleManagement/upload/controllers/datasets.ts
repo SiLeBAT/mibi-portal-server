@@ -1,6 +1,7 @@
 import { Response, Request } from 'express';
 import { multerUpload } from './../middleware';
 import { logger } from './../../../../aspects';
+import { validateSamples } from '../../validation/controllers';
 
 function saveDataset(req: Request, res: Response) {
     multerUpload(req, res, function (err) {
@@ -11,7 +12,7 @@ function saveDataset(req: Request, res: Response) {
                 .end();
         }
         // FIXME: Temporary redirect to allow for feature parity with old version
-        res.redirect(307, 'validation');
+        return validateSamples(req, res);
     });
 }
 

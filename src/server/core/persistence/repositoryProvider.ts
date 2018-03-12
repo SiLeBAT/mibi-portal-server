@@ -1,6 +1,6 @@
 import { userRepository, userDataRepository, tokenRepository, institutionRepository } from './../../../peripherals/persistence/repositories';
-import { IEntityRepository } from '../../userManagement/shared/gateway';
 import { logger, InvalidRepositoryError } from '../../../aspects';
+import { IEntityRepository } from '../gateways';
 
 export enum RepositoryType {
     USER, USERDATA, TOKEN, INSTITUTION

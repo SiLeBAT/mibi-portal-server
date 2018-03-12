@@ -1,7 +1,8 @@
 import * as winston from 'winston';
+import * as config from 'config';
 
 // tslint:disable-next-line
-(winston as any).level = 'silly';
+(winston as any).level = mapLogLevels(config.get('server.logLevel'));
 
 class Logger {
 
@@ -33,6 +34,25 @@ class Logger {
     // tslint:disable-next-line
     verbose(msg: string, meta?: any) {
         winston.log('verbose', msg, meta);
+    }
+}
+
+function mapLogLevels(level: string): string {
+    switch (level) {
+        case 'trace':
+            return 'silly';
+        case 'info':
+            return level;
+        case 'error':
+            return level;
+        case 'verbose':
+            return level;
+        case 'warn':
+            return level;
+        case 'silly':
+            return level;
+        default:
+            return 'info';
     }
 }
 

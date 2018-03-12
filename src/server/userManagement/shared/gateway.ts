@@ -1,5 +1,5 @@
 import { IUserEntity, IUserToken, IUserdata, IInstitutionEntity } from './entities';
-import { IModelAttributes } from './../../core';
+import { IModelAttributes, IEntityRepository } from './../../core';
 
 export interface IUserModelAttributes extends IModelAttributes {
     _id?: string;
@@ -11,8 +11,6 @@ export interface IUserModelAttributes extends IModelAttributes {
     userdata?: IUserdata[];
     password?: string;
 }
-
-export interface IEntityRepository {}
 
 export interface IInstitutionRepository extends IEntityRepository {
     retrieve(): Promise<IInstitutionEntity[]>;
