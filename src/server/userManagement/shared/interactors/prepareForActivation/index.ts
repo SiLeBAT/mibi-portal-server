@@ -1,0 +1,1 @@
+export { prepareUserForActivation } from './prepareUserForActivation';
