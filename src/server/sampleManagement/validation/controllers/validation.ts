@@ -5,7 +5,6 @@ import * as _ from 'lodash';
 import * as rootDir from 'app-root-dir';
 import * as unirest from 'unirest';
 import * as config from 'config';
-import { multerUpload } from './../middleware';
 import { Request, Response, NextFunction } from 'express';
 import { logger, ServerError } from './../../../../aspects';
 import { validateSamples as validate, createSample } from './../interactors';
@@ -62,16 +61,8 @@ export function validateSamples(req: Request, res: Response) {
     if (req.is('application/json')) {
         return validateSamplesViaJS(req, res);
     } else {
-        return multerUpload(req, res, function (err) {
-            if (err) {
-                logger.error('Unable to save Dataset.');
-                return res
-                    .status(400)
-                    .end();
-            }
-            const uploadedFilePath = path.join(appRootDir, req.file.path);
-            return getKnimeJobId(req, res, uploadedFilePath);
-        });
+        const uploadedFilePath = path.join(appRootDir, req.file.path);
+        return getKnimeJobId(req, res, uploadedFilePath);
     }
 
 }
