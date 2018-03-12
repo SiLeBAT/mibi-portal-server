@@ -19,3 +19,5 @@ export interface IWrite<T> {
 
 export interface IRepositoryBase<T> extends IRead<T>, IWrite<T> {
 }
+
+export interface IEntityRepository {}
