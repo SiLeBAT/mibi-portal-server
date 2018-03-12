@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import { getRepository, RepositoryType } from '../../../../core';
 import { logger, ServerError } from './../../../../../aspects';
-import { hashPassword, generateToken, sendActivationEmail, IInstitutionRepository, ITokenRepository, IUserRepository } from './../../../shared/interactors';
+import { prepareUserForActivation, hashPassword, generateToken, IInstitutionRepository, ITokenRepository, IUserRepository } from './../../../shared/interactors';
 import { createUser, TokenType } from '../../../shared/entities';
 
 export interface IUserRegistration {
@@ -27,7 +27,6 @@ async function registerUser(credentials: IUserRegistration): Promise<IRegisterRe
 
     try {
         const userRepository: IUserRepository = getRepository(RepositoryType.USER);
-        const tokenRepository: ITokenRepository = getRepository(RepositoryType.TOKEN);
         const institutionRepository: IInstitutionRepository = getRepository(RepositoryType.INSTITUTION);
         const result = await userRepository.hasUser(credentials.email);
         if (result) {
@@ -47,21 +46,7 @@ async function registerUser(credentials: IUserRegistration): Promise<IRegisterRe
         newUser.password = hashedPassword;
         const user = await userRepository.createUser(newUser);
 
-        const hasOldToken = await tokenRepository.tokenForUserExists(user.uniqueId);
-        if (hasOldToken) {
-            await tokenRepository.deleteTokenForUser(user.uniqueId);
-        }
-        const token = generateToken(user.uniqueId);
-
-        const activationToken = await tokenRepository.saveToken({
-            token: token,
-            type: TokenType.ACTIVATE,
-            user: user.uniqueId
-        });
-        // FIXME
-        const templateFile = fs.readFileSync(__dirname + '/../../views/regactivation.html').toString('utf-8');
-        const userAgent =
-            sendActivationEmail(user, activationToken, (credentials.userAgent as string), templateFile);
+        prepareUserForActivation(user, credentials.userAgent as string);
         return {
             result: RegisterResult.SUCCESS,
             email: user.email

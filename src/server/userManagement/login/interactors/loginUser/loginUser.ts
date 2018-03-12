@@ -1,4 +1,4 @@
-import { verifyPassword, generateToken, IUserRepository } from './../../../shared/interactors';
+import { verifyPassword, generateToken, IUserRepository, prepareUserForActivation } from './../../../shared/interactors';
 import { IUserEntity } from './../../../shared//entities';
 import { logger } from './../../../../../aspects/logging';
 import { InvalidUserError } from './../../../../../aspects/error';
@@ -8,6 +8,7 @@ import { RepositoryType } from '../../../../core/persistence/repositoryProvider'
 export interface IUserCredentials {
     email: string;
     password: string;
+    userAgent: string | string[] | undefined;
 }
 
 export interface ILoginResponse {
@@ -27,7 +28,7 @@ async function loginUser(credentials: IUserCredentials): Promise<ILoginResponse>
         const user = await userRepository.findByUsername(credentials.email);
 
         if (!user.isActivated()) {
-            return rejectInactive();
+            return rejectInactive(user, credentials.userAgent as string);
         }
         const authorized = await checkIfAuthorized(user, credentials);
         if (authorized) {
@@ -57,15 +58,16 @@ function checkIfAuthorized(user: IUserEntity, credentials: IUserCredentials): Pr
 }
 
 function failLogin(err: Error): ILoginResponse {
-    logger.info('Failed to log in: ', err);
+    logger.verbose('Failed to log in: ', err);
     return {
         result: LoginResult.FAIL,
         user: undefined
     };
 }
 
-function rejectInactive(): ILoginResponse {
-    logger.info('Inactive account failed to log in.');
+function rejectInactive(user: IUserEntity, userAgent: string): ILoginResponse {
+    logger.verbose('Inactive account failed to log in.');
+    prepareUserForActivation(user, userAgent);
     return {
         result: LoginResult.INACTIVE,
         user: undefined

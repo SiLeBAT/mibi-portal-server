@@ -33,7 +33,6 @@
 /libpeerconnection.log
 npm-debug.log
 testem.log
-/config
 /data
 /local
 
@@ -42,7 +41,8 @@ testem.log
 Thumbs.db
 
 # app
-/config/config.json
+/config/*
+!/config/custom-environment-variables.json
 /playground
 /uploads
 server-patch.patch

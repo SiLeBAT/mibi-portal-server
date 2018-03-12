@@ -1,0 +1,11 @@
+{
+    "server": {
+        "port": "NODE_PORT",
+        "jwtSecret": "JWT_SECRET",
+        "apiUrl": "API_URL",
+        "logLevel": "LOG_LEVEL"
+    },
+    "dataStore": {
+        "connectionString": "DB_CONNECTION"
+    }
+}
