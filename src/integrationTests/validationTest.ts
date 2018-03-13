@@ -1,8 +1,8 @@
 import * as _ from 'lodash';
 
-import { createSample, createSampleCollection } from './../src/server/sampleManagement/validation/entities';
-import { validateSamples } from './../src/server/sampleManagement/validation/interactors';
-import { createCatalogRepository } from './../src/server/sampleManagement/validation/persistence';
+import { createSample, createSampleCollection } from './../server/sampleManagement/validation/entities';
+import { validateSamples } from './../server/sampleManagement/validation/interactors';
+import { createCatalogRepository } from './../server/sampleManagement/validation/persistence';
 
 // tslint:disable
 const testArray = [
@@ -1498,51 +1498,6 @@ const testArray = [
         comment: "EH15"
     }
 ];
-
-const sampleArray = testArray.map(e => {
-    return createSample(e);
-})
-
-const sampleCollection = createSampleCollection(sampleArray);
-createCatalogRepository().then(
-    (repo) => {
-        const errors = validateSamples(sampleCollection).getSamples().forEach((s, i) => {
-            const errors = s.getErrors();
-            checkVal(errors, i, s.isZoMo)
-        });
-        // const one = validateSamples(sampleCollection).getSamples()[0]
-        // checkVal(one.getErrors(), 0, one.isZoMo)
-    }
-).catch(
-    err => console.log(err)
-);
-
-function checkVal(error: any, i: any, isZoMo: any) {
-    const actual = getErrorCode(error);
-    const expected = getExpCode(i + 1);
-    const knimeNotJs = [...diff(expected, actual)];
-    const jsNotKnime = [...diff(actual, expected)];_
-
-    //knimeNotJs.length > 0 ? console.log("Zeile " + (i + 1) + ": Caught by Knime not by JS" + (isZoMo ? "(ZOMO)" : "") + ": ", knimeNotJs) : '';
-    jsNotKnime.length > 0 ? console.log("Zeile " + (i + 1) + ": Caught by JS not by Knime: ", jsNotKnime) : '';
-
-}
-
-function diff(actual: any, expected: any) {
-    return new Set(
-        [...actual].filter(x => !expected.has(x)));
-}
-
-function getErrorCode(e: any) {
-    const errorSet = new Set();
-    _.forEach(e, i => {
-        i.forEach((k: any) => {
-            errorSet.add(k.code)
-        })
-    });
-    return errorSet;
-
-}
 
 const expecetedErrors = [
     {
@@ -4155,6 +4110,46 @@ const expecetedErrors = [
     }
 ]
 
+function runTest() {
+    const sampleArray = testArray.map(e => {
+        return createSample(e);
+    })
+    
+    const sampleCollection = createSampleCollection(sampleArray);
+
+    createCatalogRepository().then(
+        (repo) => {
+            const errors = validateSamples(sampleCollection).getSamples().forEach((s, i) => {
+                const errors = s.getErrors();
+                checkVal(errors, i, s.isZoMo)
+            });
+
+            // TODO Not Zombie code, but used to check a specific entry (manually) - ideally should be handled with a cmdLine param
+            // const one = validateSamples(sampleCollection).getSamples()[52] 
+            // checkVal(one.getErrors(), 52, one.isZoMo) 
+            // console.log(one);
+        }
+    ).catch(
+        err => console.log(err)
+    );
+}
+
+function checkVal(error: any, i: any, isZoMo: any) {
+    const actual = getErrorCode(error);
+    const expected = getExpCode(i + 1);
+    const knimeNotJs = [...diff(expected, actual)];
+    const jsNotKnime = [...diff(actual, expected)]; _
+
+    //knimeNotJs.length > 0 ? console.log("Zeile " + (i + 1) + ": Caught by Knime not by JS" + (isZoMo ? "(ZOMO)" : "") + ": ", knimeNotJs) : '';
+    jsNotKnime.length > 0 ? console.log("Zeile " + (i + 1) + ": Caught by JS not by Knime: ", jsNotKnime) : '';
+
+}
+
+function diff(actual: any, expected: any) {
+    return new Set(
+        [...actual].filter(x => !expected.has(x)));
+}
+
 function getExpCode(i: any) {
     const errorSet = new Set();
     _.filter(expecetedErrors, m => m.Zeile === i).forEach(i => {
@@ -4164,3 +4159,18 @@ function getExpCode(i: any) {
     })
     return errorSet;
 }
+
+function getErrorCode(e: any) {
+    const errorSet = new Set();
+    _.forEach(e, i => {
+        i.forEach((k: any) => {
+            errorSet.add(k.code)
+        })
+    });
+    return errorSet;
+
+}
+
+export {
+    runTest
+};

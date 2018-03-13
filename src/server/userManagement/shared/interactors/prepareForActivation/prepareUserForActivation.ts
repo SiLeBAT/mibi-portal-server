@@ -3,11 +3,19 @@ import { sendActivationEmail } from './../sendMail';
 import { IUserEntity, TokenType } from '../../entities';
 import { ITokenRepository, generateToken } from '..';
 import { getRepository, RepositoryType } from '../../../../core';
+import { logger } from '../../../../../aspects';
 
 async function prepareUserForActivation(user: IUserEntity, userAgent: string) {
     const tokenRepository: ITokenRepository = getRepository(RepositoryType.TOKEN);
 
-    deleteOldTokensForUser(user, tokenRepository);
+    deleteOldTokensForUser(user, tokenRepository).then(
+        successfullyDeleted => {
+            if (!successfullyDeleted) {
+                logger.warn('An error occured deleting token in DB for user, user.uniqueId=' + user.uniqueId);
+            }
+        },
+        fail => { logger.warn('An error occured deleting token in DB for user, user.uniqueId=' + user.uniqueId); }
+    );
 
     const token = generateToken(user.uniqueId);
 
@@ -21,11 +29,12 @@ async function prepareUserForActivation(user: IUserEntity, userAgent: string) {
     sendActivationEmail(user, activationToken, userAgent, templateFile);
 }
 
-async function deleteOldTokensForUser(user: IUserEntity, tokenRepository: ITokenRepository) {
+async function deleteOldTokensForUser(user: IUserEntity, tokenRepository: ITokenRepository): Promise<boolean> {
     const hasOldToken = await tokenRepository.tokenForUserExists(user.uniqueId);
     if (hasOldToken) {
-        await tokenRepository.deleteTokenForUser(user.uniqueId);
+        return tokenRepository.deleteTokenForUser(user.uniqueId);
     }
+    return true;
 }
 
 export {

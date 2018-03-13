@@ -10,14 +10,15 @@ export enum DataStoreType {
     MONGO = 'MongoDB'
 }
 
+class DataStoreError extends ServerError {}
+
 function createDataStore(type: DataStoreType): IDataStore {
-    logger.info('Creating datastore of type: ', type);
+    logger.info(`Creating datastore, type=${type}`);
     switch (type) {
-    case DataStoreType.MONGO:
-        return new MongooseDataStore();
-    default:
-        logger.error('Unable to create datastore: Unknown DataStore Type');
-        throw new ServerError('Unknown DataStore Type');
+        case DataStoreType.MONGO:
+            return new MongooseDataStore();
+        default:
+            throw new DataStoreError(`Unable to create datastore: Unknown DataStore Type, type=${type}`);
     }
 
 }

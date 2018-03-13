@@ -1,7 +1,7 @@
 import { verifyPassword, generateToken, IUserRepository, prepareUserForActivation } from './../../../shared/interactors';
 import { IUserEntity } from './../../../shared//entities';
 import { logger } from './../../../../../aspects/logging';
-import { InvalidUserError } from './../../../../../aspects/error';
+import { InvalidUserError, ServerError } from './../../../../../aspects/error';
 import { getRepository } from '../../../../core';
 import { RepositoryType } from '../../../../core/persistence/repositoryProvider';
 
@@ -67,7 +67,12 @@ function failLogin(err: Error): ILoginResponse {
 
 function rejectInactive(user: IUserEntity, userAgent: string): ILoginResponse {
     logger.verbose('Inactive account failed to log in.');
-    prepareUserForActivation(user, userAgent);
+    prepareUserForActivation(user, userAgent).then(
+        () => undefined,
+        err => {
+            throw new ServerError(`Unable to prepare user for activation user.uniquId=${user.uniqueId}, error=${err}`);
+        }
+    );
     return {
         result: LoginResult.INACTIVE,
         user: undefined

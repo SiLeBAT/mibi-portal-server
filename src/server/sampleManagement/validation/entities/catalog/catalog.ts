@@ -8,15 +8,12 @@ export interface ICatalog<T> {
     containsEntryWithKeyValue(key: string, value: string): boolean;
     hasUniqueId(): boolean;
     getUniqueId(): string;
-}
-
-interface ICatalogData<T> {
-    [key: string]: T;
+    dump(): T[];
 }
 
 export class Catalog<T> implements ICatalog<T> {
 
-    constructor(private data: ICatalogData<T>, private uId: string = '') {
+    constructor(private data: T[], private uId: string = '') {
 
     }
 
@@ -44,8 +41,12 @@ export class Catalog<T> implements ICatalog<T> {
 
     getEntryWithId(id: string): T {
         if (!this.hasUniqueId) {
-            throw new ServerError('Invalid Operation: No Unique Id defined for this Catalog');
+            throw new ServerError(`Invalid Operation: No Unique Id defined for this Catalog id=${id}`);
         }
         return this.getEntriesWithKeyValue(this.uId, id)[0];
+    }
+
+    dump(): T[] {
+        return this.data;
     }
 }

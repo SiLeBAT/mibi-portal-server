@@ -22,10 +22,10 @@ export async function recovery(req: Request, res: Response, next: NextFunction) 
     let status = 400;
     const dto = fromRecoverResponseToDTO(response);
     switch (response.result) {
-    case RecoverResult.SUCCESS:
-        status = 200;
-        break;
-    default:
+        case RecoverResult.SUCCESS:
+            status = 200;
+            break;
+        default:
     }
     return res
         .status(status)
@@ -36,13 +36,13 @@ export async function recovery(req: Request, res: Response, next: NextFunction) 
 function fromRecoverResponseToDTO(response: IRecoverResponse) {
     let title;
     switch (response.result) {
-    case RecoverResult.SUCCESS:
-        title = `An email has been sent to ${response.email} with further instructions`;
-        break;
-    case RecoverResult.FAIL:
-    default:
-        title = `An error occured while sending an email to ${response.email} with further instructions. Please try again`;
-        break;
+        case RecoverResult.SUCCESS:
+            title = `An email has been sent to ${response.email} with further instructions`;
+            break;
+        case RecoverResult.FAIL:
+        default:
+            title = `An error occured while sending an email to ${response.email} with further instructions. Please try again`;
+            break;
     }
     return {
         title

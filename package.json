@@ -7,12 +7,18 @@
     "serve": "nodemon -e ts --exec \"npm run build && node ./lib/main.js\"",
     "build:staging": "npm run build",
     "cp:view": "copyfiles -u 1 ./src/**/views/* ./lib",
-    "compile": "tsc",
-    "build": "npm run clean && npm run cp:view && npm run compile  && npm run test",
+    "tsc": "tsc",
+    "compile": "npm run clean && npm run lint && npm run tsc",
+    "compile:watch": "npm run clean && npm run lint && npm run tsc -- --watch",
+    "build": "npm run compile && npm run cp:view && npm run test",
     "test": "jest",
+    "test:watch": "jest --watch",
+    "test:integration": "node ./lib/integrationTests",
+    "test:integration:watch": "nodemon -e ts --exec \"npm run compile && node ./lib/integrationTests\"",
+    "test:all:watch": "nodemon -e ts --exec \"npm run build && node ./lib/integrationTests\"",
+    "test:coverage": "jest --coverage",
     "clean": "rimraf lib/*",
-    "lint": "tslint --project tsconfig.json --fix -c tslint.json 'src/**/*.ts'",
-    "check": "npm run compile && npm run lint"
+    "lint": "tslint --project tsconfig.json --fix -c tslint.json 'src/**/*.ts'"
   },
   "jest": {
     "transform": {

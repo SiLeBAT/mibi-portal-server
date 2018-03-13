@@ -73,8 +73,8 @@ class FileCatalogRepository implements ICatalogRepository {
     getCatalog(catalogName: string): ICatalog<any> {
         return this.catalogs[catalogName];
     }
-
-    private importCSVFile(filePath: string) {
+    // tslint:disable-next-line
+    private importCSVFile(filePath: string): Promise<any[]> {
         // tslint:disable-next-line
         let data: any[] = [];
 
@@ -100,8 +100,7 @@ function createCatalogRepository(): Promise<ICatalogRepository> {
         }
     ).catch(
         (error) => {
-            logger.error('Repository initialisation failure: Unable to initialise FileCatalogRepository', error);
-            throw new ServerError(error);
+            throw new ServerError(`Repository initialisation failure: Unable to initialise FileCatalogRepository, error=${error}`);
         }
     );
 }

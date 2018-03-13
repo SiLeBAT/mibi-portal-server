@@ -1,6 +1,6 @@
-import { IRead, IRepositoryBase } from './../../../server/core';
-import { IInstitutionEntity, createInstitution } from './../../../server/userManagement/shared/entities';
-import { InvalidOperationError, logger, ServerError } from './../../../aspects';
+import { IRepositoryBase } from './../../../server/core';
+import { IInstitutionEntity } from './../../../server/userManagement/shared/entities';
+import { ServerError } from './../../../aspects';
 import { createRepository, InstitutionSchema, IInstitutionModel } from './../dataStore';
 import { IInstitutionRepository } from './../../../server/userManagement/shared/interactors';
 import { mapModelToInstitution } from './dataMappers';
@@ -14,8 +14,7 @@ class InstitutionRepository implements IInstitutionRepository {
         return this.baseRepo.findById(id).then(
             m => {
                 if (!m) {
-                    logger.error('Institution not found');
-                    throw new ServerError('Institution not found');
+                    throw new ServerError(`Institution not found, id=${id}`);
                 }
                 return mapModelToInstitution(m);
             }

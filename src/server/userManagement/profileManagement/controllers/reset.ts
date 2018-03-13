@@ -15,10 +15,10 @@ async function reset(req: Request, res: Response, next: NextFunction) {
     let status = 400;
     const dto = fromResetResponseToDTO(response);
     switch (response.result) {
-    case ResetResult.SUCCESS:
-        status = 200;
-        break;
-    default:
+        case ResetResult.SUCCESS:
+            status = 200;
+            break;
+        default:
     }
     return res
         .status(status)
@@ -29,13 +29,13 @@ async function reset(req: Request, res: Response, next: NextFunction) {
 function fromResetResponseToDTO(response: IResetResponse) {
     let title;
     switch (response.result) {
-    case ResetResult.SUCCESS:
-        title = 'Please login with your new password';
-        break;
-    case ResetResult.EXPIRED:
-    default:
-        title = 'Reset password request expired, please try again';
-        break;
+        case ResetResult.SUCCESS:
+            title = 'Please login with your new password';
+            break;
+        case ResetResult.EXPIRED:
+        default:
+            title = 'Reset password request expired, please try again';
+            break;
     }
     return {
         title
