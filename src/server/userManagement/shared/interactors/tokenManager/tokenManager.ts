@@ -1,6 +1,6 @@
 import { getRepository, RepositoryType } from '../../../../core';
 import { verifyToken } from './../auth';
-import { logger, InvalidTokenError } from './../../../../../aspects';
+import { InvalidTokenError } from './../../../../../aspects';
 import { ITokenRepository } from '..';
 
 async function getUserIdForToken(token: string): Promise<string> {
@@ -10,17 +10,9 @@ async function getUserIdForToken(token: string): Promise<string> {
     const resetToken = tokenEntry;
     const userId = String(resetToken.user);
     try {
-        await verifyToken(token, userId);
+        verifyToken(token, userId);
     } catch (err) {
-
-        if (err.name === 'JsonWebTokenError') {
-            logger.error(`${err.name} ${err.message}`);
-        }
-        if (err.name === 'TokenExpiredError') {
-            logger.error(`${err.name} ${err.message}`, err.expiredAt);
-        }
-
-        throw new InvalidTokenError();
+        throw new InvalidTokenError(`Error validating token for user, token=${token}, userId=${userId}, error=${err}`);
     }
     return userId;
 }

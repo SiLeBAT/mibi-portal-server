@@ -6,6 +6,8 @@
         "sourceMap": true,
         "strictNullChecks": true,
         "noImplicitAny": true,
+        "forceConsistentCasingInFileNames": true,
+        "alwaysStrict": true,
         "typeRoots": [
             "./node_modules/@types",
             "./typings"

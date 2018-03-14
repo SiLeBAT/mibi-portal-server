@@ -1,6 +1,6 @@
 import { IRepositoryBase } from './../../../server/core';
 import { createUser, IUserEntity, IUserdata } from './../../../server/userManagement/shared/entities';
-import { InvalidUserError, logger, InvalidOperationError } from './../../../aspects';
+import { InvalidUserError } from './../../../aspects';
 import { UserSchema, IUserModel, IUserModelUpdateResponse, IUserdataModel, createRepository } from './../dataStore';
 import { IUserRepository, IUserModelAttributes } from './../../../server/userManagement/shared/interactors';
 import { mapModelToUser, mapModelToUserdata } from './dataMappers';
@@ -13,8 +13,7 @@ class UserRepository implements IUserRepository {
         return this.baseRepo.findById(id).then(
             m => {
                 if (!m) {
-                    logger.error('User not found');
-                    throw new InvalidUserError('User not found');
+                    throw new InvalidUserError(`User not found, id=${id}`);
                 }
                 return mapModelToUser(m);
             }
@@ -35,8 +34,7 @@ class UserRepository implements IUserRepository {
             ).
             catch(
                 (err) => {
-                    logger.info('User not found: ', username);
-                    throw new InvalidUserError(err);
+                    throw new InvalidUserError(`User not found, username=${username}, error=${err}`);
                 }
             );
     }
@@ -45,8 +43,7 @@ class UserRepository implements IUserRepository {
         return this.baseRepo.findOne({ email: username }).then(
             model => {
                 if (!model) {
-                    logger.error('User not found');
-                    throw new InvalidUserError('User not found');
+                    throw new InvalidUserError(`User not found, username=${username}`);
                 }
                 return model.password;
             }
@@ -76,8 +73,7 @@ class UserRepository implements IUserRepository {
         return this.baseRepo.update(userId, data).then(
             (response: IUserModelUpdateResponse) => {
                 if (!response.ok) {
-                    logger.error('User not found');
-                    throw new InvalidUserError('User not found');
+                    throw new InvalidUserError(`User not found, id=${userId}`);
                 }
                 return this.getUserById(userId);
             }
@@ -88,8 +84,7 @@ class UserRepository implements IUserRepository {
         return this.baseRepo.update(userId, { userdata: userdata.uniqueId }).then(
             (response: IUserModelUpdateResponse) => {
                 if (!response.ok) {
-                    logger.error('User not found');
-                    throw new InvalidUserError('User not found');
+                    throw new InvalidUserError(`User not found, id=${userId}`);
                 }
                 return this.baseRepo.findById(userId)
                     .then(
@@ -109,8 +104,7 @@ class UserRepository implements IUserRepository {
         return this.baseRepo.update(userId, { $pull: { userdata: userdataId } }).then(
             (response: IUserModelUpdateResponse) => {
                 if (!response.ok) {
-                    logger.error('User not found');
-                    throw new InvalidUserError('User not found');
+                    throw new InvalidUserError(`User not found, id=${userId}`);
                 }
                 return this.baseRepo.findById(userId)
                     .then(

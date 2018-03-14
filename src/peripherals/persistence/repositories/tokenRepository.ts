@@ -1,9 +1,8 @@
-import { IRead, IRepositoryBase } from './../../../server/core';
+import { IRepositoryBase } from './../../../server/core';
 import { IUserToken } from './../../../server/userManagement/shared/entities';
-import { InvalidTokenError, logger, ServerError } from './../../../aspects';
+import { InvalidTokenError } from './../../../aspects';
 import { createRepository, ResetTokenSchema, IResetTokenModel } from './../dataStore';
 import { ITokenRepository } from './../../../server/userManagement/shared/interactors';
-import { mapModelToInstitution } from './dataMappers';
 
 class TokenRepository implements ITokenRepository {
     constructor(private baseRepo: IRepositoryBase<IResetTokenModel>) {
@@ -28,8 +27,7 @@ class TokenRepository implements ITokenRepository {
         return this.baseRepo.findOne({ token: token }).then(
             model => {
                 if (!model) {
-                    logger.error('Token not found');
-                    throw new InvalidTokenError('Token not found');
+                    throw new InvalidTokenError(`Token not found, token=${token}`);
                 }
                 return {
                     token: model.token,

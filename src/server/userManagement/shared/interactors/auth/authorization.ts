@@ -1,4 +1,4 @@
-import { verify, sign, Secret } from 'jsonwebtoken';
+import { verify, sign } from 'jsonwebtoken';
 import * as config from 'config';
 
 const EXPIRATION_TIME = 60 * 60 * 12;

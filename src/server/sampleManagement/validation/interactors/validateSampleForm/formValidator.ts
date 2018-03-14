@@ -1,19 +1,19 @@
 import * as _ from 'lodash';
 import { logger, ServerError } from './../../../../../aspects';
 import { getCatalog } from './../provideCatalogData';
-import { ISample, ISampleCollection, validateSample, initialize } from './../../entities';
-
-initialize({
-    dateFormat: 'DD-MM-YYYY',
-    dateTimeFormat: 'DD-MM-YYYY hh:mm:ss',
-    catalogProvider: getCatalog
-});
+import { ISample, ISampleCollection, createValidator } from './../../entities';
 
 function validateSamples(sampleCollection: ISampleCollection): ISampleCollection {
+    const validator = createValidator({
+        dateFormat: 'DD-MM-YYYY',
+        dateTimeFormat: 'DD-MM-YYYY hh:mm:ss',
+        catalogProvider: getCatalog
+    });
+
     logger.verbose('Starting Sample validation');
 
     const results = sampleCollection.getSamples().map(s => {
-        s.setErrors(validateSample(s));
+        s.setErrors(validator.validateSample(s));
 
         return s;
     });
@@ -66,7 +66,7 @@ function getUniqueIdErrorConfig(uniqueId: string) {
                 }
             };
         default:
-            throw new ServerError('Invalid Input: This unique ID is not validated.');
+            throw new ServerError(`Invalid Input: This unique ID is not validated, uniqueId=${uniqueId}`);
     }
 
 }

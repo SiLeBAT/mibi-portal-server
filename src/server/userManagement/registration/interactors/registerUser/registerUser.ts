@@ -1,8 +1,7 @@
-import * as fs from 'fs';
 import { getRepository, RepositoryType } from '../../../../core';
 import { logger, ServerError } from './../../../../../aspects';
-import { prepareUserForActivation, hashPassword, generateToken, IInstitutionRepository, ITokenRepository, IUserRepository } from './../../../shared/interactors';
-import { createUser, TokenType } from '../../../shared/entities';
+import { prepareUserForActivation, hashPassword, IInstitutionRepository, IUserRepository } from './../../../shared/interactors';
+import { createUser } from '../../../shared/entities';
 
 export interface IUserRegistration {
     firstName: string;
@@ -38,19 +37,22 @@ async function registerUser(credentials: IUserRegistration): Promise<IRegisterRe
         const hashedPassword = await hashPassword(credentials.password);
         const inst = await institutionRepository.findById(credentials.institution);
         if (!inst) {
-            logger.error('Institution not found');
-            throw new ServerError('Institution not found');
+            throw new ServerError(`Institution not found, id=${credentials.institution}`);
         }
         const newUser = createUser('0000', credentials.email, credentials.firstName,
             credentials.lastName, inst);
         newUser.password = hashedPassword;
         const user = await userRepository.createUser(newUser);
 
-        prepareUserForActivation(user, credentials.userAgent as string);
-        return {
-            result: RegisterResult.SUCCESS,
-            email: user.email
-        };
+        return prepareUserForActivation(user, credentials.userAgent as string).then(
+            () => ({
+                result: RegisterResult.SUCCESS,
+                email: user.email
+            }),
+            err => {
+                throw new ServerError(`Unable to prepare user for activation user.uniquId=${user.uniqueId} error=${err}`);
+            }
+        );
     } catch (err) {
         logger.error('Registration failed. Reason: ', err);
         return {

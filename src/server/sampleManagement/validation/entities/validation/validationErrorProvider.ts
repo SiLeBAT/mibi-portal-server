@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { logger, ServerError } from '../../../../../aspects';
+import { ServerError } from '../../../../../aspects';
 
 interface IValidationErrorProvider {
     getError(id: string): IValidationError;
@@ -331,8 +331,7 @@ class ValidationErrorProvider implements IValidationErrorProvider {
     getError(id: string): IValidationError {
         const error = _.find(this.errors, e => e.id === id);
         if (!error) {
-            logger.error('Error code not found: ', id);
-            throw new ServerError('Error code not found: ' + id);
+            throw new ServerError(`Error code not found, id=${id}`);
         }
         return error;
     }

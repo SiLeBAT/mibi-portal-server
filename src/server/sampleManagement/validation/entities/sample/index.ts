@@ -1,1 +1,1 @@
-export { ISample, createSample } from './sample';
+export { ISample, createSample, ISampleData } from './sample';

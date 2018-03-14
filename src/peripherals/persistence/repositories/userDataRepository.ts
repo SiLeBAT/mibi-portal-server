@@ -1,6 +1,6 @@
 import { IRepositoryBase } from './../../../server/core';
 import { IUserdata } from './../../../server/userManagement/shared/entities';
-import { logger, ServerError } from './../../../aspects';
+import { ServerError } from './../../../aspects';
 import { UserdataSchema, createRepository, IUserdataModel } from './../dataStore';
 import { IUserdataRepository } from './../../../server/userManagement/shared/interactors';
 import { mapModelToUserdata } from './dataMappers';
@@ -21,10 +21,8 @@ class UserDataRepository implements IUserdataRepository {
         return this.baseRepo.findById(id).then(
             model => {
                 if (!model) {
-                    logger.error('Userdata not found');
-                    throw new ServerError('Userdata not found');
+                    throw new ServerError(`Userdata not found, id=${id}`);
                 }
-                const newModel = new UserdataSchema(userdata);
                 return !!this.baseRepo.update(model._id, new UserdataSchema(userdata));
             }
         );
@@ -34,8 +32,7 @@ class UserDataRepository implements IUserdataRepository {
         return this.baseRepo.findById(id).then(
             model => {
                 if (!model) {
-                    logger.error('Userdata not found');
-                    throw new ServerError('Userdata not found');
+                    throw new ServerError(`Userdata not found, id=${id}`);
                 }
                 return !!this.baseRepo.delete(model._id);
             }

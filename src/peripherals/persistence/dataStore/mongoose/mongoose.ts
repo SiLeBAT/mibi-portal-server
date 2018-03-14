@@ -6,20 +6,17 @@ import * as Promise from 'bluebird';
 import { IDataStore } from './../dataStoreFactory';
 import { logger } from './../../../../aspects';
 
-import { institutionSchema, userSchema, userdataSchema,resetTokenSchema, IResetTokenModel, IInstitutionModel, IUserModel, IUserdataModel } from './schemas';
+import { institutionSchema, userSchema, userdataSchema, resetTokenSchema, IResetTokenModel, IInstitutionModel, IUserModel, IUserdataModel } from './schemas';
 
 // tslint:disable-next-line
 (mongoose as any).Promise = Promise;
 
 export class MongooseDataStore implements IDataStore {
     initialize(connecionString: string) {
-        mongoose.connect(connecionString);
-
-        const db = mongoose.connection;
-        db.on('error', logger.error.bind(logger, 'mongo db error: could not connect to epilab database'));
-        db.once('open', () => {
-            logger.info('mongoose.js: mongo db: connected to epilab');
-        });
+        mongoose.connect(connecionString).then(
+            db => logger.info(`Connected to DB. connectionString=${connecionString}`),
+            err => { throw new Error(`Unable to connect to DB. connectionString=${connecionString} error=${err}`); }
+        );
     }
 }
 

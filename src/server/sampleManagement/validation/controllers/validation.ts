@@ -5,11 +5,10 @@ import * as _ from 'lodash';
 import * as rootDir from 'app-root-dir';
 import * as unirest from 'unirest';
 import * as config from 'config';
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { logger, ServerError } from './../../../../aspects';
 import { validateSamples as validate, createSample } from './../interactors';
 import { ISampleCollection, createSampleCollection, ISample } from './../entities';
-import { IValidationErrorCollection } from '../entities/validation';
 
 moment.locale('de');
 
@@ -98,7 +97,7 @@ function fromErrorsToDTO(samples: ISampleCollection) {
 
 function fromDTOToSamples(dto: IValidationRequest): ISampleCollection {
     if (!Array.isArray(dto)) {
-        throw new ServerError('Invalid input: Array expected');
+        throw new ServerError(`Invalid input: Array expected, dto=${dto}`);
     }
     const samples = dto.map(s => createSample({ ...s }));
 

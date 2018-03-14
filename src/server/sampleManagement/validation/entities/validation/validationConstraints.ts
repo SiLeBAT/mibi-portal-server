@@ -130,6 +130,10 @@ const standardConstrainst: IValidationConstraints = {
         atLeastOneOf: {
             message: vep.getError('10'),
             additionalMembers: ['pathogen_text']
+        },
+        inPathogenIndex: {
+            message: vep.getError('8'),
+            additionalMembers: ['pathogen_text']
         }
     },
     pathogen_text: {

@@ -1,6 +1,5 @@
 import { Document, Model, Types } from 'mongoose';
 import { IRepositoryBase } from './../../../../server';
-import { ServerError, logger } from '../../../../aspects';
 import { IModelAttributes, IUpdateResponse } from '../../../../server/core';
 
 export interface IMongooseUpdateResponse extends IUpdateResponse {
