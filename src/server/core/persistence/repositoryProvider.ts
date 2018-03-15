@@ -1,9 +1,9 @@
-import { userRepository, userDataRepository, tokenRepository, institutionRepository } from './../../../peripherals/persistence/repositories';
+import { userRepository, tokenRepository, institutionRepository } from './../../../peripherals/persistence/repositories';
 import { InvalidRepositoryError } from '../../../aspects';
 import { IEntityRepository } from '../gateways';
 
 export enum RepositoryType {
-    USER, USERDATA, TOKEN, INSTITUTION
+    USER, TOKEN, INSTITUTION
 }
 
 // TODO: Fix this any: Proper use of Generics?
@@ -12,8 +12,6 @@ function getRepository<T extends IEntityRepository>(type: RepositoryType): any {
     switch (type) {
         case RepositoryType.USER:
             return userRepository;
-        case RepositoryType.USERDATA:
-            return userDataRepository;
         case RepositoryType.TOKEN:
             return tokenRepository;
         case RepositoryType.INSTITUTION:

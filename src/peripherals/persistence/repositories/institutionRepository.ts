@@ -1,8 +1,6 @@
-import { IRepositoryBase } from './../../../server/core';
-import { IInstitutionEntity } from './../../../server/userManagement/shared/entities';
 import { ServerError } from './../../../aspects';
 import { createRepository, InstitutionSchema, IInstitutionModel } from './../dataStore';
-import { IInstitutionRepository } from './../../../server/userManagement/shared/interactors';
+import { IInstitutionRepository, IRepositoryBase, IInstitutionEntity } from './../../../server';
 import { mapModelToInstitution } from './dataMappers';
 
 class InstitutionRepository implements IInstitutionRepository {

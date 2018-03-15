@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import { IUserToken } from '../../../../../server/userManagement/shared/entities';
+import { IUserToken } from '../../../../../server/authentication/shared/entities';
 
 const Schema = mongoose.Schema;
 

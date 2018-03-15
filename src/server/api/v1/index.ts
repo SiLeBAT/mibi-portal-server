@@ -1,5 +1,5 @@
 import * as express from 'express';
-import { institutionsRouter } from './../../userManagement';
+import { institutionsRouter } from './../../authentication';
 import { uploadRouter, validationRouter } from './../../sampleManagement';
 
 export const router = express.Router();
