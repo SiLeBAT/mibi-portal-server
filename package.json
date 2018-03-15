@@ -1,11 +1,11 @@
 {
-  "name": "epi-lab-server",
+  "name": "mibi-portal-server",
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
     "start": "node ./lib/main.js",
     "serve": "nodemon -e ts --exec \"npm run build && node ./lib/main.js\"",
-    "build:staging": "npm run build",
+    "build:qa": "NODE_ENV=qa npm run build",
     "cp:view": "copyfiles -u 1 ./src/**/views/* ./lib",
     "tsc": "tsc",
     "compile": "npm run clean && npm run lint && npm run tsc",

@@ -3,7 +3,7 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Set up a new password for Epi-Lab</title>
+    <title>Set up a new password for {{ appName }}</title>
     <!--
     The style block is collapsed on page load to save you some scrolling.
     Postmark automatically inlines all CSS properties for maximum email client
@@ -400,7 +400,7 @@
             <tr>
               <td class="email-masthead">
                 <a href="https://example.com" class="email-masthead_name">
-        Epi-Lab
+                  {{ appName }}
       </a>
               </td>
             </tr>
@@ -412,12 +412,12 @@
                   <tr>
                     <td class="content-cell">
                       <h1>Hi {{name}},</h1>
-                      <p>This is to notify you that your password for your Epi-Lab account {{email}} was reset. </strong></p>
+                      <p>This is to notify you that your password for your {{ appName }} account {{email}} was reset. </strong></p>
                       <p>Please login with your new password at</</p>
                       <br>
                       <p>{{action_url}}</p>
                                             <p>Thanks,
-                        <br>The Epi-Lab Team</p>
+                        <br>The {{ appName }} Team</p>
                       <!-- Sub copy -->
                     </td>
                   </tr>
@@ -429,7 +429,7 @@
                 <table class="email-footer" align="center" width="570" cellpadding="0" cellspacing="0">
                   <tr>
                     <td class="content-cell" align="center">
-                      <p class="sub align-center">&copy; 2017 Epi-Lab. All rights reserved.</p>
+                      <p class="sub align-center">&copy; 2017 {{ appName }}. All rights reserved.</p>
                       <p class="sub align-center">
                         BfR - Bundesinstitut für Risikobewertung
                         <br>Diedersdorfer Weg 1
