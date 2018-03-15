@@ -9,7 +9,8 @@ export interface IUserRegistration {
     email: string;
     password: string;
     institution: string;
-    userAgent: string | string[] | undefined;
+    userAgent: string;
+    host: string;
 }
 
 export interface IRegisterResponse {
@@ -24,42 +25,35 @@ export enum RegisterResult {
 
 async function registerUser(credentials: IUserRegistration): Promise<IRegisterResponse> {
 
-    try {
-        const userRepository: IUserRepository = getRepository(RepositoryType.USER);
-        const institutionRepository: IInstitutionRepository = getRepository(RepositoryType.INSTITUTION);
-        const result = await userRepository.hasUser(credentials.email);
-        if (result) {
-            logger.info('Registration failed: User already exists: ', credentials.email);
-            return {
-                result: RegisterResult.DUPLICATE
-            };
-        }
-        const hashedPassword = await hashPassword(credentials.password);
-        const inst = await institutionRepository.findById(credentials.institution);
-        if (!inst) {
-            throw new ServerError(`Institution not found, id=${credentials.institution}`);
-        }
-        const newUser = createUser('0000', credentials.email, credentials.firstName,
-            credentials.lastName, inst);
-        newUser.password = hashedPassword;
-        const user = await userRepository.createUser(newUser);
-
-        return prepareUserForActivation(user, credentials.userAgent as string).then(
-            () => ({
-                result: RegisterResult.SUCCESS,
-                email: user.email
-            }),
-            err => {
-                throw new ServerError(`Unable to prepare user for activation user.uniquId=${user.uniqueId} error=${err}`);
-            }
-        );
-    } catch (err) {
-        logger.error('Registration failed. Reason: ', err);
+    const userRepository: IUserRepository = getRepository(RepositoryType.USER);
+    const institutionRepository: IInstitutionRepository = getRepository(RepositoryType.INSTITUTION);
+    const result = await userRepository.hasUser(credentials.email);
+    if (result) {
+        logger.info('Registration failed: User already exists: ', credentials.email);
         return {
-            result: RegisterResult.FAIL,
-            error: err
+            result: RegisterResult.DUPLICATE
         };
     }
+    const hashedPassword = await hashPassword(credentials.password);
+    const inst = await institutionRepository.findById(credentials.institution);
+    if (!inst) {
+        throw new ServerError(`Institution not found, id=${credentials.institution}`);
+    }
+    const newUser = createUser('0000', credentials.email, credentials.firstName,
+        credentials.lastName, inst);
+    newUser.password = hashedPassword;
+    const user = await userRepository.createUser(newUser);
+
+    return prepareUserForActivation(user, {
+        userAgent: credentials.userAgent,
+        email: user.email,
+        host: credentials.host
+    }).then(
+        () => ({
+            result: RegisterResult.SUCCESS,
+            email: user.email
+        })
+    );
 }
 
 export {

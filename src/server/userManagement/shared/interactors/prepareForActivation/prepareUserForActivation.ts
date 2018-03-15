@@ -1,11 +1,11 @@
-import * as fs from 'fs';
 import { sendActivationEmail } from './../sendMail';
 import { IUserEntity, TokenType } from '../../entities';
 import { ITokenRepository, generateToken } from '..';
 import { getRepository, RepositoryType } from '../../../../core';
 import { logger } from '../../../../../aspects';
+import { IRecoveryData } from '../sendMail';
 
-async function prepareUserForActivation(user: IUserEntity, userAgent: string) {
+async function prepareUserForActivation(user: IUserEntity, recoveryData: IRecoveryData) {
     const tokenRepository: ITokenRepository = getRepository(RepositoryType.TOKEN);
 
     deleteOldTokensForUser(user, tokenRepository).then(
@@ -25,8 +25,11 @@ async function prepareUserForActivation(user: IUserEntity, userAgent: string) {
         user: user.uniqueId
     });
 
-    const templateFile = fs.readFileSync(__dirname + '/../../views/regactivation.html').toString('utf-8');
-    sendActivationEmail(user, activationToken, userAgent, templateFile);
+    await sendActivationEmail(user, activationToken, {
+        userAgent: recoveryData.userAgent,
+        host: recoveryData.host,
+        email: user.email
+    });
 }
 
 async function deleteOldTokensForUser(user: IUserEntity, tokenRepository: ITokenRepository): Promise<boolean> {

@@ -3,7 +3,7 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Activate your account for {{ appName }}</title>
+    <title>Set up a new password for {{ appName }}</title>
     <!--
     The style block is collapsed on page load to save you some scrolling.
     Postmark automatically inlines all CSS properties for maximum email client
@@ -392,7 +392,7 @@
     </style>
   </head>
   <body>
-    <span class="preheader">Use this link to activate your account. The link is only valid for 24 hours.</span>
+    <span class="preheader">Wir haben eine Aufforderung erhalten, Ihr Passwort mit dieser E-Mail-Adresse zurückzusetzen. ({{email_address}})</span>
     <table class="email-wrapper" width="100%" cellpadding="0" cellspacing="0">
       <tr>
         <td align="center">
@@ -411,8 +411,8 @@
                   <!-- Body content -->
                   <tr>
                     <td class="content-cell">
-                      <h1>Hi {{name}},</h1>
-                      <p>You have registered for an {{ appName }} account. Use the button below to activate your account. <strong>This activation link is only valid for the next 24 hours.</strong></p>
+                      <p>Wir erhielten die Aufforderung, das Passwort für den Zugriff auf {{ appName }}} mit Ihrer E-Mail-Adresse ({{email_address}}}) von einem {{operating_system}}} Gerät unter Verwendung von {{user_agent}}} zurückzusetzen, aber wir konnten kein Konto finden, das mit dieser Adresse in Verbindung steht.</p>
+                      <p>  Wenn Sie {{ appName }}} verwenden und diese E-Mail erwartet haben, versuchen Sie ein Zurücksetzen des Passwort mit der E-Mail-Adresse, die Ihrem Konto zugeordnet ist, anzufordern.</p>
                       <!-- Action -->
                       <table class="body-action" align="center" width="100%" cellpadding="0" cellspacing="0">
                         <tr>
@@ -425,7 +425,7 @@
                                   <table border="0" cellspacing="0" cellpadding="0">
                                     <tr>
                                       <td>
-                                        <a href="{{action_url}}" class="button button--green" target="_blank">Activate your account</a>
+                                        <a href="{{action_url}}" class="button button--blue" target="_blank">Probieren Sie eine andere E-Mail</a>
                                       </td>
                                     </tr>
                                   </table>
@@ -435,14 +435,14 @@
                           </td>
                         </tr>
                       </table>
-                      <p>For security, this request was received from a {{operating_system}} device using {{browser_name}}. If you did not register for an {{ appName }} account, please ignore this email or <a href="{{support_url}}">contact support</a> if you have questions.</p>
-                      <p>Thanks,
-                        <br>The {{ appName }} Team</p>
+                      <p>Wenn Sie {{ appName }}} nicht benutzen oder keinen Passwort-Reset angefordert haben, ignorieren Sie bitte diese E-Mail oder Kontaktieren Sie den <a href="mailto:{{support_contact}}}">Support</a>, wenn Sie Fragen haben.</p>
+                      <p>Danke schön,
+                        <br>Das {{ appName }} Team</p>
                       <!-- Sub copy -->
                       <table class="body-sub">
                         <tr>
                           <td>
-                            <p class="sub">If you’re having trouble with the button above, copy and paste the URL below into your web browser.</p>
+                            <p class="sub">Wenn Sie Probleme mit dem obrigen Button haben, kopieren Sie die untenstehende URL und fügen Sie sie in Ihren Webbrowser ein.</p>
                             <p class="sub">{{action_url}}</p>
                           </td>
                         </tr>

@@ -1,1 +1,1 @@
-export { sendActivationEmail, sendResetHelpEmail, sendResetEmail, sendNotificationEmail } from './sendMail';
+export { IRecoveryData, sendActivationEmail, sendResetHelpEmail, sendResetEmail, sendNotificationEmail } from './sendMail';

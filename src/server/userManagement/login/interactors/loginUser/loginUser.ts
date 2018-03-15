@@ -4,11 +4,13 @@ import { logger } from './../../../../../aspects/logging';
 import { InvalidUserError, ServerError } from './../../../../../aspects/error';
 import { getRepository } from '../../../../core';
 import { RepositoryType } from '../../../../core/persistence/repositoryProvider';
+import { IRecoveryData } from '../../../shared/interactors/sendMail';
 
 export interface IUserCredentials {
     email: string;
     password: string;
     userAgent: string | string[] | undefined;
+    host: string | undefined;
 }
 
 export interface ILoginResponse {
@@ -28,7 +30,11 @@ async function loginUser(credentials: IUserCredentials): Promise<ILoginResponse>
         const user = await userRepository.findByUsername(credentials.email);
 
         if (!user.isActivated()) {
-            return rejectInactive(user, credentials.userAgent as string);
+            return rejectInactive(user, {
+                userAgent: credentials.userAgent as string,
+                email: user.email,
+                host: credentials.host as string
+            });
         }
         const authorized = await checkIfAuthorized(user, credentials);
         if (authorized) {
@@ -65,9 +71,9 @@ function failLogin(err: Error): ILoginResponse {
     };
 }
 
-function rejectInactive(user: IUserEntity, userAgent: string): ILoginResponse {
+function rejectInactive(user: IUserEntity, recoveryData: IRecoveryData): ILoginResponse {
     logger.verbose('Inactive account failed to log in.');
-    prepareUserForActivation(user, userAgent).then(
+    prepareUserForActivation(user, recoveryData).then(
         () => undefined,
         err => {
             throw new ServerError(`Unable to prepare user for activation user.uniquId=${user.uniqueId}, error=${err}`);

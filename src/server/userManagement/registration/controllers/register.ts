@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { registerUser, IRegisterResponse, RegisterResult } from './../interactors';
+import { logger } from '../../../../aspects';
 
 export async function register(req: Request, res: Response, next: NextFunction) {
     const body = req.body;
@@ -12,14 +13,16 @@ export async function register(req: Request, res: Response, next: NextFunction) 
         email: body.email,
         password: body.password,
         institution: body.institution,
-        userAgent: req.headers['user-agent']
+        userAgent: req.headers['user-agent'] as string,
+        host: req.headers['host'] as string
     };
     try {
         response = await registerUser(credentials);
+
     } catch (err) {
+        logger.error(`Unable to register user, err=${err}`);
         response = {
-            result: RegisterResult.FAIL,
-            error: err
+            result: RegisterResult.FAIL
         };
     }
     let status = 500;
@@ -45,10 +48,6 @@ function fromRegisterResponseToDTO(response: IRegisterResponse) {
         case RegisterResult.SUCCESS:
             break;
         case RegisterResult.DUPLICATE:
-            error = {
-                message: 'User is already registered'
-            };
-            break;
         case RegisterResult.FAIL:
         default:
             error = {

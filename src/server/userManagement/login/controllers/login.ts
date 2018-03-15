@@ -6,7 +6,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
     let response: ILoginResponse;
     try {
         // FIXME: Should only find user.
-        response = await loginUser({ email: body.email, password: body.password, userAgent: req.headers['user-agent'] });
+        response = await loginUser({ email: body.email, password: body.password, userAgent: req.headers['user-agent'], host: req.headers['host'] });
     } catch (err) {
         response = {
             result: LoginResult.FAIL

@@ -1,5 +1,4 @@
-import * as fs from 'fs';
-import { sendNotificationEmail,hashPassword, getUserIdForToken, IUserRepository, ITokenRepository } from './../../../shared/interactors';
+import { sendNotificationEmail, hashPassword, getUserIdForToken, IUserRepository, ITokenRepository } from './../../../shared/interactors';
 import { IUserEntity } from './../../../shared/entities';
 import { logger } from '../../../../../aspects';
 import { getRepository, RepositoryType } from '../../../../core';
@@ -27,8 +26,7 @@ async function resetPassword(token: string, password: string): Promise<IResetRes
             };
         }
         await tokenRepository.deleteTokenForUser(userId);
-        const templateFile = fs.readFileSync(__dirname + '/../../views/pwnotification.html').toString('utf-8');
-        sendNotificationEmail(user, templateFile);
+        await sendNotificationEmail(user);
         return {
             result: ResetResult.SUCCESS
         };

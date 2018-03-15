@@ -10,8 +10,8 @@ export async function recovery(req: Request, res: Response, next: NextFunction) 
     try {
         response = await recoverPassword({
             email: body.email,
-            host: req.headers['host'],
-            userAgent: req.headers['user-agent']
+            host: req.headers['host'] as string,
+            userAgent: req.headers['user-agent'] as string
         });
     } catch (err) {
         response = {
