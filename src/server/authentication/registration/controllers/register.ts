@@ -50,7 +50,7 @@ function fromRegisterResponseToDTO(response: IRegisterResponse) {
     }
     return {
         title: response.result === RegisterResult.SUCCESS ? `Please activate your account: An email has been sent to ${response.email} with further instructions`
-            : `Registration failed please contact Support: ${SUPPORT_CONTACT}`,
+            : `Registration failed. Please contact support: ${SUPPORT_CONTACT}`,
         error
     };
 
