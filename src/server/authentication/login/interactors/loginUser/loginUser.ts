@@ -1,7 +1,6 @@
 import { IUserRepository, prepareUserForActivation, IUserEntity, IRecoveryData, IUserCredentials, UserToken } from './../../../shared';
 import { logger } from './../../../../../aspects';
-import { InvalidUserError, ServerError } from './../../../../../aspects/error';
-import { getRepository, RepositoryType } from '../../../../core';
+import { getRepository, RepositoryType, InvalidUserError, ServerError } from '../../../../core';
 
 export interface IUserLoginInformation extends IUserCredentials {
     userAgent: string | string[] | undefined;

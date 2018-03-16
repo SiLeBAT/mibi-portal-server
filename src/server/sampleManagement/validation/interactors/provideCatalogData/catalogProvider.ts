@@ -1,6 +1,6 @@
 
 import { ICatalog } from './../../entities';
-import { ServerError } from '../../../../../aspects';
+import { ServerError } from './../../../../core';
 // FIXME: Catalog data should be in db
 import { createCatalogRepository } from './../../persistence';
 import { ICatalogRepository } from './../../gateways';

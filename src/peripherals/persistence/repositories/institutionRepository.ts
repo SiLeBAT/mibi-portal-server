@@ -1,6 +1,5 @@
-import { ServerError } from './../../../aspects';
 import { createRepository, InstitutionSchema, IInstitutionModel } from './../dataStore';
-import { IInstitutionRepository, IRepositoryBase, IInstitutionEntity } from './../../../server';
+import { IInstitutionRepository, IRepositoryBase, IInstitutionEntity, ServerError } from './../../../server';
 import { mapModelToInstitution } from './dataMappers';
 
 class InstitutionRepository implements IInstitutionRepository {

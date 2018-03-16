@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
-import { logger, ServerError } from './../../../../../aspects';
+import { logger } from './../../../../../aspects';
+import { ServerError } from './../../../../core';
 import { getCatalog } from './../provideCatalogData';
 import { ISample, ISampleCollection, createValidator } from './../../entities';
 

@@ -1,6 +1,5 @@
-import { InvalidTokenError } from './../../../aspects';
 import { createRepository, ResetTokenSchema, IResetTokenModel } from './../dataStore';
-import { ITokenRepository, IUserToken, IRepositoryBase } from './../../../server';
+import { ITokenRepository, IUserToken, IRepositoryBase, InvalidTokenError } from './../../../server';
 
 class TokenRepository implements ITokenRepository {
     constructor(private baseRepo: IRepositoryBase<IResetTokenModel>) {

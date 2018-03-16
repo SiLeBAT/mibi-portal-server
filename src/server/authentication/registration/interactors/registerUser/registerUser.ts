@@ -1,5 +1,5 @@
-import { getRepository, RepositoryType } from '../../../../core';
-import { logger, ServerError } from './../../../../../aspects';
+import { getRepository, RepositoryType, ServerError } from '../../../../core';
+import { logger } from './../../../../../aspects';
 import { IInstitutionRepository, IUserRepository } from './../../../shared';
 import { prepareUserForActivation } from './../../../shared/interactors';
 import { createUser } from '../../../shared/entities';

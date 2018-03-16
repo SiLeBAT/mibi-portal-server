@@ -1,5 +1,4 @@
-import { createUser, IUserEntity, IUserRepository, IUserModelAttributes, IRepositoryBase } from './../../../server';
-import { InvalidUserError } from './../../../aspects';
+import { createUser, InvalidUserError, IUserEntity, IUserRepository, IUserModelAttributes, IRepositoryBase } from './../../../server';
 import { UserSchema, IUserModel, IUserModelUpdateResponse, createRepository } from './../dataStore';
 import { mapModelToUser } from './dataMappers';
 

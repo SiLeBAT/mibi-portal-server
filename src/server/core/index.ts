@@ -8,3 +8,4 @@ export {
     getRepository,
     RepositoryType
 } from './persistence';
+export { ServerError, InvalidUserError, InvalidTokenError, InvalidOperationError, InvalidRepositoryError } from './error';
