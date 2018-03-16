@@ -1,5 +1,5 @@
 import { userRepository, tokenRepository, institutionRepository } from './../../../peripherals/persistence/repositories';
-import { InvalidRepositoryError } from '../../../aspects';
+import { InvalidRepositoryError } from './../../core';
 import { IEntityRepository } from '../gateways';
 
 export enum RepositoryType {

@@ -1,6 +1,5 @@
-import { getRepository, RepositoryType } from '../../../../core';
-import { InvalidTokenError } from './../../../../../aspects';
-import { ITokenRepository } from '../../gateway';
+import { getRepository, RepositoryType, InvalidTokenError } from '../../../../core';
+import { ITokenRepository } from './../../gateway';
 import { UserToken } from '../..';
 
 // TODO: probably remove this and shift logic into Token entity

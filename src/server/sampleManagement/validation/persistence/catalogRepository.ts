@@ -3,9 +3,10 @@ import * as path from 'path';
 import * as csv from 'fast-csv';
 import * as rootDir from 'app-root-dir';
 
-import { logger, ServerError } from './../../../../aspects';
+import { logger } from './../../../../aspects';
 import { Catalog, ICatalog } from './../entities';
 import { ICatalogRepository } from './../gateways';
+import { ServerError } from './../../../core';
 
 class FileCatalogRepository implements ICatalogRepository {
     private dataDir: string;

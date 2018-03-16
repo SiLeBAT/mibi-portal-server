@@ -1,7 +1,9 @@
+import * as config from 'config';
 import { Request, Response, NextFunction } from 'express';
 import { registerUser, IRegisterResponse, RegisterResult } from './../interactors';
 import { logger } from '../../../../aspects';
 
+const SUPPORT_CONTACT = config.get('supportContact');
 export async function register(req: Request, res: Response, next: NextFunction) {
     const body = req.body;
 
@@ -25,17 +27,9 @@ export async function register(req: Request, res: Response, next: NextFunction) 
             result: RegisterResult.FAIL
         };
     }
-    let status = 500;
+
+    let status = (response.result === RegisterResult.SUCCESS) ? 200 : 500;
     const dto = fromRegisterResponseToDTO(response);
-    switch (response.result) {
-        case RegisterResult.SUCCESS:
-            status = 200;
-            break;
-        case RegisterResult.DUPLICATE:
-            status = 409;
-            break;
-        default:
-    }
     return res
         .status(status)
         .json(dto)
@@ -47,7 +41,6 @@ function fromRegisterResponseToDTO(response: IRegisterResponse) {
     switch (response.result) {
         case RegisterResult.SUCCESS:
             break;
-        case RegisterResult.DUPLICATE:
         case RegisterResult.FAIL:
         default:
             error = {
@@ -57,7 +50,7 @@ function fromRegisterResponseToDTO(response: IRegisterResponse) {
     }
     return {
         title: response.result === RegisterResult.SUCCESS ? `Please activate your account: An email has been sent to ${response.email} with further instructions`
-            : 'Registration failed',
+            : `Registration failed please contact Support: ${SUPPORT_CONTACT}`,
         error
     };
 

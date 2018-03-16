@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { ServerError } from '../../../../../aspects';
+import { ServerError } from './../../../../core';
 
 interface IValidationErrorProvider {
     getError(id: string): IValidationError;

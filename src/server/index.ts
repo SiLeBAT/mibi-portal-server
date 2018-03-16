@@ -1,5 +1,11 @@
 export { createServer } from './server';
-export { IRepositoryBase } from './core';
+export { IRepositoryBase,
+    ServerError,
+    InvalidUserError,
+    InvalidTokenError,
+    InvalidOperationError,
+    InvalidRepositoryError
+} from './core';
 export {
     IInstitutionEntity,
     createInstitution,

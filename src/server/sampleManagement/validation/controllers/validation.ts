@@ -6,9 +6,10 @@ import * as rootDir from 'app-root-dir';
 import * as unirest from 'unirest';
 import * as config from 'config';
 import { Request, Response } from 'express';
-import { logger, ServerError } from './../../../../aspects';
+import { logger } from './../../../../aspects';
 import { validateSamples as validate, createSample } from './../interactors';
 import { ISampleCollection, createSampleCollection, ISample } from './../entities';
+import { ServerError } from './../../../core';
 
 moment.locale('de');
 

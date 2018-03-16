@@ -1,5 +1,4 @@
 import * as _ from 'lodash';
-import { ServerError } from './../../../../../aspects';
 
 export interface ICatalog<T> {
     getEntriesWithKeyValue(key: string, value: string): T[];
@@ -41,7 +40,7 @@ export class Catalog<T> implements ICatalog<T> {
 
     getEntryWithId(id: string): T {
         if (!this.hasUniqueId) {
-            throw new ServerError(`Invalid Operation: No Unique Id defined for this Catalog id=${id}`);
+            throw new Error(`Invalid Operation: No Unique Id defined for this Catalog id=${id}`);
         }
         return this.getEntriesWithKeyValue(this.uId, id)[0];
     }
