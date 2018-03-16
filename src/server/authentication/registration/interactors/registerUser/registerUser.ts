@@ -1,5 +1,4 @@
 import { getRepository, RepositoryType, ServerError } from '../../../../core';
-import { logger } from './../../../../../aspects';
 import { IInstitutionRepository, IUserRepository } from './../../../shared';
 import { prepareUserForActivation } from './../../../shared/interactors';
 import { createUser } from '../../../shared/entities';
@@ -21,7 +20,7 @@ export interface IRegisterResponse {
 }
 
 export enum RegisterResult {
-    FAIL, DUPLICATE, SUCCESS
+    FAIL, SUCCESS
 }
 
 async function registerUser(credentials: IUserRegistration): Promise<IRegisterResponse> {
@@ -30,10 +29,7 @@ async function registerUser(credentials: IUserRegistration): Promise<IRegisterRe
     const institutionRepository: IInstitutionRepository = getRepository(RepositoryType.INSTITUTION);
     const result = await userRepository.hasUser(credentials.email);
     if (result) {
-        logger.info('Registration failed: User already exists: ', credentials.email);
-        return {
-            result: RegisterResult.DUPLICATE
-        };
+        throw new ServerError(`Registration failed. User already exists, email=${credentials.email}`);
     }
     const inst = await institutionRepository.findById(credentials.institution);
     if (!inst) {
