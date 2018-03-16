@@ -12,7 +12,7 @@
     "compile:watch": "npm run clean && npm run lint && npm run tsc -- --watch",
     "build": "npm run compile && npm run cp:view && npm run test",
     "test": "jest",
-    "test:watch": "jest --watch",
+    "test:watch": "jest --watch --notify",
     "test:integration": "node ./lib/integrationTests",
     "test:integration:watch": "nodemon -e ts --exec \"npm run compile && node ./lib/integrationTests\"",
     "test:all:watch": "nodemon -e ts --exec \"npm run build && node ./lib/integrationTests\"",
