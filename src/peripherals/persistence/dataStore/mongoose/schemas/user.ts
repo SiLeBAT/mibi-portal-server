@@ -1,7 +1,7 @@
 import { Schema, Document } from 'mongoose';
 import { ObjectId } from 'bson';
 import * as mongooseUniqueValidator from 'mongoose-unique-validator';
-import { IUserBase } from '../../../../../server/userManagement/shared/entities';
+import { IUserBase } from '../../../../../server/authentication/shared/entities';
 import { IMongooseUpdateResponse } from '../mongooseRepository';
 
 export interface IUserModelUpdateResponse extends IMongooseUpdateResponse {
@@ -9,6 +9,7 @@ export interface IUserModelUpdateResponse extends IMongooseUpdateResponse {
 
 export interface IUserModel extends Document, IUserBase {
     _id: ObjectId;
+    password: string;
     enabled: boolean;
     created: Date;
     updated: Date;
@@ -41,10 +42,6 @@ export const userSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Institution'
     },
-    userdata: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Userdata'
-    }],
     created: {
         type: Date,
         default: Date.now,

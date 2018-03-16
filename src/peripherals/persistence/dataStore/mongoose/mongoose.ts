@@ -6,7 +6,7 @@ import * as Promise from 'bluebird';
 import { IDataStore } from './../dataStoreFactory';
 import { logger } from './../../../../aspects';
 
-import { institutionSchema, userSchema, userdataSchema, resetTokenSchema, IResetTokenModel, IInstitutionModel, IUserModel, IUserdataModel } from './schemas';
+import { institutionSchema, userSchema, resetTokenSchema, IResetTokenModel, IInstitutionModel, IUserModel } from './schemas';
 
 // tslint:disable-next-line
 (mongoose as any).Promise = Promise;
@@ -23,4 +23,3 @@ export class MongooseDataStore implements IDataStore {
 export const InstitutionSchema = mongoose.model<IInstitutionModel>('Institution', institutionSchema);
 export const ResetTokenSchema = mongoose.model<IResetTokenModel>('ResetToken', resetTokenSchema);
 export const UserSchema = mongoose.model<IUserModel>('User', userSchema);
-export const UserdataSchema = mongoose.model<IUserdataModel>('Userdata', userdataSchema);

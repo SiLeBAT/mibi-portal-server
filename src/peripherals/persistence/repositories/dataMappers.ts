@@ -1,5 +1,5 @@
-import { IInstitutionEntity, createInstitution, createUser, IUserEntity, IUserdata } from './../../../server/userManagement/shared/entities';
-import { IInstitutionModel, IUserdataModel } from '../dataStore';
+import { IInstitutionEntity, createInstitution, createUser, IUserEntity } from './../../../server';
+import { IInstitutionModel } from '../dataStore';
 import { IUserModel } from './../dataStore';
 
 function mapModelToInstitution(i: IInstitutionModel): IInstitutionEntity {
@@ -22,21 +22,10 @@ function mapModelToInstitution(i: IInstitutionModel): IInstitutionEntity {
 
 function mapModelToUser(model: IUserModel): IUserEntity {
     const institution = mapModelToInstitution((model.institution as IInstitutionModel));
-    return createUser(model._id.toHexString(), model.email, model.firstName, model.lastName, institution, model.enabled);
-}
-
-function mapModelToUserdata(model: IUserdataModel): IUserdata {
-    return {
-        uniqueId: model._id.toHexString(),
-        department: model.department,
-        contact: model.contact,
-        phone: model.phone,
-        email: model.email
-    };
+    return createUser(model._id.toHexString(), model.email, model.firstName, model.lastName, institution, model.password, model.enabled);
 }
 
 export {
     mapModelToInstitution,
-    mapModelToUser,
-    mapModelToUserdata
+    mapModelToUser
 };

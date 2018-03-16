@@ -1,8 +1,6 @@
-import { IRepositoryBase } from './../../../server/core';
-import { IUserToken } from './../../../server/userManagement/shared/entities';
 import { InvalidTokenError } from './../../../aspects';
 import { createRepository, ResetTokenSchema, IResetTokenModel } from './../dataStore';
-import { ITokenRepository } from './../../../server/userManagement/shared/interactors';
+import { ITokenRepository, IUserToken, IRepositoryBase } from './../../../server';
 
 class TokenRepository implements ITokenRepository {
     constructor(private baseRepo: IRepositoryBase<IResetTokenModel>) {

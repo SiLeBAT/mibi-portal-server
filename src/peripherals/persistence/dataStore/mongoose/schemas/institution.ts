@@ -1,5 +1,5 @@
 import { Schema, Document } from 'mongoose';
-import { IInstitutionEntity } from '../../../../../server/userManagement/shared/entities';
+import { IInstitutionEntity } from '../../../../../server/authentication/shared/entities';
 
 export interface IInstitutionModel extends Document, IInstitutionEntity {
     created: Date;

@@ -7,5 +7,6 @@
     },
     "dataStore": {
         "connectionString": "DB_CONNECTION"
-    }
+    },
+    "supportContact": "SUPPORT_CONTACT"
 }
