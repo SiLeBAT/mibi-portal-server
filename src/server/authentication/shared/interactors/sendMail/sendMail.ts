@@ -24,6 +24,7 @@ async function sendActivationEmail(user: IUserEntity, activationToken: IUserToke
     const activationData = {
         'name': name,
         'action_url': activationUrl,
+        'api_url': API_URL,
         'operating_system': security.host,
         'user_agent': security.userAgent,
         'support_contact': SUPPORT_CONTACT,
@@ -39,6 +40,7 @@ async function sendResetHelpEmail(security: IRecoveryData) {
     const templateFile = await readFilePromise(viewsDir + 'pwresethelp.html');
     const resetHelpData = {
         'email_address': security.email,
+        'api_url': API_URL,
         'operating_system': security.host,
         'user_agent': security.userAgent,
         'support_contact': SUPPORT_CONTACT,
@@ -58,6 +60,7 @@ async function sendResetEmail(user: IUserEntity, resetToken: IUserToken, securit
     const resetData = {
         'name': name,
         'action_url': resetUrl,
+        'api_url': API_URL,
         'operating_system': security.host,
         'user_agent': security.userAgent,
         'support_contact': SUPPORT_CONTACT,
@@ -73,6 +76,7 @@ async function sendNotificationEmail(user: IUserEntity) {
     const name = user.firstName + ' ' + user.lastName;
     const notificationData = {
         'name': name,
+        'api_url': API_URL,
         'email': user.email,
         'action_url': API_URL + '/users/login',
         'appName': APP_NAME
