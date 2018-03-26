@@ -1,1 +1,0 @@
-export { getUserIdForToken } from './tokenManager';

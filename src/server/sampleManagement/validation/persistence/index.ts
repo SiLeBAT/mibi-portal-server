@@ -1,1 +1,0 @@
-export { createCatalogRepository } from './catalogRepository';

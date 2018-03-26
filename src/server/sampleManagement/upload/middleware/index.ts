@@ -1,3 +1,0 @@
-export {
-    multerUpload
-} from './fileUpload';
