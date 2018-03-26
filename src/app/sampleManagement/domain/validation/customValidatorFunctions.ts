@@ -115,7 +115,7 @@ function registeredZoMo(catalogService: ICatalogService): IValidatorFunction<IRe
                 const groupValues = options.group.map((g: IGroup) => attributes[g.attr]);
                 const entry = cat.getEntriesWithKeyValue(options.group[0].code, groupValues[0]);
                 const filtered = _.filter(entry, e => e[options.group[2].code] === groupValues[2])
-                .filter(m => m[options.group[1].code] === groupValues[1]);
+                    .filter(m => m[options.group[1].code] === groupValues[1]);
                 if (filtered.length < 1) {
                     return options.message;
                 }
@@ -191,10 +191,10 @@ function referenceDate(value: string, options: IReferenceDateOptions, key: keyof
 
         if (options.earliest) {
             referenceDateId = options.earliest;
-            refereceOperation = dateIsBeforeReference;
+            refereceOperation = dateIsSameOrBeforeReference;
         } else if (options.latest) {
             referenceDateId = options.latest;
-            refereceOperation = dateIsAfterReference;
+            refereceOperation = dateIsSameOrAfterReference;
         } else {
             throw new Error('Error occured trying to validate');
         }
@@ -229,12 +229,12 @@ function referenceDate(value: string, options: IReferenceDateOptions, key: keyof
 
 }
 
-function dateIsAfterReference(date: moment.Moment, referenceDate: moment.Moment) {
-    return !dateIsBeforeReference(date, referenceDate);
+function dateIsSameOrAfterReference(date: moment.Moment, referenceDate: moment.Moment) {
+    return referenceDate.isSameOrAfter(date, 'day');
 }
 
-function dateIsBeforeReference(date: moment.Moment, referenceDate: moment.Moment) {
-    return referenceDate.isBefore(date, 'day');
+function dateIsSameOrBeforeReference(date: moment.Moment, referenceDate: moment.Moment) {
+    return referenceDate.isSameOrBefore(date, 'day');
 }
 
 function isEmptyString(str: string): boolean {
