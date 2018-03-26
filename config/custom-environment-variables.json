@@ -1,12 +1,13 @@
 {
     "server": {
-        "port": "NODE_PORT",
-        "jwtSecret": "JWT_SECRET",
-        "apiUrl": "API_URL",
-        "logLevel": "LOG_LEVEL"
+        "port": "MIBI_NODE_PORT",
+        "jwtSecret": "MIBI_JWT_SECRET",
+        "apiUrl": "MIBI_API_URL",
+        "logLevel": "MIBI_LOG_LEVEL"
     },
     "dataStore": {
-        "connectionString": "DB_CONNECTION"
+        "connectionString": "MIBI_DB_CONNECTION",
+        "dataDir": "MIBI_DATA_DIR"
     },
-    "supportContact": "SUPPORT_CONTACT"
+    "supportContact": "MIBI_SUPPORT_CONTACT"
 }

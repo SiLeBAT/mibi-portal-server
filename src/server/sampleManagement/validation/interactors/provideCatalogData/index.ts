@@ -1,1 +1,0 @@
-export { getCatalog } from './catalogProvider';

@@ -1,9 +1,6 @@
 import * as winston from 'winston';
 import * as config from 'config';
 
-// tslint:disable-next-line
-(winston as any).level = mapLogLevels(config.get('server.logLevel'));
-
 /*
 *
 * Log levels are:
@@ -15,54 +12,95 @@ import * as config from 'config';
 *   trace: 5
 *
 */
-class Logger {
+export class Logger {
+
+    private _logger: winston.LoggerInstance;
+
+    constructor() {
+        const tsFormat = () => (new Date()).toLocaleTimeString();
+        this._logger = new (winston.Logger)({
+            transports: [
+                // colorize the output to the console
+                new (winston.transports.Console)({
+                    timestamp: tsFormat,
+                    colorize: true,
+                    level: Logger.mapLogLevels(config.get('server.logLevel'))
+                })
+            ]
+        });
+
+    }
+
+    static mapLogLevels(level: string): string {
+        switch (level) {
+            case 'trace':
+                return 'silly';
+            case 'info':
+                return level;
+            case 'error':
+                return level;
+            case 'verbose':
+                return level;
+            case 'warn':
+                return level;
+            case 'silly':
+                return level;
+            case 'debug':
+                return level;
+            default:
+                return 'info';
+        }
+    }
+
+    static mapLevelToMorganFormat(level: string): string {
+        switch (level) {
+            case 'trace':
+                return 'dev';
+            case 'info':
+                return 'combined';
+            case 'error':
+                return 'combined';
+            case 'verbose':
+                return 'dev';
+            case 'warn':
+                return 'combined';
+            case 'silly':
+                return 'dev';
+            case 'debug':
+                return 'dev';
+            default:
+                return 'info';
+        }
+    }
+
     // tslint:disable-next-line
     error(msg: string, meta?: any) {
-        winston.log('error', msg, meta);
+        this._logger.log('error', msg, meta);
     }
 
     // tslint:disable-next-line
     warn(msg: string, meta?: any) {
-        winston.log('warn', msg, meta);
+        this._logger.log('warn', msg, meta);
     }
 
     // tslint:disable-next-line
     info(msg: string, meta?: any) {
-        winston.log('info', msg, meta);
+        this._logger.log('info', msg, meta);
     }
 
     // tslint:disable-next-line
     verbose(msg: string, meta?: any) {
-        winston.log('verbose', msg, meta);
+        this._logger.log('verbose', msg, meta);
     }
 
     // tslint:disable-next-line
     debug(msg: string, meta?: any) {
-        winston.log('debug', msg, meta);
+        this._logger.log('debug', msg, meta);
     }
 
     // tslint:disable-next-line
     trace(msg: string, meta?: any) {
-        winston.log('silly', msg, meta);
-    }
-}
-
-function mapLogLevels(level: string): string {
-    switch (level) {
-        case 'trace':
-            return 'silly';
-        case 'info':
-            return level;
-        case 'error':
-            return level;
-        case 'verbose':
-            return level;
-        case 'warn':
-            return level;
-        case 'silly':
-            return level;
-        default:
-            return 'info';
+        this._logger.log('silly', msg, meta);
     }
 }
 

@@ -1,1 +1,0 @@
-export { prepareUserForActivation } from './prepareUserForActivation';

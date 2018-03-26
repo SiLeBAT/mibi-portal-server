@@ -1,0 +1,431 @@
+import * as moment from 'moment';
+import { ISampleData } from './../../sample';
+import {
+    referenceDate,
+    atLeastOneOf,
+    dependentFieldEntry,
+    inPathogenIndex,
+    dependentFields,
+    numbersOnly,
+    registeredZoMo,
+    nonUniqueEntry,
+    inCatalog
+} from './../customValidatorFunctions';
+import { ICatalog } from '../..';
+import { IValidationError } from '..';
+import { ICatalogService } from '../../../application';
+
+moment.locale('de');
+
+describe('Custom Validator Functions', () => {
+
+    let testSample: ISampleData;
+    let validationError: IValidationError;
+
+    beforeEach(() => {
+        validationError = {
+            id: '0',
+            code: 0,
+            level: 1,
+            message: 'TEST ERROR MESSAGE'
+        };
+
+        testSample = {
+            sample_id: '1',
+            sample_id_avv: '1-ABC',
+            pathogen_adv: 'Escherichia coli',
+            pathogen_text: '',
+            sampling_date: '01.02.2017',
+            isolation_date: '01.03.2017',
+            sampling_location_adv: '11000000',
+            sampling_location_zip: '10787',
+            sampling_location_text: 'Berlin',
+            topic_adv: '01',
+            matrix_adv: '063502',
+            matrix_text: 'Hähnchen auch tiefgefroren',
+            process_state_adv: '999',
+            sampling_reason_adv: '10',
+            sampling_reason_text: 'Planprobe',
+            operations_mode_adv: '4010000',
+            operations_mode_text: 'Lebensmitteleinzelhandel',
+            vvvo: '',
+            comment: ''
+        };
+    });
+
+    describe('dependentFieldEntry', () => {
+        it('should validate without errors', () => {
+            const error = dependentFieldEntry(testSample.process_state_adv, {
+                message: validationError,
+                field: 'operations_mode_adv',
+                regex: '^4'
+            }, 'process_state_adv', testSample);
+            expect(error).toBe(null);
+        });
+
+        it('should validate without errors', () => {
+            const error = dependentFieldEntry(testSample.process_state_adv, {
+                message: validationError,
+                field: 'operations_mode_adv',
+                regex: '^1'
+            }, 'process_state_adv', testSample);
+            expect(error).toBe(null);
+        });
+
+        it('should fail validation with error message', () => {
+            const differentSample = {
+                sample_id: '1',
+                sample_id_avv: '1-ABC',
+                pathogen_adv: 'Escherichia coli',
+                pathogen_text: '',
+                sampling_date: '01.02.2017',
+                isolation_date: '01.03.2017',
+                sampling_location_adv: '11000000',
+                sampling_location_zip: '10787',
+                sampling_location_text: 'Berlin',
+                topic_adv: '01',
+                matrix_adv: '063502',
+                matrix_text: 'Hähnchen auch tiefgefroren',
+                process_state_adv: '',
+                sampling_reason_adv: '10',
+                sampling_reason_text: 'Planprobe',
+                operations_mode_adv: '4010000',
+                operations_mode_text: 'Lebensmitteleinzelhandel',
+                vvvo: '',
+                comment: ''
+            };
+            const error = dependentFieldEntry(differentSample.process_state_adv, {
+                message: validationError,
+                field: 'operations_mode_adv',
+                regex: '^4'
+            }, 'process_state_adv', differentSample);
+            expect(error).toBe(validationError);
+        });
+
+        it('should validate without errors', () => {
+            const differentSample = {
+                sample_id: '1',
+                sample_id_avv: '1-ABC',
+                pathogen_adv: 'Escherichia coli',
+                pathogen_text: '',
+                sampling_date: '01.02.2017',
+                isolation_date: '01.03.2017',
+                sampling_location_adv: '11000000',
+                sampling_location_zip: '10787',
+                sampling_location_text: 'Berlin',
+                topic_adv: '01',
+                matrix_adv: '063502',
+                matrix_text: 'Hähnchen auch tiefgefroren',
+                process_state_adv: '',
+                sampling_reason_adv: '10',
+                sampling_reason_text: 'Planprobe',
+                operations_mode_adv: '4010000',
+                operations_mode_text: 'Lebensmitteleinzelhandel',
+                vvvo: '',
+                comment: ''
+            };
+            const error = dependentFieldEntry(differentSample.process_state_adv, {
+                message: validationError,
+                field: 'operations_mode_adv',
+                regex: '^1'
+            }, 'process_state_adv', differentSample);
+            expect(error).toBe(null);
+        });
+
+    });
+
+    describe('atLeastOneOf', () => {
+        it('should validate without errors', () => {
+            const error = atLeastOneOf(testSample.sampling_reason_adv, {
+                message: validationError,
+                additionalMembers: ['sampling_reason_text']
+            }, 'sampling_reason_adv', testSample);
+            expect(error).toBe(null);
+        });
+
+        it('should validate without errors', () => {
+            const error = atLeastOneOf(testSample.sampling_reason_adv, {
+                message: validationError,
+                additionalMembers: ['comment']
+            }, 'sampling_reason_adv', testSample);
+            expect(error).toBe(null);
+        });
+
+        it('should fail validation with error message', () => {
+            const error = atLeastOneOf(testSample.vvvo, {
+                message: validationError,
+                additionalMembers: ['comment']
+            }, 'vvvo', testSample);
+            expect(error).toBe(validationError);
+        });
+    });
+
+    describe('referenceDate', () => {
+        it('should not validate', () => {
+            const oldSample = {
+                sample_id: '1',
+                sample_id_avv: '1-ABC',
+                pathogen_adv: 'Escherichia coli',
+                pathogen_text: '',
+                sampling_date: '01.02.2016',
+                isolation_date: '01.03.2017',
+                sampling_location_adv: '11000000',
+                sampling_location_zip: '10787',
+                sampling_location_text: 'Berlin',
+                topic_adv: '01',
+                matrix_adv: '063502',
+                matrix_text: 'Hähnchen auch tiefgefroren',
+                process_state_adv: '999',
+                sampling_reason_adv: '10',
+                sampling_reason_text: 'Planprobe',
+                operations_mode_adv: '4010000',
+                operations_mode_text: 'Lebensmitteleinzelhandel',
+                vvvo: '',
+                comment: ''
+            };
+
+            const error = referenceDate(oldSample.sampling_date, {
+                message: validationError,
+                earliest: 'isolation_date',
+                modifier: {
+                    value: 1,
+                    unit: 'year'
+                }
+            }, 'sampling_date', oldSample);
+            expect(error).toBe(validationError);
+        });
+
+        it('should not validate', () => {
+            const oldSample = {
+                sample_id: '1',
+                sample_id_avv: '1-ABC',
+                pathogen_adv: 'Escherichia coli',
+                pathogen_text: '',
+                sampling_date: '14.11.2006',
+                isolation_date: '15.11.2016',
+                sampling_location_adv: '11000000',
+                sampling_location_zip: '10787',
+                sampling_location_text: 'Berlin',
+                topic_adv: '01',
+                matrix_adv: '063502',
+                matrix_text: 'Hähnchen auch tiefgefroren',
+                process_state_adv: '999',
+                sampling_reason_adv: '10',
+                sampling_reason_text: 'Planprobe',
+                operations_mode_adv: '4010000',
+                operations_mode_text: 'Lebensmitteleinzelhandel',
+                vvvo: '',
+                comment: ''
+            };
+
+            const error = referenceDate(oldSample.sampling_date, {
+                message: validationError,
+                earliest: 'NOW',
+                modifier: {
+                    value: 10,
+                    unit: 'year'
+                }
+            }, 'sampling_date', oldSample);
+            expect(error).toBe(validationError);
+        });
+    });
+
+    describe('inPathogenIndex', () => {
+        // tslint:disable-next-line
+        let validationFn: any;
+        beforeEach(() => {
+            validationFn = inPathogenIndex({
+                contains: (str: string) => {
+                    switch (str) {
+                        case 'Escherichiacoli':
+                            return true;
+                        default: return false;
+                    }
+                }
+            });
+        });
+
+        it('should validate without errors', () => {
+
+            const error = validationFn(testSample.pathogen_adv, {
+                message: validationError,
+                additionalMembers: ['pathogen_text']
+            }, 'pathogen_adv', testSample);
+            expect(error).toBe(null);
+        });
+
+        it('should not validate', () => {
+            const differentSample = {
+                sample_id: '1',
+                sample_id_avv: '1-ABC',
+                pathogen_adv: 'Bob',
+                pathogen_text: '',
+                sampling_date: '14.11.2006',
+                isolation_date: '15.11.2016',
+                sampling_location_adv: '11000000',
+                sampling_location_zip: '10787',
+                sampling_location_text: 'Berlin',
+                topic_adv: '01',
+                matrix_adv: '063502',
+                matrix_text: 'Hähnchen auch tiefgefroren',
+                process_state_adv: '999',
+                sampling_reason_adv: '10',
+                sampling_reason_text: 'Planprobe',
+                operations_mode_adv: '4010000',
+                operations_mode_text: 'Lebensmitteleinzelhandel',
+                vvvo: '',
+                comment: ''
+            };
+
+            const error = validationFn(differentSample.pathogen_adv, {
+                message: validationError,
+                additionalMembers: ['pathogen_text']
+            }, 'pathogen_adv', differentSample);
+            expect(error).toBe(validationError);
+        });
+    });
+
+    describe('dependentFields', () => {
+        it('should validate without errors', () => {
+            const error = dependentFields(testSample.sampling_location_zip, {
+                message: validationError,
+                dependents: ['sampling_location_text']
+            }, 'sampling_location_zip', testSample);
+            expect(error).toBe(null);
+        });
+
+    });
+
+    describe('numbersOnly', () => {
+        it('should validate without errors', () => {
+            const error = numbersOnly(testSample.topic_adv, {
+                message: validationError
+            }, 'topic_adv', testSample);
+            expect(error).toBe(null);
+        });
+    });
+
+    describe('registeredZoMo', () => {
+        it('should validate without errors', () => {
+
+            const zoMoSample = {
+                sample_id: '1',
+                sample_id_avv: '1-ABC',
+                pathogen_adv: 'Escherichia coli',
+                pathogen_text: '',
+                sampling_date: '01.02.2017',
+                isolation_date: '01.03.2017',
+                sampling_location_adv: '11000000',
+                sampling_location_zip: '10787',
+                sampling_location_text: 'Berlin',
+                topic_adv: '01',
+                matrix_adv: '063502',
+                matrix_text: 'Hähnchen auch tiefgefroren',
+                process_state_adv: '999',
+                sampling_reason_adv: '81',
+                sampling_reason_text: '',
+                operations_mode_adv: '4010000',
+                operations_mode_text: 'Lebensmitteleinzelhandel',
+                vvvo: '',
+                comment: ''
+            };
+
+            const fakeEntry = {
+                'ADV8-Kode': '4010000',
+                'ADV8-Text1': 'Milcherzeuger',
+                'Kodiersystem': '01',
+                'ADV3-Kode': '063502',
+                'ADV3-Text1': 'Mastschweine; Kot',
+                'Programm': 'EB4',
+                'Tierart': 'Mastschwein',
+                'Matrix': 'Kot',
+                'Probenahmeort': 'Erzeugerbetrieb',
+                'Erreger': 'EC',
+                'JAHR': 2017,
+                'Matrix-B': 'TNShMsKo',
+                'ADV8_1digit': 1
+            };
+
+            // tslint:disable-next-line
+            const mockCatalog: ICatalog<any> = {
+                getEntriesWithKeyValue: (key: string, value: string) => ([fakeEntry]),
+                getEntryWithId: (id: string) => ({}),
+                containsEntryWithId: (id: string) => true,
+                containsEntryWithKeyValue: (key: string, value: string) => true,
+                hasUniqueId: () => true,
+                getUniqueId: () => '',
+                dump: () => []
+            };
+
+            const mockCatalogService: ICatalogService = {
+                getCatalog: () => mockCatalog
+            };
+            const error = registeredZoMo(mockCatalogService)(zoMoSample.operations_mode_adv, {
+                message: validationError,
+                group: [{
+                    attr: 'operations_mode_adv',
+                    code: 'ADV8-Kode'
+                }, {
+                    attr: 'matrix_adv',
+                    code: 'ADV3-Kode'
+                }, {
+                    attr: 'topic_adv',
+                    code: 'Kodiersystem'
+                }],
+                year: ['sampling_date', 'isolation_date']
+            }, 'operations_mode_adv', zoMoSample);
+            expect(error).toBe(null);
+        });
+    });
+
+    describe('nonUniqueEntry', () => {
+        it('should validate without errors', () => {
+
+            // tslint:disable-next-line
+            const mockCatalog: ICatalog<any> = {
+                getEntriesWithKeyValue: (key: string, value: string) => ([]),
+                getEntryWithId: (id: string) => ({}),
+                containsEntryWithId: (id: string) => true,
+                containsEntryWithKeyValue: (key: string, value: string) => true,
+                hasUniqueId: () => true,
+                getUniqueId: () => '',
+                dump: () => []
+            };
+            const mockCatalogService: ICatalogService = {
+                getCatalog: () => mockCatalog
+            };
+            const error = nonUniqueEntry(mockCatalogService)(testSample.matrix_adv, {
+                message: validationError,
+                catalog: 'adv3',
+                key: 'Kode'
+            }, 'matrix_adv', testSample);
+            expect(error).toBe(null);
+        });
+    });
+
+    describe('inCatalog', () => {
+        it('should validate without errors', () => {
+
+            // tslint:disable-next-line
+            const mockCatalog: ICatalog<any> = {
+                getEntriesWithKeyValue: (key: string, value: string) => ([]),
+                getEntryWithId: (id: string) => ({}),
+                containsEntryWithId: (id: string) => true,
+                containsEntryWithKeyValue: (key: string, value: string) => true,
+                hasUniqueId: () => true,
+                getUniqueId: () => '',
+                dump: () => []
+            };
+            const mockCatalogService: ICatalogService = {
+                getCatalog: () => mockCatalog
+            };
+            const error = inCatalog(mockCatalogService)(testSample.matrix_adv, {
+                message: validationError,
+                catalog: 'adv3',
+                key: 'Kode'
+            }, 'matrix_adv', testSample);
+            expect(error).toBe(null);
+        });
+    });
+
+});
