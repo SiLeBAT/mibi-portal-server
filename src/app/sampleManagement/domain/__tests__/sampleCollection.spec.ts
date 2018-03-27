@@ -1,4 +1,4 @@
-import { createSampleCollection } from './../sampleCollection';
+import { createSampleCollection } from './../sampleCollection.entity';
 
 describe('SampleCollection class', () => {
     it('should be created', () => {

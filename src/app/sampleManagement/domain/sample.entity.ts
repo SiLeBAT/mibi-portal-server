@@ -1,4 +1,5 @@
-import { IValidationErrorCollection, IValidationError } from '../../domain/validation';
+import { IValidationError } from './validationErrorProvider.entity';
+import { IValidationErrorCollection } from './validator.entity';
 
 const ZOMO_CODE: number = 81;
 const ZOMO_STRING: string = 'Zoonosen-Monitoring - Planprobe';

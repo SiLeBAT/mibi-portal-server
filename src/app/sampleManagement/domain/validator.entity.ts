@@ -2,10 +2,10 @@ import * as validate from 'validate.js';
 import * as moment from 'moment';
 import * as _ from 'lodash';
 
-import { getConstraints, ConstraintSet } from './validationConstraints';
+import { getConstraints } from './validationConstraints';
 import { ISample } from '../';
-import { IValidationError } from './validationErrorProvider';
-import { IPathogenIndex, createPathogenIndex } from './pathogenIndex';
+import { IValidationError } from './validationErrorProvider.entity';
+import { IPathogenIndex, createPathogenIndex } from './pathogenIndex.entity';
 import {
     referenceDate,
     atLeastOneOf,
@@ -17,7 +17,8 @@ import {
     nonUniqueEntry,
     inPathogenIndex
 } from './customValidatorFunctions';
-import { ICatalogService } from '../../application';
+import { ICatalogService } from '../application';
+import { ConstraintSet } from '.';
 
 moment.locale('de');
 

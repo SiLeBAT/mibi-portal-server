@@ -1,5 +1,5 @@
 export {
-    multerUpload
+    uploadToDisk
 } from './fileUpload';
 export {
     validateToken

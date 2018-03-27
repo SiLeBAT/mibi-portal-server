@@ -1,8 +1,9 @@
 import { IUser, IUserCredentials, generateToken } from './../domain';
 import { IUserRepository } from '../../ports';
-import { IRecoveryData } from './notification.service';
 import { logger } from './../../../aspects';
 import { IRegistrationService } from '.';
+import { ApplicationDomainError } from '../../sharedKernel/errors';
+import { IRecoveryData } from '../../sharedKernel';
 
 export interface IUserLoginInformation extends IUserCredentials {
     userAgent: string | string[] | undefined;
@@ -29,6 +30,8 @@ class LoginService implements ILoginService {
 
         const user = await this.userRepository.findByUsername(credentials.email);
 
+        if (!user) throw new ApplicationDomainError(`User not known. email=${credentials.email}`);
+
         if (!user.isActivated()) {
 
             return this.rejectInactiveUser(user, {
@@ -38,27 +41,22 @@ class LoginService implements ILoginService {
             });
 
         }
-        const isAuthorized = await user.isAuthorized(credentials);
 
-        if (isAuthorized) {
+        if (await user.isAuthorized(credentials)) {
             return {
                 user: user,
                 token: generateToken(user.uniqueId)
             };
         }
 
-        throw new Error(`Unable to login user user=${user.email}`);
+        throw new ApplicationDomainError(`User not authorized. user=${user.email}`);
     }
 
     private async rejectInactiveUser(user: IUser, recoveryData: IRecoveryData): Promise<ILoginResponse> {
         logger.verbose('Inactive account failed to log in.');
         return this.activationService.prepareUserForActivation(user, recoveryData).then(
             () => {
-                throw new Error(`Unable to login user user=${user.email}`);
-            }
-        ).catch(
-            (err: Error) => {
-                throw new Error(`Unable to prepare user for activation user.uniquId=${user.uniqueId} error=${err}`);
+                throw new ApplicationDomainError(`User inactive. user=${user.email}`);
             }
         );
     }

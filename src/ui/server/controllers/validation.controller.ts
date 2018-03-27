@@ -56,7 +56,7 @@ const knimeConfig: IKnimeConfig = config.get('knime');
 const appRootDir = rootDir.get();
 
 export interface IValidationController extends IController {
-    validateSamples(req: Request, res: Response): void;
+    validateSamples(req: Request, res: Response): Promise<void>;
 }
 
 class ValidationController implements IValidationController {

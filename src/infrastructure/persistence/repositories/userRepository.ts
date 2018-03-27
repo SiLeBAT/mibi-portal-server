@@ -6,13 +6,11 @@ class UserRepository implements IUserRepository {
     constructor(private baseRepo: IRepositoryBase<IUserModel>) {
     }
 
-    getUserById(id: string) {
+    findById(id: string) {
         return this.baseRepo.findById(id).then(
-            m => {
-                if (!m) {
-                    throw new Error(`User not found, id=${id}`);
-                }
-                return mapModelToUser(m);
+            (userModel: IUserModel) => {
+                if (!userModel) return null;
+                return mapModelToUser(userModel);
             }
         );
     }
@@ -20,27 +18,25 @@ class UserRepository implements IUserRepository {
     findByUsername(username: string) {
         return this.baseRepo.findOne({ email: username })
             .then(
-                populateWithAuxData
+                (userModel: IUserModel | null) => {
+                    if (!userModel) return Promise.reject(null);
+                    return populateWithAuxData(userModel);
+                }
+
             )
             .then(
-                (user: IUserModel) => {
-                    return mapModelToUser(user);
-                }
-            ).
-            catch(
-                (err) => {
-                    throw new Error(`User not found, username=${username}, error=${err}`);
+                (userModel: IUserModel) => {
+                    if (!userModel) return null;
+                    return mapModelToUser(userModel);
                 }
             );
     }
 
     getPasswordForUser(username: string) {
         return this.baseRepo.findOne({ email: username }).then(
-            model => {
-                if (!model) {
-                    throw new Error(`User not found, username=${username}`);
-                }
-                return model.password;
+            (userModel: IUserModel) => {
+                if (!userModel) return null;
+                return userModel.password;
             }
         );
     }
@@ -77,7 +73,7 @@ class UserRepository implements IUserRepository {
                 if (!response.ok) {
                     throw new Error(`User not found, id=${user.uniqueId}`);
                 }
-                return this.getUserById(user.uniqueId);
+                return this.findById(user.uniqueId);
             }
         );
     }
@@ -94,4 +90,5 @@ function populateWithAuxData(model: IUserModel): Promise<IUserModel> {
     });
 
 }
+
 export const repository: IUserRepository = new UserRepository(createRepository(UserSchema));

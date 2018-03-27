@@ -1,11 +1,11 @@
 
 import * as moment from 'moment';
 import * as _ from 'lodash';
-import { IPathogenIndex } from './pathogenIndex';
+import { IPathogenIndex } from './pathogenIndex.entity';
 import { ICatalog } from '..';
-import { IValidationError } from '.';
-import { ISampleData } from '../sample';
-import { ICatalogService } from '../../application';
+import { ISampleData } from './sample.entity';
+import { ICatalogService } from '../application';
+import { IValidationError } from './validationErrorProvider.entity';
 
 moment.locale('de');
 
@@ -183,7 +183,8 @@ export interface IReferenceDateOptions extends IValidatiorFunctionOptions {
     };
 }
 // TODO: Clean this up.
-function referenceDate(value: string, options: IReferenceDateOptions, key: keyof ISampleData, attributes: ISampleData) {
+// tslint:disable-next-line
+function referenceDate(value: string, options: IReferenceDateOptions, key: keyof ISampleData, attributes: any) {
     if (moment.utc(value, 'DD-MM-YYYY').isValid()) {
         let referenceDateId;
         let refereceOperation;
@@ -199,8 +200,8 @@ function referenceDate(value: string, options: IReferenceDateOptions, key: keyof
             throw new Error('Error occured trying to validate');
         }
 
-        if (attributes[(referenceDateId as keyof ISampleData)]) {
-            referenceDate = moment.utc(attributes[(referenceDateId as keyof ISampleData)], 'DD-MM-YYYY');
+        if (attributes[(referenceDateId)]) {
+            referenceDate = moment.utc(attributes[(referenceDateId)], 'DD-MM-YYYY');
         } else if (referenceDateId === 'NOW') {
             referenceDate = moment();
         } else {

@@ -1,7 +1,8 @@
 import * as config from 'config';
 import { IUserRepository, ITokenRepository } from '../../ports';
-import { IUser, TokenType, generateToken, verifyToken, NotificationType, IUserToken } from './../domain';
-import { IRecoveryData, INotificationService } from './notification.service';
+import { IUser, TokenType, generateToken, verifyToken, IUserToken } from './../domain';
+import { IRecoveryData, INotificationService, NotificationType } from './../../sharedKernel';
+import { ApplicationDomainError } from '../../sharedKernel/errors';
 
 // TODO: Should these be here?  Should they not be added later?
 const APP_NAME = config.get('appName');
@@ -25,12 +26,11 @@ class PasswordService implements IPasswordService {
 
     async recoverPassword(recoveryData: IRecoveryData): Promise<void> {
 
-        const exists = await this.userRepository.hasUser(recoveryData.email);
-        if (!exists) {
+        const user = await this.userRepository.findByUsername(recoveryData.email);
+        if (!user) {
             const altContactNotification = this.createAlternativeContactNotification(recoveryData);
             return this.notificationService.sendNotification(altContactNotification);
         }
-        const user = await this.userRepository.findByUsername(recoveryData.email);
         const hasOldToken = await this.tokenRepository.hasTokenForUser(user);
         if (hasOldToken) {
             await this.tokenRepository.deleteTokenForUser(user);
@@ -50,7 +50,8 @@ class PasswordService implements IPasswordService {
 
         const { userId } = await this.tokenRepository.getUserTokenByJWT(token);
         verifyToken(token, String(userId));
-        let user: IUser = await this.userRepository.getUserById(userId);
+        const user = await this.userRepository.findById(userId);
+        if (!user) throw new ApplicationDomainError(`Unknown user. id=${userId}`);
         await user.updatePassword(password);
         await this.userRepository.updateUser(user);
         await this.tokenRepository.deleteTokenForUser(user);

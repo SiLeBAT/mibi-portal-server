@@ -1,8 +1,9 @@
 import * as config from 'config';
 import { IUserRepository, ITokenRepository, IInstitutionRepository } from '../../ports';
 import { logger } from '../../../aspects';
-import { IUser, createUser, TokenType, generateToken, verifyToken, NotificationType, IUserToken } from './../domain';
-import { IRecoveryData, INotificationService } from './notification.service';
+import { IUser, createUser, TokenType, generateToken, verifyToken, IUserToken } from './../domain';
+import { IRecoveryData, INotificationService, NotificationType } from '../../sharedKernel/';
+import { ApplicationDomainError } from '../../sharedKernel/errors';
 
 // TODO: Should these be here?  Should they not be added later?
 const APP_NAME = config.get('appName');
@@ -40,7 +41,8 @@ class RegistrationService implements IRegistrationService {
     async activateUser(token: string): Promise<void> {
         const { userId } = await this.tokenRepository.getUserTokenByJWT(token);
         verifyToken(token, String(userId));
-        const user: IUser = await this.userRepository.getUserById(userId);
+        const user = await this.userRepository.findById(userId);
+        if (!user) throw new ApplicationDomainError(`Unknown user. id=${userId}`);
         user.isActivated(true);
         await this.userRepository.updateUser(user);
         await this.tokenRepository.deleteTokenForUser(user);
@@ -51,13 +53,12 @@ class RegistrationService implements IRegistrationService {
     async registerUser(credentials: IUserRegistration): Promise<void> {
 
         const result = await this.userRepository.hasUser(credentials.email);
-        if (result) {
-            throw new Error(`Registration failed. User already exists, email=${credentials.email}`);
-        }
+        if (result) throw new ApplicationDomainError(`Registration failed. User already exists, email=${credentials.email}`);
+
         const inst = await this.institutionRepository.findById(credentials.institution);
-        if (!inst) {
-            throw new Error(`Institution not found, id=${credentials.institution}`);
-        }
+
+        if (!inst) throw new ApplicationDomainError(`Institution not found, id=${credentials.institution}`);
+
         const newUser = createUser('0000', credentials.email, credentials.firstName,
             credentials.lastName, inst, '');
 
@@ -90,7 +91,7 @@ class RegistrationService implements IRegistrationService {
             userId: user.uniqueId
         });
 
-        const requestActivationNotification = this.createRequestActivationNotification(user,recoveryData,activationToken);
+        const requestActivationNotification = this.createRequestActivationNotification(user, recoveryData, activationToken);
         return this.notificationService.sendNotification(requestActivationNotification);
     }
 

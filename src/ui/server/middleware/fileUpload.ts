@@ -19,10 +19,15 @@ const storage = multer.diskStorage({ // multers disk storage settings
     }
 });
 
-const multerUpload = multer({ // multer settings
+const uploadToDisk = multer({ // multer settings
     storage: storage
 }).single('myPostName');
 
+const uploadToMemory = multer({ // multer settings
+    storage: multer.memoryStorage()
+}).single('myMemoryXSLX');
+
 export {
-    multerUpload
+    uploadToDisk,
+    uploadToMemory
 };

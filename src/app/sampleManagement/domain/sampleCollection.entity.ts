@@ -1,4 +1,4 @@
-import { ISample } from './../sample';
+import { ISample } from './sample.entity';
 
 export interface ISampleCollection {
     samples: ISample[];

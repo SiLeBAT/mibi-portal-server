@@ -1,12 +1,6 @@
 import { createService, IPasswordService } from './../password.service';
 import { verifyToken } from '../../domain';
 
-jest.mock('./../../../sharedKernel', () => ({
-    RepositoryType: {
-        USER: 0
-    }
-}));
-
 jest.mock('./../../domain', () => ({
     generateToken: jest.fn(),
     verifyToken: jest.fn(),
@@ -30,7 +24,7 @@ describe('Reset Password Use Case', () => {
     let password: string;
     beforeEach(() => {
         mockUserRepository = {
-            getUserById: jest.fn(() => ({
+            findById: jest.fn(() => ({
                 updatePassword: jest.fn()
             })),
             updateUser: jest.fn(() => true)
@@ -74,13 +68,13 @@ describe('Reset Password Use Case', () => {
     it('should call user repository to retrieve user', () => {
         expect.assertions(1);
         return service.resetPassword(token, password).then(
-            result => expect(mockUserRepository.getUserById.mock.calls.length).toBe(1)
+            result => expect(mockUserRepository.findById.mock.calls.length).toBe(1)
         );
     });
     it('should update the user password', () => {
         expect.assertions(1);
         const updatePassword = jest.fn();
-        mockUserRepository.getUserById.mockReturnValueOnce({
+        mockUserRepository.findById.mockReturnValueOnce({
             updatePassword
         });
         return service.resetPassword(token, password).then(
@@ -106,7 +100,7 @@ describe('Reset Password Use Case', () => {
         );
     });
     it('should be throw an error because user is faulty', () => {
-        mockUserRepository.getUserById = jest.fn(() => { throw new Error(); });
+        mockUserRepository.findById = jest.fn(() => { throw new Error(); });
         expect.assertions(1);
         return service.resetPassword(token, password).then(
             result => expect(mockNotificationService.sendNotification.mock.calls.length).toBe(0),
