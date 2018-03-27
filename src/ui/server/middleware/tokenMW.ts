@@ -15,7 +15,9 @@ function validateToken(secret: string) {
         /\/users\/reset\/*/,
         /\/users\/activate\/*/,
         '/api/v1/upload',
-        '/api/v1/validation'
+        '/api/v1/validation',
+        // FIXME
+        '/api/v1/job'
     ];
 
     return jwt({

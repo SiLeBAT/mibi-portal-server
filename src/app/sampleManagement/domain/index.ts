@@ -1,4 +1,6 @@
-export { ICatalog, Catalog } from './catalog';
-export { ISample, createSample } from './sample';
-export { createSampleCollection, ISampleCollection } from './sampleCollection';
-export { createValidator, IValidator } from './validation';
+export { ICatalog, Catalog } from './catalog.entity';
+export { ISample, createSample } from './sample.entity';
+export { createSampleCollection, ISampleCollection } from './sampleCollection.entity';
+export { createValidator, IValidator } from './validator.entity';
+export { IDatasetFile } from './datasetFile.entity';
+export * from './enums';

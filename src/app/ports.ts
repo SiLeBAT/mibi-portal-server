@@ -6,23 +6,23 @@ export {
     IServiceFactory,
     RepositoryFactory,
     ServiceFactory,
-    IController
+    IController,
+    INotification,
+    NotificationType,
+    INotificationPort
 } from './sharedKernel';
 
 export {
-    INotificationPort,
     IRegistrationPort,
     IPasswordPort,
     ILoginPort,
     IInstitutionPort,
-    NotificationType,
     LoginResult,
     IInstitution,
     IAddress,
     createInstitution,
     createUser,
     IUser,
-    INotification,
     IUserToken,
     IUserLoginInformation,
     ILoginResponse,
@@ -36,7 +36,9 @@ export {
     createSample,
     createSampleCollection,
     ICatalog,
-    Catalog
+    Catalog,
+    IDatasetFile,
+    IDatasetPort
 } from './sampleManagement';
 
 export interface IModelAttributes {
@@ -84,12 +86,12 @@ export interface ITokenRepository {
 }
 
 export interface IUserRepository {
-    getUserById(id: string): Promise<IUser>;
-    getPasswordForUser(username: string): Promise<string>;
-    findByUsername(username: string): Promise<IUser>;
+    findById(id: string): Promise<IUser | null>;
+    getPasswordForUser(username: string): Promise<string | null>;
+    findByUsername(username: string): Promise<IUser | null>;
     hasUser(username: string): Promise<boolean>;
     createUser(user: IUser): Promise<IUser>;
-    updateUser(user: IUser): Promise<IUser>;
+    updateUser(user: IUser): Promise<IUser | null>;
 }
 
 export interface ICatalogRepository {

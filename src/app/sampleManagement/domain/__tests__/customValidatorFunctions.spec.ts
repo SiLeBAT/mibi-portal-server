@@ -1,5 +1,5 @@
 import * as moment from 'moment';
-import { ISampleData } from './../../sample';
+import { ISampleData } from './../sample.entity';
 import {
     referenceDate,
     atLeastOneOf,
@@ -12,8 +12,8 @@ import {
     inCatalog
 } from './../customValidatorFunctions';
 import { ICatalog } from '../..';
-import { IValidationError } from '..';
-import { ICatalogService } from '../../../application';
+import { ICatalogService } from '../../application';
+import { IValidationError } from '../validationErrorProvider.entity';
 
 moment.locale('de');
 
@@ -345,8 +345,6 @@ describe('Custom Validator Functions', () => {
                 expect(error).toBe(validationError);
             });
         });
-
-
 
         it('should not validate', () => {
             const oldSample = {

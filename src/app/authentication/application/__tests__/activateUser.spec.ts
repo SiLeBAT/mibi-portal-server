@@ -25,7 +25,7 @@ describe('Activate User Use Case', () => {
     let token: string;
     beforeEach(() => {
         mockUserRepository = {
-            getUserById: jest.fn(() => ({
+            findById: jest.fn(() => ({
                 isActivated: jest.fn()
             })),
             updateUser: jest.fn(() => true)
@@ -73,13 +73,13 @@ describe('Activate User Use Case', () => {
     it('should call user repository to retrieve user', () => {
         expect.assertions(1);
         return service.activateUser(token).then(
-            result => expect(mockUserRepository.getUserById.mock.calls.length).toBe(1)
+            result => expect(mockUserRepository.findById.mock.calls.length).toBe(1)
         );
     });
     it('should activate the user', () => {
         expect.assertions(1);
         const isActivated = jest.fn();
-        mockUserRepository.getUserById.mockReturnValueOnce({
+        mockUserRepository.findById.mockReturnValueOnce({
             isActivated
         });
         return service.activateUser(token).then(
@@ -99,7 +99,7 @@ describe('Activate User Use Case', () => {
         );
     });
     it('should be throw an error because user is faulty', () => {
-        mockUserRepository.getUserById = jest.fn(() => { throw new Error(); });
+        mockUserRepository.findById = jest.fn(() => { throw new Error(); });
         expect.assertions(1);
         return service.activateUser(token).then(
             result => expect(mockTokenRepository.deleteTokenForUser.mock.calls.length).toBe(0),

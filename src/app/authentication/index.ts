@@ -4,7 +4,6 @@ export {
     createUser,
     IUser,
     IUserToken,
-    NotificationType,
     LoginResult,
     IAddress,
     IUserBase
@@ -18,7 +17,5 @@ export {
     IRegistrationPort,
     IPasswordPort,
     IInstitutionPort,
-    ILoginPort,
-    INotificationPort,
-    INotification
+    ILoginPort
 } from './application';

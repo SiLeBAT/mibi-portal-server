@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
-import { validationErrorProvider as vep, IValidationError } from './validationErrorProvider';
+import { validationErrorProvider as vep, IValidationError } from './validationErrorProvider.entity';
+import { ConstraintSet } from '.';
 
 export interface IValidationRule {
     message: IValidationError;
@@ -13,10 +14,6 @@ export interface IValidationRuleSet {
 
 export interface IValidationConstraints {
     [key: string]: IValidationRuleSet;
-}
-
-export enum ConstraintSet {
-    STANDARD = 'standard', ZOMO = 'ZoMo'
 }
 
 const zoMoConstraints: IValidationConstraints = {

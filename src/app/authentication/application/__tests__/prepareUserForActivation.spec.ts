@@ -1,12 +1,6 @@
 import { createService, IRegistrationService } from './../registration.service';
 import { generateToken, createUser, IUser } from '../../domain';
-import { IRecoveryData } from '..';
-
-jest.mock('./../../../sharedKernel', () => ({
-    RepositoryType: {
-        USER: 0
-    }
-}));
+import { IRecoveryData } from '../../../sharedKernel';
 
 jest.mock('./../../domain', () => ({
     generateToken: jest.fn(),

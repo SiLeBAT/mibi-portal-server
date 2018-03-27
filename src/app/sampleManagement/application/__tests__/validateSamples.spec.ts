@@ -1,6 +1,6 @@
 import { createService, IFormValidatorService } from './../formValidation.service';
 import { ISampleCollection } from '../..';
-import { ISampleData, ISample } from '../../domain/sample';
+import { ISampleData, ISample } from '../../domain/sample.entity';
 
 jest.mock('./../../domain', () => ({
     createValidator: () => ({

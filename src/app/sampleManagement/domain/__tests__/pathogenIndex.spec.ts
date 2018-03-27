@@ -1,4 +1,4 @@
-import { createPathogenIndex, IPathogenIndex, IADV16Data } from './../pathogenIndex';
+import { createPathogenIndex, IPathogenIndex, IADV16Data } from './../pathogenIndex.entity';
 
 describe('Pathogen Index', () => {
     // tslint:disable-next-line

@@ -11,6 +11,7 @@ export interface IValidationError {
     message: string;
 }
 
+// TODO: should these errors be in the DB?
 class ValidationErrorProvider implements IValidationErrorProvider {
     private errors: IValidationError[] = [
 

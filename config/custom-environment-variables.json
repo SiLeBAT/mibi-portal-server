@@ -9,5 +9,6 @@
         "connectionString": "MIBI_DB_CONNECTION",
         "dataDir": "MIBI_DATA_DIR"
     },
-    "supportContact": "MIBI_SUPPORT_CONTACT"
+    "supportContact": "MIBI_SUPPORT_CONTACT",
+    "jobRecipient": "MIBI_JOB_RECIPIENT"
 }

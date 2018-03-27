@@ -11,6 +11,8 @@ function getRouter(controllerFactory: IControllerFactory) {
     router.use('/upload', getBaseRouter(RouterType.DATASET, controllerFactory));
     logger.verbose('Registering Route', { route: '/validation' });
     router.use('/validation', getBaseRouter(RouterType.VALIDATE, controllerFactory));
+    logger.verbose('Registering Route', { route: '/job' });
+    router.use('/job', getBaseRouter(RouterType.JOB, controllerFactory));
     return router;
 }
 

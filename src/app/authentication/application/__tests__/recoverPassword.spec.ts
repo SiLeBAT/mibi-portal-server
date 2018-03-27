@@ -1,12 +1,6 @@
 import { createService, IPasswordService } from './../password.service';
 import { generateToken } from '../../domain';
-import { IRecoveryData } from '..';
-
-jest.mock('./../../../sharedKernel', () => ({
-    RepositoryType: {
-        USER: 0
-    }
-}));
+import { IRecoveryData } from '../../../sharedKernel';
 
 jest.mock('./../../domain', () => ({
     generateToken: jest.fn(),
@@ -34,7 +28,6 @@ describe('Recover Password Use Case', () => {
     beforeEach(() => {
 
         mockUserRepository = {
-            hasUser: jest.fn(() => true),
             findByUsername: jest.fn(() => true)
         };
 
@@ -61,12 +54,7 @@ describe('Recover Password Use Case', () => {
         const result = service.recoverPassword(credentials);
         expect(result).toBeInstanceOf(Promise);
     });
-    it('should ask the user repository if the user exists', () => {
-        expect.assertions(1);
-        return service.recoverPassword(credentials).then(
-            result => expect(mockUserRepository.hasUser.mock.calls.length).toBe(1)
-        );
-    });
+
     it('should trigger notification: sendNotification because user does not exist', () => {
         mockUserRepository.hasUser = jest.fn(() => false);
         expect.assertions(1);
