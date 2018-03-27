@@ -2,6 +2,7 @@ import * as _ from 'lodash';
 import { logger } from './../../../aspects';
 import { ISample, ISampleCollection, createValidator, IValidator } from './../domain';
 import { ICatalogService } from '.';
+import { ApplicationDomainError } from '../../sharedKernel/errors';
 
 export interface IFormValidatorPort {
     validateSamples(sampleCollection: ISampleCollection): ISampleCollection;
@@ -20,6 +21,8 @@ class FormValidatorService implements IFormValidatorService {
             catalogService: this.catalogService
         });
     }
+
+    // TODO: Needs to be refactored & tested
     validateSamples(sampleCollection: ISampleCollection): ISampleCollection {
 
         logger.verbose('Starting Sample validation');
@@ -77,7 +80,7 @@ class FormValidatorService implements IFormValidatorService {
                     }
                 };
             default:
-                throw new Error(`Invalid Input: This unique ID is not validated uniqueId=${uniqueId }`);
+                throw new ApplicationDomainError(`Invalid Input: This unique ID is not validated uniqueId=${uniqueId }`);
         }
 
     }

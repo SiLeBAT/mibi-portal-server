@@ -70,9 +70,7 @@ class UserRepository implements IUserRepository {
             enabled: user.isActivated()
         }).then(
             (response: IUserModelUpdateResponse) => {
-                if (!response.ok) {
-                    throw new Error(`User not found, id=${user.uniqueId}`);
-                }
+                if (!response.ok) return null;
                 return this.findById(user.uniqueId);
             }
         );

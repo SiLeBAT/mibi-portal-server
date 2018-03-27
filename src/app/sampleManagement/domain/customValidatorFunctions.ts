@@ -6,6 +6,7 @@ import { ICatalog } from '..';
 import { ISampleData } from './sample.entity';
 import { ICatalogService } from '../application';
 import { IValidationError } from './validationErrorProvider.entity';
+import { ApplicationDomainError } from '../../sharedKernel/errors';
 
 moment.locale('de');
 
@@ -28,13 +29,14 @@ export interface IDependentFieldEntryOptions extends IValidatiorFunctionOptions 
 function dependentFieldEntry(value: string, options: IDependentFieldEntryOptions, key: keyof ISampleData, attributes: ISampleData) {
     const re = new RegExp(options.regex);
     const matchResult = re.test(attributes[options.field]);
-    if (matchResult && isEmptyString(attributes[key])) return options.message;
+    if (matchResult && isEmptyString(attributes[key])) return { ...options.message };
     return null;
 }
 
 export interface INonUniqueEntryOptions extends IValidatiorFunctionOptions {
     catalog: string;
     key: string;
+    differentiator: [string, keyof ISampleData];
 }
 
 function nonUniqueEntry(catalogService: ICatalogService): IValidatorFunction<INonUniqueEntryOptions> {
@@ -43,11 +45,15 @@ function nonUniqueEntry(catalogService: ICatalogService): IValidatorFunction<INo
             const cat = catalogService.getCatalog(options.catalog);
             if (cat && options.key) {
                 const entries = cat.getEntriesWithKeyValue(options.key, value);
-                if (entries.length > 1) {
-                    // TODO find better way to do this
-                    options.message.message += ` Entweder '${entries[0].Kodiersystem}' für '${entries[0].Text1}' oder '${entries[1].Kodiersystem}' für '${entries[1].Text1}'.`;
-                    return options.message;
+                if (entries.length < 2) return null;
+                if (attributes[options.differentiator[1]]) {
+                    const n = _.filter(entries, e => e[options.differentiator[0]] === attributes[options.differentiator[1]]);
+                    if (n.length === 1) return null;
                 }
+                // TODO: find better way to do this
+                const newMessage: IValidationError = { ...options.message };
+                newMessage.message += ` Entweder '${entries[0].Kodiersystem}' für '${entries[0].Text1}' oder '${entries[1].Kodiersystem}' für '${entries[1].Text1}'.`;
+                return newMessage;
             }
         }
         return null;
@@ -67,7 +73,7 @@ function inCatalog(catalogService: ICatalogService): IValidatorFunction<IInCatal
             if (cat) {
                 const key: string = options.key ? options.key : cat.getUniqueId();
                 if (key && !cat.containsEntryWithKeyValue(key, value)) {
-                    return options.message;
+                    return { ...options.message };
                 }
             }
         }
@@ -85,7 +91,7 @@ function inPathogenIndex(pathogenIndex: IPathogenIndex): IValidatorFunction<IInP
         const additionalMembers = options.additionalMembers || [];
         const testValue = additionalMembers.reduce((acc: string, v: keyof ISampleData) => acc + attributes[v], value).replace(/\s/g, '');
         if (!pathogenIndex.contains(testValue)) {
-            return options.message;
+            return { ...options.message };
         }
         return null;
     };
@@ -117,13 +123,13 @@ function registeredZoMo(catalogService: ICatalogService): IValidatorFunction<IRe
                 const filtered = _.filter(entry, e => e[options.group[2].code] === groupValues[2])
                     .filter(m => m[options.group[1].code] === groupValues[1]);
                 if (filtered.length < 1) {
-                    return options.message;
+                    return { ...options.message };
                 }
             } else {
-                return options.message;
+                return { ...options.message };
             }
         } else {
-            return options.message;
+            return { ...options.message };
         }
         return null;
     };
@@ -138,7 +144,7 @@ function atLeastOneOf(value: string, options: IAtLeastOneOfOptions, key: keyof I
         for (let i = 0; i < options.additionalMembers.length; i++) {
             const element = options.additionalMembers[i];
             if (isEmptyString(attributes[element])) {
-                return options.message;
+                return { ...options.message };
             }
         }
     }
@@ -154,7 +160,7 @@ function dependentFields(value: string, options: IDependentFieldsOptions, key: k
         for (let i = 0; i < options.dependents.length; i++) {
             const element = options.dependents[i];
             if (!attributes[element]) {
-                return options.message;
+                return { ...options.message };
             }
         }
     }
@@ -168,7 +174,7 @@ function numbersOnly(value: string, options: INumbersOnlyOptions, key: keyof ISa
     if (attributes[key]) {
         let numOnly = new RegExp('^[0-9]*$');
         if (!numOnly.test(value)) {
-            return options.message;
+            return { ...options.message };
         }
     }
     return null;
@@ -197,7 +203,7 @@ function referenceDate(value: string, options: IReferenceDateOptions, key: keyof
             referenceDateId = options.latest;
             refereceOperation = dateIsSameOrAfterReference;
         } else {
-            throw new Error('Error occured trying to validate');
+            throw new ApplicationDomainError('Error occured trying to validate');
         }
 
         if (attributes[(referenceDateId)]) {
@@ -223,7 +229,7 @@ function referenceDate(value: string, options: IReferenceDateOptions, key: keyof
         if (!referenceDate.isValid() || refereceOperation(moment.utc(value, 'DD-MM-YYYY'), referenceDate)) {
             return null;
         } else {
-            return options.message;
+            return { ...options.message };
         }
     }
     return null;

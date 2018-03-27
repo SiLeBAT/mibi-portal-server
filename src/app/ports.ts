@@ -82,7 +82,7 @@ export interface ITokenRepository {
     hasTokenForUser(user: IUser): Promise<boolean>;
     deleteTokenForUser(user: IUser): Promise<boolean>;
     saveToken(token: IUserToken): Promise<IUserToken>;
-    getUserTokenByJWT(token: string): Promise<IUserToken>;
+    getUserTokenByJWT(token: string): Promise<IUserToken | null>;
 }
 
 export interface IUserRepository {

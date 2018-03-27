@@ -39,7 +39,9 @@ class RegistrationService implements IRegistrationService {
         private notificationService: INotificationService) { }
 
     async activateUser(token: string): Promise<void> {
-        const { userId } = await this.tokenRepository.getUserTokenByJWT(token);
+        const userToken = await this.tokenRepository.getUserTokenByJWT(token);
+        if (!userToken) throw new ApplicationDomainError(`No UserToken for JWT Token. token=${token}`);
+        const userId = userToken.userId;
         verifyToken(token, String(userId));
         const user = await this.userRepository.findById(userId);
         if (!user) throw new ApplicationDomainError(`Unknown user. id=${userId}`);
@@ -73,15 +75,10 @@ class RegistrationService implements IRegistrationService {
     }
 
     async prepareUserForActivation(user: IUser, recoveryData: IRecoveryData): Promise<void> {
-
-        this.deleteOldTokensForUser(user).then(
-            successfullyDeleted => {
-                if (!successfullyDeleted) {
-                    logger.warn('An error occured deleting token in DB for user', { 'user.uniqueId': user.uniqueId });
-                }
-            },
-            fail => { logger.warn('An error occured deleting token in DB for user', { 'user.uniqueId': user.uniqueId }); }
-        );
+        const hasOldToken = await this.tokenRepository.hasTokenForUser(user);
+        if (hasOldToken) {
+            await this.tokenRepository.deleteTokenForUser(user);
+        }
 
         const token = generateToken(user.uniqueId);
 
@@ -95,7 +92,6 @@ class RegistrationService implements IRegistrationService {
         return this.notificationService.sendNotification(requestActivationNotification);
     }
 
-    // TODO Too many parameters. Reduce
     private createRequestActivationNotification(user: IUser, recoveryData: IRecoveryData, activationToken: IUserToken) {
         return {
             type: NotificationType.REQUEST_ACTIVATION,
@@ -113,14 +109,6 @@ class RegistrationService implements IRegistrationService {
                 email: user.email
             }
         };
-    }
-    // TODO: Is this method neccessary?
-    private async deleteOldTokensForUser(user: IUser): Promise<boolean> {
-        const hasOldToken = await this.tokenRepository.hasTokenForUser(user);
-        if (hasOldToken) {
-            return this.tokenRepository.deleteTokenForUser(user);
-        }
-        return true;
     }
 }
 

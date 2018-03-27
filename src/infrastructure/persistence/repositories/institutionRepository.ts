@@ -10,9 +10,7 @@ class InstitutionRepository implements IInstitutionRepository {
     findById(id: string): Promise<IInstitution | null> {
         return this.baseRepo.findById(id).then(
             m => {
-                if (!m) {
-                    throw new Error(`Institution not found, id=${id}`);
-                }
+                if (!m) return null;
                 return mapModelToInstitution(m);
             }
         );

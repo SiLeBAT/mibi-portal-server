@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import { ApplicationDomainError } from '../../sharedKernel/errors';
 
 interface IValidationErrorProvider {
     getError(id: string): IValidationError;
@@ -331,7 +332,7 @@ class ValidationErrorProvider implements IValidationErrorProvider {
     getError(id: string): IValidationError {
         const error = _.find(this.errors, e => e.id === id);
         if (!error) {
-            throw new Error(`Error code not found, id=${id}`);
+            throw new ApplicationDomainError(`Error code not found, id=${id}`);
         }
         return error;
     }

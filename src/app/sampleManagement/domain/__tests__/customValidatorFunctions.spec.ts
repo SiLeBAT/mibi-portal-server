@@ -99,7 +99,7 @@ describe('Custom Validator Functions', () => {
                 field: 'operations_mode_adv',
                 regex: '^4'
             }, 'process_state_adv', differentSample);
-            expect(error).toBe(validationError);
+            expect(error).toEqual(validationError);
         });
 
         it('should validate without errors', () => {
@@ -156,7 +156,7 @@ describe('Custom Validator Functions', () => {
                 message: validationError,
                 additionalMembers: ['comment']
             }, 'vvvo', testSample);
-            expect(error).toBe(validationError);
+            expect(error).toEqual(validationError);
         });
     });
 
@@ -250,7 +250,7 @@ describe('Custom Validator Functions', () => {
                     message: validationError,
                     latest: 'isolation_date'
                 }, 'sampling_date', oldSample);
-                expect(error).toBe(validationError);
+                expect(error).toEqual(validationError);
             });
         });
 
@@ -342,7 +342,7 @@ describe('Custom Validator Functions', () => {
                     message: validationError,
                     earliest: 'sampling_date'
                 }, 'isolation_date', oldSample);
-                expect(error).toBe(validationError);
+                expect(error).toEqual(validationError);
             });
         });
 
@@ -377,7 +377,7 @@ describe('Custom Validator Functions', () => {
                     unit: 'year'
                 }
             }, 'sampling_date', oldSample);
-            expect(error).toBe(validationError);
+            expect(error).toEqual(validationError);
         });
 
         it('should not validate', () => {
@@ -411,7 +411,7 @@ describe('Custom Validator Functions', () => {
                     unit: 'year'
                 }
             }, 'sampling_date', oldSample);
-            expect(error).toBe(validationError);
+            expect(error).toEqual(validationError);
         });
     });
 
@@ -466,7 +466,7 @@ describe('Custom Validator Functions', () => {
                 message: validationError,
                 additionalMembers: ['pathogen_text']
             }, 'pathogen_adv', differentSample);
-            expect(error).toBe(validationError);
+            expect(error).toEqual(validationError);
         });
     });
 
@@ -582,9 +582,123 @@ describe('Custom Validator Functions', () => {
             const error = nonUniqueEntry(mockCatalogService)(testSample.matrix_adv, {
                 message: validationError,
                 catalog: 'adv3',
-                key: 'Kode'
+                key: 'Kode',
+                differentiator: ['Kodiersystem', 'topic_adv']
             }, 'matrix_adv', testSample);
             expect(error).toBe(null);
+        });
+
+        it('should validate without errors because topic makes entry unique', () => {
+
+            // tslint:disable-next-line
+            const mockCatalog: ICatalog<any> = {
+                getEntriesWithKeyValue: (key: string, value: string) => ([
+                    {
+                        Kodiersystem: '01',
+                        Kode: '020301',
+                        Text1: 'Test1'
+                    },
+                    {
+                        Kodiersystem: '15',
+                        Kode: '020301',
+                        Text1: 'Test2'
+                    }
+                ]),
+                getEntryWithId: (id: string) => ({}),
+                containsEntryWithId: (id: string) => true,
+                containsEntryWithKeyValue: (key: string, value: string) => true,
+                hasUniqueId: () => true,
+                getUniqueId: () => '',
+                dump: () => []
+            };
+            const mockCatalogService: ICatalogService = {
+                getCatalog: () => mockCatalog
+            };
+            const error = nonUniqueEntry(mockCatalogService)(testSample.matrix_adv, {
+                message: validationError,
+                catalog: 'adv3',
+                key: 'Kode',
+                differentiator: ['Kodiersystem', 'topic_adv']
+            }, 'matrix_adv', testSample);
+            expect(error).toEqual(null);
+        });
+
+        it('should not validate without errors because topic does not differentiate', () => {
+
+            testSample.topic_adv = '12';
+
+            // tslint:disable-next-line
+            const mockCatalog: ICatalog<any> = {
+                getEntriesWithKeyValue: (key: string, value: string) => ([
+                    {
+                        Kodiersystem: '01',
+                        Kode: '020301',
+                        Text1: 'Test1'
+                    },
+                    {
+                        Kodiersystem: '15',
+                        Kode: '020301',
+                        Text1: 'Test2'
+                    }
+                ]),
+                getEntryWithId: (id: string) => ({}),
+                containsEntryWithId: (id: string) => true,
+                containsEntryWithKeyValue: (key: string, value: string) => true,
+                hasUniqueId: () => true,
+                getUniqueId: () => '',
+                dump: () => []
+            };
+            const mockCatalogService: ICatalogService = {
+                getCatalog: () => mockCatalog
+            };
+            const error = nonUniqueEntry(mockCatalogService)(testSample.matrix_adv, {
+                message: validationError,
+                catalog: 'adv3',
+                key: 'Kode',
+                differentiator: ['Kodiersystem', 'topic_adv']
+            }, 'matrix_adv', testSample);
+            const amendedError = { ...validationError };
+            amendedError.message = amendedError.message + ' Entweder \'01\' für \'Test1\' oder \'15\' für \'Test2\'.';
+            expect(error).toEqual(amendedError);
+        });
+
+        it('should not validate without errors because of missing Topic', () => {
+
+            testSample.topic_adv = '';
+
+            // tslint:disable-next-line
+            const mockCatalog: ICatalog<any> = {
+                getEntriesWithKeyValue: (key: string, value: string) => ([
+                    {
+                        Kodiersystem: '01',
+                        Kode: '020301',
+                        Text1: 'Test1'
+                    },
+                    {
+                        Kodiersystem: '15',
+                        Kode: '020301',
+                        Text1: 'Test2'
+                    }
+                ]),
+                getEntryWithId: (id: string) => ({}),
+                containsEntryWithId: (id: string) => true,
+                containsEntryWithKeyValue: (key: string, value: string) => true,
+                hasUniqueId: () => true,
+                getUniqueId: () => '',
+                dump: () => []
+            };
+            const mockCatalogService: ICatalogService = {
+                getCatalog: () => mockCatalog
+            };
+            const error = nonUniqueEntry(mockCatalogService)(testSample.matrix_adv, {
+                message: validationError,
+                catalog: 'adv3',
+                key: 'Kode',
+                differentiator: ['Kodiersystem', 'topic_adv']
+            }, 'matrix_adv', testSample);
+            const amendedError = { ...validationError };
+            amendedError.message = amendedError.message + ' Entweder \'01\' für \'Test1\' oder \'15\' für \'Test2\'.';
+            expect(error).toEqual(amendedError);
         });
     });
 
