@@ -161,6 +161,193 @@ describe('Custom Validator Functions', () => {
     });
 
     describe('referenceDate', () => {
+
+        describe('latest', () => {
+            it('should validate because Isolation happened on same day as sampling', () => {
+                const oldSample = {
+                    sample_id: '1',
+                    sample_id_avv: '1-ABC',
+                    pathogen_adv: 'Escherichia coli',
+                    pathogen_text: '',
+                    sampling_date: '01.02.2016',
+                    isolation_date: '01.02.2016',
+                    sampling_location_adv: '11000000',
+                    sampling_location_zip: '10787',
+                    sampling_location_text: 'Berlin',
+                    topic_adv: '01',
+                    matrix_adv: '063502',
+                    matrix_text: 'Hähnchen auch tiefgefroren',
+                    process_state_adv: '999',
+                    sampling_reason_adv: '10',
+                    sampling_reason_text: 'Planprobe',
+                    operations_mode_adv: '4010000',
+                    operations_mode_text: 'Lebensmitteleinzelhandel',
+                    vvvo: '',
+                    comment: ''
+                };
+
+                const error = referenceDate(oldSample.sampling_date, {
+                    message: validationError,
+                    latest: 'isolation_date'
+                }, 'sampling_date', oldSample);
+                expect(error).toBe(null);
+            });
+
+            it('should validate because isolation happened after sampling', () => {
+                const oldSample = {
+                    sample_id: '1',
+                    sample_id_avv: '1-ABC',
+                    pathogen_adv: 'Escherichia coli',
+                    pathogen_text: '',
+                    sampling_date: '01.02.2016',
+                    isolation_date: '01.03.2016',
+                    sampling_location_adv: '11000000',
+                    sampling_location_zip: '10787',
+                    sampling_location_text: 'Berlin',
+                    topic_adv: '01',
+                    matrix_adv: '063502',
+                    matrix_text: 'Hähnchen auch tiefgefroren',
+                    process_state_adv: '999',
+                    sampling_reason_adv: '10',
+                    sampling_reason_text: 'Planprobe',
+                    operations_mode_adv: '4010000',
+                    operations_mode_text: 'Lebensmitteleinzelhandel',
+                    vvvo: '',
+                    comment: ''
+                };
+
+                const error = referenceDate(oldSample.sampling_date, {
+                    message: validationError,
+                    latest: 'isolation_date'
+                }, 'sampling_date', oldSample);
+                expect(error).toBe(null);
+            });
+
+            it('should not validate because Isolation happened before sampling', () => {
+                const oldSample = {
+                    sample_id: '1',
+                    sample_id_avv: '1-ABC',
+                    pathogen_adv: 'Escherichia coli',
+                    pathogen_text: '',
+                    sampling_date: '01.02.2016',
+                    isolation_date: '01.01.2016',
+                    sampling_location_adv: '11000000',
+                    sampling_location_zip: '10787',
+                    sampling_location_text: 'Berlin',
+                    topic_adv: '01',
+                    matrix_adv: '063502',
+                    matrix_text: 'Hähnchen auch tiefgefroren',
+                    process_state_adv: '999',
+                    sampling_reason_adv: '10',
+                    sampling_reason_text: 'Planprobe',
+                    operations_mode_adv: '4010000',
+                    operations_mode_text: 'Lebensmitteleinzelhandel',
+                    vvvo: '',
+                    comment: ''
+                };
+
+                const error = referenceDate(oldSample.sampling_date, {
+                    message: validationError,
+                    latest: 'isolation_date'
+                }, 'sampling_date', oldSample);
+                expect(error).toBe(validationError);
+            });
+        });
+
+        describe('earliest', () => {
+            it('should validate because sampling happened before isolation', () => {
+                const oldSample = {
+                    sample_id: '1',
+                    sample_id_avv: '1-ABC',
+                    pathogen_adv: 'Escherichia coli',
+                    pathogen_text: '',
+                    sampling_date: '01.02.2016',
+                    isolation_date: '01.03.2016',
+                    sampling_location_adv: '11000000',
+                    sampling_location_zip: '10787',
+                    sampling_location_text: 'Berlin',
+                    topic_adv: '01',
+                    matrix_adv: '063502',
+                    matrix_text: 'Hähnchen auch tiefgefroren',
+                    process_state_adv: '999',
+                    sampling_reason_adv: '10',
+                    sampling_reason_text: 'Planprobe',
+                    operations_mode_adv: '4010000',
+                    operations_mode_text: 'Lebensmitteleinzelhandel',
+                    vvvo: '',
+                    comment: ''
+                };
+
+                const error = referenceDate(oldSample.isolation_date, {
+                    message: validationError,
+                    earliest: 'sampling_date'
+                }, 'isolation_date', oldSample);
+                expect(error).toBe(null);
+            });
+
+            it('should validate because sampling happened on same day as isolation', () => {
+                const oldSample = {
+                    sample_id: '1',
+                    sample_id_avv: '1-ABC',
+                    pathogen_adv: 'Escherichia coli',
+                    pathogen_text: '',
+                    sampling_date: '01.02.2016',
+                    isolation_date: '01.02.2016',
+                    sampling_location_adv: '11000000',
+                    sampling_location_zip: '10787',
+                    sampling_location_text: 'Berlin',
+                    topic_adv: '01',
+                    matrix_adv: '063502',
+                    matrix_text: 'Hähnchen auch tiefgefroren',
+                    process_state_adv: '999',
+                    sampling_reason_adv: '10',
+                    sampling_reason_text: 'Planprobe',
+                    operations_mode_adv: '4010000',
+                    operations_mode_text: 'Lebensmitteleinzelhandel',
+                    vvvo: '',
+                    comment: ''
+                };
+
+                const error = referenceDate(oldSample.isolation_date, {
+                    message: validationError,
+                    earliest: 'sampling_date'
+                }, 'isolation_date', oldSample);
+                expect(error).toBe(null);
+            });
+
+            it('should not validate because sampling happened after isolation', () => {
+                const oldSample = {
+                    sample_id: '1',
+                    sample_id_avv: '1-ABC',
+                    pathogen_adv: 'Escherichia coli',
+                    pathogen_text: '',
+                    sampling_date: '01.02.2016',
+                    isolation_date: '01.01.2016',
+                    sampling_location_adv: '11000000',
+                    sampling_location_zip: '10787',
+                    sampling_location_text: 'Berlin',
+                    topic_adv: '01',
+                    matrix_adv: '063502',
+                    matrix_text: 'Hähnchen auch tiefgefroren',
+                    process_state_adv: '999',
+                    sampling_reason_adv: '10',
+                    sampling_reason_text: 'Planprobe',
+                    operations_mode_adv: '4010000',
+                    operations_mode_text: 'Lebensmitteleinzelhandel',
+                    vvvo: '',
+                    comment: ''
+                };
+
+                const error = referenceDate(oldSample.isolation_date, {
+                    message: validationError,
+                    earliest: 'sampling_date'
+                }, 'isolation_date', oldSample);
+                expect(error).toBe(validationError);
+            });
+        });
+
+
+
         it('should not validate', () => {
             const oldSample = {
                 sample_id: '1',
