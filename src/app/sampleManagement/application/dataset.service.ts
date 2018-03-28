@@ -1,7 +1,6 @@
 import * as config from 'config';
 import { IDatasetFile } from '..';
 import { INotificationService } from '../../sharedKernel/application';
-import { logger } from '../../../aspects';
 import { NotificationType } from '../../sharedKernel/domain/enums';
 
 // TODO: Should these be here?  Should they not be added later?

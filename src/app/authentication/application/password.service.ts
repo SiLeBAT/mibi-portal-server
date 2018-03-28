@@ -48,7 +48,9 @@ class PasswordService implements IPasswordService {
 
     async resetPassword(token: string, password: string): Promise<void> {
 
-        const { userId } = await this.tokenRepository.getUserTokenByJWT(token);
+        const userToken = await this.tokenRepository.getUserTokenByJWT(token);
+        if (!userToken) throw new ApplicationDomainError(`No UserToken for JWT Token. token=${token}`);
+        const userId = userToken.userId;
         verifyToken(token, String(userId));
         const user = await this.userRepository.findById(userId);
         if (!user) throw new ApplicationDomainError(`Unknown user. id=${userId}`);

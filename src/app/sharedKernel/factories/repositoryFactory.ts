@@ -1,4 +1,5 @@
 import { userRepository, tokenRepository, institutionRepository, catalogRepository } from './../../../infrastructure/persistence/repositories';
+import { ApplicationSystemError } from '../errors';
 
 export enum RepositoryType {
     USER, TOKEN, INSTITUTION, CATALOG
@@ -20,7 +21,7 @@ export class RepositoryFactory implements IRepositoryFactory {
             case RepositoryType.CATALOG:
                 return catalogRepository;
             default:
-                throw new Error(`Unknown repositoryName, repositoryName=${repositoryName}`);
+                throw new ApplicationSystemError(`Unknown repositoryName, repositoryName=${repositoryName}`);
         }
     }
 }

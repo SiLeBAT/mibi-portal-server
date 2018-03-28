@@ -24,12 +24,10 @@ class TokenRepository implements ITokenRepository {
             res => newToken
         );
     }
-    getUserTokenByJWT(token: string): Promise<IUserToken> {
+    getUserTokenByJWT(token: string): Promise<IUserToken | null> {
         return this.baseRepo.findOne({ token: token }).then(
             model => {
-                if (!model) {
-                    throw new Error(`Token not found, token=${token}`);
-                }
+                if (!model) return null;
                 return {
                     token: model.token,
                     type: model.type,

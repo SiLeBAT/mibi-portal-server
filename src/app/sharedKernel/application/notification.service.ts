@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import { NotificationType } from './../domain';
+import { NotificationType } from '..';
 
 // TODO: move this interface elsewhere
 export interface IRecoveryData {

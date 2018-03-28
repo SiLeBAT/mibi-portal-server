@@ -331,7 +331,8 @@ const standardConstrainst: IValidationConstraints = {
         nonUniqueEntry: {
             message: vep.getError('70'),
             catalog: 'adv3',
-            key: 'Kode'
+            key: 'Kode',
+            differentiator: ['Kodiersystem', 'topic_adv']
         }
     },
     matrix_text: {
@@ -423,13 +424,13 @@ const standardConstrainst: IValidationConstraints = {
 function getConstraints(set: ConstraintSet) {
     switch (set) {
         case ConstraintSet.ZOMO:
-            const c: IValidationConstraints = { ...standardConstrainst };
-            _.forEach(c, (value: IValidationRuleSet, key) => {
+            const standardConstraintClone: IValidationConstraints = { ...standardConstrainst };
+            _.forEach(standardConstraintClone, (value: IValidationRuleSet, key) => {
                 if (zoMoConstraints.hasOwnProperty(key)) {
-                    c[key] = { ...value, ...zoMoConstraints[key] };
+                    standardConstraintClone[key] = { ...value, ...zoMoConstraints[key] };
                 }
             });
-            return c;
+            return standardConstraintClone;
         case ConstraintSet.STANDARD:
         default:
             return standardConstrainst;
