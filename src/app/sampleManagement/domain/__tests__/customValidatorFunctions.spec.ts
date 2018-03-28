@@ -725,6 +725,29 @@ describe('Custom Validator Functions', () => {
             }, 'matrix_adv', testSample);
             expect(error).toBe(null);
         });
+        it('should not validate because entry 62 is not in ADV12', () => {
+
+            testSample.process_state_adv = '62';
+            // tslint:disable-next-line
+            const mockCatalog: ICatalog<any> = {
+                getEntriesWithKeyValue: (key: string, value: string) => ([]),
+                getEntryWithId: (id: string) => ({}),
+                containsEntryWithId: (id: string) => true,
+                containsEntryWithKeyValue: (key: string, value: string) => false,
+                hasUniqueId: () => true,
+                getUniqueId: () => '',
+                dump: () => []
+            };
+            const mockCatalogService: ICatalogService = {
+                getCatalog: () => mockCatalog
+            };
+            const error = inCatalog(mockCatalogService)(testSample.process_state_adv, {
+                message: validationError,
+                catalog: 'adv12',
+                key: 'Kode'
+            }, 'process_state_adv', testSample);
+            expect(error).toEqual(validationError);
+        });
     });
 
 });
