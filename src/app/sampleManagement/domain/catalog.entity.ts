@@ -35,12 +35,11 @@ export class Catalog<T> implements ICatalog<T> {
 
     getEntriesWithKeyValue(key: string, value: string): T[] {
         // tslint:disable-next-line
-        const result = _.filter(this.data, (e: any) => e[key] === value);
-        return result;
+        return  _.filter(this.data, (e: any) => e[key] === value);
     }
 
     getEntryWithId(id: string): T {
-        if (!this.hasUniqueId) {
+        if (!this.hasUniqueId()) {
             throw new ApplicationDomainError(`Invalid Operation: No Unique Id defined for this Catalog id=${id}`);
         }
         return this.getEntriesWithKeyValue(this.uId, id)[0];
