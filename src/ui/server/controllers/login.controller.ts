@@ -45,7 +45,7 @@ class LoginController implements ILoginController {
     // FIXME: Do we really need to return all of this information?
     private fromLoginResponseToResponseDTO(response: ILoginResponse): ILoginResponseDTO {
         return {
-            title: 'Login successful',
+            title: 'Anmeldung erfolgreich', // 'Login successful',
             obj: {
                 _id: response.user.uniqueId,
                 firstName: response.user.firstName,

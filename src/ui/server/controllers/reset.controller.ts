@@ -16,7 +16,7 @@ class ResetController implements IResetController {
         try {
             await this.passwordService.resetPassword(req.params.token, req.body.newPw);
             dto = {
-                title: 'Please login with your new password'
+                title: 'Bitte melden Sie sich mit Ihrem neuen Passwort an' // 'Please login with your new password'
             };
             res.status(200);
 

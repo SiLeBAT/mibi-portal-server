@@ -16,7 +16,7 @@ class RegistrationController implements IRegistrationController {
         try {
             await this.registrationService.activateUser(req.params.token);
             dto = {
-                title: 'Account Activation successful!'
+                title: 'Kontoaktivierung erfolgreich!' // 'Account Activation successful!'
             };
             res.status(200);
         } catch (err) {
@@ -36,7 +36,7 @@ class RegistrationController implements IRegistrationController {
         try {
             await this.registrationService.registerUser(credentials);
             dto = {
-                title: `Please activate your account: An email has been sent to ${credentials.email} with further instructions`
+                title: `Bitte aktivieren Sie Ihren Account: Eine Email mit weiteren Anweisungen wurde an ${credentials.email} gesendet` // `Please activate your account: An email has been sent to ${credentials.email} with further instructions`
             };
             res.status(200);
 
