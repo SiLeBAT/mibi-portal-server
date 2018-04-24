@@ -23,7 +23,7 @@ class RecoveryController implements IRecoveryController {
                 userAgent: req.headers['user-agent'] as string
             });
             dto = {
-                title: `An email has been sent to ${body.email} with further instructions`
+                title: `Eine Email mit weiteren Anweisungen wurde an ${body.email} gesendet` // `An email has been sent to ${body.email} with further instructions`
             };
             res.status(200);
         } catch (err) {
