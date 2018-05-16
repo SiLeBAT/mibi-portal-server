@@ -37,7 +37,8 @@ export {
     createSampleCollection,
     ICatalog,
     Catalog,
-    IDatasetFile,
+	IDatasetFile,
+	ISenderInfo,
     IDatasetPort
 } from './sampleManagement';
 

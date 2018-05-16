@@ -1,5 +1,5 @@
 import * as config from 'config';
-import { IDatasetFile } from '..';
+import { IDatasetFile, ISenderInfo } from '..';
 import { INotificationService } from '../../sharedKernel/application';
 import { NotificationType } from '../../sharedKernel/domain/enums';
 
@@ -8,7 +8,7 @@ const APP_NAME = config.get('appName');
 const JOB_RECIPIENT = config.get('jobRecipient');
 
 export interface IDatasetPort {
-    sendDatasetFile(dataset: IDatasetFile): void;
+    sendDatasetFile(dataset: IDatasetFile, senderInfo: ISenderInfo): void;
 }
 
 export interface IDatasetService extends IDatasetPort { }
@@ -17,17 +17,22 @@ class DatasetService implements IDatasetService {
 
     constructor(private notificationService: INotificationService) { }
 
-    sendDatasetFile(dataset: IDatasetFile): void {
-        const newDatasetNotification = this.createNewDatasetNotification(dataset);
+    sendDatasetFile(dataset: IDatasetFile, senderInfo: ISenderInfo): void {
+        const newDatasetNotification = this.createNewDatasetNotification(dataset, senderInfo);
         return this.notificationService.sendNotification(newDatasetNotification);
     }
 
-    private createNewDatasetNotification(dataset: IDatasetFile) {
+    private createNewDatasetNotification(dataset: IDatasetFile, senderInfo: ISenderInfo) {
         return {
             type: NotificationType.REQUEST_JOB,
             title: `Neuer Auftrag`,
             payload: {
-                'appName': APP_NAME
+                'appName': APP_NAME,
+                'firstName': senderInfo.firstName,
+                'lastName': senderInfo.lastName,
+                'email': senderInfo.email,
+                'institution': senderInfo.institution,
+                'location': senderInfo.location
             },
             meta: {
                 email: JOB_RECIPIENT,
