@@ -413,9 +413,14 @@
                     <td class="content-cell">
                       <h1>Dear Sir/Madame,</h1>
                       <p>Please process the attached job.</p>
+					  <p>Sender:</p>
+				      <p>{{ firstName }} {{ lastName }}<br>
+					     {{ email }}<br>
+					     {{ institution }}<br>
+					     {{ location }}</p>
                       <br>
-                                            <p>
-                        <br>The {{ appName }} Team</p>
+                      <br>
+                      <p>The {{ appName }} Team</p>
                       <!-- Sub copy -->
                     </td>
                   </tr>
@@ -427,7 +432,7 @@
                 <table class="email-footer" align="center" width="570" cellpadding="0" cellspacing="0">
                   <tr>
                     <td class="content-cell" align="center">
-                      <p class="sub align-center">&copy; 2017 {{ appName }}. All rights reserved.</p>
+                      <p class="sub align-center">&copy; 2018 {{ appName }}. All rights reserved.</p>
                       <p class="sub align-center">
                         BfR - Bundesinstitut für Risikobewertung
                         <br>Max-Dohrn-Str. 8-10

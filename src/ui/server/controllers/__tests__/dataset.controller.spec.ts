@@ -30,7 +30,11 @@ describe('Dataset controller', () => {
     });
     it('should be return a 500 response', () => {
         mockDatasetService.sendDatasetFile = jest.fn(() => { throw new Error(); });
-        const req = new mockReq();
+        const req = new mockReq({
+            body: {
+                firstName: 'test'
+            }
+        });
         req.file = true;
         const res = new mockRes();
         expect.assertions(1);
@@ -39,7 +43,11 @@ describe('Dataset controller', () => {
         );
     });
     it('should be return a 200 response', () => {
-        const req = new mockReq();
+        const req = new mockReq({
+            body: {
+                firstName: 'test'
+            }
+        });
         req.file = true;
         const res = new mockRes();
         expect.assertions(1);

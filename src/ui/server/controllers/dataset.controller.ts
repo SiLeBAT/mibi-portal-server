@@ -1,5 +1,6 @@
 import { Response, Request } from 'express';
-import { IController, IDatasetFile, IDatasetPort } from '../../../app/ports';
+import * as _ from 'lodash';
+import { IController, IDatasetFile, IDatasetPort, ISenderInfo } from '../../../app/ports';
 import { uploadToDisk } from './../middleware';
 import { logger } from '../../../aspects';
 import { IValidationController } from '.';
@@ -30,7 +31,9 @@ class DatasetController implements IDatasetController {
 
     async submitDataset(req: Request, res: Response) {
         const service = this.datasetService;
+
         uploadToMemory(req, res, function (err: Error) {
+
             if (err) {
                 logger.error('Unable to submit Dataset', { error: err });
                 return res
@@ -46,15 +49,28 @@ class DatasetController implements IDatasetController {
                     })
                     .end();
             }
+            if (!_.has(req.body, 'firstName')) {
+                logger.warn(`No sender data uploaded.`);
+                return res
+                    .status(400)
+                    .json({
+                        error: 'No sender data supplied.'
+                    })
+                    .end();
+            }
+
             const file = mapResponseFileToDatasetFile(req.file);
+            const senderInfo = mapRequestDTOToSenderInfo(req);
+
             try {
-                service.sendDatasetFile(file);
+                service.sendDatasetFile(file, senderInfo);
             } catch (err) {
                 logger.error(`Unable to send dataset.`, { error: err });
                 return res.status(500).json({
                     error: 'Unable to send dataset.'
                 }).end();
             }
+
             return res.status(200).end();
         });
     }
@@ -67,6 +83,16 @@ function mapResponseFileToDatasetFile(file: Express.Multer.File): IDatasetFile {
         mimetype: file.mimetype,
         originalname: file.originalname,
         size: file.size
+    };
+}
+
+function mapRequestDTOToSenderInfo(req: Request): ISenderInfo {
+    return {
+ 		firstName: req.body['firstName'],
+ 	    lastName: req.body['lastName'],
+	    email: req.body['email'],
+        institution: req.body['institution'],
+        location: req.body['location']
     };
 }
 
