@@ -17,6 +17,7 @@ interface IMailConfig {
 
 interface IMailOptions {
     to: string;
+    cc: string[];
     subject: string;
     // tslint:disable-next-line
     attachments: any[];
@@ -56,6 +57,7 @@ function registerListeners(notificationService: INotificationPort) {
         if (templateFile) {
             sendMail(data.payload, templateFile.toString('utf-8'), {
                 to: data.meta.email,
+                cc: data.meta.cc ? data.meta.cc : [],
                 subject: data.title,
                 attachments: data.meta.attachments ? data.meta.attachments.map(mapDataFile) : []
             });

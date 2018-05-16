@@ -36,6 +36,7 @@ class DatasetService implements IDatasetService {
             },
             meta: {
                 email: JOB_RECIPIENT,
+                cc: [senderInfo.email],
                 attachments: [dataset]
             }
         };
