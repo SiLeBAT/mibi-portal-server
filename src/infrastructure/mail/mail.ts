@@ -51,8 +51,11 @@ function registerListeners(notificationService: INotificationPort) {
             case NotificationType.REQUEST_JOB:
                 templateFile = await readFilePromise(viewsDir + 'jobnotification.html');
                 break;
+            case NotificationType.REQUEST_ADMIN_ACTIVATION:
+                templateFile = await readFilePromise(viewsDir + 'adminactivation.html');
+                break;
             default:
-                logger.warn('Unknow notification type', { notification: data });
+                logger.warn('Unknown notification type', { notification: data });
         }
         if (templateFile) {
             sendMail(data.payload, templateFile.toString('utf-8'), {

@@ -28,6 +28,7 @@ export interface IUser extends IUserBase {
     isAuthorized(credentials: IUserCredentials): Promise<boolean>;
     updatePassword(password: string): Promise<string>;
     isActivated(active?: boolean): boolean;
+    isAdminActivated(active?: boolean): boolean;
 }
 
 class GenericUser implements IUser {
@@ -37,7 +38,7 @@ class GenericUser implements IUser {
     email: string;
     institution: IInstitution;
 
-    constructor(id: string, email: string, fname: string, lname: string, inst: IInstitution, private _password: string, private enabled: boolean) {
+    constructor(id: string, email: string, fname: string, lname: string, inst: IInstitution, private _password: string, private enabled: boolean, private adminEnabled: boolean) {
         this.uniqueId = id;
         this.email = email;
         this.firstName = fname;
@@ -54,6 +55,13 @@ class GenericUser implements IUser {
             this.enabled = !!active;
         }
         return this.enabled;
+    }
+
+    isAdminActivated(active?: boolean) {
+        if (!isUndefined(active)) {
+            this.adminEnabled = !!active;
+        }
+        return this.adminEnabled;
     }
 
     isAuthorized(credentials: IUserCredentials): Promise<boolean> {
@@ -75,6 +83,6 @@ class GenericUser implements IUser {
     }
 }
 
-export function createUser(id: string, email: string, fname: string, lname: string, inst: IInstitution, password: string, enabled: boolean = false): IUser {
-    return new GenericUser(id, email, fname, lname, inst, password, enabled);
+export function createUser(id: string, email: string, fname: string, lname: string, inst: IInstitution, password: string, enabled: boolean = false, adminEnabled: boolean = false): IUser {
+    return new GenericUser(id, email, fname, lname, inst, password, enabled, adminEnabled);
 }

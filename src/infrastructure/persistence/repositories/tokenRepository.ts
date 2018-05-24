@@ -1,16 +1,31 @@
 import { createRepository, ResetTokenSchema, IResetTokenModel } from './../dataStore';
 import { IRepositoryBase, ITokenRepository, IUserToken, IUser } from './../../../app/ports';
+import { TokenType } from '../../../app/authentication/domain';
 
 class TokenRepository implements ITokenRepository {
     constructor(private baseRepo: IRepositoryBase<IResetTokenModel>) {
     }
     hasTokenForUser(user: IUser): Promise<boolean> {
-        return this.baseRepo.find({ user: user.uniqueId }, {}, {}).then(
-            docs => docs.length > 0
+        return this.baseRepo.find({ user: user.uniqueId, type: TokenType.ACTIVATE }, {}, {}).then(
+            (docs) => {
+                return docs.length > 0;
+            }
+        );
+    }
+    hasAdminTokenForUser(user: IUser): Promise<boolean> {
+        return this.baseRepo.find({ user: user.uniqueId, type: TokenType.ADMIN }, {}, {}).then(
+            (docs) => {
+                return docs.length > 0;
+            }
         );
     }
     deleteTokenForUser(user: IUser): Promise<boolean> {
-        return this.baseRepo.findOne({ user: user.uniqueId }).then(
+        return this.baseRepo.findOne({ user: user.uniqueId, type: TokenType.ACTIVATE }).then(
+            (token: IResetTokenModel) => !!this.baseRepo.delete(token._id)
+        );
+    }
+    deleteAdminTokenForUser(user: IUser): Promise<boolean> {
+        return this.baseRepo.findOne({ user: user.uniqueId, type: TokenType.ADMIN }).then(
             (token: IResetTokenModel) => !!this.baseRepo.delete(token._id)
         );
     }

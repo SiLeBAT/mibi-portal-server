@@ -20,7 +20,8 @@ describe('Login User Use Case', () => {
         }));
 
         mockActivationService = jest.fn(() => ({
-            prepareUserForActivation: jest.fn()
+            prepareUserForActivation: jest.fn(),
+            prepareUserForAdminActivation: jest.fn()
         }));
 
         service = createService(mockUserRepository, mockActivationService);
@@ -29,6 +30,7 @@ describe('Login User Use Case', () => {
     it('should return a promise', () => {
         mockUserRepository.findByUsername = jest.fn(() => ({
             isActivated: () => true,
+            isAdminActivated: () => true,
             isAuthorized: () => true
         }));
         const credentials = {
@@ -45,6 +47,7 @@ describe('Login User Use Case', () => {
 
         const mockUser = {
             isActivated: () => true,
+            isAdminActivated: () => true,
             isAuthorized: () => true
         };
         mockUserRepository.findByUsername = jest.fn(() => mockUser);
@@ -66,6 +69,7 @@ describe('Login User Use Case', () => {
 
         mockUserRepository.findByUsername = jest.fn(() => ({
             isActivated: () => true,
+            isAdminActivated: () => true,
             isAuthorized: () => false
         }));
 
@@ -90,10 +94,12 @@ describe('Login User Use Case', () => {
 
         mockUserRepository.findByUsername = jest.fn(() => ({
             isActivated: () => false,
+            isAdminActivated: () => true,
             isAuthorized: () => true
         }));
 
         mockActivationService.prepareUserForActivation = jest.fn(() => Promise.reject(true));
+        mockActivationService.prepareUserForAdminActivation = jest.fn(() => Promise.reject(true));
 
         const credentials = {
             email: 'test',
@@ -112,4 +118,63 @@ describe('Login User Use Case', () => {
             }
         );
     });
+
+    it('should be throw an error because user not activated by admin is faulty', () => {
+
+        mockUserRepository.findByUsername = jest.fn(() => ({
+            isActivated: () => true,
+            isAdminActivated: () => false,
+            isAuthorized: () => true
+        }));
+
+        mockActivationService.prepareUserForActivation = jest.fn(() => Promise.reject(true));
+        mockActivationService.prepareUserForAdminActivation = jest.fn(() => Promise.reject(true));
+
+        const credentials = {
+            email: 'test',
+            password: 'test',
+            userAgent: 'test',
+            host: 'test'
+        };
+        const result = service.loginUser(credentials);
+        expect.assertions(1);
+        return result.then(
+            data => {
+                return true;
+            },
+            err => {
+                return expect(err).toBeTruthy();
+            }
+        );
+    });
+
+    it('should be throw an error because inactive user and user not activated by admin is faulty', () => {
+
+        mockUserRepository.findByUsername = jest.fn(() => ({
+            isActivated: () => false,
+            isAdminActivated: () => false,
+            isAuthorized: () => true
+        }));
+
+        mockActivationService.prepareUserForActivation = jest.fn(() => Promise.reject(true));
+        mockActivationService.prepareUserForAdminActivation = jest.fn(() => Promise.reject(true));
+
+        const credentials = {
+            email: 'test',
+            password: 'test',
+            userAgent: 'test',
+            host: 'test'
+        };
+        const result = service.loginUser(credentials);
+        expect.assertions(1);
+        return result.then(
+            data => {
+                return true;
+            },
+            err => {
+                return expect(err).toBeTruthy();
+            }
+        );
+    });
+
 });

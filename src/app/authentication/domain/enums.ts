@@ -4,5 +4,5 @@ export enum LoginResult {
 }
 
 export enum TokenType {
-    RESET, ACTIVATE
+    RESET, ACTIVATE, ADMIN
 }

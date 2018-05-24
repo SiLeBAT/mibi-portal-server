@@ -13,11 +13,21 @@ function generateToken(id: string) {
     );
 }
 
+function generateAdminToken(id: string) {
+    return sign(
+        { sub: id,
+		  admin: true },
+        JWT_SECRET,
+        { expiresIn: EXPIRATION_TIME }
+    );
+}
+
 function verifyToken(token: string, id: string) {
     return verify(token, JWT_SECRET, { subject: id });
 }
 
 export {
-    generateToken,
+	generateToken,
+	generateAdminToken,
     verifyToken
 };

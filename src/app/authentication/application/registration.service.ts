@@ -1,7 +1,7 @@
 import * as config from 'config';
 import { IUserRepository, ITokenRepository, IInstitutionRepository } from '../../ports';
 import { logger } from '../../../aspects';
-import { IUser, createUser, TokenType, generateToken, verifyToken, IUserToken } from './../domain';
+import { IUser, createUser, TokenType, generateToken, generateAdminToken, verifyToken, IUserToken } from './../domain';
 import { IRecoveryData, INotificationService, NotificationType } from '../../sharedKernel/';
 import { ApplicationDomainError } from '../../sharedKernel/errors';
 
@@ -9,14 +9,17 @@ import { ApplicationDomainError } from '../../sharedKernel/errors';
 const APP_NAME = config.get('appName');
 const API_URL = config.get('server.apiUrl');
 const SUPPORT_CONTACT = config.get('supportContact');
+const JOB_RECIPIENT = config.get('jobRecipient');
 
 export interface IRegistrationPort {
     activateUser(token: string): Promise<void>;
+    adminActivateUser(token: string): Promise<string>;
     registerUser(credentials: IUserRegistration): Promise<void>;
 }
 
 export interface IRegistrationService extends IRegistrationPort {
     prepareUserForActivation(user: IUser, recoveryData: IRecoveryData): Promise<void>;
+    prepareUserForAdminActivation(user: IUser): Promise<void>;
 }
 
 // TODO: Fix or remove this interface
@@ -52,8 +55,22 @@ class RegistrationService implements IRegistrationService {
         return;
     }
 
-    async registerUser(credentials: IUserRegistration): Promise<void> {
+    async adminActivateUser(adminToken: string): Promise<string> {
+        const userAdminToken = await this.tokenRepository.getUserTokenByJWT(adminToken);
+        if (!userAdminToken) throw new ApplicationDomainError(`No UserAdminToken for JWT Token. token=${adminToken}`);
+        const userId = userAdminToken.userId;
+        verifyToken(adminToken, String(userId));
+        const user = await this.userRepository.findById(userId);
+        if (!user) throw new ApplicationDomainError(`Unknown user. id=${userId}`);
+        user.isAdminActivated(true);
+        await this.userRepository.updateUser(user);
+        await this.tokenRepository.deleteAdminTokenForUser(user);
+        logger.verbose('User admin activation successful');
+        const userName = user.firstName + ' ' + user.lastName;
+        return userName;
+    }
 
+    async registerUser(credentials: IUserRegistration): Promise<void> {
         const result = await this.userRepository.hasUser(credentials.email);
         if (result) throw new ApplicationDomainError(`Registration failed. User already exists, email=${credentials.email}`);
 
@@ -66,12 +83,16 @@ class RegistrationService implements IRegistrationService {
 
         await newUser.updatePassword(credentials.password);
         const user = await this.userRepository.createUser(newUser);
-
-        return this.prepareUserForActivation(user, {
+        const recoveryData: IRecoveryData = {
             userAgent: credentials.userAgent,
             email: user.email,
             host: credentials.host
-        });
+        };
+
+        await this.prepareUserForActivation(user, recoveryData);
+        const adminActivationResult = await this.prepareUserForAdminActivation(user);
+
+        return adminActivationResult;
     }
 
     async prepareUserForActivation(user: IUser, recoveryData: IRecoveryData): Promise<void> {
@@ -89,24 +110,65 @@ class RegistrationService implements IRegistrationService {
         });
 
         const requestActivationNotification = this.createRequestActivationNotification(user, recoveryData, activationToken);
+
         return this.notificationService.sendNotification(requestActivationNotification);
     }
 
+    async prepareUserForAdminActivation(user: IUser): Promise<void> {
+        const hasOldAdminToken = await this.tokenRepository.hasAdminTokenForUser(user);
+        if (hasOldAdminToken) {
+            await this.tokenRepository.deleteAdminTokenForUser(user);
+        }
+
+        const adminToken = generateAdminToken(user.uniqueId);
+
+        const adminActivationToken = await this.tokenRepository.saveToken({
+            token: adminToken,
+            type: TokenType.ADMIN,
+            userId: user.uniqueId
+        });
+
+        const requestAdminActivationNotification = this.createRequestAdminActivationNotification(user, adminActivationToken);
+
+        return this.notificationService.sendNotification(requestAdminActivationNotification);
+    }
+
     private createRequestActivationNotification(user: IUser, recoveryData: IRecoveryData, activationToken: IUserToken) {
+    	return {
+      		type: NotificationType.REQUEST_ACTIVATION,
+	        title: `Aktivieren Sie Ihr Konto für ${APP_NAME} `,// `Activate your account for ${APP_NAME}`;
+	        payload: {
+	            'name': user.firstName + ' ' + user.lastName,
+	            'action_url': API_URL + '/users/activate/' + activationToken.token,
+	            'api_url': API_URL,
+	            'operating_system': recoveryData.host,
+	            'user_agent': recoveryData.userAgent,
+	            'support_contact': SUPPORT_CONTACT,
+	            'appName': APP_NAME
+	        },
+	        meta: {
+	            email: user.email
+	        }
+	    };
+    }
+
+    private createRequestAdminActivationNotification(user: IUser, adminActivationToken: IUserToken) {
+        const fullName = user.firstName + ' ' + user.lastName;
+
         return {
-            type: NotificationType.REQUEST_ACTIVATION,
-            title: `Aktivieren Sie Ihr Konto für ${APP_NAME}`,// `Activate your account for ${APP_NAME}`;
+            type: NotificationType.REQUEST_ADMIN_ACTIVATION,
+            title: `Aktivieren Sie das ${APP_NAME} Konto für ${fullName}`,// `Activate your account for ${APP_NAME}`;
             payload: {
                 'name': user.firstName + ' ' + user.lastName,
-                'action_url': API_URL + '/users/activate/' + activationToken.token,
+                'action_url': API_URL + '/users/adminactivate/' + adminActivationToken.token,
                 'api_url': API_URL,
-                'operating_system': recoveryData.host,
-                'user_agent': recoveryData.userAgent,
-                'support_contact': SUPPORT_CONTACT,
+                'email': user.email,
+                'institution': user.institution.name1,
+                'location': user.institution.name2,
                 'appName': APP_NAME
             },
             meta: {
-                email: user.email
+                email: JOB_RECIPIENT
             }
         };
     }

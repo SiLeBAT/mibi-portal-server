@@ -425,9 +425,16 @@
                 <!-- Body content -->
                 <tr>
                   <td class="content-cell">
-                    <h1>Liebe(r) {{name}},</h1>
-                    <p>Sie haben sich für ein {{ appName }}-Konto registriert. Benutzen Sie den Link unten, um Ihr Konto zu
-                      aktivieren.
+                    <h1>Hallo {{ appName }} Admin,</h1>
+					<p>bitte registrieren Sie den User für ein {{ appName }}-Konto: </p>
+
+					<p> {{ name }}<br>
+						{{ email }}<br>
+						{{ institution }}<br>
+						{{ location }}</p>
+
+
+					<p>Benutzen Sie den Link unten, um das Konto zu aktivieren.
                       <strong>Dieser Aktivierungslink ist nur für die nächsten 24 Stunden gültig.
                       </strong>
                     </p>
@@ -443,7 +450,7 @@
                                 <table border="0" cellspacing="0" cellpadding="0">
                                   <tr>
                                     <td>
-                                      <a href="{{action_url}}" class="button button--green" target="_blank">Aktivieren Sie Ihr Konto</a>
+                                      <a href="{{action_url}}" class="button button--green" target="_blank">Aktivieren Sie das Userkonto</a>
                                     </td>
                                   </tr>
                                 </table>
@@ -454,12 +461,7 @@
                       </tr>
                     </table>
                     <p>
-                      Sicherheitsbezogen: Diese Anfrage wurde mit {{user_agent}} gesendet. Wenn Sie sich nicht
-                      für einen {{ appName }}-Account registriert haben, ignorieren Sie bitte diese E-Mail oder Kontaktieren
-                      Sie den <a href="mailto:{{support_contact}}">Support</a>, wenn Sie Fragen haben.
-                    </p>
-                    <p>
-                      <br>Das {{ appName }} Team</p>
+                      <br>Der {{ appName }} Registrierungsprozess</p>
                     <!-- Sub copy -->
                     <table class="body-sub">
                       <tr>

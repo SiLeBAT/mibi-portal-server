@@ -67,6 +67,7 @@ export interface IRepositoryBase<T> extends IRead<T>, IWrite<T> {
 export interface IUserModelAttributes extends IModelAttributes {
     _id?: string;
     enabled?: boolean;
+    adminEnabled?: boolean;
     firstName?: string;
     lastName?: string;
     email?: string;
@@ -81,7 +82,9 @@ export interface IInstitutionRepository {
 
 export interface ITokenRepository {
     hasTokenForUser(user: IUser): Promise<boolean>;
+    hasAdminTokenForUser(user: IUser): Promise<boolean>;
     deleteTokenForUser(user: IUser): Promise<boolean>;
+    deleteAdminTokenForUser(user: IUser): Promise<boolean>;
     saveToken(token: IUserToken): Promise<IUserToken>;
     getUserTokenByJWT(token: string): Promise<IUserToken | null>;
 }

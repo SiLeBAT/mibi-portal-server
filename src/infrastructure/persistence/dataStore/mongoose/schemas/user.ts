@@ -11,6 +11,7 @@ export interface IUserModel extends Document, IUserBase {
     _id: ObjectId;
     password: string;
     enabled: boolean;
+    adminEnabled: boolean;
     created: Date;
     updated: Date;
 }
@@ -34,6 +35,11 @@ export const userSchema = new Schema({
         required: true
     },
     enabled: {
+        type: Boolean,
+        default: false,
+        required: true
+    },
+    adminEnabled: {
         type: Boolean,
         default: false,
         required: true

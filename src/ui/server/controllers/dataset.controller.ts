@@ -87,12 +87,13 @@ function mapResponseFileToDatasetFile(file: Express.Multer.File): IDatasetFile {
 }
 
 function mapRequestDTOToSenderInfo(req: Request): ISenderInfo {
+    const body = req.body;
     return {
- 		firstName: req.body['firstName'],
- 	    lastName: req.body['lastName'],
-	    email: req.body['email'],
-        institution: req.body['institution'],
-        location: req.body['location']
+ 		firstName: body['firstName'],
+ 	    lastName: body['lastName'],
+	    email: body['email'],
+        institution: body['institution'],
+        location: body['location']
     };
 }
 

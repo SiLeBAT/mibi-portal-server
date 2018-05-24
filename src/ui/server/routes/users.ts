@@ -17,6 +17,8 @@ function getRouter(controllerFactory: IControllerFactory) {
     router.use('/reset', getBaseRouter(RouterType.RESET, controllerFactory));
     logger.verbose('Registering Route', { route: '/activate' });
     router.use('/activate', getBaseRouter(RouterType.ACTIVATE, controllerFactory));
+    logger.verbose('Registering Route', { route: '/adminactivate' });
+    router.use('/adminactivate', getBaseRouter(RouterType.ADMINACTIVATE, controllerFactory));
     return router;
 }
 
