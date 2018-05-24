@@ -32,7 +32,7 @@ class LoginService implements ILoginService {
 
         if (!user) throw new ApplicationDomainError(`User not known. email=${credentials.email}`);
 
-        if (!user.isActivated()) {
+        if (!user.isActivated() || !user.isAdminActivated()) {
 
             return this.rejectInactiveUser(user, {
                 userAgent: credentials.userAgent as string,

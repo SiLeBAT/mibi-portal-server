@@ -56,7 +56,7 @@ class UserRepository implements IUserRepository {
             password: user.password
         });
         return this.baseRepo.create(newUser).then(
-            model => createUser(model._id.toHexString(), user.email, user.firstName, user.lastName, user.institution, user.password, model.enabled)
+            model => createUser(model._id.toHexString(), user.email, user.firstName, user.lastName, user.institution, user.password, model.enabled, model.adminEnabled)
         );
     }
 
@@ -67,7 +67,8 @@ class UserRepository implements IUserRepository {
             lastName: user.lastName,
             email: user.email,
             password: user.password,
-            enabled: user.isActivated()
+            enabled: user.isActivated(),
+            adminEnabled: user.isAdminActivated()
         }).then(
             (response: IUserModelUpdateResponse) => {
                 if (!response.ok) return null;

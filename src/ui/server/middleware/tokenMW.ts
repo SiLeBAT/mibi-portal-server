@@ -14,6 +14,7 @@ function validateToken(secret: string) {
         '/users/recovery',
         /\/users\/reset\/*/,
         /\/users\/activate\/*/,
+        /\/users\/adminactivate\/*/,
         '/api/v1/upload',
         '/api/v1/validation',
         // FIXME

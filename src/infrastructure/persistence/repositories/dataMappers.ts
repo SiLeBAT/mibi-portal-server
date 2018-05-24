@@ -22,7 +22,7 @@ function mapModelToInstitution(i: IInstitutionModel): IInstitution {
 
 function mapModelToUser(model: IUserModel): IUser {
     const institution = mapModelToInstitution((model.institution as IInstitutionModel));
-    return createUser(model._id.toHexString(), model.email, model.firstName, model.lastName, institution, model.password, model.enabled);
+    return createUser(model._id.toHexString(), model.email, model.firstName, model.lastName, institution, model.password, model.enabled, model.adminEnabled);
 }
 
 export {

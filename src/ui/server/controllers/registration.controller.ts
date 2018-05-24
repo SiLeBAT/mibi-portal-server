@@ -28,6 +28,24 @@ class RegistrationController implements IRegistrationController {
         return res.json(dto).end();
     }
 
+    async adminactivate(req: Request, res: Response) {
+        let dto;
+        try {
+            const userName = await this.registrationService.adminActivateUser(req.params.token);
+            dto = {
+                title: 'Admin Kontoaktivierung erfolgreich!', // 'Account Activation successful!'
+                obj: userName
+            };
+            res.status(200);
+        } catch (err) {
+            logger.error('Unable to admin activate user', { error: err });
+            dto = {};
+            res.status(400);
+        }
+        logger.info('Response sent', dto);
+        return res.json(dto).end();
+    }
+
     async register(req: Request, res: Response) {
 
         const credentials = this.fromRequestToCredentials(req);
