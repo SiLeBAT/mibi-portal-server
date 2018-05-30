@@ -32,13 +32,19 @@ class LoginService implements ILoginService {
 
         if (!user) throw new ApplicationDomainError(`User not known. email=${credentials.email}`);
 
-        if (!user.isActivated() || !user.isAdminActivated()) {
+        if (!user.isActivated()) {
 
             return this.rejectInactiveUser(user, {
                 userAgent: credentials.userAgent as string,
                 email: user.email,
                 host: credentials.host as string
             });
+
+        }
+
+        if (!user.isAdminActivated()) {
+
+            return this.rejectAdminInactiveUser(user);
 
         }
 
@@ -60,6 +66,16 @@ class LoginService implements ILoginService {
             }
         );
     }
+
+    private async rejectAdminInactiveUser(user: IUser): Promise<ILoginResponse> {
+        logger.verbose('Admin inactive account failed to log in.');
+        return this.activationService.handleUserIfNotAdminActivated(user).then(
+            () => {
+                throw new ApplicationDomainError(`User admin inactive. user=${user.email}`);
+            }
+        );
+    }
+
 }
 
 export function createService(userRepository: IUserRepository, activationService: IRegistrationService): ILoginService {

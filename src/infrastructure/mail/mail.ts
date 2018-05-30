@@ -54,6 +54,15 @@ function registerListeners(notificationService: INotificationPort) {
             case NotificationType.REQUEST_ADMIN_ACTIVATION:
                 templateFile = await readFilePromise(viewsDir + 'adminactivation.html');
                 break;
+            case NotificationType.NOTIFICATION_ADMIN_ACTIVATION:
+                templateFile = await readFilePromise(viewsDir + 'adminactivationNotification.html');
+                break;
+            case NotificationType.NOTIFICATION_NOT_ADMIN_ACTIVATED:
+                templateFile = await readFilePromise(viewsDir + 'notAdminactivationNotification.html');
+                break;
+            case NotificationType.REMINDER_ADMIN_ACTIVATION:
+                templateFile = await readFilePromise(viewsDir + 'adminactivationReminder.html');
+                break;
             default:
                 logger.warn('Unknown notification type', { notification: data });
         }

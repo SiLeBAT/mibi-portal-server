@@ -20,6 +20,7 @@ export interface IRegistrationPort {
 export interface IRegistrationService extends IRegistrationPort {
     prepareUserForActivation(user: IUser, recoveryData: IRecoveryData): Promise<void>;
     prepareUserForAdminActivation(user: IUser): Promise<void>;
+    handleUserIfNotAdminActivated(user: IUser): Promise<void>;
 }
 
 // TODO: Fix or remove this interface
@@ -66,6 +67,10 @@ class RegistrationService implements IRegistrationService {
         await this.userRepository.updateUser(user);
         await this.tokenRepository.deleteAdminTokenForUser(user);
         logger.verbose('User admin activation successful');
+
+        const adminActivationNotification = this.createAdminActivationNotification(user);
+        this.notificationService.sendNotification(adminActivationNotification);
+
         const userName = user.firstName + ' ' + user.lastName;
         return userName;
     }
@@ -133,6 +138,17 @@ class RegistrationService implements IRegistrationService {
         return this.notificationService.sendNotification(requestAdminActivationNotification);
     }
 
+    async handleUserIfNotAdminActivated(user: IUser): Promise<void> {
+        const requestNotAdminActivatedNotification = this.createNotAdminActivatedNotification(user);
+        this.notificationService.sendNotification(requestNotAdminActivatedNotification);
+
+        const requestAdminActivationReminder = this.createAdminActivationReminder(user);
+
+        return this.notificationService.sendNotification(requestAdminActivationReminder);
+    }
+
+	// private
+
     private createRequestActivationNotification(user: IUser, recoveryData: IRecoveryData, activationToken: IUserToken) {
     	return {
       		type: NotificationType.REQUEST_ACTIVATION,
@@ -159,7 +175,7 @@ class RegistrationService implements IRegistrationService {
             type: NotificationType.REQUEST_ADMIN_ACTIVATION,
             title: `Aktivieren Sie das ${APP_NAME} Konto für ${fullName}`,// `Activate your account for ${APP_NAME}`;
             payload: {
-                'name': user.firstName + ' ' + user.lastName,
+                'name': fullName,
                 'action_url': API_URL + '/users/adminactivate/' + adminActivationToken.token,
                 'api_url': API_URL,
                 'email': user.email,
@@ -171,6 +187,57 @@ class RegistrationService implements IRegistrationService {
                 email: JOB_RECIPIENT
             }
         };
+    }
+
+    private createAdminActivationNotification(user: IUser) {
+	    const fullName = user.firstName + ' ' + user.lastName;
+
+	    return {
+	        type: NotificationType.NOTIFICATION_ADMIN_ACTIVATION,
+	        title: `Admin Aktivierung Ihres ${APP_NAME} Kontos`,
+	        payload: {
+	            'name': fullName,
+	            'appName': APP_NAME
+	        },
+	        meta: {
+	            email: user.email
+	        }
+	    };
+    }
+
+    private createNotAdminActivatedNotification(user: IUser) {
+	    const fullName = user.firstName + ' ' + user.lastName;
+
+	    return {
+	        type: NotificationType.NOTIFICATION_NOT_ADMIN_ACTIVATED,
+	        title: `Noch keine Admin Aktivierung Ihres ${APP_NAME} Kontos`,
+	        payload: {
+	            'name': fullName,
+	            'appName': APP_NAME
+	        },
+	        meta: {
+	            email: user.email
+	        }
+	    };
+    }
+
+    private createAdminActivationReminder(user: IUser) {
+	    const fullName = user.firstName + ' ' + user.lastName;
+
+	    return {
+	        type: NotificationType.REMINDER_ADMIN_ACTIVATION,
+	        title: `Erinnerung: Bitte aktivieren Sie das ${APP_NAME} Konto für ${fullName}`,
+	        payload: {
+	            'name': fullName,
+	            'email': user.email,
+	            'institution': user.institution.name1,
+	            'location': user.institution.name2,
+	            'appName': APP_NAME
+	        },
+	        meta: {
+	            email: JOB_RECIPIENT
+	        }
+	    };
     }
 }
 

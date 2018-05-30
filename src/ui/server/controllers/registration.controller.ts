@@ -33,7 +33,7 @@ class RegistrationController implements IRegistrationController {
         try {
             const userName = await this.registrationService.adminActivateUser(req.params.token);
             dto = {
-                title: 'Admin Kontoaktivierung erfolgreich!', // 'Account Activation successful!'
+                title: `Admin Kontoaktivierung erfolgreich! Bestätigung gesendet an ${userName}`, // 'Account Activation successful!'
                 obj: userName
             };
             res.status(200);
