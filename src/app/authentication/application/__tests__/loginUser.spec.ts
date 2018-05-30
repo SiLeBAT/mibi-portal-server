@@ -21,7 +21,8 @@ describe('Login User Use Case', () => {
 
         mockActivationService = jest.fn(() => ({
             prepareUserForActivation: jest.fn(),
-            prepareUserForAdminActivation: jest.fn()
+            prepareUserForAdminActivation: jest.fn(),
+            handleUserIfNotAdminActivated: jest.fn()
         }));
 
         service = createService(mockUserRepository, mockActivationService);
@@ -100,6 +101,7 @@ describe('Login User Use Case', () => {
 
         mockActivationService.prepareUserForActivation = jest.fn(() => Promise.reject(true));
         mockActivationService.prepareUserForAdminActivation = jest.fn(() => Promise.reject(true));
+        mockActivationService.handleUserIfNotAdminActivated = jest.fn(() => Promise.reject(true));
 
         const credentials = {
             email: 'test',
@@ -129,6 +131,7 @@ describe('Login User Use Case', () => {
 
         mockActivationService.prepareUserForActivation = jest.fn(() => Promise.reject(true));
         mockActivationService.prepareUserForAdminActivation = jest.fn(() => Promise.reject(true));
+        mockActivationService.handleUserIfNotAdminActivated = jest.fn(() => Promise.reject(true));
 
         const credentials = {
             email: 'test',
@@ -158,6 +161,7 @@ describe('Login User Use Case', () => {
 
         mockActivationService.prepareUserForActivation = jest.fn(() => Promise.reject(true));
         mockActivationService.prepareUserForAdminActivation = jest.fn(() => Promise.reject(true));
+        mockActivationService.handleUserIfNotAdminActivated = jest.fn(() => Promise.reject(true));
 
         const credentials = {
             email: 'test',

@@ -4,6 +4,9 @@ import { verifyToken, generateAdminToken } from '../../domain';
 jest.mock('./../../../sharedKernel', () => ({
     RepositoryType: {
         USER: 0
+    },
+    NotificationType: {
+        NOTIFICATION_ADMIN_ACTIVATION: 0
     }
 }));
 
@@ -104,6 +107,12 @@ describe('Admin activate User Use Case', () => {
         return service.adminActivateUser(token).then(
             result => expect(mockTokenRepository.deleteAdminTokenForUser.mock.calls.length).toBe(0),
             err => expect(err).toBeTruthy()
+        );
+    });
+    it('should trigger notification: sendNotification', () => {
+        expect.assertions(1);
+        return service.adminActivateUser(token).then(
+			result => expect(mockNotificationService.sendNotification.mock.calls.length).toBe(1)
         );
     });
 });

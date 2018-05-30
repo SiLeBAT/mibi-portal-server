@@ -425,55 +425,10 @@
                 <tr>
                   <td class="content-cell">
                     <h1>Liebe(r) {{name}},</h1>
-					<p>Sie haben sich für ein {{ appName }}-Konto registriert.</p>
-					<p>Die Aktivierung Ihres Kontos erfolgt in zwei unabhängigen Schritten.</p>
-					<p>Bitte benutzen Sie den Link unten, um Ihr Konto zu
-                      aktivieren.
-                      <strong>Dieser Aktivierungslink ist nur für die nächsten 24 Stunden gültig.
-                      </strong>
-                    </p>
-                    <!-- Action -->
-                    <table class="body-action" align="center" width="100%" cellpadding="0" cellspacing="0">
-                      <tr>
-                        <td align="center">
-                          <!-- Border based button
-                       https://litmus.com/blog/a-guide-to-bulletproof-buttons-in-email-design -->
-                          <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                            <tr>
-                              <td align="center">
-                                <table border="0" cellspacing="0" cellpadding="0">
-                                  <tr>
-                                    <td>
-                                      <a href="{{action_url}}" class="button button--green" target="_blank">Aktivieren Sie Ihr Konto</a>
-                                    </td>
-                                  </tr>
-                                </table>
-                              </td>
-                            </tr>
-                          </table>
-                        </td>
-                      </tr>
-					</table>
-
-					<p>Nachdem der {{ appName }} Administrator Ihr Konto aktiviert hat, erhalten Sie eine Email.</p>
-					<p>Nach der erfolgreichen 2-Schritt Aktivierung können Sie sich am {{ appName }} anmelden.</p>
-
-                    <p>
-                      Sicherheitsbezogen: Diese Anfrage wurde mit {{user_agent}} gesendet. Wenn Sie sich nicht
-                      für einen {{ appName }}-Account registriert haben, ignorieren Sie bitte diese E-Mail oder Kontaktieren
-                      Sie den <a href="mailto:{{support_contact}}">Support</a>, wenn Sie Fragen haben.
-                    </p>
-                    <p>
-                      <br>Das {{ appName }} Team</p>
-                    <!-- Sub copy -->
-                    <table class="body-sub">
-                      <tr>
-                        <td>
-                          <p class="sub">Wenn Sie Probleme mit dem obrigen Link haben, kopieren Sie die untenstehende URL und fügen Sie sie in Ihren Webbrowser ein.</p>
-                          <p class="sub">{{action_url}}</p>
-                        </td>
-                      </tr>
-                    </table>
+					<p>Der {{ appName }} Administrator hat Ihr Konto noch nicht aktiviert
+					   und hat eine entsprechende Nachricht erhalten.</p>
+					<br>
+					<p>Das {{ appName }} Team</p>
                   </td>
                 </tr>
               </table>
