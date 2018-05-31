@@ -18,8 +18,27 @@ class DatasetService implements IDatasetService {
     constructor(private notificationService: INotificationService) { }
 
     sendDatasetFile(dataset: IDatasetFile, senderInfo: ISenderInfo): void {
+        const newDatasetCopyNotification = this.createNewDatasetCopyNotification(dataset, senderInfo);
+        this.notificationService.sendNotification(newDatasetCopyNotification);
+
         const newDatasetNotification = this.createNewDatasetNotification(dataset, senderInfo);
         return this.notificationService.sendNotification(newDatasetNotification);
+    }
+
+    private createNewDatasetCopyNotification(dataset: IDatasetFile, senderInfo: ISenderInfo) {
+        const fullName = senderInfo.firstName + ' ' + senderInfo.lastName;
+        return {
+            type: NotificationType.NOTIFICATION_SENT,
+            title: `Neuer Auftrag an das BfR`,
+            payload: {
+                'appName': APP_NAME,
+                'name': fullName
+            },
+            meta: {
+                email: senderInfo.email,
+                attachments: [dataset]
+            }
+        };
     }
 
     private createNewDatasetNotification(dataset: IDatasetFile, senderInfo: ISenderInfo) {
