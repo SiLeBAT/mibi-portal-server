@@ -16,7 +16,9 @@ class UserRepository implements IUserRepository {
     }
 
     findByUsername(username: string) {
-        return this.baseRepo.findOne({ email: username })
+        const nameRegex = new RegExp(username, 'i');
+
+        return this.baseRepo.findOne({ 'email': { $regex: nameRegex } })
             .then(
                 (userModel: IUserModel | null) => {
                     if (!userModel) return Promise.reject(null);
