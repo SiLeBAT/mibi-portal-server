@@ -3,6 +3,7 @@ import { IUserRepository, ITokenRepository } from '../../ports';
 import { IUser, TokenType, generateToken, verifyToken, IUserToken } from './../domain';
 import { IRecoveryData, INotificationService, NotificationType } from './../../sharedKernel';
 import { ApplicationDomainError } from '../../sharedKernel/errors';
+import { logger } from '../../../aspects';
 
 // TODO: Should these be here?  Should they not be added later?
 const APP_NAME = config.get('appName');
@@ -25,8 +26,13 @@ class PasswordService implements IPasswordService {
         private notificationService: INotificationService) { }
 
     async recoverPassword(recoveryData: IRecoveryData): Promise<void> {
+        let user;
+        try {
+            user = await this.userRepository.findByUsername(recoveryData.email);
+        } catch (err) {
+            logger.error(`no user for ${recoveryData.email} found, error=`, err);
+        }
 
-        const user = await this.userRepository.findByUsername(recoveryData.email);
         if (!user) {
             const altContactNotification = this.createAlternativeContactNotification(recoveryData);
             return this.notificationService.sendNotification(altContactNotification);
