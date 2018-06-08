@@ -82,8 +82,10 @@ export interface IInstitutionRepository {
 
 export interface ITokenRepository {
     hasTokenForUser(user: IUser): Promise<boolean>;
+    hasResetTokenForUser(user: IUser): Promise<boolean>;
     hasAdminTokenForUser(user: IUser): Promise<boolean>;
     deleteTokenForUser(user: IUser): Promise<boolean>;
+    deleteResetTokenForUser(user: IUser): Promise<boolean>;
     deleteAdminTokenForUser(user: IUser): Promise<boolean>;
     saveToken(token: IUserToken): Promise<IUserToken>;
     getUserTokenByJWT(token: string): Promise<IUserToken | null>;
