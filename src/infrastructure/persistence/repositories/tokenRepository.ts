@@ -12,6 +12,13 @@ class TokenRepository implements ITokenRepository {
             }
         );
     }
+    hasResetTokenForUser(user: IUser): Promise<boolean> {
+        return this.baseRepo.find({ user: user.uniqueId, type: TokenType.RESET }, {}, {}).then(
+            (docs) => {
+                return docs.length > 0;
+            }
+        );
+    }
     hasAdminTokenForUser(user: IUser): Promise<boolean> {
         return this.baseRepo.find({ user: user.uniqueId, type: TokenType.ADMIN }, {}, {}).then(
             (docs) => {
@@ -21,6 +28,11 @@ class TokenRepository implements ITokenRepository {
     }
     deleteTokenForUser(user: IUser): Promise<boolean> {
         return this.baseRepo.findOne({ user: user.uniqueId, type: TokenType.ACTIVATE }).then(
+            (token: IResetTokenModel) => !!this.baseRepo.delete(token._id)
+        );
+    }
+    deleteResetTokenForUser(user: IUser): Promise<boolean> {
+        return this.baseRepo.findOne({ user: user.uniqueId, type: TokenType.RESET }).then(
             (token: IResetTokenModel) => !!this.baseRepo.delete(token._id)
         );
     }

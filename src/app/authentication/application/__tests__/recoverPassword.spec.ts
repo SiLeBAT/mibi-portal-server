@@ -32,8 +32,8 @@ describe('Recover Password Use Case', () => {
         };
 
         mockTokenRepository = {
-            hasTokenForUser: jest.fn(() => true),
-            deleteTokenForUser: jest.fn(() => true),
+            hasResetTokenForUser: jest.fn(() => true),
+            deleteResetTokenForUser: jest.fn(() => true),
             saveToken: jest.fn(() => true)
         };
 
@@ -71,20 +71,20 @@ describe('Recover Password Use Case', () => {
     it('should ask the token repository if the user has tokens', () => {
         expect.assertions(1);
         return service.recoverPassword(credentials).then(
-            result => expect(mockTokenRepository.hasTokenForUser.mock.calls.length).toBe(1)
+            result => expect(mockTokenRepository.hasResetTokenForUser.mock.calls.length).toBe(1)
         );
     });
     it('should trigger deletion of old user tokens', () => {
         expect.assertions(1);
         return service.recoverPassword(credentials).then(
-            result => expect(mockTokenRepository.deleteTokenForUser.mock.calls.length).toBe(1)
+            result => expect(mockTokenRepository.deleteResetTokenForUser.mock.calls.length).toBe(1)
         );
     });
     it('should not trigger deletion of old user tokens if user does not have any', () => {
-        mockTokenRepository.hasTokenForUser = jest.fn(() => false);
+        mockTokenRepository.hasResetTokenForUser = jest.fn(() => false);
         expect.assertions(1);
         return service.recoverPassword(credentials).then(
-            result => expect(mockTokenRepository.deleteTokenForUser.mock.calls.length).toBe(0)
+            result => expect(mockTokenRepository.deleteResetTokenForUser.mock.calls.length).toBe(0)
         );
     });
     it('should generate a new token', () => {

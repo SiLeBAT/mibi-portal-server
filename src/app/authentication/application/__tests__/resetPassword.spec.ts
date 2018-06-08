@@ -32,7 +32,7 @@ describe('Reset Password Use Case', () => {
 
         mockTokenRepository = {
             getUserTokenByJWT: jest.fn(() => true),
-            deleteTokenForUser: jest.fn(() => true)
+            deleteResetTokenForUser: jest.fn(() => true)
         };
 
         mockNotificationService = {
@@ -90,7 +90,7 @@ describe('Reset Password Use Case', () => {
     it('should call the token Repository to delete the token', () => {
         expect.assertions(1);
         return service.resetPassword(token, password).then(
-            result => expect(mockTokenRepository.deleteTokenForUser.mock.calls.length).toBe(1)
+            result => expect(mockTokenRepository.deleteResetTokenForUser.mock.calls.length).toBe(1)
         );
     });
     it('should call the notification Service with a new notification', () => {

@@ -37,9 +37,9 @@ class PasswordService implements IPasswordService {
             const altContactNotification = this.createAlternativeContactNotification(recoveryData);
             return this.notificationService.sendNotification(altContactNotification);
         }
-        const hasOldToken = await this.tokenRepository.hasTokenForUser(user);
+        const hasOldToken = await this.tokenRepository.hasResetTokenForUser(user);
         if (hasOldToken) {
-            await this.tokenRepository.deleteTokenForUser(user);
+            await this.tokenRepository.deleteResetTokenForUser(user);
         }
         const token = generateToken(user.uniqueId);
         const resetToken = await this.tokenRepository.saveToken({
@@ -62,7 +62,7 @@ class PasswordService implements IPasswordService {
         if (!user) throw new ApplicationDomainError(`Unknown user. id=${userId}`);
         await user.updatePassword(password);
         await this.userRepository.updateUser(user);
-        await this.tokenRepository.deleteTokenForUser(user);
+        await this.tokenRepository.deleteResetTokenForUser(user);
         const resetSuccessNotification = this.createResetSuccessNotification(user);
         return this.notificationService.sendNotification(resetSuccessNotification);
     }
