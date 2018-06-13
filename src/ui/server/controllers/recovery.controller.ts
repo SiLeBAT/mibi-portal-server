@@ -23,7 +23,9 @@ class RecoveryController implements IRecoveryController {
                 userAgent: req.headers['user-agent'] as string
             });
             dto = {
-                title: `Eine Email mit weiteren Anweisungen wurde an ${body.email} gesendet` // `An email has been sent to ${body.email} with further instructions`
+                title: `Eine Email mit weiteren Anweisungen wurde an ${body.email} gesendet.
+						Wenn Sie keine Email erhalten, könnte das bedeuten, daß Sie sich mit
+						einer anderen Email-Adresse angemeldet haben.` // `An email has been sent to ${body.email} with further instructions`
             };
             res.status(200);
         } catch (err) {
