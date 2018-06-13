@@ -110,7 +110,7 @@ describe('Recover Password Use Case', () => {
         mockUserRepository.findByUsername = jest.fn(() => { throw new Error(); });
         expect.assertions(1);
         return service.recoverPassword(credentials).then(
-            result => expect(mockNotificationService.sendNotification.mock.calls.length).toBe(1),
+            result => expect(mockNotificationService.sendNotification.mock.calls.length).toBe(0),
             err => expect(err).toBeTruthy()
         );
     });

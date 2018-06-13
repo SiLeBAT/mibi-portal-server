@@ -34,9 +34,9 @@ class PasswordService implements IPasswordService {
         }
 
         if (!user) {
-            const altContactNotification = this.createAlternativeContactNotification(recoveryData);
-            return this.notificationService.sendNotification(altContactNotification);
+            return;
         }
+
         const hasOldToken = await this.tokenRepository.hasResetTokenForUser(user);
         if (hasOldToken) {
             await this.tokenRepository.deleteResetTokenForUser(user);
@@ -65,25 +65,6 @@ class PasswordService implements IPasswordService {
         await this.tokenRepository.deleteResetTokenForUser(user);
         const resetSuccessNotification = this.createResetSuccessNotification(user);
         return this.notificationService.sendNotification(resetSuccessNotification);
-    }
-
-    private createAlternativeContactNotification(recoveryData: IRecoveryData) {
-        return {
-            type: NotificationType.REQUEST_ALTERNATIVE_CONTACT,
-            title: `Setzen Sie Ihr ${APP_NAME}-Konto Passwort zurück.`,// `Reset Password for ${APP_NAME}`;
-            payload: {
-                'email': recoveryData.email,
-                'api_url': API_URL,
-                'operating_system': recoveryData.host,
-                'user_agent': recoveryData.userAgent,
-                'support_contact': SUPPORT_CONTACT,
-                'action_url': API_URL + '/users/recovery',
-                'appName': APP_NAME
-            },
-            meta: {
-                email: recoveryData.email
-            }
-        };
     }
 
     private createResetRequestNotification(user: IUser, recoveryData: IRecoveryData, resetToken: IUserToken) {
