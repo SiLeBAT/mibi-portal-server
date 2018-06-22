@@ -12,6 +12,8 @@ export interface IUserModel extends Document, IUserBase {
     password: string;
     enabled: boolean;
     adminEnabled: boolean;
+    numAttempt: number;
+    lastAttempt: number;
     created: Date;
     updated: Date;
 }
@@ -42,6 +44,16 @@ export const userSchema = new Schema({
     adminEnabled: {
         type: Boolean,
         default: false,
+        required: true
+    },
+    numAttempt: {
+        type: Number,
+        default: 0,
+        required: true
+    },
+    lastAttempt: {
+        type: Number,
+        default: Date.now(),
         required: true
     },
     institution: {

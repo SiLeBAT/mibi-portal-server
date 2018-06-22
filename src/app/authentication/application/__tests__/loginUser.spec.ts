@@ -32,7 +32,9 @@ describe('Login User Use Case', () => {
         mockUserRepository.findByUsername = jest.fn(() => ({
             isActivated: () => true,
             isAdminActivated: () => true,
-            isAuthorized: () => true
+            isAuthorized: () => true,
+            getLastLoginAttempt: () => 0,
+            getNumberOfFailedAttempts: () => 0
         }));
         const credentials = {
             email: 'test',
@@ -49,9 +51,12 @@ describe('Login User Use Case', () => {
         const mockUser = {
             isActivated: () => true,
             isAdminActivated: () => true,
-            isAuthorized: () => true
+            isAuthorized: () => true,
+            getLastLoginAttempt: () => 0,
+            getNumberOfFailedAttempts: () => 0
         };
         mockUserRepository.findByUsername = jest.fn(() => mockUser);
+        mockUserRepository.updateUser = jest.fn(() => mockUser);
 
         const credentials = {
             email: 'test',
@@ -71,7 +76,9 @@ describe('Login User Use Case', () => {
         mockUserRepository.findByUsername = jest.fn(() => ({
             isActivated: () => true,
             isAdminActivated: () => true,
-            isAuthorized: () => false
+            isAuthorized: () => false,
+            getLastLoginAttempt: () => 0,
+            getNumberOfFailedAttempts: () => 0
         }));
 
         const credentials = {
@@ -96,7 +103,9 @@ describe('Login User Use Case', () => {
         mockUserRepository.findByUsername = jest.fn(() => ({
             isActivated: () => false,
             isAdminActivated: () => true,
-            isAuthorized: () => true
+            isAuthorized: () => true,
+            getLastLoginAttempt: () => 0,
+            getNumberOfFailedAttempts: () => 0
         }));
 
         mockActivationService.prepareUserForActivation = jest.fn(() => Promise.reject(true));
@@ -126,7 +135,10 @@ describe('Login User Use Case', () => {
         mockUserRepository.findByUsername = jest.fn(() => ({
             isActivated: () => true,
             isAdminActivated: () => false,
-            isAuthorized: () => true
+            isAuthorized: () => true,
+            getLastLoginAttempt: () => 0,
+            getNumberOfFailedAttempts: () => 0
+
         }));
 
         mockActivationService.prepareUserForActivation = jest.fn(() => Promise.reject(true));
@@ -156,7 +168,10 @@ describe('Login User Use Case', () => {
         mockUserRepository.findByUsername = jest.fn(() => ({
             isActivated: () => false,
             isAdminActivated: () => false,
-            isAuthorized: () => true
+            isAuthorized: () => true,
+            getLastLoginAttempt: () => 0,
+            getNumberOfFailedAttempts: () => 0
+
         }));
 
         mockActivationService.prepareUserForActivation = jest.fn(() => Promise.reject(true));
