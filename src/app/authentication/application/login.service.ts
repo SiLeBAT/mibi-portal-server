@@ -7,8 +7,8 @@ import { IRegistrationService } from '.';
 import { ApplicationDomainError } from '../../sharedKernel/errors';
 import { IRecoveryData } from '../../sharedKernel';
 
-const THRESHOLD: number = config.get('login.threshold');
-const SECONDS_DELAY: number = config.get('login.secondsDelay');
+const THRESHOLD: number = config.has('login.threshold') ? config.get('login.threshold') : 5;
+const SECONDS_DELAY: number = config.has('login.secondsDelay') ? config.get('login.secondsDelay') : 300;
 
 export interface IUserLoginInformation extends IUserCredentials {
     userAgent: string | string[] | undefined;
