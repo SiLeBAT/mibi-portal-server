@@ -27,8 +27,12 @@ export interface IUser extends IUserBase {
     readonly password: string;
     isAuthorized(credentials: IUserCredentials): Promise<boolean>;
     updatePassword(password: string): Promise<string>;
+    updateNumberOfFailedAttempts(increment: boolean): void;
+    updateLastLoginAttempt(): void;
     isActivated(active?: boolean): boolean;
     isAdminActivated(active?: boolean): boolean;
+    getNumberOfFailedAttempts(): number;
+    getLastLoginAttempt(): number;
 }
 
 class GenericUser implements IUser {
@@ -38,7 +42,16 @@ class GenericUser implements IUser {
     email: string;
     institution: IInstitution;
 
-    constructor(id: string, email: string, fname: string, lname: string, inst: IInstitution, private _password: string, private enabled: boolean, private adminEnabled: boolean) {
+    constructor(id: string,
+				email: string,
+				fname: string,
+				lname: string,
+				inst: IInstitution,
+				private _password: string,
+				private enabled: boolean,
+				private adminEnabled: boolean,
+				private numAttempt: number,
+				private lastAttempt: number) {
         this.uniqueId = id;
         this.email = email;
         this.firstName = fname;
@@ -74,6 +87,22 @@ class GenericUser implements IUser {
         );
     }
 
+    updateNumberOfFailedAttempts(increment: boolean) {
+        increment ? this.numAttempt++ : this.numAttempt = 0;
+    }
+
+    updateLastLoginAttempt() {
+        this.lastAttempt = Date.now();
+    }
+
+    getNumberOfFailedAttempts(): number {
+        return this.numAttempt;
+    }
+
+    getLastLoginAttempt(): number {
+        return this.lastAttempt;
+    }
+
     private verifyPassword(hashedPassword: string, password: string) {
         return argon2.verify(hashedPassword, password);
     }
@@ -81,8 +110,18 @@ class GenericUser implements IUser {
     private hashPassword(password: string, options = defaultHashOptions) {
         return argon2.hash(password, options);
     }
+
 }
 
-export function createUser(id: string, email: string, fname: string, lname: string, inst: IInstitution, password: string, enabled: boolean = false, adminEnabled: boolean = false): IUser {
-    return new GenericUser(id, email, fname, lname, inst, password, enabled, adminEnabled);
+export function createUser(id: string,
+						   email: string,
+						   fname: string,
+						   lname: string,
+						   inst: IInstitution,
+						   password: string,
+						   enabled: boolean = false,
+						   adminEnabled: boolean = false,
+						   numAttempt: number = 0,
+						   lastAttempt: number = Date.now()): IUser {
+    return new GenericUser(id, email, fname, lname, inst, password, enabled, adminEnabled, numAttempt, lastAttempt);
 }

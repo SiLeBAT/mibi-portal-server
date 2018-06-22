@@ -70,7 +70,9 @@ class UserRepository implements IUserRepository {
             email: user.email,
             password: user.password,
             enabled: user.isActivated(),
-            adminEnabled: user.isAdminActivated()
+            adminEnabled: user.isAdminActivated(),
+            numAttempt: user.getNumberOfFailedAttempts(),
+            lastAttempt: user.getLastLoginAttempt()
         }).then(
             (response: IUserModelUpdateResponse) => {
                 if (!response.ok) return null;

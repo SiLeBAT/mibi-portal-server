@@ -44,6 +44,14 @@ class LoginController implements ILoginController {
     }
     // FIXME: Do we really need to return all of this information?
     private fromLoginResponseToResponseDTO(response: ILoginResponse): ILoginResponseDTO {
+
+        if (response.timeToWait) {
+            return {
+                title: `Zuviele fehlgeschlagene Logins, bitte warten Sie ${response.timeToWait}.`,
+                obj: {}
+            };
+        }
+
         return {
             title: 'Anmeldung erfolgreich', // 'Login successful',
             obj: {

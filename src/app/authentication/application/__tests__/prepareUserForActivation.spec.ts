@@ -79,7 +79,12 @@ describe('Prepare User for Activation Use Case', () => {
             isAuthorized: jest.fn(),
             isActivated: jest.fn(),
             isAdminActivated: jest.fn(),
-            updatePassword: jest.fn()
+            updatePassword: jest.fn(),
+            getNumberOfFailedAttempts: jest.fn(),
+            getLastLoginAttempt: jest.fn(),
+            updateNumberOfFailedAttempts: jest.fn(),
+            updateLastLoginAttempt: jest.fn()
+
         };
         recoveryData = {
             email: 'test',
