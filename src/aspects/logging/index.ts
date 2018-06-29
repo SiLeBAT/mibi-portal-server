@@ -1,5 +1,6 @@
 import * as winston from 'winston';
 import * as config from 'config';
+import { TransformableInfo } from 'logform';
 
 /*
 *
@@ -14,21 +15,29 @@ import * as config from 'config';
 */
 export class Logger {
 
-    private _logger: winston.LoggerInstance;
+    private _logger: winston.Logger;
 
     constructor() {
-        const tsFormat = () => (new Date()).toLocaleTimeString();
-        this._logger = new (winston.Logger)({
+        this._logger = winston.createLogger({
+            level: Logger.mapLogLevels(config.get('server.logLevel')),
+            format: winston.format.combine(
+				winston.format.colorize(),
+				winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+				winston.format.printf(info => Logger.mapLogMessage(info))
+			),
             transports: [
-                // colorize the output to the console
-                new (winston.transports.Console)({
-                    timestamp: tsFormat,
-                    colorize: true,
-                    level: Logger.mapLogLevels(config.get('server.logLevel'))
-                })
+                new winston.transports.Console()
             ]
         });
+    }
 
+    static mapLogMessage(info: TransformableInfo): string {
+        let logMsg = `${info.timestamp} ${info.level} ${info.message}`;
+        logMsg = (info.meta !== undefined) ?
+				 logMsg + ' ' + (typeof(info.meta) === 'object' ? JSON.stringify(info.meta) : info.meta) :
+				 logMsg;
+
+        return logMsg;
     }
 
     static mapLogLevels(level: string): string {
@@ -75,32 +84,32 @@ export class Logger {
 
     // tslint:disable-next-line
     error(msg: string, meta?: any) {
-        this._logger.log('error', msg, meta);
+        this._logger.log('error', msg, { meta: meta });
     }
 
     // tslint:disable-next-line
     warn(msg: string, meta?: any) {
-        this._logger.log('warn', msg, meta);
+        this._logger.log('warn', msg, { meta: meta });
     }
 
     // tslint:disable-next-line
     info(msg: string, meta?: any) {
-        this._logger.log('info', msg, meta);
+        this._logger.log('info', msg, { meta: meta });
     }
 
     // tslint:disable-next-line
     verbose(msg: string, meta?: any) {
-        this._logger.log('verbose', msg, meta);
+        this._logger.log('verbose', msg, { meta: meta });
     }
 
     // tslint:disable-next-line
     debug(msg: string, meta?: any) {
-        this._logger.log('debug', msg, meta);
+        this._logger.log('debug', msg, { meta: meta });
     }
 
     // tslint:disable-next-line
     trace(msg: string, meta?: any) {
-        this._logger.log('silly', msg, meta);
+        this._logger.log('silly', msg, { meta: meta });
     }
 }
 

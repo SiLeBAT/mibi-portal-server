@@ -33,8 +33,8 @@ export const resetTokenSchema = new Schema({
         ref: 'User'
     }
 }).pre('save', function (next) {
-    if (this._doc) {
-        let doc = this._doc as IResetTokenModel;
+    if (this) {
+        let doc = this as IResetTokenModel;
         let now = new Date();
         if (!doc.created) {
             doc.created = now;
@@ -42,5 +42,4 @@ export const resetTokenSchema = new Schema({
         doc.updated = now;
     }
     next();
-    return this;
 });

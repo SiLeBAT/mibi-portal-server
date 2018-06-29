@@ -18,7 +18,7 @@ class LoginController implements ILoginController {
     async login(req: Request, res: Response) {
         let response: ILoginResponse;
         const userLoginInfo: IUserLoginInformation = this.mapRequestDTOToUserLoginInfo(req);
-        logger.info('Request received', userLoginInfo);
+        logger.info('Request received', userLoginInfo.email);
         try {
             response = await this.loginService.loginUser(userLoginInfo);
             const dto = this.fromLoginResponseToResponseDTO(response);
@@ -44,7 +44,6 @@ class LoginController implements ILoginController {
     }
     // FIXME: Do we really need to return all of this information?
     private fromLoginResponseToResponseDTO(response: ILoginResponse): ILoginResponseDTO {
-
         if (response.timeToWait) {
             return {
                 title: `Zuviele fehlgeschlagene Logins, bitte warten Sie ${response.timeToWait}.`,
