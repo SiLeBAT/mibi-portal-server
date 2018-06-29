@@ -49,7 +49,7 @@ class RegistrationController implements IRegistrationController {
     async register(req: Request, res: Response) {
 
         const credentials = this.fromRequestToCredentials(req);
-        logger.info('Request received', credentials);
+        logger.info('Request received', credentials.email);
         let dto;
         try {
             await this.registrationService.registerUser(credentials);

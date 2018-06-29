@@ -71,8 +71,8 @@ export const userSchema = new Schema({
         required: true
     }
 }).pre('save', function (next) {
-    if (this._doc) {
-        let doc = this._doc as IUserModel;
+    if (this) {
+        let doc = this as IUserModel;
         let now = new Date();
         if (!doc.created) {
             doc.created = now;
@@ -80,7 +80,6 @@ export const userSchema = new Schema({
         doc.updated = now;
     }
     next();
-    return this;
 });
 
 userSchema.plugin(mongooseUniqueValidator);

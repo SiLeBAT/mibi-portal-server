@@ -1,4 +1,3 @@
-import { isUndefined } from 'util';
 import * as argon2 from 'argon2';
 import { IInstitution } from './institution.entity';
 
@@ -64,14 +63,14 @@ class GenericUser implements IUser {
     }
 
     isActivated(active?: boolean) {
-        if (!isUndefined(active)) {
+        if (!(active === undefined)) {
             this.enabled = !!active;
         }
         return this.enabled;
     }
 
     isAdminActivated(active?: boolean) {
-        if (!isUndefined(active)) {
+        if (!(active === undefined)) {
             this.adminEnabled = !!active;
         }
         return this.adminEnabled;

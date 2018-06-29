@@ -65,8 +65,8 @@ export const institutionSchema = new Schema({
         required: true
     }
 }).pre('save', function (next) {
-    if (this._doc) {
-        let doc = this._doc as IInstitutionModel;
+    if (this) {
+        let doc = this as IInstitutionModel;
         let now = new Date();
         if (!doc.created) {
             doc.created = now;
@@ -74,5 +74,4 @@ export const institutionSchema = new Schema({
         doc.updated = now;
     }
     next();
-    return this;
 });
