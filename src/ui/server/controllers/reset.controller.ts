@@ -26,7 +26,7 @@ class ResetController implements IResetController {
             return res
                 .status(500);
         }
-        logger.info('Response sent', dto);
+        logger.info('ResetController.reset, Response sent');
         return res.json(dto).end();
     }
 

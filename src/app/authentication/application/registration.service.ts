@@ -52,7 +52,7 @@ class RegistrationService implements IRegistrationService {
         user.isActivated(true);
         await this.userRepository.updateUser(user);
         await this.tokenRepository.deleteTokenForUser(user);
-        logger.verbose('User activation successful');
+        logger.verbose('RegistrationService.activateUser, User activation successful');
         return;
     }
 
@@ -66,7 +66,7 @@ class RegistrationService implements IRegistrationService {
         user.isAdminActivated(true);
         await this.userRepository.updateUser(user);
         await this.tokenRepository.deleteAdminTokenForUser(user);
-        logger.verbose('User admin activation successful');
+        logger.verbose('RegistrationService.adminActivateUser, User admin activation successful');
 
         const adminActivationNotification = this.createAdminActivationNotification(user);
         this.notificationService.sendNotification(adminActivationNotification);

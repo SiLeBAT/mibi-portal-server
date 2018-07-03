@@ -18,14 +18,14 @@ class LoginController implements ILoginController {
     async login(req: Request, res: Response) {
         let response: ILoginResponse;
         const userLoginInfo: IUserLoginInformation = this.mapRequestDTOToUserLoginInfo(req);
-        logger.info('Request received', userLoginInfo.email);
+        logger.info('LoginController.login, Request received');
         try {
             response = await this.loginService.loginUser(userLoginInfo);
             const dto = this.fromLoginResponseToResponseDTO(response);
-            logger.info('Response sent', dto);
+            logger.info('LoginController.login, Response sent');
             res.status(200).json(dto);
         } catch (err) {
-            logger.error('Login failed', { email: req.body.email, error: err });
+            logger.error('Login failed', { error: err });
             res.status(401).json({
                 error: 'Unauthorized'
             });

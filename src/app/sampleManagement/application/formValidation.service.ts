@@ -25,7 +25,7 @@ class FormValidatorService implements IFormValidatorService {
     // TODO: Needs to be refactored & tested
     validateSamples(sampleCollection: ISampleCollection): ISampleCollection {
 
-        logger.verbose('Starting Sample validation');
+        logger.verbose('FormValidatorService.validateSamples, Starting Sample validation');
 
         const results = sampleCollection.samples.map(s => {
             s.setErrors(this.validator.validateSample(s));

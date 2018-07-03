@@ -24,7 +24,7 @@ class RegistrationController implements IRegistrationController {
             dto = {};
             res.status(400);
         }
-        logger.info('Response sent', dto);
+        logger.info('RegistrationController.activate, Response sent');
         return res.json(dto).end();
     }
 
@@ -42,14 +42,14 @@ class RegistrationController implements IRegistrationController {
             dto = {};
             res.status(400);
         }
-        logger.info('Response sent', dto);
+        logger.info('RegistrationController.adminactivate, Response sent');
         return res.json(dto).end();
     }
 
     async register(req: Request, res: Response) {
 
         const credentials = this.fromRequestToCredentials(req);
-        logger.info('Request received', credentials.email);
+        logger.info('RegistrationController.register, Request received');
         let dto;
         try {
             await this.registrationService.registerUser(credentials);
@@ -64,7 +64,7 @@ class RegistrationController implements IRegistrationController {
             return res
                 .status(500);
         }
-        logger.info('Response sent', dto);
+        logger.info('RegistrationController.register, Response sent');
         return res.json(dto).end();
     }
 
