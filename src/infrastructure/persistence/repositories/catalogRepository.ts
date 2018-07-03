@@ -17,7 +17,7 @@ class FileCatalogRepository implements ICatalogRepository {
     }
 
     initialise() {
-        logger.verbose('Loading Catalog data from Filesystem', { dataDir: this.dataDir });
+        logger.verbose('FileCatalogRepository.initialize, Loading Catalog data from Filesystem', { dataDir: this.dataDir });
         return Promise.all([
             this.importCSVFile(path.join(this.dataDir, 'ADV2.csv')),
             this.importCSVFile(path.join(this.dataDir, 'ADV3.csv')),

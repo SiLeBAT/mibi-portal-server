@@ -60,7 +60,7 @@ class AppServer implements IAppServer {
         routes.init(this.server);
 
         this.server.get('*', (req: express.Request, res: express.Response) => {
-            logger.verbose('Getting index.html');
+            logger.verbose('AppServer.initialise, Getting index.html');
             res.sendFile(path.join(__dirname, this.publicDir + '/index.html'));
         });
     }

@@ -67,7 +67,7 @@ class ValidationController implements IValidationController {
 
         if (req.is('application/json')) {
             const validationResult = this.validateSamplesViaJS(req, res);
-            logger.info('Response sent', validationResult);
+            logger.info('ValidationController.validateSamples, Response sent', validationResult);
             res
                 .status(200)
                 .json(validationResult);
@@ -81,7 +81,7 @@ class ValidationController implements IValidationController {
     }
 
     private validateSamplesViaJS(req: Request, res: Response) {
-        logger.info('Request received', req.body);
+        logger.info('ValidationController.validateSamplesViaJS, Request received', req.body);
         const sampleCollection: ISampleCollection = this.fromDTOToSamples(req.body);
         const rawValidationResult = this.formValidationService.validateSamples(sampleCollection);
         return this.fromErrorsToDTO(rawValidationResult);
@@ -116,7 +116,7 @@ class ValidationController implements IValidationController {
     }
 
     private getKnimeJobId(req: Request, res: Response, filePath: string) {
-        logger.info('Retrieving Knime Job ID.');
+        logger.info('ValidationController.getKnimeJobId, Retrieving Knime Job ID.');
 
         const urlJobId = knimeConfig.urlJobId;
         const user = knimeConfig.user;

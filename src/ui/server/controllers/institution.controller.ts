@@ -46,7 +46,7 @@ class InstitutionController implements IInstitutionController {
             res.status(500).json(dto);
         });
 
-        logger.info('Response sent', dto);
+        logger.info('InstitutionController.listInstitutions, Response sent');
         return res.end();
     }
 

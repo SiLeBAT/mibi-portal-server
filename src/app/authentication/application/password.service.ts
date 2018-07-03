@@ -30,7 +30,7 @@ class PasswordService implements IPasswordService {
         try {
             user = await this.userRepository.findByUsername(recoveryData.email);
         } catch (err) {
-            logger.error(`no user for ${recoveryData.email} found, error=`, err);
+            logger.error('recoverPassword: no user for provided email found, error=', err);
         }
 
         if (!user) {

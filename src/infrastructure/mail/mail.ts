@@ -67,7 +67,7 @@ function registerListeners(notificationService: INotificationPort) {
                 templateFile = await readFilePromise(viewsDir + 'sentnotification.html');
                 break;
             default:
-                logger.warn('Unknown notification type', { notification: data });
+                logger.warn('Unknown notification type', { notification: data.type });
         }
         if (templateFile) {
             sendMail(data.payload, templateFile.toString('utf-8'), {
@@ -116,8 +116,7 @@ function sendMail(templateData: any, templateFile: string, options: IMailOptions
             logger.error('Error sending mail', { error: error });
         } else {
             logger.info('Email sent', {
-                subject: mailOptions.subject,
-                response: info.response
+                subject: mailOptions.subject
             });
         }
     });

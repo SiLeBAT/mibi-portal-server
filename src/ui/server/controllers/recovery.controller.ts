@@ -14,7 +14,7 @@ class RecoveryController implements IRecoveryController {
     async recovery(req: Request, res: Response) {
 
         const body = req.body;
-        logger.info('Request received', body);
+        logger.info('RecoveryController.recovery, Request received');
         let dto;
         try {
             await this.passwordService.recoverPassword({
@@ -33,7 +33,7 @@ class RecoveryController implements IRecoveryController {
             dto = {};
             res.status(500);
         }
-        logger.info('Response sent', dto);
+        logger.info('RecoveryController.recovery, Response sent');
         return res.json(dto).end();
     }
 }

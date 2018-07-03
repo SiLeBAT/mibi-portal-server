@@ -79,7 +79,7 @@ class LoginService implements ILoginService {
     }
 
     private async rejectInactiveUser(user: IUser, recoveryData: IRecoveryData): Promise<ILoginResponse> {
-        logger.verbose('Inactive account failed to log in.');
+        logger.verbose('LoginService.rejectInactiveUser, Inactive account failed to log in.');
         return this.activationService.prepareUserForActivation(user, recoveryData).then(
             () => {
                 throw new ApplicationDomainError(`User inactive. user=${user.email}`);
@@ -88,7 +88,7 @@ class LoginService implements ILoginService {
     }
 
     private async rejectAdminInactiveUser(user: IUser): Promise<ILoginResponse> {
-        logger.verbose('Admin inactive account failed to log in.');
+        logger.verbose('LoginService.rejectAdminInactiveUser, Admin inactive account failed to log in.');
         return this.activationService.handleUserIfNotAdminActivated(user).then(
             () => {
                 throw new ApplicationDomainError(`User admin inactive. user=${user.email}`);
