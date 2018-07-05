@@ -1,7 +1,7 @@
 import * as config from 'config';
 import { IUserRepository, ITokenRepository, IInstitutionRepository } from '../../ports';
 import { logger } from '../../../aspects';
-import { IUser, createUser, TokenType, generateToken, generateAdminToken, verifyToken, IUserToken } from './../domain';
+import { IUser, createUser, TokenType, generateToken, generateAdminToken, verifyToken, IUserToken, createInstitution } from './../domain';
 import { IRecoveryData, INotificationService, NotificationType } from '../../sharedKernel/';
 import { ApplicationDomainError } from '../../sharedKernel/errors';
 
@@ -76,10 +76,19 @@ class RegistrationService implements IRegistrationService {
     }
 
     async registerUser(credentials: IUserRegistration): Promise<void> {
+        let instituteIsUnknown = false;
         const result = await this.userRepository.hasUser(credentials.email);
         if (result) throw new ApplicationDomainError(`Registration failed. User already exists, email=${credentials.email}`);
 
-        const inst = await this.institutionRepository.findById(credentials.institution);
+        let inst;
+        try {
+            inst = await this.institutionRepository.findById(credentials.institution);
+        } catch (err) {
+            logger.error('RegistrationService.registerUser, Unable to find instituton: ', err);
+            logger.info('RegistrationService.registerUser, link registered user to dummy institution');
+            instituteIsUnknown = true;
+            inst = await this.getDummyInstitution();
+        }
 
         if (!inst) throw new ApplicationDomainError(`Institution not found, id=${credentials.institution}`);
 
@@ -95,7 +104,7 @@ class RegistrationService implements IRegistrationService {
         };
 
         await this.prepareUserForActivation(user, recoveryData);
-        const adminActivationResult = await this.prepareUserForAdminActivation(user);
+        const adminActivationResult = await this.prepareUserForAdminActivation(user, instituteIsUnknown ? credentials.institution : null);
 
         return adminActivationResult;
     }
@@ -119,7 +128,7 @@ class RegistrationService implements IRegistrationService {
         return this.notificationService.sendNotification(requestActivationNotification);
     }
 
-    async prepareUserForAdminActivation(user: IUser): Promise<void> {
+    async prepareUserForAdminActivation(user: IUser, institution?: string | null): Promise<void> {
         const hasOldAdminToken = await this.tokenRepository.hasAdminTokenForUser(user);
         if (hasOldAdminToken) {
             await this.tokenRepository.deleteAdminTokenForUser(user);
@@ -133,7 +142,12 @@ class RegistrationService implements IRegistrationService {
             userId: user.uniqueId
         });
 
-        const requestAdminActivationNotification = this.createRequestAdminActivationNotification(user, adminActivationToken);
+        let requestAdminActivationNotification;
+        if (!institution) {
+            requestAdminActivationNotification = this.createRequestAdminActivationNotification(user, adminActivationToken);
+        } else {
+            requestAdminActivationNotification = this.createRequestForUnknownInstituteNotification(user, adminActivationToken, institution);
+        }
 
         return this.notificationService.sendNotification(requestAdminActivationNotification);
     }
@@ -147,7 +161,21 @@ class RegistrationService implements IRegistrationService {
         return this.notificationService.sendNotification(requestAdminActivationReminder);
     }
 
-	// private
+    private async getDummyInstitution() {
+        let inst = await this.institutionRepository.findByInstitutionName('dummy');
+        if (!inst) {
+            const newInstitution = createInstitution('0000');
+            newInstitution.short = 'dummy';
+            newInstitution.name1 = 'dummy';
+            newInstitution.location = 'dummy';
+            newInstitution.phone = 'dummy';
+            newInstitution.fax = 'dummy';
+
+            inst = await this.institutionRepository.createInstitution(newInstitution);
+        }
+
+        return inst;
+    }
 
     private createRequestActivationNotification(user: IUser, recoveryData: IRecoveryData, activationToken: IUserToken) {
     	return {
@@ -181,6 +209,26 @@ class RegistrationService implements IRegistrationService {
                 'email': user.email,
                 'institution': user.institution.name1,
                 'location': user.institution.name2,
+                'appName': APP_NAME
+            },
+            meta: {
+                email: JOB_RECIPIENT
+            }
+        };
+    }
+
+    private createRequestForUnknownInstituteNotification(user: IUser, adminActivationToken: IUserToken, institution: string) {
+        const fullName = user.firstName + ' ' + user.lastName;
+
+        return {
+            type: NotificationType.REQUEST_UNKNOWN_INSTITUTE,
+            title: `Aktivierungsanfrage für das ${APP_NAME} Konto von ${fullName} mit nicht registriertem Institut`,
+            payload: {
+                'name': fullName,
+                'action_url': API_URL + '/users/adminactivate/' + adminActivationToken.token,
+                'api_url': API_URL,
+                'email': user.email,
+                'institution': institution,
                 'appName': APP_NAME
             },
             meta: {

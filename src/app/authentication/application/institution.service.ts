@@ -14,7 +14,9 @@ class InstitutionService implements IInstitutionService {
         private institutionRepository: IInstitutionRepository) { }
 
     async retrieveInstitutions(): Promise<IInstitution[]> {
-        return this.institutionRepository.retrieve();
+        let institutions = await this.institutionRepository.retrieve();
+
+        return institutions.filter((institution: IInstitution) => institution.name1 !== 'dummy');
     }
 }
 

@@ -78,6 +78,8 @@ export interface IUserModelAttributes extends IModelAttributes {
 export interface IInstitutionRepository {
     retrieve(): Promise<IInstitution[]>;
     findById(id: string): Promise<IInstitution | null>;
+    createInstitution(institution: IInstitution): Promise<IInstitution>;
+    findByInstitutionName(name: string): Promise<IInstitution | null>;
 }
 
 export interface ITokenRepository {

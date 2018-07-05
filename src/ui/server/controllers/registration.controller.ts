@@ -60,9 +60,10 @@ class RegistrationController implements IRegistrationController {
 
         } catch (err) {
             logger.error(`Unable to register user. error=${err}`);
-            dto = {};
-            return res
-                .status(500);
+            dto = {
+                title: 'Fehler beim Registrieren'
+            };
+            res.status(500);
         }
         logger.info('RegistrationController.register, Response sent');
         return res.json(dto).end();

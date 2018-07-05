@@ -54,6 +54,9 @@ function registerListeners(notificationService: INotificationPort) {
             case NotificationType.REQUEST_ADMIN_ACTIVATION:
                 templateFile = await readFilePromise(viewsDir + 'adminactivation.html');
                 break;
+            case NotificationType.REQUEST_UNKNOWN_INSTITUTE:
+                templateFile = await readFilePromise(viewsDir + 'adminactivationUnknownInst.html');
+                break;
             case NotificationType.NOTIFICATION_ADMIN_ACTIVATION:
                 templateFile = await readFilePromise(viewsDir + 'adminactivationNotification.html');
                 break;
