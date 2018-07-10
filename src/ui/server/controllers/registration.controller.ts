@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import * as config from 'config';
 import { logger } from '../../../aspects';
 import { IController, IRegistrationPort } from '../../../app/ports';
 
@@ -6,6 +7,8 @@ export interface IRegistrationController extends IController {
     register(req: Request, res: Response): void;
     activate(req: Request, res: Response): Promise<void>;
 }
+
+const SUPPORT_CONTACT = config.get('supportContact');
 
 class RegistrationController implements IRegistrationController {
 
@@ -61,7 +64,9 @@ class RegistrationController implements IRegistrationController {
         } catch (err) {
             logger.error(`Unable to register user. error=${err}`);
             dto = {
-                title: 'Fehler beim Registrieren'
+                title: `Fehler beim Registrieren.
+						Eine Email mit weiteren Informationen wurde an ${credentials.email} gesendet.
+						Wenn Sie keine Email erhalten, wenden Sie sich bitte direkt per Email an uns: ${SUPPORT_CONTACT}.`
             };
             res.status(500);
         }
