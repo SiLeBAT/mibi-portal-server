@@ -78,7 +78,10 @@ class RegistrationService implements IRegistrationService {
     async registerUser(credentials: IUserRegistration): Promise<void> {
         let instituteIsUnknown = false;
         const result = await this.userRepository.hasUser(credentials.email);
-        if (result) throw new ApplicationDomainError(`Registration failed. User already exists, email=${credentials.email}`);
+        if (result) {
+            await this.handleAlreadyRegisteredUser(credentials);
+            throw new ApplicationDomainError('Registration failed. User already exists');
+        }
 
         let inst;
         try {
@@ -159,6 +162,11 @@ class RegistrationService implements IRegistrationService {
         const requestAdminActivationReminder = this.createAdminActivationReminder(user);
 
         return this.notificationService.sendNotification(requestAdminActivationReminder);
+    }
+
+    async handleAlreadyRegisteredUser(credentials: IUserRegistration): Promise<void> {
+        const userAlreadyRegisteredNotification = this.createAlreadyRegisteredUserNotification(credentials);
+        return this.notificationService.sendNotification(userAlreadyRegisteredNotification);
     }
 
     private async getDummyInstitution() {
@@ -284,6 +292,23 @@ class RegistrationService implements IRegistrationService {
 	        },
 	        meta: {
 	            email: JOB_RECIPIENT
+	        }
+	    };
+    }
+
+    private createAlreadyRegisteredUserNotification(credentials: IUserRegistration) {
+        const fullName = credentials.firstName + ' ' + credentials.lastName;
+
+	    return {
+	        type: NotificationType.NOTIFICATION_ALREADY_REGISTERED,
+	        title: `Ihre Registrierung für ein ${APP_NAME} Konto`,
+	        payload: {
+            'name': fullName,
+            'action_url': API_URL + '/users/recovery',
+	        'appName': APP_NAME
+	        },
+	        meta: {
+	            email: credentials.email
 	        }
 	    };
     }

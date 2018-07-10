@@ -63,6 +63,9 @@ function registerListeners(notificationService: INotificationPort) {
             case NotificationType.NOTIFICATION_NOT_ADMIN_ACTIVATED:
                 templateFile = await readFilePromise(viewsDir + 'notAdminactivationNotification.html');
                 break;
+            case NotificationType.NOTIFICATION_ALREADY_REGISTERED:
+                templateFile = await readFilePromise(viewsDir + 'reguserexists.html');
+                break;
             case NotificationType.REMINDER_ADMIN_ACTIVATION:
                 templateFile = await readFilePromise(viewsDir + 'adminactivationReminder.html');
                 break;
