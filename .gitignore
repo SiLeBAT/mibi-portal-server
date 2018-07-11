@@ -45,6 +45,7 @@ Thumbs.db
 /config/*
 !/config/custom-environment-variables.json
 !/config/generic.config.json
+!/config/mydev.json
 /playground
 /uploads
 server-patch.patch

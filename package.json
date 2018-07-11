@@ -5,6 +5,7 @@
   "scripts": {
     "start": "node ./lib/main.js",
     "serve": "nodemon -e ts --exec \"npm run build && node ./lib/main.js\"",
+    "debug": "nodemon -e ts --exec \"npm run build && node --inspect-brk ./lib/main.js\"",
     "build:qa": "NODE_ENV=qa npm run build",
     "cp:view": "copyfiles -u 1 ./src/**/views/**/* ./lib",
     "tsc": "tsc",
@@ -66,6 +67,7 @@
     "winston": "^3.0.0"
   },
   "devDependencies": {
+    "@angular/cli": "^6.0.8",
     "@types/app-root-dir": "^0.1.0",
     "@types/bluebird": "^3.5.20",
     "@types/body-parser": "^1.16.8",
