@@ -7,25 +7,22 @@ class UserRepository implements IUserRepository {
     }
 
     findById(id: string) {
-        return this.baseRepo.findById(id).then(
-            (userModel: IUserModel) => {
-                if (!userModel) return null;
-                return mapModelToUser(userModel);
-            }
-        );
+        return this.baseRepo.findById(id)
+			.then((userModel: IUserModel) => {
+			    if (!userModel) return null;
+			    return mapModelToUser(userModel);
+			}
+		);
     }
 
     findByUsername(username: string) {
         const nameRegex = new RegExp(username, 'i');
 
         return this.baseRepo.findOne({ 'email': { $regex: nameRegex } })
-            .then(
-                (userModel: IUserModel | null) => {
-                    if (!userModel) return Promise.reject(null);
-                    return populateWithAuxData(userModel);
-                }
-
-            )
+            .then((userModel: IUserModel | null) => {
+                if (!userModel) return Promise.reject(null);
+                return populateWithAuxData(userModel);
+            })
             .then(
                 (userModel: IUserModel) => {
                     if (!userModel) return null;
@@ -35,8 +32,10 @@ class UserRepository implements IUserRepository {
     }
 
     getPasswordForUser(username: string) {
-        return this.baseRepo.findOne({ email: username }).then(
-            (userModel: IUserModel) => {
+        const nameRegex = new RegExp(username, 'i');
+
+        return this.baseRepo.findOne({ 'email': { $regex: nameRegex } })
+            .then((userModel: IUserModel) => {
                 if (!userModel) return null;
                 return userModel.password;
             }
@@ -44,8 +43,10 @@ class UserRepository implements IUserRepository {
     }
 
     hasUser(username: string) {
-        return this.baseRepo.findOne({ email: username }).then(
-            docs => !!docs
+        const nameRegex = new RegExp(username, 'i');
+
+        return this.baseRepo.findOne({ 'email': { $regex: nameRegex } })
+            .then(docs => !!docs
         );
     }
 
