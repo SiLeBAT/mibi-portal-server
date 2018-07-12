@@ -66,7 +66,7 @@ async function start() {
 		console.log();
 		console.log(await findInstById(updatedUser.institution));
 		console.log();
-		console.log('exiting...');
+		console.log('import institution and linking to user SUCCESSFUL, exiting...');
 
 		process.exit(0);
 

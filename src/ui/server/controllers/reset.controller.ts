@@ -21,10 +21,11 @@ class ResetController implements IResetController {
             res.status(200);
 
         } catch (err) {
-            logger.error(`Unable to reset password. error=${err}`);
-            dto = {};
-            return res
-                .status(500);
+            logger.error(`ResetController.reset, Unable to reset password. error=${err}`);
+            dto = {
+                title: `Fehler beim Passwort zurücksetzten, Token ungültig. Bitte lassen Sie sich einen neuen 'Passwort-Reset' Link mit Hilfe der Option 'Passwort vergessen?' zuschicken.`
+            };
+            res.status(500);
         }
         logger.info('ResetController.reset, Response sent');
         return res.json(dto).end();
