@@ -49,11 +49,11 @@ class Sample implements ISample {
     }
 
     get pathogenId(): string {
-        return (this.data.sample_id + this.data.pathogen_adv + this.data.pathogen_text).replace(/\s+/g, '');
+        return (this.data.sample_id + this.data.pathogen_adv + (this.data.pathogen_text === this.data.pathogen_adv ? '' : this.data.pathogen_text)).replace(/\s+/g, '');
     }
 
     get pathogenIdAVV(): string {
-        return (this.data.sample_id_avv + this.data.pathogen_adv + this.data.pathogen_text).replace(/\s+/g, '');
+        return (this.data.sample_id_avv + this.data.pathogen_adv + (this.data.pathogen_text === this.data.pathogen_adv ? '' : this.data.pathogen_text)).replace(/\s+/g, '');
     }
 
     setErrors(errors: IValidationErrorCollection = {}) {

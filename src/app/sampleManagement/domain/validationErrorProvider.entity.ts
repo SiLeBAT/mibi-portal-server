@@ -20,7 +20,7 @@ class ValidationErrorProvider implements IValidationErrorProvider {
             code: 3,
             id: '3',
             level: 2,
-            message: 'Probenummer kommt mehrfach vor(bei identischem Erreger)'
+            message: 'Probenummer kommt mehrfach vor (bei identischem Erreger)'
         },
         {
             code: 5,
@@ -32,7 +32,7 @@ class ValidationErrorProvider implements IValidationErrorProvider {
             code: 6,
             id: '6',
             level: 2,
-            message: 'Probenummer nach AVVData kommt mehrfach vor(bei identischem Erreger)'
+            message: 'Probenummer nach AVVData kommt mehrfach vor (bei identischem Erreger)'
         },
         {
             code: 8,
