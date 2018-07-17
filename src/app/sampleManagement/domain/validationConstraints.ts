@@ -175,7 +175,7 @@ const standardConstrainst: IValidationConstraints = {
             message: vep.getError('11'),
             allowEmpty: false
         },
-        date: {
+        dateAllowEmpty: {
             message: vep.getError('12')
         },
         futureDate: {
@@ -212,7 +212,7 @@ const standardConstrainst: IValidationConstraints = {
             message: vep.getError('15'),
             allowEmpty: false
         },
-        date: {
+        dateAllowEmpty: {
             message: vep.getError('16')
         },
         futureDate: {

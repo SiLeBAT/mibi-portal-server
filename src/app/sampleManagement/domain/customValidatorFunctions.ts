@@ -150,6 +150,17 @@ function atLeastOneOf(value: string, options: IAtLeastOneOfOptions, key: keyof I
     }
     return null;
 }
+function dateAllowEmpty(value: string, options: IAtLeastOneOfOptions, key: keyof ISampleData, attributes: ISampleData) {
+
+    if (isEmptyString(value)) {
+        return null;
+    } else if (moment.utc(value, ['DD.MM.YYYY','D.MM.YYYY','D.M.YYYY','DD.M.YYYY'], true).isValid()) {
+        return null;
+    } else {
+        return { ...options.message };
+    }
+    return null;
+}
 
 export interface IDependentFieldsOptions extends IValidatiorFunctionOptions {
     dependents: (keyof ISampleData)[];
@@ -251,6 +262,7 @@ function isEmptyString(str: string): boolean {
 export {
     referenceDate,
     atLeastOneOf,
+    dateAllowEmpty,
     dependentFields,
     dependentFieldEntry,
     numbersOnly,

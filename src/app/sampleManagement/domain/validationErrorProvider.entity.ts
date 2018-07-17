@@ -98,7 +98,7 @@ class ValidationErrorProvider implements IValidationErrorProvider {
             code: 19,
             id: '19',
             level: 2,
-            message: 'Datum fehlt'
+            message: 'Entweder das Probenahme- oder das Isolationsdatum muss angegeben sein'
         },
         {
             code: 20,
