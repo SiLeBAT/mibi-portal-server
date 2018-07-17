@@ -9,6 +9,7 @@ import { IPathogenIndex, createPathogenIndex } from './pathogenIndex.entity';
 import {
     referenceDate,
     atLeastOneOf,
+    dateAllowEmpty,
     dependentFields,
     dependentFieldEntry,
     numbersOnly,
@@ -76,6 +77,7 @@ class SampleValidator implements IValidator {
         validate.validators.futureDate = referenceDate;
         validate.validators.oldSample = referenceDate;
         validate.validators.atLeastOneOf = atLeastOneOf;
+        validate.validators.dateAllowEmpty = dateAllowEmpty;
         validate.validators.referenceDate = referenceDate;
         validate.validators.timeBetween = referenceDate;
         validate.validators.dependentFields = dependentFields;
