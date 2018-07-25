@@ -11,7 +11,7 @@ class UserRepository implements IUserRepository {
 			.then((userModel: IUserModel) => {
 			    if (!userModel) return null;
 			    return mapModelToUser(userModel);
-			}
+}
 		);
     }
 
