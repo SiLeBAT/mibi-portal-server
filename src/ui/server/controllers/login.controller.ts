@@ -46,7 +46,7 @@ class LoginController implements ILoginController {
     private fromLoginResponseToResponseDTO(response: ILoginResponse): ILoginResponseDTO {
         if (response.timeToWait) {
             return {
-                title: `Zuviele fehlgeschlagene Logins, bitte warten Sie ${response.timeToWait}.`,
+                title: `Zu viele fehlgeschlagene Logins, bitte warten Sie ${response.timeToWait}.`,
                 obj: {}
             };
         }
