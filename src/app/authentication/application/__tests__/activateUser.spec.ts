@@ -1,6 +1,6 @@
 import { createService, IRegistrationService } from './../registration.service';
 import { verifyToken, generateToken } from '../../domain';
-
+ // tslint:disable
 jest.mock('./../../../sharedKernel', () => ({
     RepositoryType: {
         USER: 0
@@ -13,13 +13,13 @@ jest.mock('./../../domain', () => ({
 }));
 
 describe('Activate User Use Case', () => {
-    // tslint:disable-next-line
+
     let mockUserRepository: any;
-    // tslint:disable-next-line
+
     let mockTokenRepository: any;
-    // tslint:disable-next-line
+  
     let mockNotificationService: any;
-    // tslint:disable-next-line
+   
     let mockInstitutionRepository: any;
     let service: IRegistrationService;
     let token: string;
@@ -43,9 +43,9 @@ describe('Activate User Use Case', () => {
             sendNotification: jest.fn(() => true)
         };
 
-        // tslint:disable-next-line
+       
         (verifyToken as any).mockReset();
-         // tslint:disable-next-line
+      
         (generateToken as any).mockReset();
         token = 'test';
 
@@ -66,7 +66,6 @@ describe('Activate User Use Case', () => {
     it('should verify the token against the retrieved userId', () => {
         expect.assertions(1);
         return service.activateUser(token).then(
-            // tslint:disable-next-line
             result => expect((verifyToken as any).mock.calls.length).toBe(1)
         );
     });

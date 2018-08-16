@@ -1,7 +1,7 @@
 import { createService, IPasswordService } from './../password.service';
 import { generateToken } from '../../domain';
 import { IRecoveryData } from '../../../sharedKernel';
-
+ // tslint:disable
 jest.mock('./../../domain', () => ({
     generateToken: jest.fn(),
     verifyToken: jest.fn(),
@@ -17,11 +17,11 @@ jest.mock('./../../domain', () => ({
 }));
 
 describe('Recover Password Use Case', () => {
-    // tslint:disable-next-line
+ 
     let mockUserRepository: any;
-    // tslint:disable-next-line
+ 
     let mockTokenRepository: any;
-    // tslint:disable-next-line
+ 
     let mockNotificationService: any;
     let service: IPasswordService;
     let credentials: IRecoveryData;
@@ -40,7 +40,7 @@ describe('Recover Password Use Case', () => {
         mockNotificationService = {
             sendNotification:  jest.fn(() => true)
         };
-        // tslint:disable-next-line
+
         (generateToken as any).mockReset();
         credentials = {
             email: 'test',
@@ -90,7 +90,6 @@ describe('Recover Password Use Case', () => {
     it('should generate a new token', () => {
         expect.assertions(1);
         return service.recoverPassword(credentials).then(
-            // tslint:disable-next-line
             result => expect((generateToken as any).mock.calls.length).toBe(1)
         );
     });

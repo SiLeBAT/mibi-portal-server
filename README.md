@@ -5,7 +5,7 @@ The EpiLab Server
 ## Installation
 
 ```shell
-$ yarn install 
+$ npm install 
 ```
 
 ## Quick start
