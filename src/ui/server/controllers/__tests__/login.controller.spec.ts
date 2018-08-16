@@ -2,7 +2,7 @@ import { createController, ILoginController } from './../login.controller';
 import * as mockReq from 'mock-express-request';
 import * as mockRes from 'mock-express-response';
 import { LoginResult, ILoginPort } from '../../../../app/ports';
-
+ // tslint:disable
 jest.genMockFromModule('./../../../../aspects');
 jest.mock('./../../../../aspects');
 jest.mock('./../../../../app/ports', () => ({
@@ -23,7 +23,7 @@ describe('Login controller', () => {
         controller = createController(mockLoginService);
     });
     it('should be return a promise', () => {
-        // tslint:disable-next-line
+
         (mockLoginService.loginUser as any).mockReturnValueOnce({
             result: LoginResult.SUCCESS
         });
@@ -37,7 +37,7 @@ describe('Login controller', () => {
         expect(result).toBeInstanceOf(Promise);
     });
     it('should be return a 401 response', () => {
-        // tslint:disable-next-line
+    
         (mockLoginService.loginUser as any).mockReturnValueOnce({
             result: LoginResult.FAIL
         });
@@ -54,7 +54,7 @@ describe('Login controller', () => {
         });
     });
     it('should be return a 200 response', () => {
-        // tslint:disable-next-line
+
         (mockLoginService.loginUser as any).mockReturnValueOnce({
             user: {}
         });

@@ -1,6 +1,6 @@
 import { createService, IRegistrationService } from './../registration.service';
 import { generateAdminToken, createUser, IUser } from '../../domain';
-
+ // tslint:disable
 jest.mock('./../../domain', () => ({
     generateAdminToken: jest.fn(),
     verifyToken: jest.fn(),
@@ -19,13 +19,13 @@ jest.mock('./../../domain', () => ({
 }));
 
 describe('Prepare User for Activation Use Case', () => {
-    // tslint:disable-next-line
+  
     let mockUserRepository: any;
-    // tslint:disable-next-line
+  
     let mockTokenRepository: any;
-    // tslint:disable-next-line
+   
     let mockNotificationService: any;
-    // tslint:disable-next-line
+
     let mockInstitutionRepository: any;
     let service: IRegistrationService;
     let user: IUser;
@@ -83,9 +83,9 @@ describe('Prepare User for Activation Use Case', () => {
             updateNumberOfFailedAttempts: jest.fn(),
             updateLastLoginAttempt: jest.fn()
         };
-        // tslint:disable-next-line
+       
         (createUser as any).mockClear();
-        // tslint:disable-next-line
+      
         (generateAdminToken as any).mockClear();
 
         service = createService(mockUserRepository, mockTokenRepository, mockInstitutionRepository, mockNotificationService);
@@ -119,7 +119,6 @@ describe('Prepare User for Activation Use Case', () => {
     it('should generate a new admin token', () => {
         expect.assertions(1);
         return service.prepareUserForAdminActivation(user).then(
-            // tslint:disable-next-line
             result => expect((generateAdminToken as any).mock.calls.length).toBe(1)
         );
     });

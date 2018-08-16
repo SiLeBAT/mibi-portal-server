@@ -1,6 +1,6 @@
 import { createService, IPasswordService } from './../password.service';
 import { verifyToken } from '../../domain';
-
+ // tslint:disable
 jest.mock('./../../domain', () => ({
     generateToken: jest.fn(),
     verifyToken: jest.fn(),
@@ -13,11 +13,11 @@ jest.mock('./../../domain', () => ({
 }));
 
 describe('Reset Password Use Case', () => {
-    // tslint:disable-next-line
+ 
     let mockUserRepository: any;
-    // tslint:disable-next-line
+ 
     let mockTokenRepository: any;
-    // tslint:disable-next-line
+ 
     let mockNotificationService: any;
     let service: IPasswordService;
     let token: string;
@@ -39,7 +39,7 @@ describe('Reset Password Use Case', () => {
             sendNotification: jest.fn(() => true)
         };
 
-        // tslint:disable-next-line
+   
         (verifyToken as any).mockReset();
         token = 'test';
         password = 'test';
@@ -61,7 +61,7 @@ describe('Reset Password Use Case', () => {
     it('should verify the token against the retrieved userId', () => {
         expect.assertions(1);
         return service.resetPassword(token, password).then(
-            // tslint:disable-next-line
+       
             result => expect((verifyToken as any).mock.calls.length).toBe(1)
         );
     });

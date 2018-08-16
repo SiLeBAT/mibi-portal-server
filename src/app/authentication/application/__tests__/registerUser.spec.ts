@@ -1,6 +1,6 @@
 import { createService, IRegistrationService, IUserRegistration } from './../registration.service';
 import { createUser } from '../../domain';
-
+ // tslint:disable
 jest.mock('./../../../sharedKernel', () => ({
     RepositoryType: {
         USER: 0
@@ -16,13 +16,13 @@ jest.mock('./../../domain', () => ({
 }));
 
 describe('Register User Use Case', () => {
-    // tslint:disable-next-line
+  
     let mockUserRepository: any;
-    // tslint:disable-next-line
+
     let mockTokenRepository: any;
-    // tslint:disable-next-line
+   
     let mockNotificationService: any;
-    // tslint:disable-next-line
+
     let mockInstitutionRepository: any;
     let service: IRegistrationService;
     let credentials: IUserRegistration;
@@ -50,7 +50,7 @@ describe('Register User Use Case', () => {
             host: 'test'
         };
 
-        // tslint:disable-next-line
+     
         (createUser as any).mockClear();
 
         service = createService(mockUserRepository, mockTokenRepository, mockInstitutionRepository, mockNotificationService);
@@ -98,19 +98,16 @@ describe('Register User Use Case', () => {
     it('should create a new User', () => {
         expect.assertions(1);
         return service.registerUser(credentials).then(
-            // tslint:disable-next-line
             result => expect((createUser as any).mock.calls.length).toBe(1)
         );
     });
     it('should update password for new user', () => {
         const updatePassword = jest.fn();
-        // tslint:disable-next-line
         (createUser as any).mockReturnValueOnce({
             updatePassword
         });
         expect.assertions(1);
         return service.registerUser(credentials).then(
-            // tslint:disable-next-line
             result => expect((updatePassword as any).mock.calls.length).toBe(1)
         );
     });
@@ -123,14 +120,12 @@ describe('Register User Use Case', () => {
     it('should prepare user for activation', () => {
         expect.assertions(1);
         return service.registerUser(credentials).then(
-            // tslint:disable-next-line
             result => expect((service.prepareUserForActivation as any).mock.calls.length).toBe(1)
         );
     });
     it('should prepare user for admin activation', () => {
         expect.assertions(1);
         return service.registerUser(credentials).then(
-            // tslint:disable-next-line
             result => expect((service.prepareUserForAdminActivation as any).mock.calls.length).toBe(1)
         );
     });
