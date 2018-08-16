@@ -27,9 +27,9 @@ class FormValidatorService implements IFormValidatorService {
 
         logger.verbose('FormValidatorService.validateSamples, Starting Sample validation');
 
-        const results = sampleCollection.samples.map(s => {
-            s.setErrors(this.validator.validateSample(s));
-            return s;
+        const results = sampleCollection.samples.map(sample => {
+            sample.setErrors(this.validator.validateSample(sample));
+            return sample;
         });
 
         const checkedForDuplicateIds = this.checkForDuplicateId(results, 'pathogenId');

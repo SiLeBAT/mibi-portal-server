@@ -6,8 +6,8 @@ import * as rootDir from 'app-root-dir';
 import * as unirest from 'unirest';
 import * as config from 'config';
 import { Request, Response } from 'express';
-import { logger } from './../../../aspects';
-import { IFormValidatorPort, IController, ISampleCollection, ISample, createSample, createSampleCollection } from '../../../app/ports';
+import { logger } from '../../../aspects';
+import { IFormValidatorPort, IFormAutoCorrectionPort, IController, ISampleCollection, ISample, createSample, createSampleCollection } from '../../../app/ports';
 
 moment.locale('de');
 
@@ -61,16 +61,19 @@ export interface IValidationController extends IController {
 
 class ValidationController implements IValidationController {
 
-    constructor(private formValidationService: IFormValidatorPort) { }
+    constructor(private formValidationService: IFormValidatorPort, private formAutoCorrectionService: IFormAutoCorrectionPort) { }
 
     async validateSamples(req: Request, res: Response) {
 
         if (req.is('application/json')) {
-            const validationResult = this.validateSamplesViaJS(req, res);
-            logger.info('ValidationController.validateSamples, Response sent', validationResult);
+            const sampleCollection: ISampleCollection = this.fromDTOToSamples(req.body);
+            const autoCorrectedResult = this.formAutoCorrectionService.applyAutoCorrection(sampleCollection);
+            const validationResult = this.formValidationService.validateSamples(autoCorrectedResult);
+            const validationResultsDTO = this.fromErrorsToDTO(validationResult);
+            logger.info('ValidationController.validateSamples, Response sent', validationResultsDTO);
             res
                 .status(200)
-                .json(validationResult);
+                .json(validationResultsDTO);
         } else {
             const uploadedFilePath = path.join(appRootDir, req.file.path);
             this.getKnimeJobId(req, res, uploadedFilePath);
@@ -80,18 +83,12 @@ class ValidationController implements IValidationController {
 
     }
 
-    private validateSamplesViaJS(req: Request, res: Response) {
-        logger.info('ValidationController.validateSamplesViaJS, Request received', req.body);
-        const sampleCollection: ISampleCollection = this.fromDTOToSamples(req.body);
-        const rawValidationResult = this.formValidationService.validateSamples(sampleCollection);
-        return this.fromErrorsToDTO(rawValidationResult);
-    }
-
     private fromErrorsToDTO(sampleCollection: ISampleCollection) {
 
-        return sampleCollection.samples.map((s: ISample) => {
-            let errors: IErrorResponseDTO = {};
-            _.forEach(s.getErrors(), (e, i) => {
+        return sampleCollection.samples.map((sample: ISample) => {
+            const errors: IErrorResponseDTO = {};
+
+            _.forEach(sample.getErrors(), (e, i) => {
                 errors[i] = e.map(f => ({
                     code: f.code,
                     level: f.level,
@@ -99,8 +96,9 @@ class ValidationController implements IValidationController {
                 }));
             });
             return {
-                data: s.getData(),
-                errors: errors
+                data: sample.getData(),
+                errors: errors,
+                corrections: sample.autoCorrections
             };
 
         });
@@ -189,6 +187,6 @@ class ValidationController implements IValidationController {
 
 }
 
-export function createController(service: IFormValidatorPort) {
-    return new ValidationController(service);
+export function createController(validationService: IFormValidatorPort, autocorrectionService: IFormAutoCorrectionPort) {
+    return new ValidationController(validationService, autocorrectionService);
 }

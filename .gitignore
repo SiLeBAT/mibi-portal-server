@@ -34,7 +34,6 @@
 npm-debug.log
 yarn-error.log
 testem.log
-/data
 /local
 
 # System Files

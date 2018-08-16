@@ -30,6 +30,7 @@ export {
 } from './authentication';
 
 export {
+    IFormAutoCorrectionPort,
     IFormValidatorPort,
     ISampleCollection,
     ISample,

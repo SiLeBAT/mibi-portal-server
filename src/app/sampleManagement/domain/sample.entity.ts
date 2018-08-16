@@ -7,11 +7,19 @@ const ZOMO_STRING: string = 'Zoonosen-Monitoring - Planprobe';
 export interface ISample {
     readonly pathogenIdAVV: string;
     readonly pathogenId: string;
+    autoCorrections: IAutoCorrectedValue[];
     getData(): ISampleData;
+    correctField(key: keyof ISampleData, value: string): void;
     setErrors(errors: IValidationErrorCollection): void;
     addErrorTo(id: string, errors: IValidationError): void;
     getErrors(): IValidationErrorCollection;
     isZoMo(): boolean;
+}
+
+export interface IAutoCorrectedValue {
+    field: keyof ISampleData;
+    original: string;
+    corrected: string;
 }
 
 export interface ISampleData {
@@ -38,10 +46,12 @@ export interface ISampleData {
 
 class Sample implements ISample {
 
+    autoCorrections: IAutoCorrectedValue[];
     private errors: IValidationErrorCollection;
 
     constructor(private data: ISampleData) {
         this.errors = {};
+        this.autoCorrections = [];
     }
 
     getData() {
@@ -74,6 +84,10 @@ class Sample implements ISample {
         }
         this.errors[id].push(error);
 
+    }
+
+    correctField(key: keyof ISampleData, value: string) {
+        this.data[key] = value;
     }
 }
 
