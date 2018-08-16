@@ -1,8 +1,8 @@
-import { ILoginService, createService as createLoginService } from './../../../app/authentication/application/login.service';
-import { createService as createInstitutionService, IInstitutionService } from './../../../app/authentication/application/institution.service';
+import { ILoginService, createService as createLoginService } from '../../authentication/application/login.service';
+import { createService as createInstitutionService, IInstitutionService } from '../../authentication/application/institution.service';
 import { RepositoryType, IRepositoryFactory } from './repositoryFactory';
 import { IRegistrationService, IPasswordService, createRegistrationService, createPasswordService } from '../../authentication/application';
-import { IFormValidatorService, createFormValidationService, ICatalogService, createCatalogService, IDatasetService, createDatasetService } from '../../sampleManagement/application';
+import { IFormValidatorService, createFormValidationService, ICatalogService, createCatalogService, IDatasetService, createDatasetService, createFormAutoCorrectionService, IFormAutoCorrectionService } from '../../sampleManagement/application';
 import { ApplicationSystemError } from '../errors';
 import { INotificationService, createNotificationService } from '../application';
 
@@ -20,6 +20,7 @@ export class ServiceFactory implements IServiceFactory {
     private validationService: IFormValidatorService;
     private catalogService: ICatalogService;
     private datasetService: IDatasetService;
+    private autoCorrectionService: IFormAutoCorrectionService;
 
     constructor(private repositoryFactory: IRepositoryFactory) {
         const userRepository = this.repositoryFactory.getRepository(RepositoryType.USER);
@@ -34,6 +35,7 @@ export class ServiceFactory implements IServiceFactory {
         this.registrationService = createRegistrationService(userRepository, tokenRepository, institutionRepository, this.notificationService);
         this.passwordService = createPasswordService(userRepository, tokenRepository, this.notificationService);
         this.loginService = createLoginService(userRepository, this.registrationService);
+        this.autoCorrectionService = createFormAutoCorrectionService(this.catalogService);
         this.validationService = createFormValidationService(this.catalogService);
 
     }
@@ -54,6 +56,8 @@ export class ServiceFactory implements IServiceFactory {
                 return this.validationService;
             case 'DATASET':
                 return this.datasetService;
+            case 'AUTOCORRECTION':
+                return this.autoCorrectionService;
             default:
                 throw new ApplicationSystemError(`Unknown serviceName, serviceName=${serviceName}`);
         }

@@ -1,24 +1,24 @@
-import { createService, IFormValidatorService } from './../formValidation.service';
+import { createService, IFormAutoCorrectionService } from './../formAutoCorrection.service';
 import { ISampleCollection } from '../..';
 import { ISampleData, ISample } from '../../domain/sample.entity';
 
-jest.mock('./../../domain', () => ({
-    createValidator: () => ({
-        validateSample: jest.fn()
-    })
-}));
-
-describe('Validate Sample Use Case', () => {
+describe('Auto-correct Sample Use Case', () => {
     // tslint:disable-next-line
     let mockCatalogService: any;
-    let service: IFormValidatorService;
+    let service: IFormAutoCorrectionService;
 
     let genericTestSampleCollection: ISampleCollection;
     let testSampleData: ISampleData;
     let genericTestSample: ISample;
     beforeEach(() => {
+
         mockCatalogService = {
-            getCatalog: jest.fn()
+            getCatalog: jest.fn(() => {
+                return {
+                    dump: () => jest.fn,
+                    getFuzzyIndex: jest.fn
+                };
+            })
         };
 
         service = createService(mockCatalogService);
@@ -59,22 +59,10 @@ describe('Validate Sample Use Case', () => {
         };
     });
     it('should successfully complete Happy Path', () => {
-        const result = service.validateSamples(genericTestSampleCollection);
+        const result = service.applyAutoCorrection(genericTestSampleCollection);
         expect(result).toEqual({
             samples: []
         });
     });
-    it('should call setError on testsample twice', () => {
-        const mockSetErrors = jest.fn();
-        const testSample = {
-            ...genericTestSample, ...{
-                setErrors: mockSetErrors
-            }
-        };
-        const testSampleCollection = {
-            samples: [testSample, testSample]
-        };
-        service.validateSamples(testSampleCollection);
-        expect(mockSetErrors.mock.calls.length).toBe(2);
-    });
+
 });

@@ -17,6 +17,7 @@ class CatalogService implements ICatalogService {
     getCatalog(catalogName: string) {
         return this.catalogRepository.getCatalog(catalogName);
     }
+
 }
 
 export function createService(repository: ICatalogRepository): ICatalogService {

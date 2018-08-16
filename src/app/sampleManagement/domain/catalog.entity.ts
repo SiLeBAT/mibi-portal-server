@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import * as Fuse from 'fuse.js';
 import { ApplicationDomainError } from '../../sharedKernel/errors';
 
 export interface ICatalog<T> {
@@ -8,6 +9,8 @@ export interface ICatalog<T> {
     containsEntryWithKeyValue(key: string, value: string): boolean;
     hasUniqueId(): boolean;
     getUniqueId(): string;
+     // tslint:disable-next-line
+    getFuzzyIndex(options: Fuse.FuseOptions, enhamcements?: any[]): Fuse;
     dump(): T[];
 }
 
@@ -35,7 +38,7 @@ export class Catalog<T> implements ICatalog<T> {
 
     getEntriesWithKeyValue(key: string, value: string): T[] {
         // tslint:disable-next-line
-        return  _.filter(this.data, (e: any) => e[key] === value);
+        return _.filter(this.data, (e: any) => e[key] === value);
     }
 
     getEntryWithId(id: string): T {
@@ -47,5 +50,10 @@ export class Catalog<T> implements ICatalog<T> {
 
     dump(): T[] {
         return this.data;
+    }
+    // tslint:disable-next-line
+    getFuzzyIndex(options: Fuse.FuseOptions, enhamcements: any[] = []): Fuse {
+        const data = this.dump();
+        return new Fuse(data.concat(enhamcements), options);
     }
 }

@@ -539,6 +539,7 @@ describe('Custom Validator Functions', () => {
                 containsEntryWithKeyValue: (key: string, value: string) => true,
                 hasUniqueId: () => true,
                 getUniqueId: () => '',
+                getFuzzyIndex: jest.fn(),
                 dump: () => []
             };
 
@@ -574,6 +575,7 @@ describe('Custom Validator Functions', () => {
                 containsEntryWithKeyValue: (key: string, value: string) => true,
                 hasUniqueId: () => true,
                 getUniqueId: () => '',
+                getFuzzyIndex: jest.fn(),
                 dump: () => []
             };
             const mockCatalogService: ICatalogService = {
@@ -609,6 +611,7 @@ describe('Custom Validator Functions', () => {
                 containsEntryWithKeyValue: (key: string, value: string) => true,
                 hasUniqueId: () => true,
                 getUniqueId: () => '',
+                getFuzzyIndex: jest.fn(),
                 dump: () => []
             };
             const mockCatalogService: ICatalogService = {
@@ -646,6 +649,7 @@ describe('Custom Validator Functions', () => {
                 containsEntryWithKeyValue: (key: string, value: string) => true,
                 hasUniqueId: () => true,
                 getUniqueId: () => '',
+                getFuzzyIndex: jest.fn(),
                 dump: () => []
             };
             const mockCatalogService: ICatalogService = {
@@ -685,6 +689,7 @@ describe('Custom Validator Functions', () => {
                 containsEntryWithKeyValue: (key: string, value: string) => true,
                 hasUniqueId: () => true,
                 getUniqueId: () => '',
+                getFuzzyIndex: jest.fn(),
                 dump: () => []
             };
             const mockCatalogService: ICatalogService = {
@@ -713,6 +718,7 @@ describe('Custom Validator Functions', () => {
                 containsEntryWithKeyValue: (key: string, value: string) => true,
                 hasUniqueId: () => true,
                 getUniqueId: () => '',
+                getFuzzyIndex: jest.fn(),
                 dump: () => []
             };
             const mockCatalogService: ICatalogService = {
@@ -736,6 +742,7 @@ describe('Custom Validator Functions', () => {
                 containsEntryWithKeyValue: (key: string, value: string) => false,
                 hasUniqueId: () => true,
                 getUniqueId: () => '',
+                getFuzzyIndex: jest.fn(),
                 dump: () => []
             };
             const mockCatalogService: ICatalogService = {

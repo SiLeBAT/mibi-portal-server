@@ -25,5 +25,12 @@
     },
     "appName": "MiBi-Portal",
     "supportContact": "",
-    "jobRecipient": ""
+    "jobRecipient": "",
+    "searchAlias": [
+        {
+            "catalog": "",
+            "token": "",
+            "alias" : []
+        }
+    ]
 }

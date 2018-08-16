@@ -1,4 +1,4 @@
-import { IServiceFactory, IController } from './../../../../app/ports';
+import { IServiceFactory, IController } from '../../../../app/ports';
 import {
     ILoginController,
     createLoginController,
@@ -14,7 +14,7 @@ import {
     IRegistrationController,
     createResetController,
     IResetController
-} from './../../controllers';
+} from '../../controllers';
 
 export interface IControllerFactory {
     // tslint:disable-next-line
@@ -31,7 +31,7 @@ export class ControllerFactory implements IControllerFactory {
     private validationController: IValidationController;
 
     constructor(private serviceFactory: IServiceFactory) {
-        this.validationController = createValidationController(this.serviceFactory.getService('VALIDATION'));
+        this.validationController = createValidationController(this.serviceFactory.getService('VALIDATION'), this.serviceFactory.getService('AUTOCORRECTION'));
         this.loginController = createLoginController(this.serviceFactory.getService('LOGIN'));
         this.institutionsController = createInstitutionController(this.serviceFactory.getService('INSTITUTION'));
         this.datasetController = createDatasetController(this.serviceFactory.getService('DATASET'), (this.getController('VALIDATION') as IValidationController));
