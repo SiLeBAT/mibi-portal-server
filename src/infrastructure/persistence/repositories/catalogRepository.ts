@@ -1,4 +1,5 @@
 import * as path from 'path';
+import * as fs from 'fs';
 import * as config from 'config';
 import * as csv from 'fast-csv';
 import * as rootDir from 'app-root-dir';
@@ -6,10 +7,17 @@ import * as rootDir from 'app-root-dir';
 import { logger } from './../../../aspects';
 import { ICatalogRepository, ICatalog, Catalog } from './../../../app/ports';
 
+declare type CatalogData = Record<string, string>;
+
+interface CatalogConfig {
+    filename: string;
+    id: string;
+    uId?: string;
+}
+
 class FileCatalogRepository implements ICatalogRepository {
     private catalogs: {
-        // tslint:disable-next-line
-        [key: string]: ICatalog<any>;
+        [key: string]: ICatalog<CatalogData>;
     };
     constructor(private dataDir: string) {
         this.dataDir = this.dataDir || path.join(rootDir.get(), 'data');
@@ -18,63 +26,102 @@ class FileCatalogRepository implements ICatalogRepository {
 
     initialise() {
         logger.verbose('FileCatalogRepository.initialize, Loading Catalog data from Filesystem', { dataDir: this.dataDir });
-        return Promise.all([
-            this.importCSVFile(path.join(this.dataDir, 'ADV2.csv')),
-            this.importCSVFile(path.join(this.dataDir, 'ADV3.csv')),
-            this.importCSVFile(path.join(this.dataDir, 'ADV4.csv')),
-            this.importCSVFile(path.join(this.dataDir, 'ADV8.csv')),
-            this.importCSVFile(path.join(this.dataDir, 'ADV9.csv')),
-            this.importCSVFile(path.join(this.dataDir, 'ADV12.csv')),
-            this.importCSVFile(path.join(this.dataDir, 'ADV16.csv')),
-            this.importCSVFile(path.join(this.dataDir, 'BW_Grund_Codes.csv')),
-            this.importCSVFile(path.join(this.dataDir, 'BW_Matrix_Codes.csv')),
-            this.importCSVFile(path.join(this.dataDir, 'BW_MatrixOberbegriff_Codes.csv')),
-            this.importCSVFile(path.join(this.dataDir, 'NRLs_u_Erreger.csv')),
-            this.importCSVFile(path.join(this.dataDir, 'PLZ.csv')),
-            this.importCSVFile(path.join(this.dataDir, 'ZSP2017.csv')),
-            this.importCSVFile(path.join(this.dataDir, 'ZSP2018.csv'))
-        ]).then(
-            (data) => {
-                // tslint:disable-next-line
-                this.catalogs['adv2'] = new Catalog<any>(data[0], 'Kode');
-                // tslint:disable-next-line
-                this.catalogs['adv3'] = new Catalog<any>(data[1]);
-                // tslint:disable-next-line
-                this.catalogs['adv4'] = new Catalog<any>(data[2], 'Kode');
-                // tslint:disable-next-line
-                this.catalogs['adv8'] = new Catalog<any>(data[3], 'Kode');
-                // tslint:disable-next-line
-                this.catalogs['adv9'] = new Catalog<any>(data[4], 'Kode');
-                // tslint:disable-next-line
-                this.catalogs['adv12'] = new Catalog<any>(data[5], 'Kode');
-                // tslint:disable-next-line
-                this.catalogs['adv16'] = new Catalog<any>(data[6], 'Kode');
-                // tslint:disable-next-line
-                this.catalogs['bw_grund'] = new Catalog<any>(data[7], 'Kode');
-                // tslint:disable-next-line
-                this.catalogs['bw_matrix'] = new Catalog<any>(data[8], 'Kode');
-                // tslint:disable-next-line
-                this.catalogs['bw_ober'] = new Catalog<any>(data[9], 'Kode');
-                // tslint:disable-next-line
-                this.catalogs['erreger'] = new Catalog<any>(data[10]);
-                // tslint:disable-next-line
-                this.catalogs['plz'] = new Catalog(<any>data[11], 'plz');
-                // tslint:disable-next-line
-                this.catalogs['zsp2017'] = new Catalog<any>(data[12]);
-                // tslint:disable-next-line
-                this.catalogs['zsp2018'] = new Catalog(<any>data[13]);
-                logger.info('Finished initialising Catalog Repository from Filesystem', { dataDir: this.dataDir });
+
+        const catalogsConfig: CatalogConfig[] = [
+            {
+                filename: 'ADV2.csv',
+                id: 'adv2',
+                uId: 'Kode'
+            },
+            {
+                filename: 'ADV3.csv',
+                id: 'adv3'
+            },
+            {
+                filename: 'ADV4.csv',
+                id: 'adv4',
+                uId: 'Kode'
+            },
+            {
+                filename: 'ADV8.csv',
+                id: 'adv8',
+                uId: 'Kode'
+            },
+            {
+                filename: 'ADV9.csv',
+                id: 'adv9',
+                uId: 'Kode'
+            },
+            {
+                filename: 'ADV12.csv',
+                id: 'adv12',
+                uId: 'Kode'
+            },
+            {
+                filename: 'ADV16.csv',
+                id: 'adv16',
+                uId: 'Kode'
+            },
+            {
+                filename: 'BW_Grund_Codes.csv',
+                id: 'bw_grund',
+                uId: 'Kode'
+            },
+            {
+                filename: 'BW_Matrix_Codes.csv',
+                id: 'bw_matrix',
+                uId: 'Kode'
+            },
+            {
+                filename: 'BW_MatrixOberbegriff_Codes.csv',
+                id: 'bw_ober',
+                uId: 'Kode'
+            },
+            {
+                filename: 'NRLs_u_Erreger.csv',
+                id: 'erreger'
+            },
+            {
+                filename: 'PLZ.csv',
+                id: 'plz',
+                uId: 'plz'
+            },
+            {
+                filename: 'ZSP2017.csv',
+                id: 'zsp2017'
+            },
+            {
+                filename: 'ZSP2018.csv',
+                id: 'zsp2018'
             }
+        ];
+
+        const promiseArray = catalogsConfig.map(catalogConfig => {
+            const filePath = path.join(this.dataDir, catalogConfig.filename);
+            if (fs.existsSync(filePath)) {
+                return this.importCSVFile(filePath).then(
+                    (data: CatalogData[]) => this.catalogs[catalogConfig.id] = new Catalog<CatalogData>(data, catalogConfig.uId)
+                );
+            } else {
+                return new Promise((resolve, reject) => {
+                    logger.warn('Catalog missing on Filesystem', { catalog: catalogConfig.filename });
+                    this.catalogs[catalogConfig.id] = new Catalog<CatalogData>([], catalogConfig.uId);
+                    resolve();
+                });
+            }
+        });
+
+        return Promise.all(promiseArray).then(
+            data => logger.info('Finished initialising Catalog Repository from Filesystem', { dataDir: this.dataDir })
         );
     }
-    // tslint:disable-next-line
-    getCatalog(catalogName: string): ICatalog<any> {
+
+    getCatalog(catalogName: string): ICatalog<CatalogData> {
         return this.catalogs[catalogName];
     }
-    // tslint:disable-next-line
-    private importCSVFile(filePath: string): Promise<any[]> {
-        // tslint:disable-next-line
-        let data: any[] = [];
+
+    private importCSVFile(filePath: string): Promise<CatalogData[]> {
+        let data: CatalogData[] = [];
 
         return new Promise(function (resolve, reject) {
             csv
@@ -92,8 +139,6 @@ export const repository = new FileCatalogRepository(config.get('dataStore.dataDi
 
 export function initialiseRepository() {
     return repository.initialise().then(
-        () => {
-            return repository;
-        }
+        () => repository
     );
 }
