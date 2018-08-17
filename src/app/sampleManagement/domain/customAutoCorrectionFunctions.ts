@@ -30,7 +30,13 @@ function autoCorrectPathogen(catalogService: ICatalogService) {
             'Kode'
         ]
     };
-    const searchAlias: ISearchAlias[] = config.get('searchAlias') || [];
+    let searchAlias: ISearchAlias[] = [];
+
+    try {
+        searchAlias = config.get('searchAlias');
+    } catch (err) {
+        logger.warn('No SearchAlias configuration found in configuration.');
+    }
 
     const enhancements = _(searchAlias)
         .filter((e: ISearchAlias) => e.catalog.toLowerCase().localeCompare('adv16') === 0)
