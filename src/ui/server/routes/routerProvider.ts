@@ -8,10 +8,11 @@ import { getRouter as getActivateRouter } from './authentication/activation';
 import { getRouter as getAdminActivateRouter } from './authentication/adminactivation';
 import { getRouter as getInstitutionsRouter } from './institution';
 import { getRouter as getRecoveryRouter } from './authentication/recovery';
+import { getRouter as getUserRouter } from './users';
 import { IControllerFactory } from '../sharedKernel';
 
 export enum RouterType {
-    LOGIN, VALIDATE, DATASET, REGISTER, RESET, ACTIVATE, INSTITUTIONS, RECOVERY, JOB, ADMINACTIVATE
+    LOGIN, VALIDATE, DATASET, REGISTER, RESET, ACTIVATE, INSTITUTIONS, RECOVERY, JOB, ADMINACTIVATE, USER
 }
 
 function getRouter(type: RouterType, controllerFactory: IControllerFactory) {
@@ -36,6 +37,8 @@ function getRouter(type: RouterType, controllerFactory: IControllerFactory) {
             return getInstitutionsRouter(controllerFactory);
         case RouterType.RECOVERY:
             return getRecoveryRouter(controllerFactory);
+        case RouterType.USER:
+            return getUserRouter(controllerFactory);
         default:
             throw new Error(`Unknown RouterType, type=${type}`);
     }
