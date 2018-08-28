@@ -133,7 +133,22 @@ const zoMoConstraints: IValidationConstraints = {
     }
 };
 
-const standardConstrainst: IValidationConstraints = {
+const standardConstraints: IValidationConstraints = {
+    sampling_date: {
+        atLeastOneOf: {
+            message: vep.getError('19'),
+            additionalMembers: ['isolation_date']
+        }
+    },
+    isolation_date: {
+        atLeastOneOf: {
+            message: vep.getError('19'),
+            additionalMembers: ['sampling_date']
+        }
+    }
+};
+
+const baseConstraints: IValidationConstraints = {
     sample_id: {
         atLeastOneOf: {
             message: vep.getError('69'),
@@ -167,10 +182,6 @@ const standardConstrainst: IValidationConstraints = {
         }
     },
     sampling_date: {
-        atLeastOneOf: {
-            message: vep.getError('19'),
-            additionalMembers: ['isolation_date']
-        },
         presence: {
             message: vep.getError('11'),
             allowEmpty: false
@@ -204,10 +215,6 @@ const standardConstrainst: IValidationConstraints = {
         }
     },
     isolation_date: {
-        atLeastOneOf: {
-            message: vep.getError('19'),
-            additionalMembers: ['sampling_date']
-        },
         presence: {
             message: vep.getError('15'),
             allowEmpty: false
@@ -422,20 +429,24 @@ const standardConstrainst: IValidationConstraints = {
 };
 
 function getConstraints(set: ConstraintSet) {
+    const newConstraints: IValidationConstraints = { ...baseConstraints };
     switch (set) {
         case ConstraintSet.ZOMO:
-            const standardConstraintClone: IValidationConstraints = { ...standardConstrainst };
-            _.forEach(standardConstraintClone, (value: IValidationRuleSet, key) => {
+            _.forEach(newConstraints, (value: IValidationRuleSet, key) => {
                 if (zoMoConstraints.hasOwnProperty(key)) {
-                    standardConstraintClone[key] = { ...value, ...zoMoConstraints[key] };
+                    newConstraints[key] = { ...value, ...zoMoConstraints[key] };
                 }
             });
-            return standardConstraintClone;
+            break;
         case ConstraintSet.STANDARD:
         default:
-            return standardConstrainst;
-
+            _.forEach(newConstraints, (value: IValidationRuleSet, key) => {
+                if (standardConstraints.hasOwnProperty(key)) {
+                    newConstraints[key] = { ...value, ...standardConstraints[key] };
+                }
+            });
     }
+    return newConstraints;
 }
 
 export {

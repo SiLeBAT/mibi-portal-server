@@ -73,27 +73,8 @@ describe('Custom Validator Functions', () => {
         });
 
         it('should fail validation with error message', () => {
-            const differentSample = {
-                sample_id: '1',
-                sample_id_avv: '1-ABC',
-                pathogen_adv: 'Escherichia coli',
-                pathogen_text: '',
-                sampling_date: '01.02.2017',
-                isolation_date: '01.03.2017',
-                sampling_location_adv: '11000000',
-                sampling_location_zip: '10787',
-                sampling_location_text: 'Berlin',
-                topic_adv: '01',
-                matrix_adv: '063502',
-                matrix_text: 'Hähnchen auch tiefgefroren',
-                process_state_adv: '',
-                sampling_reason_adv: '10',
-                sampling_reason_text: 'Planprobe',
-                operations_mode_adv: '4010000',
-                operations_mode_text: 'Lebensmitteleinzelhandel',
-                vvvo: '',
-                comment: ''
-            };
+
+            const differentSample = { ...testSample, ...{ process_state_adv: '' } };
             const error = dependentFieldEntry(differentSample.process_state_adv, {
                 message: validationError,
                 field: 'operations_mode_adv',
@@ -103,27 +84,7 @@ describe('Custom Validator Functions', () => {
         });
 
         it('should validate without errors', () => {
-            const differentSample = {
-                sample_id: '1',
-                sample_id_avv: '1-ABC',
-                pathogen_adv: 'Escherichia coli',
-                pathogen_text: '',
-                sampling_date: '01.02.2017',
-                isolation_date: '01.03.2017',
-                sampling_location_adv: '11000000',
-                sampling_location_zip: '10787',
-                sampling_location_text: 'Berlin',
-                topic_adv: '01',
-                matrix_adv: '063502',
-                matrix_text: 'Hähnchen auch tiefgefroren',
-                process_state_adv: '',
-                sampling_reason_adv: '10',
-                sampling_reason_text: 'Planprobe',
-                operations_mode_adv: '4010000',
-                operations_mode_text: 'Lebensmitteleinzelhandel',
-                vvvo: '',
-                comment: ''
-            };
+            const differentSample = { ...testSample, ...{ process_state_adv: '' } };
             const error = dependentFieldEntry(differentSample.process_state_adv, {
                 message: validationError,
                 field: 'operations_mode_adv',
@@ -165,25 +126,10 @@ describe('Custom Validator Functions', () => {
         describe('latest', () => {
             it('should validate because Isolation happened on same day as sampling', () => {
                 const oldSample = {
-                    sample_id: '1',
-                    sample_id_avv: '1-ABC',
-                    pathogen_adv: 'Escherichia coli',
-                    pathogen_text: '',
-                    sampling_date: '01.02.2016',
-                    isolation_date: '01.02.2016',
-                    sampling_location_adv: '11000000',
-                    sampling_location_zip: '10787',
-                    sampling_location_text: 'Berlin',
-                    topic_adv: '01',
-                    matrix_adv: '063502',
-                    matrix_text: 'Hähnchen auch tiefgefroren',
-                    process_state_adv: '999',
-                    sampling_reason_adv: '10',
-                    sampling_reason_text: 'Planprobe',
-                    operations_mode_adv: '4010000',
-                    operations_mode_text: 'Lebensmitteleinzelhandel',
-                    vvvo: '',
-                    comment: ''
+                    ...testSample, ...{
+                        sampling_date: '01.02.2016',
+                        isolation_date: '01.02.2016'
+                    }
                 };
 
                 const error = referenceDate(oldSample.sampling_date, {
@@ -195,25 +141,10 @@ describe('Custom Validator Functions', () => {
 
             it('should validate because isolation happened after sampling', () => {
                 const oldSample = {
-                    sample_id: '1',
-                    sample_id_avv: '1-ABC',
-                    pathogen_adv: 'Escherichia coli',
-                    pathogen_text: '',
-                    sampling_date: '01.02.2016',
-                    isolation_date: '01.03.2016',
-                    sampling_location_adv: '11000000',
-                    sampling_location_zip: '10787',
-                    sampling_location_text: 'Berlin',
-                    topic_adv: '01',
-                    matrix_adv: '063502',
-                    matrix_text: 'Hähnchen auch tiefgefroren',
-                    process_state_adv: '999',
-                    sampling_reason_adv: '10',
-                    sampling_reason_text: 'Planprobe',
-                    operations_mode_adv: '4010000',
-                    operations_mode_text: 'Lebensmitteleinzelhandel',
-                    vvvo: '',
-                    comment: ''
+                    ...testSample, ...{
+                        sampling_date: '01.02.2016',
+                        isolation_date: '01.03.2016'
+                    }
                 };
 
                 const error = referenceDate(oldSample.sampling_date, {
@@ -225,25 +156,10 @@ describe('Custom Validator Functions', () => {
 
             it('should not validate because Isolation happened before sampling', () => {
                 const oldSample = {
-                    sample_id: '1',
-                    sample_id_avv: '1-ABC',
-                    pathogen_adv: 'Escherichia coli',
-                    pathogen_text: '',
-                    sampling_date: '01.02.2016',
-                    isolation_date: '01.01.2016',
-                    sampling_location_adv: '11000000',
-                    sampling_location_zip: '10787',
-                    sampling_location_text: 'Berlin',
-                    topic_adv: '01',
-                    matrix_adv: '063502',
-                    matrix_text: 'Hähnchen auch tiefgefroren',
-                    process_state_adv: '999',
-                    sampling_reason_adv: '10',
-                    sampling_reason_text: 'Planprobe',
-                    operations_mode_adv: '4010000',
-                    operations_mode_text: 'Lebensmitteleinzelhandel',
-                    vvvo: '',
-                    comment: ''
+                    ...testSample, ...{
+                        sampling_date: '01.02.2016',
+                        isolation_date: '01.01.2016'
+                    }
                 };
 
                 const error = referenceDate(oldSample.sampling_date, {
@@ -257,25 +173,10 @@ describe('Custom Validator Functions', () => {
         describe('earliest', () => {
             it('should validate because sampling happened before isolation', () => {
                 const oldSample = {
-                    sample_id: '1',
-                    sample_id_avv: '1-ABC',
-                    pathogen_adv: 'Escherichia coli',
-                    pathogen_text: '',
-                    sampling_date: '01.02.2016',
-                    isolation_date: '01.03.2016',
-                    sampling_location_adv: '11000000',
-                    sampling_location_zip: '10787',
-                    sampling_location_text: 'Berlin',
-                    topic_adv: '01',
-                    matrix_adv: '063502',
-                    matrix_text: 'Hähnchen auch tiefgefroren',
-                    process_state_adv: '999',
-                    sampling_reason_adv: '10',
-                    sampling_reason_text: 'Planprobe',
-                    operations_mode_adv: '4010000',
-                    operations_mode_text: 'Lebensmitteleinzelhandel',
-                    vvvo: '',
-                    comment: ''
+                    ...testSample, ...{
+                        sampling_date: '01.02.2016',
+                        isolation_date: '01.03.2016'
+                    }
                 };
 
                 const error = referenceDate(oldSample.isolation_date, {
@@ -287,25 +188,10 @@ describe('Custom Validator Functions', () => {
 
             it('should validate because sampling happened on same day as isolation', () => {
                 const oldSample = {
-                    sample_id: '1',
-                    sample_id_avv: '1-ABC',
-                    pathogen_adv: 'Escherichia coli',
-                    pathogen_text: '',
-                    sampling_date: '01.02.2016',
-                    isolation_date: '01.02.2016',
-                    sampling_location_adv: '11000000',
-                    sampling_location_zip: '10787',
-                    sampling_location_text: 'Berlin',
-                    topic_adv: '01',
-                    matrix_adv: '063502',
-                    matrix_text: 'Hähnchen auch tiefgefroren',
-                    process_state_adv: '999',
-                    sampling_reason_adv: '10',
-                    sampling_reason_text: 'Planprobe',
-                    operations_mode_adv: '4010000',
-                    operations_mode_text: 'Lebensmitteleinzelhandel',
-                    vvvo: '',
-                    comment: ''
+                    ...testSample, ...{
+                        sampling_date: '01.02.2016',
+                        isolation_date: '01.02.2016'
+                    }
                 };
 
                 const error = referenceDate(oldSample.isolation_date, {
@@ -317,25 +203,10 @@ describe('Custom Validator Functions', () => {
 
             it('should not validate because sampling happened after isolation', () => {
                 const oldSample = {
-                    sample_id: '1',
-                    sample_id_avv: '1-ABC',
-                    pathogen_adv: 'Escherichia coli',
-                    pathogen_text: '',
-                    sampling_date: '01.02.2016',
-                    isolation_date: '01.01.2016',
-                    sampling_location_adv: '11000000',
-                    sampling_location_zip: '10787',
-                    sampling_location_text: 'Berlin',
-                    topic_adv: '01',
-                    matrix_adv: '063502',
-                    matrix_text: 'Hähnchen auch tiefgefroren',
-                    process_state_adv: '999',
-                    sampling_reason_adv: '10',
-                    sampling_reason_text: 'Planprobe',
-                    operations_mode_adv: '4010000',
-                    operations_mode_text: 'Lebensmitteleinzelhandel',
-                    vvvo: '',
-                    comment: ''
+                    ...testSample, ...{
+                        sampling_date: '01.02.2016',
+                        isolation_date: '01.01.2016'
+                    }
                 };
 
                 const error = referenceDate(oldSample.isolation_date, {
@@ -348,25 +219,10 @@ describe('Custom Validator Functions', () => {
 
         it('should not validate', () => {
             const oldSample = {
-                sample_id: '1',
-                sample_id_avv: '1-ABC',
-                pathogen_adv: 'Escherichia coli',
-                pathogen_text: '',
-                sampling_date: '01.02.2016',
-                isolation_date: '01.03.2017',
-                sampling_location_adv: '11000000',
-                sampling_location_zip: '10787',
-                sampling_location_text: 'Berlin',
-                topic_adv: '01',
-                matrix_adv: '063502',
-                matrix_text: 'Hähnchen auch tiefgefroren',
-                process_state_adv: '999',
-                sampling_reason_adv: '10',
-                sampling_reason_text: 'Planprobe',
-                operations_mode_adv: '4010000',
-                operations_mode_text: 'Lebensmitteleinzelhandel',
-                vvvo: '',
-                comment: ''
+                ...testSample, ...{
+                    sampling_date: '01.02.2016',
+                    isolation_date: '01.03.2017'
+                }
             };
 
             const error = referenceDate(oldSample.sampling_date, {
@@ -382,25 +238,10 @@ describe('Custom Validator Functions', () => {
 
         it('should not validate', () => {
             const oldSample = {
-                sample_id: '1',
-                sample_id_avv: '1-ABC',
-                pathogen_adv: 'Escherichia coli',
-                pathogen_text: '',
-                sampling_date: '14.11.2006',
-                isolation_date: '15.11.2016',
-                sampling_location_adv: '11000000',
-                sampling_location_zip: '10787',
-                sampling_location_text: 'Berlin',
-                topic_adv: '01',
-                matrix_adv: '063502',
-                matrix_text: 'Hähnchen auch tiefgefroren',
-                process_state_adv: '999',
-                sampling_reason_adv: '10',
-                sampling_reason_text: 'Planprobe',
-                operations_mode_adv: '4010000',
-                operations_mode_text: 'Lebensmitteleinzelhandel',
-                vvvo: '',
-                comment: ''
+                ...testSample, ...{
+                    sampling_date: '14.11.2006',
+                    isolation_date: '15.11.2016'
+                }
             };
 
             const error = referenceDate(oldSample.sampling_date, {
@@ -441,25 +282,9 @@ describe('Custom Validator Functions', () => {
 
         it('should not validate', () => {
             const differentSample = {
-                sample_id: '1',
-                sample_id_avv: '1-ABC',
-                pathogen_adv: 'Bob',
-                pathogen_text: '',
-                sampling_date: '14.11.2006',
-                isolation_date: '15.11.2016',
-                sampling_location_adv: '11000000',
-                sampling_location_zip: '10787',
-                sampling_location_text: 'Berlin',
-                topic_adv: '01',
-                matrix_adv: '063502',
-                matrix_text: 'Hähnchen auch tiefgefroren',
-                process_state_adv: '999',
-                sampling_reason_adv: '10',
-                sampling_reason_text: 'Planprobe',
-                operations_mode_adv: '4010000',
-                operations_mode_text: 'Lebensmitteleinzelhandel',
-                vvvo: '',
-                comment: ''
+                ...testSample, ...{
+                    pathogen_adv: 'Bob'
+                }
             };
 
             const error = validationFn(differentSample.pathogen_adv, {
@@ -492,27 +317,11 @@ describe('Custom Validator Functions', () => {
 
     describe('registeredZoMo', () => {
         it('should validate without errors', () => {
-
             const zoMoSample = {
-                sample_id: '1',
-                sample_id_avv: '1-ABC',
-                pathogen_adv: 'Escherichia coli',
-                pathogen_text: '',
-                sampling_date: '01.02.2017',
-                isolation_date: '01.03.2017',
-                sampling_location_adv: '11000000',
-                sampling_location_zip: '10787',
-                sampling_location_text: 'Berlin',
-                topic_adv: '01',
-                matrix_adv: '063502',
-                matrix_text: 'Hähnchen auch tiefgefroren',
-                process_state_adv: '999',
-                sampling_reason_adv: '81',
-                sampling_reason_text: '',
-                operations_mode_adv: '4010000',
-                operations_mode_text: 'Lebensmitteleinzelhandel',
-                vvvo: '',
-                comment: ''
+                ...testSample, ...{
+                    sampling_reason_adv: '81',
+                    sampling_reason_text: ''
+                }
             };
 
             const fakeEntry = {
