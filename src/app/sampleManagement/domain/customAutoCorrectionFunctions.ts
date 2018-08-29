@@ -63,7 +63,7 @@ function autoCorrectPathogen(catalogService: ICatalogService) {
                 result = fuse.search(sampleData.pathogen_adv);
                 searchCache[sampleData.pathogen_adv] = result;
             }
-            if (result.length > 0) {
+            if (result.length) {
                 if (sampleData.pathogen_adv.localeCompare(result[0]) !== 0) {
                     return {
                         field: 'pathogen_adv' as keyof ISampleData,
