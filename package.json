@@ -13,7 +13,7 @@
     "build": "npm run clean &&  npm run tsc && npm run cp:view && npm run test && npm run lint",
     "test": "jest",
     "test:watch": "npm test -- --watch",
-    "test:e21": "node ./lib/e2e",
+    "test:e2e": "node ./lib/e2e",
     "test:e2e:watch": "nodemon -e ts --exec \"npm run compile && node ./lib/e2e\"",
     "test:all:watch": "nodemon -e ts --exec \"npm run build && node ./lib/e2e\"",
     "test:coverage": "npm test -- --coverage",

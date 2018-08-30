@@ -14,12 +14,17 @@ export interface ISearchAlias {
     alias: string[];
 }
 
+interface IFuzzySearchResultEntry {
+    item: string;
+    score: number;
+}
 // ADV16
 function autoCorrectPathogen(catalogService: ICatalogService) {
 
     logger.debug('Initializing auto-correction: Pathogen (ADV-16) & creating closure');
     const options = {
         shouldSort: true,
+        includeScore: true,
         threshold: 0.6,
         location: 0,
         distance: 100,
@@ -51,11 +56,11 @@ function autoCorrectPathogen(catalogService: ICatalogService) {
 
     const fuse = catalogService.getCatalog('adv16').getFuzzyIndex(options, enhancements);
 
-    const searchCache: Record<string, string[]> = {};
+    const searchCache: Record<string, IFuzzySearchResultEntry[]> = {};
 
     return (sample: ISample): IAutoCorrectedValue | null => {
         const sampleData = sample.getData();
-        let result: string[] = [];
+        let result: IFuzzySearchResultEntry[] = [];
         if (sampleData.pathogen_adv.replace(/\s/g, '').length) {
             if (searchCache[sampleData.pathogen_adv]) {
                 result = searchCache[sampleData.pathogen_adv];
@@ -64,11 +69,20 @@ function autoCorrectPathogen(catalogService: ICatalogService) {
                 searchCache[sampleData.pathogen_adv] = result;
             }
             if (result.length) {
-                if (sampleData.pathogen_adv.localeCompare(result[0]) !== 0) {
+                for (let i = 0; i < 5; i++) {
+                    if (result[i]) {
+                        logger.verbose(`Fuzzy Search result for ${sampleData.pathogen_adv}: ` , {
+                            rank: i,
+                            guess: result[i].item,
+                            score: result[i].score
+                        });
+                    }
+                }
+                if (sampleData.pathogen_adv.localeCompare(result[0].item) !== 0) {
                     return {
                         field: 'pathogen_adv' as keyof ISampleData,
                         original: sampleData.pathogen_adv,
-                        corrected: result[0]
+                        corrected: result[0].item
                     };
                 }
             }
