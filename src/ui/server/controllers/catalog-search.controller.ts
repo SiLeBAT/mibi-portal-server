@@ -15,13 +15,12 @@ class CatalogSearchController implements ICatalogSearchController {
 
         const body = req.body;
         logger.info('CatalogSearchController.searchCatalog, Request received');
-        const searchTerm: string = body.searchTerm;
-        const enhanced: boolean = body.enhanced;
-        const catalog: string = body.catalog;
+        const searchTerms: string[] = body.searchTerms;
+        const catalog = body.catalog;
         const searchOptions = body.searchOptions;
         let dto;
         try {
-            dto = this.catalogSearchService.searchCatalog(catalog, searchTerm, searchOptions, enhanced);
+            dto = this.catalogSearchService.searchCatalog(catalog, searchTerms, searchOptions);
             res.status(200);
         } catch (err) {
             logger.error(`Unable to search catalog. error=${err}`);
