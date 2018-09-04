@@ -2,7 +2,7 @@ import { ILoginService, createService as createLoginService } from '../../authen
 import { createService as createInstitutionService, IInstitutionService } from '../../authentication/application/institution.service';
 import { RepositoryType, IRepositoryFactory } from './repositoryFactory';
 import { IRegistrationService, IPasswordService, createRegistrationService, createPasswordService } from '../../authentication/application';
-import { IFormValidatorService, createFormValidationService, ICatalogService, createCatalogService, IDatasetService, createDatasetService, createFormAutoCorrectionService, IFormAutoCorrectionService } from '../../sampleManagement/application';
+import { IFormValidatorService, createFormValidationService, ICatalogService, createCatalogService, IDatasetService, createDatasetService, createFormAutoCorrectionService, IFormAutoCorrectionService, ICatalogSearchService, createCatalogSearchService } from '../../sampleManagement/application';
 import { ApplicationSystemError } from '../errors';
 import { INotificationService, createNotificationService } from '../application';
 
@@ -21,6 +21,7 @@ export class ServiceFactory implements IServiceFactory {
     private catalogService: ICatalogService;
     private datasetService: IDatasetService;
     private autoCorrectionService: IFormAutoCorrectionService;
+    private catalogSearchService: ICatalogSearchService;
 
     constructor(private repositoryFactory: IRepositoryFactory) {
         const userRepository = this.repositoryFactory.getRepository(RepositoryType.USER);
@@ -37,6 +38,7 @@ export class ServiceFactory implements IServiceFactory {
         this.loginService = createLoginService(userRepository, this.registrationService);
         this.autoCorrectionService = createFormAutoCorrectionService(this.catalogService);
         this.validationService = createFormValidationService(this.catalogService);
+        this.catalogSearchService = createCatalogSearchService(this.catalogService);
 
     }
 
@@ -58,6 +60,8 @@ export class ServiceFactory implements IServiceFactory {
                 return this.datasetService;
             case 'AUTOCORRECTION':
                 return this.autoCorrectionService;
+            case 'CATALOG_SEARCH':
+                return this.catalogSearchService;
             default:
                 throw new ApplicationSystemError(`Unknown serviceName, serviceName=${serviceName}`);
         }

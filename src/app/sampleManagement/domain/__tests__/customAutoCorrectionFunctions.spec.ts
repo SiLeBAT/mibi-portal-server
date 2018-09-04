@@ -44,7 +44,8 @@ describe('Custom Auto-correction Functions', () => {
                         dump: () => mockADVEntries,
                         getFuzzyIndex: (options: Fuse.FuseOptions) => new Fuse(mockADVEntries, options)
                     };
-                })
+                }),
+                getCatalogSearchAliases: () => []
             };
             genericSampleData = {
                 sample_id: '1',

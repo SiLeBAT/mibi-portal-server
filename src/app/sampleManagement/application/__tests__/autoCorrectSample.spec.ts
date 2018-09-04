@@ -18,7 +18,8 @@ describe('Auto-correct Sample Use Case', () => {
                     dump: () => jest.fn,
                     getFuzzyIndex: jest.fn
                 };
-            })
+            }),
+            getCatalogSearchAliases: jest.fn(() => [])
         };
 
         service = createService(mockCatalogService);

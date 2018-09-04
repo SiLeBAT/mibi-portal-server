@@ -5,3 +5,4 @@ export { createController as createRecoveryController, IRecoveryController } fro
 export { createRegistrationController as createRegistrationController, IRegistrationController } from './registration.controller';
 export { createController as createValidationController, IValidationController } from './validation.controller';
 export { createController as createResetController, IResetController } from './reset.controller';
+export { createController as createCatalogSearchController, ICatalogSearchController } from './catalog-search.controller';
