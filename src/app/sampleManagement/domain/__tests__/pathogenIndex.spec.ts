@@ -1,9 +1,9 @@
-import { createPathogenIndex, IPathogenIndex, IADV16Data } from './../pathogenIndex.entity';
+import { createPathogenIndex, IPathogenIndex } from './../pathogenIndex.entity';
 
 describe('Pathogen Index', () => {
     // tslint:disable-next-line
     let testSample: any;
-    let data: IADV16Data[];
+    let data: Record<string, string | number>[];
     beforeEach(() => {
         data = [{
             ADV16_Int: 801001,

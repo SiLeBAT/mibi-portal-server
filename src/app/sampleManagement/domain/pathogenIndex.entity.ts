@@ -11,23 +11,6 @@ interface IPathogenSet {
     add(s: string): void;
 }
 
-export interface IADV16Data {
-    ADV16_Int: number;
-    DatumGueltigkeit: string;
-    Katalog: string;
-    Kode: string;
-    Kodiersystem: string;
-    'P-Code1': string;
-    'P-Code2': string;
-    'P-Code3': string;
-    Text1: string;
-    Text2: string;
-    Text3: string;
-    Text4: string;
-    Text5: string;
-    Text6: string;
-}
-
 class ADV16PathogenSet implements IPathogenSet {
 
     private pathogenTypes: string[] = [];
@@ -87,20 +70,20 @@ class ADV16PathogenIndex implements IPathogenIndex {
 
     private ADVCodeRegEx: RegExp = /\d{7}/;
 
-    constructor(data: IADV16Data[]) {
+    constructor(data: Record<string, string | number>[]) {
         data.forEach(
             e => {
-                this.codeList.push(e.Kode);
+                this.codeList.push(e.Kode as string);
                 let added = false;
                 for (let i = 0; i < this.pathogenSets.length; i++) {
-                    if (this.isLowerCaseTextContained(e.Text1, this.pathogenSets[i].key)) {
-                        this.pathogenSets[i].add(e.Text1.replace(/\s/g, ''));
+                    if (this.isLowerCaseTextContained(e.Text1 as string, this.pathogenSets[i].key)) {
+                        this.pathogenSets[i].add((e.Text1 as string).replace(/\s/g, ''));
                         added = true;
                         break;
                     }
                 }
                 if (!added) {
-                    this.defaultPathogenSet.add(e.Text1.replace(/\s/g, ''));
+                    this.defaultPathogenSet.add((e.Text1 as string).replace(/\s/g, ''));
                 }
             }
         );
@@ -136,7 +119,7 @@ class ADV16PathogenIndex implements IPathogenIndex {
     }
 }
 
-function createPathogenIndex(data: IADV16Data[]): IPathogenIndex {
+function createPathogenIndex(data: Record<string, string | number>[]): IPathogenIndex {
     return new ADV16PathogenIndex(data);
 }
 export {

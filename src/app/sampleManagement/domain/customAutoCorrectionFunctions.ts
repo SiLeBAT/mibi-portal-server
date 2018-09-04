@@ -1,4 +1,3 @@
-import * as config from 'config';
 import * as _ from 'lodash';
 import { ISample, IAutoCorrectedValue, ISampleData } from './sample.entity';
 import { ICatalogService } from '../application';
@@ -21,6 +20,7 @@ interface IFuzzySearchResultEntry {
 // ADV16
 function autoCorrectPathogen(catalogService: ICatalogService) {
 
+    const catalogName = 'adv16';
     logger.debug('Initializing auto-correction: Pathogen (ADV-16) & creating closure');
     const options = {
         shouldSort: true,
@@ -35,16 +35,8 @@ function autoCorrectPathogen(catalogService: ICatalogService) {
             'Kode'
         ]
     };
-    let searchAlias: ISearchAlias[] = [];
 
-    try {
-        searchAlias = config.get('searchAlias');
-    } catch (err) {
-        logger.warn('No SearchAlias configuration found in configuration.');
-    }
-
-    const enhancements = _(searchAlias)
-        .filter((e: ISearchAlias) => e.catalog.toLowerCase().localeCompare('adv16') === 0)
+    const enhancements = _(catalogService.getCatalogSearchAliases(catalogName))
         .map((e: ISearchAlias) => {
             return e.alias.map(alias => ({
                 Text1: e.token,
@@ -54,7 +46,7 @@ function autoCorrectPathogen(catalogService: ICatalogService) {
         .flattenDeep()
         .value();
 
-    const fuse = catalogService.getCatalog('adv16').getFuzzyIndex(options, enhancements);
+    const fuse = catalogService.getCatalog(catalogName).getFuzzyIndex(options, enhancements);
 
     const searchCache: Record<string, IFuzzySearchResultEntry[]> = {};
 
@@ -71,7 +63,7 @@ function autoCorrectPathogen(catalogService: ICatalogService) {
             if (result.length) {
                 for (let i = 0; i < 5; i++) {
                     if (result[i]) {
-                        logger.verbose(`Fuzzy Search result for ${sampleData.pathogen_adv}: ` , {
+                        logger.verbose(`Fuzzy Search result for ${sampleData.pathogen_adv}: `, {
                             rank: i,
                             guess: result[i].item,
                             score: result[i].score

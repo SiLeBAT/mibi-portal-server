@@ -353,7 +353,8 @@ describe('Custom Validator Functions', () => {
             };
 
             const mockCatalogService: ICatalogService = {
-                getCatalog: () => mockCatalog
+                getCatalog: () => mockCatalog,
+                getCatalogSearchAliases: jest.fn()
             };
             const error = registeredZoMo(mockCatalogService)(zoMoSample.operations_mode_adv, {
                 message: validationError,
@@ -388,7 +389,8 @@ describe('Custom Validator Functions', () => {
                 dump: () => []
             };
             const mockCatalogService: ICatalogService = {
-                getCatalog: () => mockCatalog
+                getCatalog: () => mockCatalog,
+                getCatalogSearchAliases: jest.fn()
             };
             const error = nonUniqueEntry(mockCatalogService)(testSample.matrix_adv, {
                 message: validationError,
@@ -424,7 +426,8 @@ describe('Custom Validator Functions', () => {
                 dump: () => []
             };
             const mockCatalogService: ICatalogService = {
-                getCatalog: () => mockCatalog
+                getCatalog: () => mockCatalog,
+                getCatalogSearchAliases: jest.fn()
             };
             const error = nonUniqueEntry(mockCatalogService)(testSample.matrix_adv, {
                 message: validationError,
@@ -462,7 +465,8 @@ describe('Custom Validator Functions', () => {
                 dump: () => []
             };
             const mockCatalogService: ICatalogService = {
-                getCatalog: () => mockCatalog
+                getCatalog: () => mockCatalog,
+                getCatalogSearchAliases: jest.fn()
             };
             const error = nonUniqueEntry(mockCatalogService)(testSample.matrix_adv, {
                 message: validationError,
@@ -502,7 +506,8 @@ describe('Custom Validator Functions', () => {
                 dump: () => []
             };
             const mockCatalogService: ICatalogService = {
-                getCatalog: () => mockCatalog
+                getCatalog: () => mockCatalog,
+                getCatalogSearchAliases: jest.fn()
             };
             const error = nonUniqueEntry(mockCatalogService)(testSample.matrix_adv, {
                 message: validationError,
@@ -531,7 +536,8 @@ describe('Custom Validator Functions', () => {
                 dump: () => []
             };
             const mockCatalogService: ICatalogService = {
-                getCatalog: () => mockCatalog
+                getCatalog: () => mockCatalog,
+                getCatalogSearchAliases: jest.fn()
             };
             const error = inCatalog(mockCatalogService)(testSample.matrix_adv, {
                 message: validationError,
@@ -555,7 +561,8 @@ describe('Custom Validator Functions', () => {
                 dump: () => []
             };
             const mockCatalogService: ICatalogService = {
-                getCatalog: () => mockCatalog
+                getCatalog: () => mockCatalog,
+                getCatalogSearchAliases: jest.fn()
             };
             const error = inCatalog(mockCatalogService)(testSample.process_state_adv, {
                 message: validationError,

@@ -3,6 +3,7 @@ import * as jwt from 'express-jwt';
 function validateToken(secret: string) {
     const whiteList = [
         /((?!\/api\/).)*$/,
+        '/api/v1/catalog-search',
         '/api/v1/institutions',
         '/api/v1/users/login',
         '/api/v1/users/register',

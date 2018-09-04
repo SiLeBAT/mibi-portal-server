@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { createSample, createSampleCollection, ISample } from '../app/sampleManagement/domain';
+import { createSample, createSampleCollection } from '../app/sampleManagement/domain';
 import { createFormAutoCorrectionService, createCatalogService } from '../app/sampleManagement/application';
 import { initialiseCatalogRepository } from '../infrastructure/persistence/repositories';
 import { ISampleData } from '../app/sampleManagement/domain/sample.entity';
