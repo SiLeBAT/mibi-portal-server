@@ -40,15 +40,13 @@ class FormValidatorService implements IFormValidatorService {
 
     }
 
-    private checkForDuplicateId(samples: ISample[], uniqueId: string): ISample[] {
+    private checkForDuplicateId(samples: ISample[], uniqueId: keyof ISample): ISample[] {
         const config = this.getUniqueIdErrorConfig(uniqueId);
-        // tslint:disable-next-line
-        const pathogenArrayId = samples.map(s => (s as any)[uniqueId]);
+        const pathogenArrayId = samples.map(sample => sample[uniqueId]).filter(x => x);
         const pathogenArrayIdDuplicates = _.filter(pathogenArrayId, function (value, index, iteratee) {
             return _.includes(iteratee, value, index + 1);
         });
-        // tslint:disable-next-line
-        _.filter(samples, s => _.includes(pathogenArrayIdDuplicates, (s as any)[uniqueId]))
+        _.filter(samples, sample => _.includes(pathogenArrayIdDuplicates, sample[uniqueId]))
             .forEach(e => {
                 e.addErrorTo(config.sampleId, config.error);
             });
