@@ -5,8 +5,8 @@ const ZOMO_CODE: number = 81;
 const ZOMO_STRING: string = 'Zoonosen-Monitoring - Planprobe';
 
 export interface ISample {
-    readonly pathogenIdAVV: string;
-    readonly pathogenId: string;
+    readonly pathogenIdAVV?: string;
+    readonly pathogenId?: string;
     autoCorrections: IAutoCorrectedValue[];
     getData(): ISampleData;
     correctField(key: keyof ISampleData, value: string): void;
@@ -58,11 +58,17 @@ class Sample implements ISample {
         return this.data;
     }
 
-    get pathogenId(): string {
+    get pathogenId(): string | undefined {
+        if (!this.data.sample_id || !this.data.pathogen_adv) {
+            return;
+        }
         return (this.data.sample_id + this.data.pathogen_adv + (this.data.pathogen_text === this.data.pathogen_adv ? '' : this.data.pathogen_text)).replace(/\s+/g, '');
     }
 
-    get pathogenIdAVV(): string {
+    get pathogenIdAVV(): string | undefined {
+        if (!this.data.sample_id_avv || !this.data.pathogen_adv) {
+            return;
+        }
         return (this.data.sample_id_avv + this.data.pathogen_adv + (this.data.pathogen_text === this.data.pathogen_adv ? '' : this.data.pathogen_text)).replace(/\s+/g, '');
     }
 
