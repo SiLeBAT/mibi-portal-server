@@ -44,7 +44,7 @@ class AppServer implements IAppServer {
         this.server.set('logger', logger);
         this.server.set('controllerFactory', serverConfig.controllerFactory);
 
-        this.server.use(bodyParser.json());
+        this.server.use(bodyParser.json({ limit: '50mb' }));
         this.server.use(bodyParser.urlencoded({
             extended: false
         }));
