@@ -11,10 +11,11 @@ import { getRouter as getRecoveryRouter } from './authentication/recovery';
 import { getRouter as getUserRouter } from './users';
 import { getRouter as getCatalogSearchRouter } from './util/catalog-search';
 import { getRouter as getUtilRouter } from './util';
+import { getRouter as getSystemInfoRouter } from './util/system-info';
 import { IControllerFactory } from '../sharedKernel';
 
 export enum RouterType {
-    LOGIN, VALIDATE, DATASET, REGISTER, RESET, ACTIVATE, INSTITUTIONS, RECOVERY, JOB, ADMINACTIVATE, USER, CATALOG_SEARCH, UTIL
+    LOGIN, VALIDATE, DATASET, REGISTER, RESET, ACTIVATE, INSTITUTIONS, RECOVERY, JOB, ADMINACTIVATE, USER, CATALOG_SEARCH, UTIL, SYSTEM_INFO
 }
 
 function getRouter(type: RouterType, controllerFactory: IControllerFactory) {
@@ -43,6 +44,8 @@ function getRouter(type: RouterType, controllerFactory: IControllerFactory) {
             return getUserRouter(controllerFactory);
         case RouterType.CATALOG_SEARCH:
             return getCatalogSearchRouter(controllerFactory);
+        case RouterType.SYSTEM_INFO:
+            return getSystemInfoRouter(controllerFactory);
         case RouterType.UTIL:
             return getUtilRouter(controllerFactory);
         default:

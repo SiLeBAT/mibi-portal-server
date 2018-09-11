@@ -15,7 +15,9 @@ import {
     createResetController,
     IResetController,
     ICatalogSearchController,
-    createCatalogSearchController
+    createCatalogSearchController,
+    ISystemInfoController,
+    createSystemInfoController
 } from '../../controllers';
 
 export interface IControllerFactory {
@@ -32,6 +34,7 @@ export class ControllerFactory implements IControllerFactory {
     private resetController: IResetController;
     private validationController: IValidationController;
     private catalogSearchController: ICatalogSearchController;
+    private systemInfoController: ISystemInfoController;
 
     constructor(private serviceFactory: IServiceFactory) {
         this.validationController = createValidationController(this.serviceFactory.getService('VALIDATION'), this.serviceFactory.getService('AUTOCORRECTION'));
@@ -42,6 +45,7 @@ export class ControllerFactory implements IControllerFactory {
         this.registrationController = createRegistrationController(this.serviceFactory.getService('REGISTRATION'));
         this.resetController = createResetController(this.serviceFactory.getService('PASSWORD'));
         this.catalogSearchController = createCatalogSearchController(this.serviceFactory.getService('CATALOG_SEARCH'));
+        this.systemInfoController = createSystemInfoController();
     }
 
     getController(controller: string): IController {
@@ -62,6 +66,8 @@ export class ControllerFactory implements IControllerFactory {
                 return this.validationController;
             case 'CATALOG_SEARCH':
                 return this.catalogSearchController;
+            case 'SYSTEM_INFO':
+                return this.systemInfoController;
             default:
                 throw new Error(`Unknown controller, controller=${controller}`);
         }
