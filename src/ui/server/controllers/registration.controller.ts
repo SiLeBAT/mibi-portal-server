@@ -19,12 +19,14 @@ class RegistrationController implements IRegistrationController {
         try {
             await this.registrationService.activateUser(req.params.token);
             dto = {
-                title: 'Kontoaktivierung erfolgreich!' // 'Account Activation successful!'
+                activation: true
             };
             res.status(200);
         } catch (err) {
             logger.error('Unable to activate user', { error: err });
-            dto = {};
+            dto = {
+                activation: false
+            };
             res.status(400);
         }
         logger.info('RegistrationController.activate, Response sent');
