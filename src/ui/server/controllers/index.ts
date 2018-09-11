@@ -6,3 +6,4 @@ export { createRegistrationController as createRegistrationController, IRegistra
 export { createController as createValidationController, IValidationController } from './validation.controller';
 export { createController as createResetController, IResetController } from './reset.controller';
 export { createController as createCatalogSearchController, ICatalogSearchController } from './catalog-search.controller';
+export { createController as createSystemInfoController, ISystemInfoController } from './system-info.controller';

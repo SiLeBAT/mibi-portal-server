@@ -4,6 +4,7 @@ function validateToken(secret: string) {
     const whiteList = [
         /((?!\/api\/).)*$/,
         '/api/v1/catalog-search',
+        '/api/v1/system-info',
         '/api/v1/institutions',
         '/api/v1/users/login',
         '/api/v1/users/register',
@@ -13,7 +14,6 @@ function validateToken(secret: string) {
         /\/api\/v1\/users\/adminactivate\/*/,
         '/api/v1/upload',
         '/api/v1/validation',
-        // FIXME
         '/api/v1/job'
     ];
 
