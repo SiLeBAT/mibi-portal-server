@@ -15,12 +15,14 @@ class SystemInfoController implements ISystemInfoController {
         let dto;
         try {
             dto = {
+                version: pjson.version,
                 lastChange: pjson.mibiConfig.lastChange
             };
             res.status(200);
         } catch (err) {
             logger.error(`Unable to retrieve system information. error=${err}`);
             dto = {
+                version: undefined,
                 lastChange: undefined
             };
             res.status(500);
