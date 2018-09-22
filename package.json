@@ -97,5 +97,8 @@
     "tslint": "^5.9.1",
     "tslint-config-standard": "^7.0.0",
     "typescript": "^2.9.2"
+  },
+  "mibiConfig": {
+    "lastChange": "Sat Sep 15 15:01:44 2018 +0200"
   }
 }
