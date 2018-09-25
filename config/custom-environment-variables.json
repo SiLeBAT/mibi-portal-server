@@ -1,0 +1,14 @@
+{
+    "server": {
+        "port": "MIBI_NODE_PORT",
+        "jwtSecret": "MIBI_JWT_SECRET",
+        "apiUrl": "MIBI_API_URL",
+        "logLevel": "MIBI_LOG_LEVEL"
+    },
+    "dataStore": {
+        "connectionString": "MIBI_DB_CONNECTION",
+        "dataDir": "MIBI_DATA_DIR"
+    },
+    "supportContact": "MIBI_SUPPORT_CONTACT",
+    "jobRecipient": "MIBI_JOB_RECIPIENT"
+}

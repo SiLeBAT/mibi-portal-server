@@ -1,0 +1,29 @@
+{
+    "server": {
+        "port": 3000,
+        "jwtSecret": "",
+        "apiUrl": "",
+        "logLevel": "info"
+    },
+    "dataStore": {
+        "connectionString": "",
+        "dataDir": ""
+    },
+    "mail": {
+        "fromAddress": "",
+        "replyToAddress": ""
+    },
+    "knime": {
+        "user": "",
+        "pass": "",
+        "urlJobId": "",
+        "urlResult": ""
+    },
+    "login": {
+      "threshold": 0,
+      "secondsDelay": 0
+    },
+    "appName": "MiBi-Portal",
+    "supportContact": "",
+    "jobRecipient": ""
+}

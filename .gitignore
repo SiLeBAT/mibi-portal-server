@@ -2,6 +2,7 @@
 
 # compiled output
 /dist
+/lib
 /tmp
 /out-tsc
 
@@ -16,6 +17,7 @@
 *.launch
 .settings/
 *.sublime-workspace
+.vscode
 
 # IDE - VSCode
 .vscode/*
@@ -30,17 +32,22 @@
 /coverage
 /libpeerconnection.log
 npm-debug.log
+yarn-error.log
 testem.log
-/typings
-
-# e2e
-/e2e/*.js
-/e2e/*.map
+/data
+/local
 
 # System Files
 .DS_Store
 Thumbs.db
 
 # app
-/server/config/config.json
+/config/*
+!/config/custom-environment-variables.json
+!/config/generic.config.json
+!/config/mydev.json
 /playground
+/uploads
+server-patch.patch
+/tmp
+local-*
