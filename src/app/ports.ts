@@ -40,8 +40,7 @@ export {
     Catalog,
 	IDatasetFile,
 	ISenderInfo,
-    IDatasetPort,
-    ICatalogSearchPort
+    IDatasetPort
 } from './sampleManagement';
 
 export interface IModelAttributes {

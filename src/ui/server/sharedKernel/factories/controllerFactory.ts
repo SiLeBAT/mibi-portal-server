@@ -14,8 +14,6 @@ import {
     IRegistrationController,
     createResetController,
     IResetController,
-    ICatalogSearchController,
-    createCatalogSearchController,
     ISystemInfoController,
     createSystemInfoController
 } from '../../controllers';
@@ -33,7 +31,6 @@ export class ControllerFactory implements IControllerFactory {
     private registrationController: IRegistrationController;
     private resetController: IResetController;
     private validationController: IValidationController;
-    private catalogSearchController: ICatalogSearchController;
     private systemInfoController: ISystemInfoController;
 
     constructor(private serviceFactory: IServiceFactory) {
@@ -44,7 +41,6 @@ export class ControllerFactory implements IControllerFactory {
         this.recoveryController = createRecoveryController(this.serviceFactory.getService('PASSWORD'));
         this.registrationController = createRegistrationController(this.serviceFactory.getService('REGISTRATION'));
         this.resetController = createResetController(this.serviceFactory.getService('PASSWORD'));
-        this.catalogSearchController = createCatalogSearchController(this.serviceFactory.getService('CATALOG_SEARCH'));
         this.systemInfoController = createSystemInfoController();
     }
 
@@ -64,8 +60,6 @@ export class ControllerFactory implements IControllerFactory {
                 return this.resetController;
             case 'VALIDATION':
                 return this.validationController;
-            case 'CATALOG_SEARCH':
-                return this.catalogSearchController;
             case 'SYSTEM_INFO':
                 return this.systemInfoController;
             default:

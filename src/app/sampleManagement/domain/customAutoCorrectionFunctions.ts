@@ -61,15 +61,6 @@ function autoCorrectPathogen(catalogService: ICatalogService) {
                 searchCache[sampleData.pathogen_adv] = result;
             }
             if (result.length) {
-                for (let i = 0; i < 5; i++) {
-                    if (result[i]) {
-                        logger.verbose(`Fuzzy Search result for ${sampleData.pathogen_adv}: `, {
-                            rank: i,
-                            guess: result[i].item,
-                            score: result[i].score
-                        });
-                    }
-                }
                 if (sampleData.pathogen_adv.localeCompare(result[0].item) !== 0) {
                     return {
                         field: 'pathogen_adv' as keyof ISampleData,
