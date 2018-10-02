@@ -7,6 +7,7 @@
     "serve": "nodemon -e ts --exec \"npm run build:dev && node ./lib/main.js\"",
     "debug": "nodemon -e ts --exec \"npm run build && node --inspect-brk ./lib/main.js\"",
     "build:qa": "NODE_ENV=qa npm run build",
+    "build:prod": "NODE_ENV=production npm run build",
     "build:dev": "npm run clean &&  npm run tsc && npm run cp:view && npm run test",
     "cp:view": "copyfiles -u 1 ./src/**/views/**/* ./lib",
     "tsc": "tsc",
