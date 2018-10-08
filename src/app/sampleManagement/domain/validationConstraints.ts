@@ -170,9 +170,10 @@ const baseConstraints: IValidationConstraints = {
             message: vep.getError('10'),
             additionalMembers: ['pathogen_text']
         },
-        inPathogenIndex: {
+        matchADVNumberOrString: {
             message: vep.getError('8'),
-            additionalMembers: ['pathogen_text']
+            catalog: 'adv16',
+            alternateKeys: ['Text1']
         }
     },
     pathogen_text: {

@@ -1,6 +1,7 @@
 import * as Fuse from 'fuse.js';
 import { autoCorrectPathogen, ICorrectionFunction } from '../customAutoCorrectionFunctions';
 import { ISampleData, ISample } from '../sample.entity';
+import { IValidationErrorCollection } from '../validator.entity';
 
 describe('Custom Auto-correction Functions', () => {
 
@@ -9,6 +10,7 @@ describe('Custom Auto-correction Functions', () => {
         let mockCatalogService: any;
         let genericSampleData: ISampleData;
         let genericTestSample: ISample;
+        let genericErrorData: IValidationErrorCollection;
 
         beforeEach(() => {
             let mockADVEntries = [
@@ -31,18 +33,25 @@ describe('Custom Auto-correction Functions', () => {
                     Kode: '0801014',
                     'P-Code3': '',
                     Text1: 'Escherichia coli Carbapenemase-bildend'
-                },
-                {
-                    'P-Code3': 'E. coli',
-                    Text1: 'Escherichia coli'
                 }
             ];
+
+            genericErrorData = {
+                pathogen_adv: [{
+                    id: '3',
+                    code: 0,
+                    level: 2,
+                    message: 'Error'
+                }]
+            };
 
             mockCatalogService = {
                 getCatalog: jest.fn(() => {
                     return {
                         dump: () => mockADVEntries,
-                        getFuzzyIndex: (options: Fuse.FuseOptions) => new Fuse(mockADVEntries, options)
+                        getFuzzyIndex: (options: Fuse.FuseOptions) => new Fuse(mockADVEntries, options),
+                        // @ts-ignore
+                        containsEntryWithKeyValue: (k: string, v: string) => mockADVEntries[k] === v
                     };
                 }),
                 getCatalogSearchAliases: () => []
@@ -77,7 +86,8 @@ describe('Custom Auto-correction Functions', () => {
                 isZoMo: jest.fn(),
                 addErrorTo: jest.fn(),
                 getErrors: jest.fn(),
-                correctField: jest.fn()
+                correctField: jest.fn(),
+                clone: jest.fn()
             };
         });
 
@@ -91,7 +101,8 @@ describe('Custom Auto-correction Functions', () => {
             const specificTestSample = {
                 ...genericTestSample,
                 ...{
-                    getData: jest.fn(() => specificSampleData)
+                    getData: jest.fn(() => specificSampleData),
+                    getErrors: jest.fn(() => genericErrorData)
                 }
             };
 
@@ -101,35 +112,11 @@ describe('Custom Auto-correction Functions', () => {
             expect(autoCorrection).toEqual({
                 field: 'pathogen_adv',
                 original: 'Escherigia coli',
-                corrected: 'Escherichia coli'
+                correctionOffer: ['Escherichia coli', 'Escherichia coli Carbapenemase-bildend', 'Salmonella Colindale', 'Salmonella Dublin']
             });
         });
 
-        it('should successfully autocorrect 0801014 in pathogen_adv', () => {
-            const specificSampleData = {
-                ...genericSampleData,
-                ...{
-                    pathogen_adv: '0801014'
-                }
-            };
-            const specificTestSample = {
-                ...genericTestSample,
-                ...{
-                    getData: jest.fn(() => specificSampleData)
-                }
-            };
-
-            const correctionFunction: ICorrectionFunction = autoCorrectPathogen(mockCatalogService);
-
-            const autoCorrection = correctionFunction(specificTestSample);
-            expect(autoCorrection).toEqual({
-                field: 'pathogen_adv',
-                original: '0801014',
-                corrected: 'Escherichia coli Carbapenemase-bildend'
-            });
-        });
-
-        it('should successfully autocorrect 0801014 in pathogen_adv', () => {
+        it('should not offer corrections for 801014 in pathogen_adv', () => {
             const specificSampleData = {
                 ...genericSampleData,
                 ...{
@@ -139,21 +126,19 @@ describe('Custom Auto-correction Functions', () => {
             const specificTestSample = {
                 ...genericTestSample,
                 ...{
-                    getData: jest.fn(() => specificSampleData)
+                    getData: jest.fn(() => specificSampleData),
+                    getErrors: jest.fn(() => genericErrorData)
+
                 }
             };
 
             const correctionFunction: ICorrectionFunction = autoCorrectPathogen(mockCatalogService);
 
             const autoCorrection = correctionFunction(specificTestSample);
-            expect(autoCorrection).toEqual({
-                field: 'pathogen_adv',
-                original: '801014',
-                corrected: 'Escherichia coli Carbapenemase-bildend'
-            });
+            expect(autoCorrection).toBe(null);
         });
 
-        it('should successfully autocorrect E. coli in pathogen_adv', () => {
+        it('should successfully offer corrections for E. coli in pathogen_adv', () => {
             const specificSampleData = {
                 ...genericSampleData,
                 ...{
@@ -163,7 +148,8 @@ describe('Custom Auto-correction Functions', () => {
             const specificTestSample = {
                 ...genericTestSample,
                 ...{
-                    getData: jest.fn(() => specificSampleData)
+                    getData: jest.fn(() => specificSampleData),
+                    getErrors: jest.fn(() => genericErrorData)
                 }
             };
 
@@ -173,7 +159,7 @@ describe('Custom Auto-correction Functions', () => {
             expect(autoCorrection).toEqual({
                 field: 'pathogen_adv',
                 original: 'E. coli',
-                corrected: 'Escherichia coli'
+                correctionOffer: ['Escherichia coli', 'Salmonella Colindale', 'Escherichia coli Carbapenemase-bildend', 'Salmonella Dublin']
             });
         });
 
@@ -187,7 +173,8 @@ describe('Custom Auto-correction Functions', () => {
             const specificTestSample = {
                 ...genericTestSample,
                 ...{
-                    getData: jest.fn(() => specificSampleData)
+                    getData: jest.fn(() => specificSampleData),
+                    getErrors: jest.fn(() => genericErrorData)
                 }
             };
 
@@ -207,7 +194,8 @@ describe('Custom Auto-correction Functions', () => {
             const specificTestSample = {
                 ...genericTestSample,
                 ...{
-                    getData: jest.fn(() => specificSampleData)
+                    getData: jest.fn(() => specificSampleData),
+                    getErrors: jest.fn(() => genericErrorData)
                 }
             };
 

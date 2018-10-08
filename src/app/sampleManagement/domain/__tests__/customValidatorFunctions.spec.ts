@@ -4,12 +4,13 @@ import {
     referenceDate,
     atLeastOneOf,
     dependentFieldEntry,
-    inPathogenIndex,
     dependentFields,
     numbersOnly,
     registeredZoMo,
     nonUniqueEntry,
-    inCatalog
+    inCatalog,
+    matchADVNumberOrString,
+    IMatchADVNumberOrStringOptions
 } from './../customValidatorFunctions';
 import { ICatalog } from '../..';
 import { ICatalogService } from '../../application';
@@ -256,45 +257,6 @@ describe('Custom Validator Functions', () => {
         });
     });
 
-    describe('inPathogenIndex', () => {
-        // tslint:disable-next-line
-        let validationFn: any;
-        beforeEach(() => {
-            validationFn = inPathogenIndex({
-                contains: (str: string) => {
-                    switch (str) {
-                        case 'Escherichiacoli':
-                            return true;
-                        default: return false;
-                    }
-                }
-            });
-        });
-
-        it('should validate without errors', () => {
-
-            const error = validationFn(testSample.pathogen_adv, {
-                message: validationError,
-                additionalMembers: ['pathogen_text']
-            }, 'pathogen_adv', testSample);
-            expect(error).toBe(null);
-        });
-
-        it('should not validate', () => {
-            const differentSample = {
-                ...testSample, ...{
-                    pathogen_adv: 'Bob'
-                }
-            };
-
-            const error = validationFn(differentSample.pathogen_adv, {
-                message: validationError,
-                additionalMembers: ['pathogen_text']
-            }, 'pathogen_adv', differentSample);
-            expect(error).toEqual(validationError);
-        });
-    });
-
     describe('dependentFields', () => {
         it('should validate without errors', () => {
             const error = dependentFields(testSample.sampling_location_zip, {
@@ -522,10 +484,12 @@ describe('Custom Validator Functions', () => {
     });
 
     describe('inCatalog', () => {
-        it('should validate without errors', () => {
+        // tslint:disable-next-line
+        let mockCatalog: ICatalog<any>;
+        let mockCatalogService: ICatalogService;
 
-            // tslint:disable-next-line
-            const mockCatalog: ICatalog<any> = {
+        beforeEach(() => {
+            mockCatalog = {
                 getEntriesWithKeyValue: (key: string, value: string) => ([]),
                 getEntryWithId: (id: string) => ({}),
                 containsEntryWithId: (id: string) => true,
@@ -535,10 +499,13 @@ describe('Custom Validator Functions', () => {
                 getFuzzyIndex: jest.fn(),
                 dump: () => []
             };
-            const mockCatalogService: ICatalogService = {
+            mockCatalogService = {
                 getCatalog: () => mockCatalog,
                 getCatalogSearchAliases: jest.fn()
             };
+        });
+
+        it('should validate without errors', () => {
             const error = inCatalog(mockCatalogService)(testSample.matrix_adv, {
                 message: validationError,
                 catalog: 'adv3',
@@ -546,24 +513,11 @@ describe('Custom Validator Functions', () => {
             }, 'matrix_adv', testSample);
             expect(error).toBe(null);
         });
+
         it('should not validate because entry 62 is not in ADV12', () => {
 
             testSample.process_state_adv = '62';
-            // tslint:disable-next-line
-            const mockCatalog: ICatalog<any> = {
-                getEntriesWithKeyValue: (key: string, value: string) => ([]),
-                getEntryWithId: (id: string) => ({}),
-                containsEntryWithId: (id: string) => true,
-                containsEntryWithKeyValue: (key: string, value: string) => false,
-                hasUniqueId: () => true,
-                getUniqueId: () => '',
-                getFuzzyIndex: jest.fn(),
-                dump: () => []
-            };
-            const mockCatalogService: ICatalogService = {
-                getCatalog: () => mockCatalog,
-                getCatalogSearchAliases: jest.fn()
-            };
+            mockCatalog.containsEntryWithKeyValue = (key: string, value: string) => false;
             const error = inCatalog(mockCatalogService)(testSample.process_state_adv, {
                 message: validationError,
                 catalog: 'adv12',
@@ -573,4 +527,115 @@ describe('Custom Validator Functions', () => {
         });
     });
 
+    describe('matchADVNumberOrString', () => {
+
+        // tslint:disable-next-line
+        let mockCatalog: ICatalog<any>;
+        let mockCatalogService: ICatalogService;
+
+        beforeEach(() => {
+            // tslint:disable-next-line
+            mockCatalog = {
+                getEntriesWithKeyValue: (key: string, value: string) => ([]),
+                getEntryWithId: (id: string) => ({}),
+                containsEntryWithId: (id: string) => true,
+                containsEntryWithKeyValue: (key: string, value: string) => {
+                    switch (value) {
+                        case '1234567':
+                            return true;
+                        case 'Escherichia coli':
+                            return true;
+                        default:
+                            return false;
+                    }
+                },
+                hasUniqueId: () => true,
+                getUniqueId: () => '',
+                getFuzzyIndex: jest.fn(),
+                dump: () => []
+            };
+
+            mockCatalogService = {
+                getCatalog: () => mockCatalog,
+                getCatalogSearchAliases: jest.fn()
+            };
+        });
+
+        it('should validate without errors', () => {
+
+            testSample.pathogen_adv = '';
+            const error = matchADVNumberOrString(mockCatalogService)(testSample.pathogen_adv, {
+                message: validationError,
+                catalog: 'adv16',
+                key: 'Kode',
+                alternateKeys: ['Text1']
+            } as IMatchADVNumberOrStringOptions, 'pathogen_adv', testSample);
+            expect(error).toBe(null);
+        });
+
+        it('should not validate because entry 62 is not in ADV16', () => {
+
+            testSample.pathogen_adv = '62';
+
+            const error = matchADVNumberOrString(mockCatalogService)(testSample.pathogen_adv, {
+                message: validationError,
+                catalog: 'adv16',
+                key: 'Kode',
+                alternateKeys: ['Text1']
+            } as IMatchADVNumberOrStringOptions, 'pathogen_adv', testSample);
+            expect(error).toEqual(validationError);
+        });
+
+        it('should validate because entry 1234567 is in ADV16', () => {
+
+            testSample.pathogen_adv = '1234567';
+
+            const error = matchADVNumberOrString(mockCatalogService)(testSample.pathogen_adv, {
+                message: validationError,
+                catalog: 'adv16',
+                key: 'Kode',
+                alternateKeys: ['Text1']
+            } as IMatchADVNumberOrStringOptions, 'pathogen_adv', testSample);
+            expect(error).toEqual(null);
+        });
+
+        it('should validate because entry 1234567 is in ADV16 and value is trimmed', () => {
+
+            testSample.pathogen_adv = '    1234567    ';
+
+            const error = matchADVNumberOrString(mockCatalogService)(testSample.pathogen_adv, {
+                message: validationError,
+                catalog: 'adv16',
+                key: 'Kode',
+                alternateKeys: ['Text1']
+            } as IMatchADVNumberOrStringOptions, 'pathogen_adv', testSample);
+            expect(error).toEqual(null);
+        });
+
+        it('should validate because entry Escherichia coli is in ADV16 and value is trimmed', () => {
+
+            testSample.pathogen_adv = '    Escherichia coli    ';
+
+            const error = matchADVNumberOrString(mockCatalogService)(testSample.pathogen_adv, {
+                message: validationError,
+                catalog: 'adv16',
+                key: 'Kode',
+                alternateKeys: ['Text1']
+            } as IMatchADVNumberOrStringOptions, 'pathogen_adv', testSample);
+            expect(error).toEqual(null);
+        });
+
+        it('should not validate because entry 1234  567 contains spaces', () => {
+
+            testSample.pathogen_adv = '1234  567';
+
+            const error = matchADVNumberOrString(mockCatalogService)(testSample.pathogen_adv, {
+                message: validationError,
+                catalog: 'adv16',
+                key: 'Kode',
+                alternateKeys: ['Text1']
+            } as IMatchADVNumberOrStringOptions, 'pathogen_adv', testSample);
+            expect(error).toEqual(validationError);
+        });
+    });
 });

@@ -1,6 +1,6 @@
 import { ICatalogService } from '.';
 import { logger } from './../../../aspects';
-import { ISampleCollection } from './../domain';
+import { ISampleCollection, ISample } from './../domain';
 import { ICorrectionFunction, autoCorrectPathogen } from '../domain/customAutoCorrectionFunctions';
 
 export interface IFormAutoCorrectionPort {
@@ -20,20 +20,19 @@ class FormAutoCorrectionService implements IFormAutoCorrectionService {
     applyAutoCorrection(sampleCollection: ISampleCollection): ISampleCollection {
 
         logger.verbose('FormAutoCorrectionService.applyAutoCorrection, Starting Sample autoCorrection');
+
         const results = sampleCollection.samples.map(sample => {
+            const newSample: ISample = sample.clone();
             this.correctionFunctions.forEach(fn => {
-                const correction = fn(sample);
+                const correction = fn(newSample);
                 if (correction) {
-                    sample.autoCorrections.push(correction);
-                    sample.correctField(correction.field, correction.corrected);
+                    newSample.autoCorrections.push(correction);
                 }
             });
-            return sample;
+            return newSample;
         });
         logger.info('Finishing Sample autoCorrection');
-        sampleCollection.samples = results;
-        return sampleCollection;
-
+        return { samples: results };
     }
 
     private registerCorrectionFunctions() {

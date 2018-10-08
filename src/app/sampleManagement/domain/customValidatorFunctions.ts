@@ -1,7 +1,6 @@
 
 import * as moment from 'moment';
 import * as _ from 'lodash';
-import { IPathogenIndex } from './pathogenIndex.entity';
 import { ICatalog } from '..';
 import { ISampleData } from './sample.entity';
 import { ICatalogService } from '../application';
@@ -67,12 +66,13 @@ export interface IInCatalogOptions extends IValidatiorFunctionOptions {
 
 function inCatalog(catalogService: ICatalogService): IValidatorFunction<IInCatalogOptions> {
     return (value: string, options: IInCatalogOptions, key: keyof ISampleData, attributes: ISampleData) => {
+        const trimmedValue = value.trim();
         if (attributes[key]) {
             const cat = catalogService.getCatalog(options.catalog);
 
             if (cat) {
                 const key: string = options.key ? options.key : cat.getUniqueId();
-                if (key && !cat.containsEntryWithKeyValue(key, value)) {
+                if (key && !cat.containsEntryWithKeyValue(key, trimmedValue)) {
                     return { ...options.message };
                 }
             }
@@ -81,17 +81,38 @@ function inCatalog(catalogService: ICatalogService): IValidatorFunction<IInCatal
     };
 }
 
-export interface IInPathogenIndexOptions extends IValidatiorFunctionOptions {
-    additionalMembers: string[];
+export interface IMatchADVNumberOrStringOptions extends IInCatalogOptions {
+    alternateKeys: string[];
 }
+// Matching for ADV16 accorind to #mps53
+function matchADVNumberOrString(catalogService: ICatalogService): IValidatorFunction<IInCatalogOptions> {
+    return (value: string, options: IMatchADVNumberOrStringOptions, key: keyof ISampleData, attributes: ISampleData) => {
+        const trimmedValue = value.trim();
+        const altKeys = options.alternateKeys || [];
+        if (attributes[key]) {
+            const cat = catalogService.getCatalog(options.catalog);
 
-function inPathogenIndex(pathogenIndex: IPathogenIndex): IValidatorFunction<IInPathogenIndexOptions> {
-
-    return (value: string, options: IInPathogenIndexOptions, key: keyof ISampleData, attributes: ISampleData) => {
-        const additionalMembers = options.additionalMembers || [];
-        const testValue = additionalMembers.reduce((acc: string, v: keyof ISampleData) => acc + attributes[v], value).replace(/\s/g, '');
-        if (!pathogenIndex.contains(testValue)) {
-            return { ...options.message };
+            if (cat) {
+                const key: string = options.key ? options.key : cat.getUniqueId();
+                if (!key) {
+                    return null;
+                }
+                const numbersOnly = /^\d+?/;
+                if (numbersOnly.test(value)) {
+                    if (!cat.containsEntryWithKeyValue(key, trimmedValue)) {
+                        return { ...options.message };
+                    }
+                } else {
+                    let found = false;
+                    altKeys.forEach(k => {
+                        found = cat.containsEntryWithKeyValue(k, trimmedValue) || found;
+                    });
+                    if (found) {
+                        return null;
+                    }
+                    return { ...options.message };
+                }
+            }
         }
         return null;
     };
@@ -154,7 +175,7 @@ function dateAllowEmpty(value: string, options: IAtLeastOneOfOptions, key: keyof
 
     if (isEmptyString(value)) {
         return null;
-    } else if (moment.utc(value, ['DD.MM.YYYY','D.MM.YYYY','D.M.YYYY','DD.M.YYYY'], true).isValid()) {
+    } else if (moment.utc(value, ['DD.MM.YYYY', 'D.MM.YYYY', 'D.M.YYYY', 'DD.M.YYYY'], true).isValid()) {
         return null;
     } else {
         return { ...options.message };
@@ -269,5 +290,5 @@ export {
     inCatalog,
     registeredZoMo,
     nonUniqueEntry,
-    inPathogenIndex
+    matchADVNumberOrString
 };

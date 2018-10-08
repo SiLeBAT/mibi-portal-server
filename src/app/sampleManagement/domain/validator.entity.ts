@@ -5,7 +5,6 @@ import * as _ from 'lodash';
 import { getConstraints } from './validationConstraints';
 import { ISample } from '../';
 import { IValidationError } from './validationErrorProvider.entity';
-import { IPathogenIndex, createPathogenIndex } from './pathogenIndex.entity';
 import {
     referenceDate,
     atLeastOneOf,
@@ -16,7 +15,7 @@ import {
     inCatalog,
     registeredZoMo,
     nonUniqueEntry,
-    inPathogenIndex
+    matchADVNumberOrString
 } from './customValidatorFunctions';
 import { ICatalogService } from '../application';
 import { ConstraintSet } from '.';
@@ -40,7 +39,6 @@ export interface IValidatorConfig {
 class SampleValidator implements IValidator {
 
     private catalogService: ICatalogService;
-    private pathogenIndex: IPathogenIndex;
 
     constructor(config: IValidatorConfig) {
 
@@ -63,7 +61,6 @@ class SampleValidator implements IValidator {
             }
         });
         this.catalogService = config.catalogService;
-        this.pathogenIndex = createPathogenIndex(this.catalogService.getCatalog('adv16').dump());
         this.registerCustomValidators();
     }
 
@@ -84,9 +81,9 @@ class SampleValidator implements IValidator {
         validate.validators.dependentFieldEntry = dependentFieldEntry;
         validate.validators.numbersOnly = numbersOnly;
         validate.validators.inCatalog = inCatalog(this.catalogService);
+        validate.validators.matchADVNumberOrString = matchADVNumberOrString(this.catalogService);
         validate.validators.registeredZoMo = registeredZoMo(this.catalogService);
         validate.validators.nonUniqueEntry = nonUniqueEntry(this.catalogService);
-        validate.validators.inPathogenIndex = inPathogenIndex(this.pathogenIndex);
     }
 
 }
