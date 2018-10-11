@@ -52,7 +52,8 @@ describe('Validate Sample Use Case', () => {
             isZoMo: jest.fn(),
             addErrorTo: jest.fn(),
             getErrors: jest.fn(),
-            correctField: jest.fn()
+            correctField: jest.fn(),
+            clone: jest.fn()
         };
         genericTestSampleCollection = {
             samples: []

@@ -67,9 +67,9 @@ class ValidationController implements IValidationController {
 
         if (req.is('application/json')) {
             const sampleCollection: ISampleCollection = this.fromDTOToSamples(req.body);
-            const autoCorrectedResult = this.formAutoCorrectionService.applyAutoCorrection(sampleCollection);
-            const validationResult = this.formValidationService.validateSamples(autoCorrectedResult);
-            const validationResultsDTO = this.fromErrorsToDTO(validationResult);
+            const validationResult = this.formValidationService.validateSamples(sampleCollection);
+            const autocorrectedSamples = this.formAutoCorrectionService.applyAutoCorrection(validationResult);
+            const validationResultsDTO = this.fromErrorsToDTO(autocorrectedSamples);
             logger.info('ValidationController.validateSamples, Response sent', validationResultsDTO);
             res
                 .status(200)

@@ -8,6 +8,7 @@ export interface ISample {
     readonly pathogenIdAVV?: string;
     readonly pathogenId?: string;
     autoCorrections: IAutoCorrectedValue[];
+    clone(): ISample;
     getData(): ISampleData;
     correctField(key: keyof ISampleData, value: string): void;
     setErrors(errors: IValidationErrorCollection): void;
@@ -19,7 +20,7 @@ export interface ISample {
 export interface IAutoCorrectedValue {
     field: keyof ISampleData;
     original: string;
-    corrected: string;
+    correctionOffer: string[];
 }
 
 export interface ISampleData {
@@ -94,6 +95,14 @@ class Sample implements ISample {
 
     correctField(key: keyof ISampleData, value: string) {
         this.data[key] = value;
+    }
+
+    clone() {
+        const d = { ...this.data };
+        const s = new Sample(d);
+        s.autoCorrections = [...this.autoCorrections];
+        s.errors = { ...this.errors };
+        return s;
     }
 }
 
