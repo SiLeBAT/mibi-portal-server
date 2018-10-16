@@ -38,7 +38,7 @@ class ValidationErrorProvider implements IValidationErrorProvider {
             code: 8,
             id: '8',
             level: 2,
-            message: 'Erreger nicht erkannt.Der Eintrag entspricht keinem Text oder Code in ADV - Katalog Nr. 16.'
+            message: 'Erreger nicht erkannt. Der verwendete Text/Code codiert keinen Erreger, der am BfR untersucht wird.'
         },
         {
             code: 10,

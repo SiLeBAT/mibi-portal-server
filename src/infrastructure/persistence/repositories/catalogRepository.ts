@@ -13,6 +13,7 @@ interface CatalogConfig {
     filename: string;
     id: string;
     uId?: string;
+    filterFunction?: Function;
 }
 
 class FileCatalogRepository implements ICatalogRepository {
@@ -60,7 +61,14 @@ class FileCatalogRepository implements ICatalogRepository {
             {
                 filename: 'ADV16.csv',
                 id: 'adv16',
-                uId: 'Kode'
+                uId: 'Kode',
+                filterFunction: (entry: { Kode: string }) => {
+                    const code = parseInt(entry.Kode, 10);
+                    return (code >= 302000 && code < 306000)
+                        || (code >= 500000 && code < 1700000)
+                        || (code >= 3402000 && code < 3402080)
+                        || (code >= 5500000 && code < 6000000);
+                }
             },
             {
                 filename: 'BW_Grund_Codes.csv',
@@ -99,7 +107,7 @@ class FileCatalogRepository implements ICatalogRepository {
         const promiseArray = catalogsConfig.map(catalogConfig => {
             const filePath = path.join(this.dataDir, catalogConfig.filename);
             if (fs.existsSync(filePath)) {
-                return this.importCSVFile(filePath).then(
+                return this.importCSVFile(filePath, catalogConfig.filterFunction).then(
                     (data: CatalogData[]) => this.catalogs[catalogConfig.id] = new Catalog<CatalogData>(data, catalogConfig.uId)
                 );
             } else {
@@ -120,14 +128,17 @@ class FileCatalogRepository implements ICatalogRepository {
         return this.catalogs[catalogName];
     }
 
-    private importCSVFile(filePath: string): Promise<CatalogData[]> {
+    private importCSVFile(filePath: string, entryFilter: Function = () => true): Promise<CatalogData[]> {
         let data: CatalogData[] = [];
 
         return new Promise(function (resolve, reject) {
             csv
                 .fromPath(filePath, { headers: true })
                 .on('data', function (entry) {
-                    data.push(entry);
+                    if (entryFilter(entry)) {
+                        data.push(entry);
+                    }
+
                 })
                 .on('end', function () {
                     resolve(data);
