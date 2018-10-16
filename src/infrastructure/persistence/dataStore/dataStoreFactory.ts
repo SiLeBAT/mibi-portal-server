@@ -3,7 +3,9 @@ import { MongooseDataStore } from './mongoose';
 import { logger } from './../../../aspects';
 
 export interface IDataStore {
-    initialize(connectionString: string): void;
+    initialize(connectionString: string): IDataStore;
+    close(): void;
+    drop(collection: string): void;
 }
 
 export enum DataStoreType {

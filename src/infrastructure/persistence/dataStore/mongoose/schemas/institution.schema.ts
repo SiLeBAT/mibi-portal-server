@@ -43,8 +43,7 @@ export const institutionSchema = new Schema({
         required: true
     },
     fax: {
-        type: String,
-        required: true
+        type: String
     },
 
     email: [{

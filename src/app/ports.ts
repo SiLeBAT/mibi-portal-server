@@ -103,7 +103,15 @@ export interface IUserRepository {
     updateUser(user: IUser): Promise<IUser | null>;
 }
 
+export interface IStateRepository {
+}
+
 export interface ICatalogRepository {
     // tslint:disable-next-line
     getCatalog(catalogName: string): ICatalog<any>;
+}
+
+export interface IState {
+    name: string;
+    short: string;
 }
