@@ -79,14 +79,3 @@ function writeToDB(collection: string, entries: any[]) {
     });
     return db;
 }
-
-function getNewGroupToOldGroupMapping(newGroups: Map<string, string[]>, oldGroups: Map<string, string[]>): Map<string, string> {
-    const result: Map<string, string> = new Map();
-    for (let [key, value] of newGroups) {
-        for (let [key2, value2] of oldGroups) {
-            result.set(key, key2);
-            break;
-        }
-    }
-    return result;
-}
