@@ -1,13 +1,22 @@
 import { Schema, Document } from 'mongoose';
-import { IInstitution } from '../../../../../app/ports';
+import { IAddress } from '../../../../../app/ports';
 
-export interface IInstitutionModel extends Document, IInstitution {
+export interface IInstitutionModel extends Document {
     created: Date;
     updated: Date;
+    state_short: string;
+    name1: string;
+    name2: string;
+    location: string;
+    address1: IAddress;
+    address2: IAddress;
+    phone: string;
+    fax: string;
+    email: string[];
 }
 
 export const institutionSchema = new Schema({
-    short: {
+    state_short: {
         type: String,
         required: true
     },
@@ -49,10 +58,6 @@ export const institutionSchema = new Schema({
     email: [{
         type: String
     }],
-    state_id: {
-        type: Schema.Types.ObjectId,
-        ref: 'State'
-    },
     created: {
         type: Date,
         default: Date.now,

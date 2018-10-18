@@ -3,7 +3,6 @@ import * as _ from 'lodash';
 import { IController, IDatasetFile, IDatasetPort, ISenderInfo } from '../../../app/ports';
 import { uploadToDisk } from './../middleware';
 import { logger } from '../../../aspects';
-import { IValidationController } from '.';
 import { uploadToMemory } from '../middleware/fileUpload';
 
 export interface IDatasetController extends IController {
@@ -13,9 +12,8 @@ export interface IDatasetController extends IController {
 
 class DatasetController implements IDatasetController {
 
-    constructor(private datasetService: IDatasetPort, private controller: IValidationController) { }
+    constructor(private datasetService: IDatasetPort) { }
     async saveDataset(req: Request, res: Response) {
-        const controller = this.controller;
         uploadToDisk(req, res, function (err: Error) {
             if (err) {
                 logger.error('Unable to save Dataset', { error: err });
@@ -23,9 +21,7 @@ class DatasetController implements IDatasetController {
                     .status(500)
                     .end();
             }
-            // FIXME: Temporary redirect to allow for feature parity with old version
-            logger.warn('Redirecting request to different controller');
-            return controller.validateSamples(req, res);
+            return res.status(200).end();
         });
     }
 
@@ -97,6 +93,6 @@ function mapRequestDTOToSenderInfo(req: Request): ISenderInfo {
     };
 }
 
-export function createController(service: IDatasetPort, controller: IValidationController) {
-    return new DatasetController(service, controller);
+export function createController(service: IDatasetPort) {
+    return new DatasetController(service);
 }

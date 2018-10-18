@@ -1,6 +1,5 @@
 import * as _ from 'lodash';
 import { validationErrorProvider as vep, IValidationError } from './validationErrorProvider.entity';
-import { ConstraintSet } from '.';
 
 export interface IValidationRule {
     message: IValidationError;
@@ -16,7 +15,7 @@ export interface IValidationConstraints {
     [key: string]: IValidationRuleSet;
 }
 
-const zoMoConstraints: IValidationConstraints = {
+export const zoMoConstraints: IValidationConstraints = {
     sample_id_avv: {
         presence: {
             message: vep.getError('5'),
@@ -133,7 +132,7 @@ const zoMoConstraints: IValidationConstraints = {
     }
 };
 
-const standardConstraints: IValidationConstraints = {
+export const standardConstraints: IValidationConstraints = {
     sampling_date: {
         atLeastOneOf: {
             message: vep.getError('19'),
@@ -148,7 +147,7 @@ const standardConstraints: IValidationConstraints = {
     }
 };
 
-const baseConstraints: IValidationConstraints = {
+export const baseConstraints: IValidationConstraints = {
     sample_id: {
         atLeastOneOf: {
             message: vep.getError('69'),
@@ -163,6 +162,10 @@ const baseConstraints: IValidationConstraints = {
         atLeastOneOf: {
             message: vep.getError('69'),
             additionalMembers: ['sample_id']
+        },
+        aavDataFormat: {
+            message: vep.getError('72'),
+            regex: []
         }
     },
     pathogen_adv: {
@@ -427,29 +430,4 @@ const baseConstraints: IValidationConstraints = {
     },
     vvvo: {},
     comment: {}
-};
-
-function getConstraints(set: ConstraintSet) {
-    const newConstraints: IValidationConstraints = { ...baseConstraints };
-    switch (set) {
-        case ConstraintSet.ZOMO:
-            _.forEach(newConstraints, (value: IValidationRuleSet, key) => {
-                if (zoMoConstraints.hasOwnProperty(key)) {
-                    newConstraints[key] = { ...value, ...zoMoConstraints[key] };
-                }
-            });
-            break;
-        case ConstraintSet.STANDARD:
-        default:
-            _.forEach(newConstraints, (value: IValidationRuleSet, key) => {
-                if (standardConstraints.hasOwnProperty(key)) {
-                    newConstraints[key] = { ...value, ...standardConstraints[key] };
-                }
-            });
-    }
-    return newConstraints;
-}
-
-export {
-    getConstraints
 };

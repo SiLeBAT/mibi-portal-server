@@ -173,7 +173,7 @@ class RegistrationService implements IRegistrationService {
         let inst = await this.institutionRepository.findByInstitutionName('dummy');
         if (!inst) {
             const newInstitution = createInstitution('0000');
-            newInstitution.short = 'dummy';
+            newInstitution.stateShort = 'dummy';
             newInstitution.name1 = 'dummy';
             newInstitution.location = 'dummy';
             newInstitution.phone = 'dummy';

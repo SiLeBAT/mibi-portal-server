@@ -2,7 +2,6 @@ import * as validate from 'validate.js';
 import * as moment from 'moment';
 import * as _ from 'lodash';
 
-import { getConstraints } from './validationConstraints';
 import { ISample } from '../';
 import { IValidationError } from './validationErrorProvider.entity';
 import {
@@ -15,15 +14,16 @@ import {
     inCatalog,
     registeredZoMo,
     nonUniqueEntry,
-    matchADVNumberOrString
+    matchADVNumberOrString,
+    aavDataFormat
 } from './customValidatorFunctions';
 import { ICatalogService } from '../application';
-import { ConstraintSet } from '.';
+import { IValidationConstraints } from './validationConstraints';
 
 moment.locale('de');
 
 export interface IValidator {
-    validateSample(sample: ISample): IValidationErrorCollection;
+    validateSample(sample: ISample, constraintSet: IValidationConstraints): IValidationErrorCollection;
 }
 
 export interface IValidationErrorCollection {
@@ -64,8 +64,7 @@ class SampleValidator implements IValidator {
         this.registerCustomValidators();
     }
 
-    validateSample(sample: ISample): IValidationErrorCollection {
-        const constraintSet = sample.isZoMo() ? getConstraints(ConstraintSet.ZOMO) : getConstraints(ConstraintSet.STANDARD);
+    validateSample(sample: ISample, constraintSet: IValidationConstraints): IValidationErrorCollection {
         return validate(sample.getData(), constraintSet);
     }
 
@@ -80,6 +79,7 @@ class SampleValidator implements IValidator {
         validate.validators.dependentFields = dependentFields;
         validate.validators.dependentFieldEntry = dependentFieldEntry;
         validate.validators.numbersOnly = numbersOnly;
+        validate.validators.aavDataFormat = aavDataFormat;
         validate.validators.inCatalog = inCatalog(this.catalogService);
         validate.validators.matchADVNumberOrString = matchADVNumberOrString(this.catalogService);
         validate.validators.registeredZoMo = registeredZoMo(this.catalogService);

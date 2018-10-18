@@ -8,10 +8,18 @@ import * as config from 'config';
 import { Request, Response } from 'express';
 import { logger } from '../../../aspects';
 import { IFormValidatorPort, IFormAutoCorrectionPort, IController, ISampleCollection, ISample, createSample, createSampleCollection } from '../../../app/ports';
+import { ApplicationSystemError } from '../../../app/sharedKernel/errors';
 
 moment.locale('de');
 
-interface IValidationRequest extends Array<ISampleDTO> { }
+interface IValidationRequestMeta {
+    state: string;
+}
+
+interface IValidationRequest {
+    data: ISampleDTO[];
+    meta: IValidationRequestMeta;
+}
 
 interface ISampleDTO {
     sample_id: string;
@@ -66,14 +74,21 @@ class ValidationController implements IValidationController {
     async validateSamples(req: Request, res: Response) {
 
         if (req.is('application/json')) {
-            const sampleCollection: ISampleCollection = this.fromDTOToSamples(req.body);
-            const validationResult = this.formValidationService.validateSamples(sampleCollection);
-            const autocorrectedSamples = this.formAutoCorrectionService.applyAutoCorrection(validationResult);
-            const validationResultsDTO = this.fromErrorsToDTO(autocorrectedSamples);
-            logger.info('ValidationController.validateSamples, Response sent', validationResultsDTO);
-            res
-                .status(200)
-                .json(validationResultsDTO);
+            try {
+                const sampleCollection: ISampleCollection = this.fromDTOToSamples(req.body);
+                const validationResult = this.formValidationService.validateSamples(sampleCollection, req.body.meta.state);
+                const autocorrectedSamples = this.formAutoCorrectionService.applyAutoCorrection(validationResult);
+                const validationResultsDTO = this.fromErrorsToDTO(autocorrectedSamples);
+                logger.info('ValidationController.validateSamples, Response sent', validationResultsDTO);
+                res
+                    .status(200)
+                    .json(validationResultsDTO);
+            } catch (err) {
+                res
+                    .status(500).end();
+                throw err;
+            }
+
         } else {
             const uploadedFilePath = path.join(appRootDir, req.file.path);
             this.getKnimeJobId(req, res, uploadedFilePath);
@@ -105,10 +120,10 @@ class ValidationController implements IValidationController {
     }
 
     private fromDTOToSamples(dto: IValidationRequest): ISampleCollection {
-        if (!Array.isArray(dto)) {
-            throw new Error(`Invalid input: Array expected, dto=${dto}`);
+        if (!Array.isArray(dto.data)) {
+            throw new ApplicationSystemError(`Invalid input: Array expected, dto.data${dto.data}`);
         }
-        const samples = dto.map(s => createSample({ ...s }));
+        const samples = dto.data.map(s => createSample({ ...s }));
 
         return createSampleCollection(samples);
     }

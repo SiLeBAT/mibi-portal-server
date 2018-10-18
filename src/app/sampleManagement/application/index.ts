@@ -2,3 +2,4 @@ export { IFormValidatorPort, IFormValidatorService, createService as createFormV
 export { IFormAutoCorrectionPort, IFormAutoCorrectionService, createService as createFormAutoCorrectionService } from './formAutoCorrection.service';
 export { ICatalogService, ICatalogPort, createService as createCatalogService } from './catalog.service';
 export { IDatasetPort, IDatasetService, createService as createDatasetService } from './dataset.service';
+export { IAVVFormatProvider, IAVVFormatPort, createService as createAVVFormatProvider } from './avvFormatProvider.service';
