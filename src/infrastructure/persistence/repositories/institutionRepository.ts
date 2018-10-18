@@ -26,7 +26,7 @@ class InstitutionRepository implements IInstitutionRepository {
 
     createInstitution(institution: IInstitution): Promise<IInstitution> {
         const newInstitution = new InstitutionSchema({
-            short: institution.short,
+            short: institution.stateShort,
             name1: institution.name1,
             location: institution.location,
             phone: institution.phone,

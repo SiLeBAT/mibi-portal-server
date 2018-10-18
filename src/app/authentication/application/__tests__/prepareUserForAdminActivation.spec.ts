@@ -57,7 +57,7 @@ describe('Prepare User for Activation Use Case', () => {
             password: 'test',
             institution: {
                 uniqueId: 'test',
-                short: 'test',
+                stateShort: 'test',
                 name1: 'test',
                 name2: 'test',
                 location: 'test',
@@ -71,8 +71,7 @@ describe('Prepare User for Activation Use Case', () => {
                 },
                 phone: 'test',
                 fax: 'test',
-                email: [],
-                stateId: 'test'
+                email: []
             },
             isAuthorized: jest.fn(),
             isActivated: jest.fn(),

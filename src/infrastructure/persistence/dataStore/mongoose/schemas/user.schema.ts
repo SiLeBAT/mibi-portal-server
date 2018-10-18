@@ -2,14 +2,18 @@ import { Schema, Document } from 'mongoose';
 import { ObjectId } from 'bson';
 import * as mongooseUniqueValidator from 'mongoose-unique-validator';
 import { IMongooseUpdateResponse } from '../mongooseRepository';
-import { IUserBase } from '../../../../../app/ports';
+import { IInstitutionModel } from './institution.schema';
 
 export interface IUserModelUpdateResponse extends IMongooseUpdateResponse {
 }
 
-export interface IUserModel extends Document, IUserBase {
+export interface IUserModel extends Document {
     _id: ObjectId;
     password: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    institution: IInstitutionModel;
     enabled: boolean;
     adminEnabled: boolean;
     numAttempt: number;
@@ -30,8 +34,8 @@ export const userSchema = new Schema({
     email: {
         type: String,
         required: true,
-		unique: true,
-		uniqueCaseInsensitive: true
+        unique: true,
+        uniqueCaseInsensitive: true
     },
     password: {
         type: String,

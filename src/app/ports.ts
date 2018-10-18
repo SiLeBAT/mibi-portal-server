@@ -104,6 +104,7 @@ export interface IUserRepository {
 }
 
 export interface IStateRepository {
+    getAllFormats(): Promise<IAVVFormatCollection>;
 }
 
 export interface ICatalogRepository {
@@ -111,7 +112,11 @@ export interface ICatalogRepository {
     getCatalog(catalogName: string): ICatalog<any>;
 }
 
+export interface IAVVFormatCollection {
+    [key: string]: string[];
+}
 export interface IState {
     name: string;
     short: string;
+    AVV: string[];
 }

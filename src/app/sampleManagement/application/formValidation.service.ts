@@ -1,11 +1,13 @@
 import * as _ from 'lodash';
 import { logger } from './../../../aspects';
-import { ISample, ISampleCollection, createValidator, IValidator } from './../domain';
+import { ISample, ISampleCollection, createValidator, IValidator, ConstraintSet } from './../domain';
 import { ICatalogService } from '.';
 import { ApplicationDomainError } from '../../sharedKernel/errors';
+import { IValidationConstraints, IValidationRuleSet, baseConstraints, zoMoConstraints, standardConstraints } from '../domain/validationConstraints';
+import { IAVVFormatProvider } from './avvFormatProvider.service';
 
 export interface IFormValidatorPort {
-    validateSamples(sampleCollection: ISampleCollection): ISampleCollection;
+    validateSamples(sampleCollection: ISampleCollection, state?: string): ISampleCollection;
 }
 
 export interface IFormValidatorService extends IFormValidatorPort { }
@@ -14,7 +16,7 @@ class FormValidatorService implements IFormValidatorService {
 
     private validator: IValidator;
 
-    constructor(private catalogService: ICatalogService) {
+    constructor(private catalogService: ICatalogService, private avvFormatProvider: IAVVFormatProvider) {
         this.validator = createValidator({
             dateFormat: 'DD-MM-YYYY',
             dateTimeFormat: 'DD-MM-YYYY hh:mm:ss',
@@ -23,12 +25,13 @@ class FormValidatorService implements IFormValidatorService {
     }
 
     // TODO: Needs to be refactored & tested
-    validateSamples(sampleCollection: ISampleCollection): ISampleCollection {
+    validateSamples(sampleCollection: ISampleCollection, state: string = ''): ISampleCollection {
 
         logger.verbose('FormValidatorService.validateSamples, Starting Sample validation');
 
         const results = sampleCollection.samples.map(sample => {
-            sample.setErrors(this.validator.validateSample(sample));
+            const constraintSet = sample.isZoMo() ? this.getConstraints(ConstraintSet.ZOMO, state) : this.getConstraints(ConstraintSet.STANDARD, state);
+            sample.setErrors(this.validator.validateSample(sample, constraintSet));
             return sample;
         });
 
@@ -82,8 +85,31 @@ class FormValidatorService implements IFormValidatorService {
         }
 
     }
+
+    private getConstraints(set: ConstraintSet, state: string) {
+        const newConstraints: IValidationConstraints = { ...baseConstraints };
+        // Necessary because of Ticket #49
+        newConstraints['sample_id_avv']['aavDataFormat'].regex = this.avvFormatProvider.getFormat(state);
+        switch (set) {
+            case ConstraintSet.ZOMO:
+                _.forEach(newConstraints, (value: IValidationRuleSet, key) => {
+                    if (zoMoConstraints.hasOwnProperty(key)) {
+                        newConstraints[key] = { ...value, ...zoMoConstraints[key] };
+                    }
+                });
+                break;
+            case ConstraintSet.STANDARD:
+            default:
+                _.forEach(newConstraints, (value: IValidationRuleSet, key) => {
+                    if (standardConstraints.hasOwnProperty(key)) {
+                        newConstraints[key] = { ...value, ...standardConstraints[key] };
+                    }
+                });
+        }
+        return newConstraints;
+    }
 }
 
-export function createService(catalogService: ICatalogService): IFormValidatorService {
-    return new FormValidatorService(catalogService);
+export function createService(catalogService: ICatalogService, avvFormatProvider: IAVVFormatProvider): IFormValidatorService {
+    return new FormValidatorService(catalogService, avvFormatProvider);
 }

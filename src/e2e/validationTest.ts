@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import { createSample, createSampleCollection, ISample } from '../app/sampleManagement/domain';
-import { createFormValidationService, createCatalogService } from '../app/sampleManagement/application';
+import { createFormValidationService, createCatalogService, createAVVFormatProvider } from '../app/sampleManagement/application';
 import { initialiseCatalogRepository } from './../infrastructure/persistence/repositories';
 
 // tslint:disable
@@ -4120,7 +4120,11 @@ function runTest() {
     initialiseCatalogRepository().then(
         repo => {
             const catalogService = createCatalogService(repo);
-            const validationService = createFormValidationService(catalogService);
+            const mockStateRepo = {
+                getAllFormats: () => Promise.resolve({})
+            };
+            const avvFormatProvider = createAVVFormatProvider(mockStateRepo);
+            const validationService = createFormValidationService(catalogService, avvFormatProvider);
             const errors = validationService.validateSamples(sampleCollection).samples.forEach((s: ISample, i: number) => {
                 const errors = s.getErrors();
                 checkVal(errors, i, s.isZoMo)

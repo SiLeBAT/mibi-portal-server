@@ -1,16 +1,23 @@
 import { createService, IFormValidatorService } from './../formValidation.service';
 import { ISampleCollection } from '../..';
 import { ISampleData, ISample } from '../../domain/sample.entity';
+import { ICatalogService } from '../catalog.service';
+import { IAVVFormatProvider } from '../avvFormatProvider.service';
 
 jest.mock('./../../domain', () => ({
     createValidator: () => ({
         validateSample: jest.fn()
-    })
+    }),
+    ConstraintSet: {
+        STANDARD: 'standard',
+        ZOMO: 'ZoMo'
+    }
 }));
 
 describe('Validate Sample Use Case', () => {
     // tslint:disable-next-line
-    let mockCatalogService: any;
+    let mockCatalogService: ICatalogService;
+    let mockAVVFormatProvider: IAVVFormatProvider;
     let service: IFormValidatorService;
 
     let genericTestSampleCollection: ISampleCollection;
@@ -18,10 +25,13 @@ describe('Validate Sample Use Case', () => {
     let genericTestSample: ISample;
     beforeEach(() => {
         mockCatalogService = {
-            getCatalog: jest.fn()
+            getCatalog: jest.fn(),
+            getCatalogSearchAliases: jest.fn()
         };
-
-        service = createService(mockCatalogService);
+        mockAVVFormatProvider = {
+            getFormat: jest.fn()
+        };
+        service = createService(mockCatalogService, mockAVVFormatProvider);
         testSampleData = {
             sample_id: '1',
             sample_id_avv: '1-ABC',

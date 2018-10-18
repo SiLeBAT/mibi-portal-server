@@ -1,12 +1,12 @@
 import * as path from 'path';
+import * as fs from 'fs';
 import * as readline from 'linebyline';
 import * as config from 'config';
 import { Document } from 'mongoose';
 import { logger } from '../../aspects';
-import { createDataStore, DataStoreType, createRepository } from '../../infrastructure';
+import { createDataStore, DataStoreType } from '../../infrastructure';
 import { IDataStore } from '../../infrastructure/persistence/dataStore/dataStoreFactory';
-import { IRepositoryBase } from '../../app/ports';
-import { StateSchema, InstitutionSchema } from '../../infrastructure/persistence/dataStore';
+import { mapCollectionToRepository } from '../../infrastructure/persistence/dataStore/mongoose/mongoose';
 
 start().catch(err => { throw err; });
 
@@ -20,7 +20,10 @@ async function start() {
             parseTabDelimitedFile(filename);
             break;
         case '.json':
+            parseJSONFile(filename);
+            break;
         default:
+            throw new Error('File extension not recognized: ' + ext);
     }
 
 }
@@ -30,25 +33,13 @@ function connectToDB() {
     return primaryDataStore.initialize(config.get('dataStore.connectionString'));
 }
 
-function insertNewEntry(collection: string, fields: string[], values: string[]) {
+function insertNewEntry(fields: string[], values: string[]) {
     // tslint:disable-next-line:no-any
     const entry: any = {};
     for (let i = 0; i < fields.length; i++) {
         entry[fields[i]] = values[i];
     }
     return entry;
-}
-
-// TODO: This should be handled elsewhere? In some other way?
-function mapCollectionToRepository(collection: string): IRepositoryBase<Document> {
-    switch (collection) {
-        case 'states':
-            return createRepository(StateSchema);
-        case 'institutions':
-            return createRepository(InstitutionSchema);
-        default:
-            throw new Error(`Collection not found. collection=${collection}`);
-    }
 }
 
 function parseCommandLine(): string {
@@ -61,6 +52,20 @@ function parseCommandLine(): string {
     }
 
     return argv[2];
+}
+
+function parseJSONFile(filename: string) {
+    const rawData = fs.readFileSync(filename, { encoding: 'UTF-8' });
+    const data = JSON.parse(rawData);
+    const collection = path.basename(filename, '.json');
+    // tslint:disable-next-line:no-any
+    let entries: any[] = [];
+    if (Array.isArray(data)) {
+        entries = data;
+    } else {
+        entries = [data];
+    }
+    writeToDB(collection, entries);
 }
 
 function parseTabDelimitedFile(filename: string) {
@@ -83,28 +88,11 @@ function parseTabDelimitedFile(filename: string) {
                 fields = line.substring(2).split('\t');
                 break;
             default:
-                entries.push(insertNewEntry(collection, fields, line.split('\t')));
+                entries.push(insertNewEntry(fields, line.split('\t')));
         }
     })
         .on('close', () => {
-            db = connectToDB();
-
-            db.drop(collection);
-            const repo = mapCollectionToRepository(collection);
-            const promises: Promise<Document>[] = [];
-            entries.forEach(e => {
-                logger.info(`Adding entry to collection. collection=${collection} entry=${e}`);
-                promises.push(repo.create(
-                    e
-                ));
-            });
-
-            Promise.all(promises).then(
-                () => db.close()
-            ).catch((err: Error) => {
-                logger.error(`Error during state insert. err= ${err}`);
-                return process.exit(1);
-            });
+            db = writeToDB(collection, entries);
         })
         .on('error', (error: Error) => {
             logger.error(`Error during readline. error=${error}`);
@@ -114,13 +102,40 @@ function parseTabDelimitedFile(filename: string) {
         });
 }
 
+// tslint:disable-next-line:no-any
+function writeToDB(collection: string, entries: any[]) {
+    const db = connectToDB();
+
+    db.drop(collection);
+    const repo = mapCollectionToRepository(collection);
+    const promises: Promise<Document>[] = [];
+    entries.forEach(e => {
+        logger.info(`Adding entry to collection. collection=${collection} entry=${e}`);
+        promises.push(repo.create(
+            e
+        ));
+    });
+
+    Promise.all(promises).then(
+        () => db.close()
+    ).catch((err: Error) => {
+        logger.error(`Error during state insert. err= ${err}`);
+        return process.exit(1);
+    });
+    return db;
+}
+
 function printUsage(scriptName: string) {
     logger.info('Usage:');
     logger.info('------');
-    logger.info(`$ >node ${scriptName} <filename>.txt`);
+    logger.info(`$ >node ${scriptName} <filename>.<txt|json>`);
     logger.info('');
     logger.info('.txt files should be tab delimited with 2 header lines (indicated by //) referencing the collection name and listing the field names');
     logger.info('e.g.');
     logger.info('//myCollection');
     logger.info('//filed1   field2  field3');
+    logger.info('');
+    logger.info('.json files should have the basename of the file be the name of the collection');
+    logger.info('e.g.');
+    logger.info('institutions.json');
 }

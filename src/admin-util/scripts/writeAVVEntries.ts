@@ -1,0 +1,92 @@
+import * as path from 'path';
+import * as fs from 'fs';
+import * as config from 'config';
+import { logger } from '../../aspects';
+import { createDataStore, DataStoreType } from '../../infrastructure';
+import { mapCollectionToRepository } from '../../infrastructure/persistence/dataStore/mongoose/mongoose';
+
+/**
+ * Script used to insert AVV entries into existing DB: For Ticket mps#49
+ * Run: >NODE_CONFIG_DIR=../../../config node writeAVVEntries.js ../../../data/states.json
+ */
+start().catch(err => { throw err; });
+
+async function start() {
+    let filename = parseCommandLine();
+    parseJSONFile(filename);
+
+}
+
+function connectToDB() {
+    const primaryDataStore = createDataStore(DataStoreType.MONGO);
+    let connectionString: string;
+    try {
+        connectionString = config.get('dataStore.connectionString');
+    } catch (e) {
+        logger.error(`Error during state insert. err= ${e}`);
+        return process.exit(1);
+    }
+    return primaryDataStore.initialize(connectionString);
+}
+
+function parseCommandLine(): string {
+    const argv = process.argv;
+
+    if (argv.length < 3) {
+        process.exit(1);
+    }
+
+    return argv[2];
+}
+
+function parseJSONFile(filename: string) {
+    const rawData = fs.readFileSync(filename, { encoding: 'UTF-8' });
+    const data = JSON.parse(rawData);
+    const collection = path.basename(filename, '.json');
+    // tslint:disable-next-line:no-any
+    let entries: any[] = [];
+    if (Array.isArray(data)) {
+        entries = data;
+    } else {
+        entries = [data];
+    }
+    writeToDB(collection, entries);
+}
+
+// tslint:disable-next-line:no-any
+function writeToDB(collection: string, entries: any[]) {
+    const db = connectToDB();
+    // tslint:disable-next-line:no-any
+    const promises: Promise<any>[] = [];
+    const repo = mapCollectionToRepository(collection);
+    entries.forEach(e => {
+        logger.info(`Adding entry to collection. collection=${collection} entry=${e.short}`);
+        promises.push(repo.findOne({ short: e['short'] }).then(
+            // tslint:disable-next-line:no-any
+            (d: any) => {
+                return repo.update(d._id.toString(), { AVV: e['AVV'] }).catch(e => { throw e; });
+            }
+        ).catch(
+            e => { throw e; }
+        ));
+
+    });
+    Promise.all(promises).then(
+        () => db.close()
+    ).catch((err: Error) => {
+        logger.error(`Error during state insert. err= ${err}`);
+        return process.exit(1);
+    });
+    return db;
+}
+
+function getNewGroupToOldGroupMapping(newGroups: Map<string, string[]>, oldGroups: Map<string, string[]>): Map<string, string> {
+    const result: Map<string, string> = new Map();
+    for (let [key, value] of newGroups) {
+        for (let [key2, value2] of oldGroups) {
+            result.set(key, key2);
+            break;
+        }
+    }
+    return result;
+}

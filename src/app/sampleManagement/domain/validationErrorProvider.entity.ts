@@ -327,6 +327,12 @@ class ValidationErrorProvider implements IValidationErrorProvider {
             id: '71',
             level: 1,
             message: 'Bitte tragen Sie eine Betriebsart ein!'
+        },
+        {
+            code: 72,
+            id: '72',
+            level: 1,
+            message: 'Das Format der AVV Nummer scheint nicht korrekt zu sein'
         }
     ];
     getError(id: string): IValidationError {

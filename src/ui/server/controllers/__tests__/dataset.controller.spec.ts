@@ -1,22 +1,17 @@
 import { createController, IDatasetController } from './../dataset.controller';
 import * as mockReq from 'mock-express-request';
 import * as mockRes from 'mock-express-response';
-import { IValidationController } from '..';
 import { IDatasetPort } from '../../../../app/ports';
  // tslint:disable
 describe('Dataset controller', () => {
 
     let controller: IDatasetController;
-    let mockValidationController: IValidationController;
     let mockDatasetService: IDatasetPort;
     beforeEach(() => {
         mockDatasetService = {
             sendDatasetFile: jest.fn()
         };
-        mockValidationController = {
-            validateSamples: jest.fn()
-        };
-        controller = createController(mockDatasetService, mockValidationController);
+        controller = createController(mockDatasetService);
     });
     it('should be return a promise', () => {
         const req = new mockReq({

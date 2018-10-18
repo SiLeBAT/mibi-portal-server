@@ -1,4 +1,5 @@
 import * as moment from 'moment';
+import * as _ from 'lodash';
 import { ISampleData } from './../sample.entity';
 import {
     referenceDate,
@@ -10,7 +11,8 @@ import {
     nonUniqueEntry,
     inCatalog,
     matchADVNumberOrString,
-    IMatchADVNumberOrStringOptions
+    IMatchADVNumberOrStringOptions,
+    aavDataFormat
 } from './../customValidatorFunctions';
 import { ICatalog } from '../..';
 import { ICatalogService } from '../../application';
@@ -33,7 +35,7 @@ describe('Custom Validator Functions', () => {
 
         testSample = {
             sample_id: '1',
-            sample_id_avv: '1-ABC',
+            sample_id_avv: '17-L-00412-1-1',
             pathogen_adv: 'Escherichia coli',
             pathogen_text: '',
             sampling_date: '01.02.2017',
@@ -636,6 +638,56 @@ describe('Custom Validator Functions', () => {
                 alternateKeys: ['Text1']
             } as IMatchADVNumberOrStringOptions, 'pathogen_adv', testSample);
             expect(error).toEqual(validationError);
+        });
+    });
+
+    describe('avvDataFormat', () => {
+
+        const stateFormats: { [key: string]: string[] } = {
+            BW: ['^17[0-9]{7}$', '^17/[0-9]{5}[\.-][0-9]$'],
+            BY: ['^17-[0-9]{7}-[0-9]{3}$', '^17-[0-9]{7}$'],
+            BE: ['^17-(W|TW|CMO|T|UKF)-[0-9]{1,4}$', '^17[0-9]{5}(MK|T|CMO|TK)( *)[0-9]{1,4}$'],
+            BB: ['^17-(UKF|T|FA|W|CMO)-[0-9]{2,4}$', '^17[0-9]{5}(MK|UKF|UWF|MI|T|CMO|L|MM)( *)[0-9]{1,4}$'],
+            HB: ['^[0-9]{5,7}17[0-9]{4,5}$'],
+            HH: ['^17-[LF]-[0-9]{5}-[0-9]-[0-9]$'],
+            HE: ['^17[0-9]{7}$'],
+            MV: ['^17[A-Za-z]{2,4}[0-9]{4}-[0-9]{2,3}$'],
+            NI: ['^[0-9]{4,5}17[0-9]{4,6}$'],
+            NW: ['^2017-[0-9]{7}$', '^2017(MEL|OWL|RRW|WFL)[0-9]{6}$', '^[0-9]{5}$', '^(D)[0-9]{2,4}$', '^(D)[0-9]{3,4}-[0-9]{2,4}$', '^(K)( *)[0-9]{3,4}$', '^(D)( *)[0-9]{4}-[0-9]{2,4}$'],
+            RP: ['^2017-[0-9]{8}$'],
+            SL: ['^L-2017-[0-9]{5}$'],
+            ST: ['^17[0-9]{9}$', '^[0-9]{3}-[0-9]{2}-[0-9]{3}-17$'],
+            SH: ['^[NF]17[0-9]{6}-[0-9]{3}$', '^[NF]18[0-9]{6}-[0-9]{3}$'],
+            SN: ['^L/2017/[0-9]{5,6}$', '^V[L|D]-2017/[0-9]{5}$', '^17(B|L)[0-9]{3}$', '^V[L|D]-2018/[0-9]{5}$'],
+            TH: ['^B-2017/[0-9]{4,5}$', '^[0-9]{4,5}17$']
+        };
+
+        it('should validate without errors', () => {
+            const error = aavDataFormat(testSample.sample_id_avv, {
+                message: validationError,
+                regex: [new RegExp('^17-[LF]-[0-9]{5}-[0-9]-[0-9]$')]
+            }, 'sample_id_avv', testSample);
+            expect(error).toBe(null);
+        });
+
+        it('should validate list without errors', () => {
+            const data = require('./AVVExamples.json');
+
+            _.forEach(data, (exampleAVVs: string[], state: string) => {
+                exampleAVVs.forEach(
+                    avv => {
+                        _.forEach(stateFormats, (regex: string[], st: string) => {
+                            const error = aavDataFormat(avv, {
+                                message: validationError,
+                                regex: regex.map(s => new RegExp(s))
+                            }, 'sample_id_avv', testSample);
+                            if (state === st) {
+                                expect(error).toBe(null);
+                            }
+                        });
+                    }
+                );
+            });
         });
     });
 });

@@ -1,8 +1,8 @@
-import { userRepository, tokenRepository, institutionRepository, catalogRepository } from './../../../infrastructure/persistence/repositories';
+import { userRepository, tokenRepository, institutionRepository, catalogRepository, stateRepository } from './../../../infrastructure/persistence/repositories';
 import { ApplicationSystemError } from '../errors';
 
 export enum RepositoryType {
-    USER, TOKEN, INSTITUTION, CATALOG
+    USER, TOKEN, INSTITUTION, CATALOG, STATE
 }
 export interface IRepositoryFactory {
     // tslint:disable-next-line
@@ -18,6 +18,8 @@ export class RepositoryFactory implements IRepositoryFactory {
                 return tokenRepository;
             case RepositoryType.INSTITUTION:
                 return institutionRepository;
+            case RepositoryType.STATE:
+                return stateRepository;
             case RepositoryType.CATALOG:
                 return catalogRepository;
             default:

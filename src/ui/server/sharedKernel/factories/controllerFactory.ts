@@ -37,7 +37,7 @@ export class ControllerFactory implements IControllerFactory {
         this.validationController = createValidationController(this.serviceFactory.getService('VALIDATION'), this.serviceFactory.getService('AUTOCORRECTION'));
         this.loginController = createLoginController(this.serviceFactory.getService('LOGIN'));
         this.institutionsController = createInstitutionController(this.serviceFactory.getService('INSTITUTION'));
-        this.datasetController = createDatasetController(this.serviceFactory.getService('DATASET'), (this.getController('VALIDATION') as IValidationController));
+        this.datasetController = createDatasetController(this.serviceFactory.getService('DATASET'));
         this.recoveryController = createRecoveryController(this.serviceFactory.getService('PASSWORD'));
         this.registrationController = createRegistrationController(this.serviceFactory.getService('REGISTRATION'));
         this.resetController = createResetController(this.serviceFactory.getService('PASSWORD'));

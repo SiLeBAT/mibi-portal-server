@@ -105,7 +105,6 @@ function autoCorrectPathogen(catalogService: ICatalogService) {
             let alteredEntry = trimmedEntry;
             if (noSpaceDot.test(trimmedEntry)) {
                 alteredEntry = trimmedEntry.replace(noSpaceDot, '. \$1');
-                logger.error('Has no space', alteredEntry);
             }
             const result: IFuzzySearchResultEntry[] = fuse.search(alteredEntry);
             const slicedResult = result.slice(0, numberOfResults).map(entry => entry.item);

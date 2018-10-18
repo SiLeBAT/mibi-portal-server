@@ -1,7 +1,9 @@
 import { Schema, Document } from 'mongoose';
-import { IState } from '../../../../../app/ports';
 
-export interface IStateModel extends Document, IState {
+export interface IStateModel extends Document {
+    name: string;
+    short: string;
+    AVV: string[];
     created: Date;
     updated: Date;
 }
@@ -15,6 +17,9 @@ export const stateSchema = new Schema({
         type: String,
         required: true
     },
+    AVV: [{
+        type: String
+    }],
     created: {
         type: Date,
         default: Date.now,

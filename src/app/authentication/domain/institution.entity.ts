@@ -1,6 +1,6 @@
 export interface IInstitution {
     uniqueId: string;
-    short: string;
+    stateShort: string;
     name1: string;
     name2: string;
     location: string;
@@ -9,7 +9,6 @@ export interface IInstitution {
     phone: string;
     fax: string;
     email: string[];
-    stateId: string;
 }
 
 export interface IAddress {
@@ -19,7 +18,7 @@ export interface IAddress {
 
 class Institution implements IInstitution {
     uniqueId: string;
-    short: string;
+    stateShort: string;
     name1: string;
     name2: string;
     location: string;
@@ -28,7 +27,6 @@ class Institution implements IInstitution {
     phone: string;
     fax: string;
     email: string[];
-    stateId: string;
 
     constructor(id: string) {
         this.uniqueId = id;

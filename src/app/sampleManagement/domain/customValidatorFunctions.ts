@@ -32,6 +32,25 @@ function dependentFieldEntry(value: string, options: IDependentFieldEntryOptions
     return null;
 }
 
+export interface IAAVDataFormatOptions extends IValidatiorFunctionOptions {
+    regex: RegExp[];
+}
+
+function aavDataFormat(value: string, options: IAAVDataFormatOptions, key: keyof ISampleData, attributes: ISampleData) {
+    if (!value) {
+        return null;
+    }
+    let success = false;
+    options.regex.forEach(
+        regexp => {
+            if (regexp.test(value)) {
+                success = true;
+            }
+        }
+    );
+    return success ? null : { ...options.message } ;
+}
+
 export interface INonUniqueEntryOptions extends IValidatiorFunctionOptions {
     catalog: string;
     key: string;
@@ -290,5 +309,6 @@ export {
     inCatalog,
     registeredZoMo,
     nonUniqueEntry,
-    matchADVNumberOrString
+    matchADVNumberOrString,
+    aavDataFormat
 };
