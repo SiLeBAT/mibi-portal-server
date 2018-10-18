@@ -112,7 +112,7 @@ describe('Custom Auto-correction Functions', () => {
             expect(autoCorrection).toEqual({
                 field: 'pathogen_adv',
                 original: 'Escherigia coli',
-                correctionOffer: ['Escherichia coli', 'Escherichia coli Carbapenemase-bildend', 'Salmonella Colindale', 'Salmonella Dublin']
+                correctionOffer: ['Escherichia coli', 'Escherichia coli Carbapenemase-bildend']
             });
         });
 
