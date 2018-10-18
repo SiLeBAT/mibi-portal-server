@@ -29,6 +29,7 @@ function autoCorrectPathogen(catalogService: ICatalogService) {
         shouldSort: true,
         tokenize: true,
         includeScore: true,
+        matchAllTokens: true,
         threshold: 0.6,
         location: 0,
         distance: 100,
@@ -96,10 +97,12 @@ function autoCorrectPathogen(catalogService: ICatalogService) {
                         original: sampleData.pathogen_adv,
                         correctionOffer: [enhancement.text]
                     };
-                    return searchCache[trimmedEntry];
+
                 }
             });
-
+            if (searchCache[trimmedEntry]) {
+                return searchCache[trimmedEntry];
+            }
             // Do fuzzy search
             const noSpaceDot = /\.(\S)/g;
             let alteredEntry = trimmedEntry;
