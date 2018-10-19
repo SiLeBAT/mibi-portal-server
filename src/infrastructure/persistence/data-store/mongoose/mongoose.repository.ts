@@ -1,5 +1,5 @@
 import { Document, Model, Types } from 'mongoose';
-import { IRepositoryBase, IModelAttributes, IUpdateResponse } from './../../../../app/ports';
+import { IRepositoryBase, IModelAttributes, IUpdateResponse } from '../../../../app/ports';
 
 export interface IMongooseUpdateResponse extends IUpdateResponse {
     ok: number;

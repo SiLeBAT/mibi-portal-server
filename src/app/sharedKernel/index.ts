@@ -1,4 +1,4 @@
-export { RepositoryType, IRepositoryFactory, RepositoryFactory, IServiceFactory, ServiceFactory, IController } from './factories';
+export { IServiceFactory, ServiceFactory, IController } from './factories';
 export {
     INotificationPort,
     INotification,
@@ -8,3 +8,4 @@ export {
 export {
     NotificationType
 } from './domain';
+export { ApplicationDomainError, ApplicationSystemError } from './errors';

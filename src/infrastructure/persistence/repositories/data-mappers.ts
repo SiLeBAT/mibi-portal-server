@@ -1,7 +1,5 @@
-import { IInstitution, createInstitution, createUser, IUser, IState } from './../../../app/ports';
-import { IInstitutionModel } from '../dataStore';
-import { IUserModel } from './../dataStore';
-import { IStateModel } from '../dataStore/mongoose/schemas/state.schema';
+import { IInstitution, createInstitution, createUser, IUser, IState, IValidationError, INRL } from '../../../app/ports';
+import { IValidationErrorModel, IInstitutionModel, IUserModel, IStateModel, INRLModel } from '../data-store';
 
 function mapModelToInstitution(i: IInstitutionModel): IInstitution {
     const inst = createInstitution(i._id);
@@ -43,8 +41,25 @@ function mapModelToState(model: IStateModel): IState {
     };
 }
 
+function mapModelToValidationError(model: IValidationErrorModel): IValidationError {
+    return {
+        code: model.code,
+        level: model.level,
+        message: model.message
+    };
+}
+
+function mapModelToNRL(model: INRLModel): INRL {
+    return {
+        name: model.name,
+        selectors: model.selector
+    };
+}
+
 export {
     mapModelToInstitution,
     mapModelToUser,
-    mapModelToState
+    mapModelToState,
+    mapModelToValidationError,
+    mapModelToNRL
 };

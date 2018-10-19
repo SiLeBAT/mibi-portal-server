@@ -1,6 +1,6 @@
 
 import { MongooseDataStore } from './mongoose';
-import { logger } from './../../../aspects';
+import { logger } from '../../../aspects';
 
 export interface IDataStore {
     initialize(connectionString: string): IDataStore;

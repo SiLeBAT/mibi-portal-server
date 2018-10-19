@@ -1,10 +1,10 @@
-import { createRepository, StateSchema, IStateModel } from './../dataStore';
-import { IRepositoryBase, IStateRepository, IState, IAVVFormatCollection } from './../../../app/ports';
-import { mapModelToState } from './dataMappers';
+import { createRepository, StateSchema, IStateModel } from '../data-store';
+import { IStateRepository, IState, IAVVFormatCollection, IRead } from '../../../app/ports';
+import { mapModelToState } from './data-mappers';
 
 class StateRepository implements IStateRepository {
 
-    constructor(private baseRepo: IRepositoryBase<IStateModel>) {
+    constructor(private baseRepo: IRead<IStateModel>) {
     }
 
     getAllFormats(): Promise<IAVVFormatCollection> {
@@ -19,7 +19,7 @@ class StateRepository implements IStateRepository {
         );
     }
 
-    retrieve(): Promise<IState[]> {
+    private retrieve(): Promise<IState[]> {
         return this.baseRepo.retrieve().then(
             modelArray => {
                 return modelArray.map(m => mapModelToState(m));

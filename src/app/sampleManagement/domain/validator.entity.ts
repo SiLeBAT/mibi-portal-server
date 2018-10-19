@@ -3,7 +3,6 @@ import * as moment from 'moment';
 import * as _ from 'lodash';
 
 import { ISample } from '../';
-import { IValidationError } from './validationErrorProvider.entity';
 import {
     referenceDate,
     atLeastOneOf,
@@ -15,9 +14,9 @@ import {
     registeredZoMo,
     nonUniqueEntry,
     matchADVNumberOrString,
-    aavDataFormat
+    matchesRegexPattern
 } from './customValidatorFunctions';
-import { ICatalogService } from '../application';
+import { ICatalogService, IValidationError } from '../application';
 import { IValidationConstraints } from './validationConstraints';
 
 moment.locale('de');
@@ -79,7 +78,7 @@ class SampleValidator implements IValidator {
         validate.validators.dependentFields = dependentFields;
         validate.validators.dependentFieldEntry = dependentFieldEntry;
         validate.validators.numbersOnly = numbersOnly;
-        validate.validators.aavDataFormat = aavDataFormat;
+        validate.validators.matchesRegexPattern = matchesRegexPattern;
         validate.validators.inCatalog = inCatalog(this.catalogService);
         validate.validators.matchADVNumberOrString = matchADVNumberOrString(this.catalogService);
         validate.validators.registeredZoMo = registeredZoMo(this.catalogService);

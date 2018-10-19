@@ -1,5 +1,5 @@
-import { createRepository, ResetTokenSchema, IResetTokenModel } from './../dataStore';
-import { IRepositoryBase, ITokenRepository, IUserToken, IUser } from './../../../app/ports';
+import { createRepository, ResetTokenSchema, IResetTokenModel } from '../data-store';
+import { IRepositoryBase, ITokenRepository, IUserToken, IUser } from '../../../app/ports';
 import { TokenType } from '../../../app/authentication/domain';
 
 class TokenRepository implements ITokenRepository {

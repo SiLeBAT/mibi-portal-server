@@ -9,7 +9,7 @@
     "build:qa": "NODE_ENV=qa npm run build",
     "build:prod": "NODE_ENV=production npm run build",
     "build:dev": "npm run clean &&  npm run tsc && npm run cp:view && npm run test",
-    "build:notest": "npm run clean &&  npm run tsc && npm run cp:view && npm run cp:scripts && npm run lint",
+    "build:notest": "npm run clean &&  npm run tsc && npm run cp:view && npm run cp:scripts",
     "cp:view": "copyfiles -u 1 ./src/**/views/**/* ./lib",
     "cp:scripts": "copyfiles -u 1 ./src/**/scripts/*.sh ./lib",
     "tsc": "tsc",

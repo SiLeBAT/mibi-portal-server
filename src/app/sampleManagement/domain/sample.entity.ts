@@ -1,4 +1,4 @@
-import { IValidationError } from './validationErrorProvider.entity';
+import { IValidationError } from '../application';
 import { IValidationErrorCollection } from './validator.entity';
 
 const ZOMO_CODE: number = 81;

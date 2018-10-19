@@ -1,10 +1,20 @@
-import { ILoginService, createService as createLoginService } from '../../authentication/application/login.service';
-import { createService as createInstitutionService, IInstitutionService } from '../../authentication/application/institution.service';
-import { RepositoryType, IRepositoryFactory } from './repositoryFactory';
-import { IRegistrationService, IPasswordService, createRegistrationService, createPasswordService } from '../../authentication/application';
-import { IFormValidatorService, createFormValidationService, ICatalogService, createCatalogService, IDatasetService, createDatasetService, createFormAutoCorrectionService, IFormAutoCorrectionService, IAVVFormatProvider, createAVVFormatProvider } from '../../sampleManagement/application';
+import {
+    IRegistrationService,
+    IPasswordService,
+    createRegistrationService, createPasswordService, ILoginService, createLoginService, createInstitutionService, IInstitutionService
+} from '../../authentication/application';
+import {
+    IFormValidatorService,
+    createFormValidationService,
+    ICatalogService,
+    createCatalogService,
+    IDatasetService,
+    createDatasetService, createFormAutoCorrectionService, IFormAutoCorrectionService, IAVVFormatProvider, createAVVFormatProvider, IValidationErrorProvider, createValidationErrorProvider, INRLSelectorProvider, createNRLSelectorProvider
+} from '../../sampleManagement/application';
 import { ApplicationSystemError } from '../errors';
 import { INotificationService, createNotificationService } from '../application';
+// TODO: IS this the right way to get the dependency?
+import { catalogRepository, nrlRepository, stateRepository, institutionRepository, userRepository, tokenRepository, validationErrorRepository } from '../../../infrastructure';
 
 export interface IServiceFactory {
     // tslint:disable-next-line
@@ -22,16 +32,15 @@ export class ServiceFactory implements IServiceFactory {
     private datasetService: IDatasetService;
     private autoCorrectionService: IFormAutoCorrectionService;
     private avvFormatProvider: IAVVFormatProvider;
+    private nrlSelectorProvider: INRLSelectorProvider;
+    private validationErrorProvider: IValidationErrorProvider;
 
-    constructor(private repositoryFactory: IRepositoryFactory) {
-        const userRepository = this.repositoryFactory.getRepository(RepositoryType.USER);
-        const institutionRepository = this.repositoryFactory.getRepository(RepositoryType.INSTITUTION);
-        const tokenRepository = this.repositoryFactory.getRepository(RepositoryType.TOKEN);
-        const catalogRepository = this.repositoryFactory.getRepository(RepositoryType.CATALOG);
-        const stateRepository = this.repositoryFactory.getRepository(RepositoryType.STATE);
+    constructor() {
 
         this.catalogService = createCatalogService(catalogRepository);
+        this.nrlSelectorProvider = createNRLSelectorProvider(nrlRepository);
         this.avvFormatProvider = createAVVFormatProvider(stateRepository);
+        this.validationErrorProvider = createValidationErrorProvider(validationErrorRepository);
         this.notificationService = createNotificationService();
         this.datasetService = createDatasetService(this.notificationService);
         this.institutionService = createInstitutionService(institutionRepository);
@@ -39,7 +48,7 @@ export class ServiceFactory implements IServiceFactory {
         this.passwordService = createPasswordService(userRepository, tokenRepository, this.notificationService);
         this.loginService = createLoginService(userRepository, this.registrationService);
         this.autoCorrectionService = createFormAutoCorrectionService(this.catalogService);
-        this.validationService = createFormValidationService(this.catalogService, this.avvFormatProvider);
+        this.validationService = createFormValidationService(this.catalogService, this.avvFormatProvider, this.validationErrorProvider, this.nrlSelectorProvider);
 
     }
 
@@ -63,6 +72,10 @@ export class ServiceFactory implements IServiceFactory {
                 return this.autoCorrectionService;
             case 'AVVFORMATPROVIDER':
                 return this.avvFormatProvider;
+            case 'VALIDATIONERRORPROVIDER':
+                return this.validationErrorProvider;
+            case 'NRLSELECTORPROVIDER':
+                return this.nrlSelectorProvider;
             default:
                 throw new ApplicationSystemError(`Unknown serviceName, serviceName=${serviceName}`);
         }
