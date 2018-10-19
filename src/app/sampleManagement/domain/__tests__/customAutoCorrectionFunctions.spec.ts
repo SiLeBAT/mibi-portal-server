@@ -38,8 +38,7 @@ describe('Custom Auto-correction Functions', () => {
 
             genericErrorData = {
                 pathogen_adv: [{
-                    id: '3',
-                    code: 0,
+                    code: 3,
                     level: 2,
                     message: 'Error'
                 }]

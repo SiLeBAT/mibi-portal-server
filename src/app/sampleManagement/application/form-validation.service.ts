@@ -1,13 +1,21 @@
 import * as _ from 'lodash';
-import { logger } from './../../../aspects';
-import { ISample, ISampleCollection, createValidator, IValidator, ConstraintSet } from './../domain';
-import { ICatalogService } from '.';
-import { ApplicationDomainError } from '../../sharedKernel/errors';
-import { IValidationConstraints, IValidationRuleSet, baseConstraints, zoMoConstraints, standardConstraints } from '../domain/validationConstraints';
-import { IAVVFormatProvider } from './avvFormatProvider.service';
+import { logger } from '../../../aspects';
+import { ICatalogService, IAVVFormatProvider, IValidationErrorProvider, INRLSelectorProvider } from '.';
+import { ApplicationDomainError } from '../../sharedKernel';
+import {
+    ISample,
+    ISampleCollection,
+    createValidator,
+    IValidator,
+    ConstraintSet, IValidationConstraints, IValidationRuleSet, baseConstraints, zoMoConstraints, standardConstraints, IValidationRule
+} from '../domain';
 
+export interface IValidationOptions {
+    state?: string;
+    nrl?: string;
+}
 export interface IFormValidatorPort {
-    validateSamples(sampleCollection: ISampleCollection, state?: string): ISampleCollection;
+    validateSamples(sampleCollection: ISampleCollection, validationOptions: IValidationOptions): Promise<ISampleCollection>;
 }
 
 export interface IFormValidatorService extends IFormValidatorPort { }
@@ -16,7 +24,7 @@ class FormValidatorService implements IFormValidatorService {
 
     private validator: IValidator;
 
-    constructor(private catalogService: ICatalogService, private avvFormatProvider: IAVVFormatProvider) {
+    constructor(private catalogService: ICatalogService, private avvFormatProvider: IAVVFormatProvider, private validationErrorProvider: IValidationErrorProvider, private nrlSelectorProvider: INRLSelectorProvider) {
         this.validator = createValidator({
             dateFormat: 'DD-MM-YYYY',
             dateTimeFormat: 'DD-MM-YYYY hh:mm:ss',
@@ -25,12 +33,12 @@ class FormValidatorService implements IFormValidatorService {
     }
 
     // TODO: Needs to be refactored & tested
-    validateSamples(sampleCollection: ISampleCollection, state: string = ''): ISampleCollection {
+    async validateSamples(sampleCollection: ISampleCollection, validationOptions: IValidationOptions): Promise<ISampleCollection> {
 
         logger.verbose('FormValidatorService.validateSamples, Starting Sample validation');
 
         const results = sampleCollection.samples.map(sample => {
-            const constraintSet = sample.isZoMo() ? this.getConstraints(ConstraintSet.ZOMO, state) : this.getConstraints(ConstraintSet.STANDARD, state);
+            const constraintSet = sample.isZoMo() ? this.getConstraints(ConstraintSet.ZOMO, validationOptions) : this.getConstraints(ConstraintSet.STANDARD, validationOptions);
             sample.setErrors(this.validator.validateSample(sample, constraintSet));
             return sample;
         });
@@ -51,7 +59,7 @@ class FormValidatorService implements IFormValidatorService {
         });
         _.filter(samples, sample => _.includes(pathogenArrayIdDuplicates, sample[uniqueId]))
             .forEach(e => {
-                e.addErrorTo(config.sampleId, config.error);
+                e.addErrorTo(config.sampleId, this.validationErrorProvider.getError(config.error));
             });
 
         return [...samples];
@@ -63,33 +71,25 @@ class FormValidatorService implements IFormValidatorService {
             case 'pathogenId':
                 return {
                     sampleId: 'sample_id',
-                    error: {
-                        code: 3,
-                        id: '3',
-                        level: 2,
-                        message: 'Probenummer kommt mehrfach vor (bei identischem Erreger)'
-                    }
+                    error: 3
                 };
             case 'pathogenIdAVV':
                 return {
                     sampleId: 'sample_id_avv',
-                    error: {
-                        code: 6,
-                        id: '6',
-                        level: 2,
-                        message: 'Probenummer nach AVVData kommt mehrfach vor (bei identischem Erreger)'
-                    }
+                    error: 6
                 };
             default:
-                throw new ApplicationDomainError(`Invalid Input: This unique ID is not validated uniqueId=${uniqueId }`);
+                throw new ApplicationDomainError(`Invalid Input: This unique ID is not validated uniqueId=${uniqueId}`);
         }
 
     }
 
-    private getConstraints(set: ConstraintSet, state: string) {
+    private getConstraints(set: ConstraintSet, options: IValidationOptions) {
         const newConstraints: IValidationConstraints = { ...baseConstraints };
         // Necessary because of Ticket #49
-        newConstraints['sample_id_avv']['aavDataFormat'].regex = this.avvFormatProvider.getFormat(state);
+        newConstraints['sample_id_avv']['matchesRegexPattern'].regex = this.avvFormatProvider.getFormat(options.state);
+        // Necessary because of Ticket #54
+        newConstraints['pathogen_adv']['matchesRegexPattern'].regex = this.nrlSelectorProvider.getSelectors(options.nrl);
         switch (set) {
             case ConstraintSet.ZOMO:
                 _.forEach(newConstraints, (value: IValidationRuleSet, key) => {
@@ -106,10 +106,15 @@ class FormValidatorService implements IFormValidatorService {
                     }
                 });
         }
+        _.forEach(newConstraints, (v: IValidationRuleSet, k) => {
+            _.forEach(v, (v2: IValidationRule, k2) => {
+                v2['message'] = this.validationErrorProvider.getError(v2['error']);
+            });
+        });
         return newConstraints;
     }
 }
 
-export function createService(catalogService: ICatalogService, avvFormatProvider: IAVVFormatProvider): IFormValidatorService {
-    return new FormValidatorService(catalogService, avvFormatProvider);
+export function createService(catalogService: ICatalogService, avvFormatProvider: IAVVFormatProvider, validationErrorProvider: IValidationErrorProvider, nrlSelectorProvider: INRLSelectorProvider): IFormValidatorService {
+    return new FormValidatorService(catalogService, avvFormatProvider, validationErrorProvider, nrlSelectorProvider);
 }

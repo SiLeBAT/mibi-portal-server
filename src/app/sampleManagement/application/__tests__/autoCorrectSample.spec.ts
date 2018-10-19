@@ -1,4 +1,4 @@
-import { createService, IFormAutoCorrectionService } from './../formAutoCorrection.service';
+import { createService, IFormAutoCorrectionService } from '../form-auto-correction.service';
 import { ISampleCollection } from '../..';
 import { ISampleData, ISample } from '../../domain/sample.entity';
 
@@ -62,9 +62,12 @@ describe('Auto-correct Sample Use Case', () => {
     });
     it('should successfully complete Happy Path', () => {
         const result = service.applyAutoCorrection(genericTestSampleCollection);
-        expect(result).toEqual({
+
+        expect(result).resolves.toEqual({
             samples: []
-        });
+        }).catch(
+            e => { throw e; }
+        );
     });
 
 });

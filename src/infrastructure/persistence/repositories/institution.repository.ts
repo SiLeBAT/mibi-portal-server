@@ -1,6 +1,6 @@
-import { createRepository, InstitutionSchema, IInstitutionModel } from './../dataStore';
-import { IRepositoryBase, IInstitutionRepository, IInstitution, createInstitution } from './../../../app/ports';
-import { mapModelToInstitution } from './dataMappers';
+import { createRepository, InstitutionSchema, IInstitutionModel } from '../data-store';
+import { IRepositoryBase, IInstitutionRepository, IInstitution, createInstitution } from '../../../app/ports';
+import { mapModelToInstitution } from './data-mappers';
 
 class InstitutionRepository implements IInstitutionRepository {
 

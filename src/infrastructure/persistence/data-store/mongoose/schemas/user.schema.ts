@@ -1,7 +1,7 @@
 import { Schema, Document } from 'mongoose';
 import { ObjectId } from 'bson';
 import * as mongooseUniqueValidator from 'mongoose-unique-validator';
-import { IMongooseUpdateResponse } from '../mongooseRepository';
+import { IMongooseUpdateResponse } from '../mongoose.repository';
 import { IInstitutionModel } from './institution.schema';
 
 export interface IUserModelUpdateResponse extends IMongooseUpdateResponse {

@@ -1,10 +1,10 @@
 import { ICatalogService } from '.';
-import { logger } from './../../../aspects';
-import { ISampleCollection, ISample } from './../domain';
+import { logger } from '../../../aspects';
+import { ISampleCollection, ISample } from '../domain';
 import { ICorrectionFunction, autoCorrectPathogen } from '../domain/customAutoCorrectionFunctions';
 
 export interface IFormAutoCorrectionPort {
-    applyAutoCorrection(sampleCollection: ISampleCollection): ISampleCollection;
+    applyAutoCorrection(sampleCollection: ISampleCollection): Promise<ISampleCollection>;
 }
 
 export interface IFormAutoCorrectionService extends IFormAutoCorrectionPort { }
@@ -17,7 +17,7 @@ class FormAutoCorrectionService implements IFormAutoCorrectionService {
         this.registerCorrectionFunctions();
     }
 
-    applyAutoCorrection(sampleCollection: ISampleCollection): ISampleCollection {
+    async applyAutoCorrection(sampleCollection: ISampleCollection): Promise<ISampleCollection> {
 
         logger.verbose('FormAutoCorrectionService.applyAutoCorrection, Starting Sample autoCorrection');
 

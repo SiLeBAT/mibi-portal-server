@@ -1,8 +1,7 @@
 import * as _ from 'lodash';
-import { validationErrorProvider as vep, IValidationError } from './validationErrorProvider.entity';
 
 export interface IValidationRule {
-    message: IValidationError;
+    error: number;
     // tslint:disable-next-line
     [key: string]: any;
 }
@@ -18,29 +17,29 @@ export interface IValidationConstraints {
 export const zoMoConstraints: IValidationConstraints = {
     sample_id_avv: {
         presence: {
-            message: vep.getError('5'),
+            error: 5,
             allowEmpty: false
         }
     },
     sampling_date: {
         presence: {
-            message: vep.getError('14'),
+            error: 14,
             allowEmpty: false
         }
     },
     isolation_date: {
         presence: {
-            message: vep.getError('18'),
+            error: 18,
             allowEmpty: false
         }
     },
     matrix_adv: {
         presence: {
-            message: vep.getError('34'),
+            error: 34,
             allowEmpty: false
         },
         registeredZoMo: {
-            message: vep.getError('49'),
+            error: 49,
             group: [{
                 attr: 'operations_mode_adv',
                 code: 'ADV8-Kode'
@@ -56,11 +55,11 @@ export const zoMoConstraints: IValidationConstraints = {
     },
     operations_mode_adv: {
         atLeastOneOf: {
-            message: vep.getError('48'),
+            error: 48,
             additionalMembers: ['operations_mode_text']
         },
         registeredZoMo: {
-            message: vep.getError('49'),
+            error: 49,
             group: [{
                 attr: 'operations_mode_adv',
                 code: 'ADV8-Kode'
@@ -76,31 +75,31 @@ export const zoMoConstraints: IValidationConstraints = {
     },
     operations_mode_text: {
         atLeastOneOf: {
-            message: vep.getError('48'),
+            error: 48,
             additionalMembers: ['operations_mode_adv']
         }
     },
     sampling_location_adv: {
         atLeastOneOf: {
-            message: vep.getError('64b'),
+            error: 86,
             additionalMembers: ['sampling_location_zip', 'sampling_location_text']
         }
     },
     sampling_location_zip: {
         atLeastOneOf: {
-            message: vep.getError('64b'),
+            error: 86,
             additionalMembers: ['sampling_location_adv', 'sampling_location_text']
         }
     },
     sampling_location_text: {
         atLeastOneOf: {
-            message: vep.getError('64b'),
+            error: 86,
             additionalMembers: ['sampling_location_adv', 'sampling_location_zip']
         }
     },
     sampling_reason_adv: {
         registeredZoMo: {
-            message: vep.getError('49'),
+            error: 49,
             group: [{
                 attr: 'operations_mode_adv',
                 code: 'ADV8-Kode'
@@ -116,7 +115,7 @@ export const zoMoConstraints: IValidationConstraints = {
     },
     sampling_reason_text: {
         registeredZoMo: {
-            message: vep.getError('49'),
+            error: 49,
             group: [{
                 attr: 'operations_mode_adv',
                 code: 'ADV8-Kode'
@@ -135,13 +134,13 @@ export const zoMoConstraints: IValidationConstraints = {
 export const standardConstraints: IValidationConstraints = {
     sampling_date: {
         atLeastOneOf: {
-            message: vep.getError('19'),
+            error: 19,
             additionalMembers: ['isolation_date']
         }
     },
     isolation_date: {
         atLeastOneOf: {
-            message: vep.getError('19'),
+            error: 19,
             additionalMembers: ['sampling_date']
         }
     }
@@ -150,59 +149,64 @@ export const standardConstraints: IValidationConstraints = {
 export const baseConstraints: IValidationConstraints = {
     sample_id: {
         atLeastOneOf: {
-            message: vep.getError('69'),
+            error: 69,
             additionalMembers: ['sample_id_avv']
         },
         presence: {
-            message: vep.getError('68'),
+            error: 68,
             allowEmpty: false
         }
     },
     sample_id_avv: {
         atLeastOneOf: {
-            message: vep.getError('69'),
+            error: 69,
             additionalMembers: ['sample_id']
         },
-        aavDataFormat: {
-            message: vep.getError('72'),
+        matchesRegexPattern: {
+            error: 72,
             regex: []
         }
     },
     pathogen_adv: {
         atLeastOneOf: {
-            message: vep.getError('10'),
+            error: 10,
             additionalMembers: ['pathogen_text']
         },
         matchADVNumberOrString: {
-            message: vep.getError('8'),
+            error: 8,
             catalog: 'adv16',
             alternateKeys: ['Text1']
+        },
+        matchesRegexPattern: {
+            error: 73,
+            regex: [],
+            ignoreNumbers: true
         }
     },
     pathogen_text: {
         atLeastOneOf: {
-            message: vep.getError('10'),
+            error: 10,
             additionalMembers: ['pathogen_adv']
         }
     },
     sampling_date: {
         presence: {
-            message: vep.getError('11'),
+            error: 11,
             allowEmpty: false
         },
         dateAllowEmpty: {
-            message: vep.getError('12')
+            error: 12
         },
         futureDate: {
-            message: vep.getError('13'),
+            error: 13,
             latest: 'NOW'
         },
         referenceDate: {
-            message: vep.getError('20'),
+            error: 20,
             latest: 'isolation_date'
         },
         timeBetween: {
-            message: vep.getError('61'),
+            error: 61,
             earliest: 'isolation_date',
             modifier: {
                 value: 1,
@@ -210,7 +214,7 @@ export const baseConstraints: IValidationConstraints = {
             }
         },
         oldSample: {
-            message: vep.getError('62'),
+            error: 62,
             earliest: 'NOW',
             modifier: {
                 value: 10,
@@ -220,22 +224,22 @@ export const baseConstraints: IValidationConstraints = {
     },
     isolation_date: {
         presence: {
-            message: vep.getError('15'),
+            error: 15,
             allowEmpty: false
         },
         dateAllowEmpty: {
-            message: vep.getError('16')
+            error: 16
         },
         futureDate: {
-            message: vep.getError('17'),
+            error: 17,
             latest: 'NOW'
         },
         referenceDate: {
-            message: vep.getError('20'),
+            error: 20,
             earliest: 'sampling_date'
         },
         timeBetween: {
-            message: vep.getError('61'),
+            error: 61,
             latest: 'sampling_date',
             modifier: {
                 value: 1,
@@ -243,7 +247,7 @@ export const baseConstraints: IValidationConstraints = {
             }
         },
         oldSample: {
-            message: vep.getError('63'),
+            error: 63,
             earliest: 'NOW',
             modifier: {
                 value: 10,
@@ -253,29 +257,29 @@ export const baseConstraints: IValidationConstraints = {
     },
     sampling_location_adv: {
         atLeastOneOf: {
-            message: vep.getError('64a'),
+            error: 64,
             additionalMembers: ['sampling_location_zip', 'sampling_location_text']
         },
         length: {
-            message: vep.getError('24b'),
+            error: 74,
             maximum: 8
         },
         inCatalog: {
-            message: vep.getError('24a'),
+            error: 24,
             catalog: 'adv9'
         }
     },
     sampling_location_zip: {
         atLeastOneOf: {
-            message: vep.getError('64a'),
+            error: 64,
             additionalMembers: ['sampling_location_adv', 'sampling_location_text']
         },
         dependentFields: {
-            message: vep.getError('28'),
+            error: 28,
             dependents: ['sampling_location_text']
         },
         length: {
-            message: vep.getError('27a'),
+            error: 27,
             is: 5,
             tokenizer: function (value: string) {
                 // Necessary to deal with empty strings
@@ -283,23 +287,23 @@ export const baseConstraints: IValidationConstraints = {
             }
         },
         inCatalog: {
-            message: vep.getError('27b'),
+            error: 75,
             catalog: 'plz'
         }
     },
     sampling_location_text: {
         atLeastOneOf: {
-            message: vep.getError('64a'),
+            error: 64,
             additionalMembers: ['sampling_location_adv', 'sampling_location_zip']
         },
         dependentFields: {
-            message: vep.getError('25'),
+            error: 25,
             dependents: ['sampling_location_zip']
         }
     },
     topic_adv: {
         length: {
-            message: vep.getError('30b'),
+            error: 76,
             is: 2,
             tokenizer: function (value: string) {
                 // Necessary to deal with empty strings
@@ -307,24 +311,24 @@ export const baseConstraints: IValidationConstraints = {
             }
         },
         numbersOnly: {
-            message: vep.getError('30c')
+            error: 77
         },
         inCatalog: {
-            message: vep.getError('30a'),
+            error: 30,
             catalog: 'adv2'
         }
     },
     matrix_adv: {
         atLeastOneOf: {
-            message: vep.getError('37'),
+            error: 37,
             additionalMembers: ['matrix_text']
         },
         presence: {
-            message: vep.getError('32'),
+            error: 32,
             allowEmpty: false
         },
         length: {
-            message: vep.getError('33b'),
+            error: 78,
             is: 6,
             tokenizer: function (value: string) {
                 // Necessary to deal with empty strings
@@ -332,15 +336,15 @@ export const baseConstraints: IValidationConstraints = {
             }
         },
         numbersOnly: {
-            message: vep.getError('33c')
+            error: 79
         },
         inCatalog: {
-            message: vep.getError('33a'),
+            error: 33,
             catalog: 'adv3',
             key: 'Kode'
         },
         nonUniqueEntry: {
-            message: vep.getError('70'),
+            error: 70,
             catalog: 'adv3',
             key: 'Kode',
             differentiator: ['Kodiersystem', 'topic_adv']
@@ -348,18 +352,18 @@ export const baseConstraints: IValidationConstraints = {
     },
     matrix_text: {
         atLeastOneOf: {
-            message: vep.getError('37'),
+            error: 37,
             additionalMembers: ['matrix_adv']
         }
     },
     process_state_adv: {
         dependentFieldEntry: {
-            message: vep.getError('39'),
+            error: 39,
             field: 'operations_mode_adv',
             regex: '^4'
         },
         length: {
-            message: vep.getError('40b'),
+            error: 80,
             is: 3,
             tokenizer: function (value: string) {
                 // Necessary to deal with empty strings
@@ -367,20 +371,20 @@ export const baseConstraints: IValidationConstraints = {
             }
         },
         numbersOnly: {
-            message: vep.getError('40c')
+            error: 81
         },
         inCatalog: {
-            message: vep.getError('40a'),
+            error: 40,
             catalog: 'adv12'
         }
     },
     sampling_reason_adv: {
         atLeastOneOf: {
-            message: vep.getError('44'),
+            error: 44,
             additionalMembers: ['sampling_reason_text']
         },
         length: {
-            message: vep.getError('42b'),
+            error: 82,
             is: 2,
             tokenizer: function (value: string) {
                 // Necessary to deal with empty strings
@@ -388,26 +392,26 @@ export const baseConstraints: IValidationConstraints = {
             }
         },
         numbersOnly: {
-            message: vep.getError('42c')
+            error: 83
         },
         inCatalog: {
-            message: vep.getError('42a'),
+            error: 42,
             catalog: 'adv4'
         }
     },
     sampling_reason_text: {
         atLeastOneOf: {
-            message: vep.getError('44'),
+            error: 44,
             additionalMembers: ['sampling_reason_adv']
         }
     },
     operations_mode_adv: {
         atLeastOneOf: {
-            message: vep.getError('71'),
+            error: 71,
             additionalMembers: ['operations_mode_text']
         },
         length: {
-            message: vep.getError('46b'),
+            error: 84,
             is: 7,
             tokenizer: function (value: string) {
                 // Necessary to deal with empty strings
@@ -415,16 +419,16 @@ export const baseConstraints: IValidationConstraints = {
             }
         },
         numbersOnly: {
-            message: vep.getError('46c')
+            error: 85
         },
         inCatalog: {
-            message: vep.getError('46a'),
+            error: 46,
             catalog: 'adv8'
         }
     },
     operations_mode_text: {
         atLeastOneOf: {
-            message: vep.getError('71'),
+            error: 71,
             additionalMembers: ['operations_mode_adv']
         }
     },

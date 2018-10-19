@@ -1,7 +1,8 @@
 import * as _ from 'lodash';
 import { createSample, createSampleCollection, ISample } from '../app/sampleManagement/domain';
-import { createFormValidationService, createCatalogService, createAVVFormatProvider } from '../app/sampleManagement/application';
+import { createFormValidationService, createCatalogService, createAVVFormatProvider, createValidationErrorProvider, createNRLSelectorProvider } from '../app/sampleManagement/application';
 import { initialiseCatalogRepository } from './../infrastructure/persistence/repositories';
+import { INRLRepository } from '../app/ports';
 
 // tslint:disable
 const testArray = [
@@ -4123,12 +4124,25 @@ function runTest() {
             const mockStateRepo = {
                 getAllFormats: () => Promise.resolve({})
             };
+            const mockNRLRepo: INRLRepository = {
+                getAllNRLs: () => Promise.resolve([])
+            };
+            const mockValidationErrorRepo = {
+                getAllErrors: () => Promise.resolve([])
+            };
+            const validationErrorProvider = createValidationErrorProvider(mockValidationErrorRepo);
             const avvFormatProvider = createAVVFormatProvider(mockStateRepo);
-            const validationService = createFormValidationService(catalogService, avvFormatProvider);
-            const errors = validationService.validateSamples(sampleCollection).samples.forEach((s: ISample, i: number) => {
-                const errors = s.getErrors();
-                checkVal(errors, i, s.isZoMo)
-            });
+            const nrlSelectorProvider = createNRLSelectorProvider(mockNRLRepo);
+            const validationService = createFormValidationService(catalogService, avvFormatProvider, validationErrorProvider, nrlSelectorProvider);
+            let errors;
+            validationService.validateSamples(sampleCollection, {}).then(
+                data => {
+                    errors = data.samples.forEach((s: ISample, i: number) => {
+                        const errors = s.getErrors();
+                        checkVal(errors, i, s.isZoMo)
+                    });
+                }
+            );
 
             // TODO Not Zombie code, but used to check a specific entry (manually) - ideally should be handled with a cmdLine param
             // const one = validateSamples(sampleCollection).getSamples()[52] 

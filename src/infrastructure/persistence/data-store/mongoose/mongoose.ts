@@ -3,10 +3,10 @@
 import * as mongoose from 'mongoose';
 import * as Promise from 'bluebird';
 // local
-import { IDataStore } from './../dataStoreFactory';
+import { IDataStore } from '../data-store.factory';
 import { logger } from './../../../../aspects';
 
-import { institutionSchema, userSchema, resetTokenSchema, IResetTokenModel, IInstitutionModel, IUserModel, IStateModel, stateSchema } from './schemas';
+import { nrlSchema, institutionSchema, userSchema, resetTokenSchema, IResetTokenModel, IInstitutionModel, IUserModel, IStateModel, stateSchema, INRLModel, validationErrorSchema, IValidationErrorModel } from './schemas';
 import { IRepositoryBase } from '../../../../app/ports';
 import { createRepository } from '.';
 
@@ -49,6 +49,8 @@ export const StateSchema = mongoose.model<IStateModel>('State', stateSchema);
 export const InstitutionSchema = mongoose.model<IInstitutionModel>('Institution', institutionSchema);
 export const ResetTokenSchema = mongoose.model<IResetTokenModel>('ResetToken', resetTokenSchema);
 export const UserSchema = mongoose.model<IUserModel>('User', userSchema);
+export const NRLSchema = mongoose.model<INRLModel>('NRL', nrlSchema);
+export const ValidationErrorSchema = mongoose.model<IValidationErrorModel>('ValidationError', validationErrorSchema);
 
 // TODO: This should be handled elsewhere? In some other way?
 export function mapCollectionToRepository(collection: string): IRepositoryBase<mongoose.Document> {
@@ -57,6 +59,10 @@ export function mapCollectionToRepository(collection: string): IRepositoryBase<m
             return createRepository(StateSchema);
         case 'institutions':
             return createRepository(InstitutionSchema);
+        case 'nrls':
+            return createRepository(NRLSchema);
+        case 'validationerrors':
+            return createRepository(ValidationErrorSchema);
         default:
             throw new Error(`Collection not found. collection=${collection}`);
     }

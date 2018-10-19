@@ -4,8 +4,8 @@ import * as config from 'config';
 import * as csv from 'fast-csv';
 import * as rootDir from 'app-root-dir';
 
-import { logger } from './../../../aspects';
-import { ICatalogRepository, ICatalog, Catalog } from './../../../app/ports';
+import { logger } from '../../../aspects';
+import { ICatalogRepository, ICatalog, Catalog } from '../../../app/ports';
 
 declare type CatalogData = Record<string, string>;
 

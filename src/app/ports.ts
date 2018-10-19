@@ -1,10 +1,8 @@
-import { ICatalog } from './sampleManagement';
+import { ICatalog, INRL, IValidationError } from './sampleManagement';
 import { IUserToken, IUser, IInstitution } from './authentication';
 
 export {
-    IRepositoryFactory,
     IServiceFactory,
-    RepositoryFactory,
     ServiceFactory,
     IController,
     INotification,
@@ -40,7 +38,9 @@ export {
     Catalog,
 	IDatasetFile,
 	ISenderInfo,
-    IDatasetPort
+    IDatasetPort,
+    IValidationError,
+    INRL
 } from './sampleManagement';
 
 export interface IModelAttributes {
@@ -103,8 +103,15 @@ export interface IUserRepository {
     updateUser(user: IUser): Promise<IUser | null>;
 }
 
+export interface IValidationErrorRepository {
+    getAllErrors(): Promise<IValidationError[]>;
+}
 export interface IStateRepository {
     getAllFormats(): Promise<IAVVFormatCollection>;
+}
+
+export interface INRLRepository {
+    getAllNRLs(): Promise<INRL[]> ;
 }
 
 export interface ICatalogRepository {

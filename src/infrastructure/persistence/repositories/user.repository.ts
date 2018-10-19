@@ -1,6 +1,6 @@
-import { IRepositoryBase, IUserRepository, createUser, IUser } from './../../../app/ports';
-import { UserSchema, IUserModel, IUserModelUpdateResponse, createRepository } from './../dataStore';
-import { mapModelToUser } from './dataMappers';
+import { IRepositoryBase, IUserRepository, createUser, IUser } from '../../../app/ports';
+import { UserSchema, IUserModel, IUserModelUpdateResponse, createRepository } from '../data-store';
+import { mapModelToUser } from './data-mappers';
 
 class UserRepository implements IUserRepository {
     constructor(private baseRepo: IRepositoryBase<IUserModel>) {

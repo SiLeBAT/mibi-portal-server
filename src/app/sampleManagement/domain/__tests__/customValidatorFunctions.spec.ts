@@ -12,11 +12,10 @@ import {
     inCatalog,
     matchADVNumberOrString,
     IMatchADVNumberOrStringOptions,
-    aavDataFormat
+    matchesRegexPattern
 } from './../customValidatorFunctions';
 import { ICatalog } from '../..';
-import { ICatalogService } from '../../application';
-import { IValidationError } from '../validationErrorProvider.entity';
+import { ICatalogService, IValidationError } from '../../application';
 
 moment.locale('de');
 
@@ -27,7 +26,6 @@ describe('Custom Validator Functions', () => {
 
     beforeEach(() => {
         validationError = {
-            id: '0',
             code: 0,
             level: 1,
             message: 'TEST ERROR MESSAGE'
@@ -663,9 +661,10 @@ describe('Custom Validator Functions', () => {
         };
 
         it('should validate without errors', () => {
-            const error = aavDataFormat(testSample.sample_id_avv, {
+            const error = matchesRegexPattern(testSample.sample_id_avv, {
                 message: validationError,
-                regex: [new RegExp('^17-[LF]-[0-9]{5}-[0-9]-[0-9]$')]
+                regex: [new RegExp('^17-[LF]-[0-9]{5}-[0-9]-[0-9]$')],
+                ignoreNumbers: false
             }, 'sample_id_avv', testSample);
             expect(error).toBe(null);
         });
@@ -677,9 +676,10 @@ describe('Custom Validator Functions', () => {
                 exampleAVVs.forEach(
                     avv => {
                         _.forEach(stateFormats, (regex: string[], st: string) => {
-                            const error = aavDataFormat(avv, {
+                            const error = matchesRegexPattern(avv, {
                                 message: validationError,
-                                regex: regex.map(s => new RegExp(s))
+                                regex: regex.map(s => new RegExp(s)),
+                                ignoreNumbers: false
                             }, 'sample_id_avv', testSample);
                             if (state === st) {
                                 expect(error).toBe(null);

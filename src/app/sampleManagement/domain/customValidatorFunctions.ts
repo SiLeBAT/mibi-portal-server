@@ -3,9 +3,8 @@ import * as moment from 'moment';
 import * as _ from 'lodash';
 import { ICatalog } from '..';
 import { ISampleData } from './sample.entity';
-import { ICatalogService } from '../application';
-import { IValidationError } from './validationErrorProvider.entity';
-import { ApplicationDomainError } from '../../sharedKernel/errors';
+import { ICatalogService, IValidationError } from '../application';
+import { ApplicationDomainError } from '../../sharedKernel';
 
 moment.locale('de');
 
@@ -32,12 +31,20 @@ function dependentFieldEntry(value: string, options: IDependentFieldEntryOptions
     return null;
 }
 
-export interface IAAVDataFormatOptions extends IValidatiorFunctionOptions {
+export interface IMatchRegexPatternOptions extends IValidatiorFunctionOptions {
     regex: RegExp[];
+    ignoreNumbers: boolean;
 }
 
-function aavDataFormat(value: string, options: IAAVDataFormatOptions, key: keyof ISampleData, attributes: ISampleData) {
-    if (!value) {
+function numbersOnlyValue(value: string): boolean {
+    const numbersOnly = /^\d+?/;
+    return numbersOnly.test(value);
+}
+function matchesRegexPattern(value: string, options: IMatchRegexPatternOptions, key: keyof ISampleData, attributes: ISampleData) {
+    if (!value || !options.regex.length) {
+        return null;
+    }
+    if (options.ignoreNumbers && numbersOnlyValue(value)) {
         return null;
     }
     let success = false;
@@ -48,7 +55,7 @@ function aavDataFormat(value: string, options: IAAVDataFormatOptions, key: keyof
             }
         }
     );
-    return success ? null : { ...options.message } ;
+    return success ? null : { ...options.message };
 }
 
 export interface INonUniqueEntryOptions extends IValidatiorFunctionOptions {
@@ -116,8 +123,7 @@ function matchADVNumberOrString(catalogService: ICatalogService): IValidatorFunc
                 if (!key) {
                     return null;
                 }
-                const numbersOnly = /^\d+?/;
-                if (numbersOnly.test(value)) {
+                if (numbersOnlyValue(value)) {
                     if (!cat.containsEntryWithKeyValue(key, trimmedValue)) {
                         return { ...options.message };
                     }
@@ -223,8 +229,7 @@ export interface INumbersOnlyOptions extends IValidatiorFunctionOptions {
 
 function numbersOnly(value: string, options: INumbersOnlyOptions, key: keyof ISampleData, attributes: ISampleData) {
     if (attributes[key]) {
-        let numOnly = new RegExp('^[0-9]*$');
-        if (!numOnly.test(value)) {
+        if (!numbersOnlyValue(value)) {
             return { ...options.message };
         }
     }
@@ -310,5 +315,5 @@ export {
     registeredZoMo,
     nonUniqueEntry,
     matchADVNumberOrString,
-    aavDataFormat
+    matchesRegexPattern
 };

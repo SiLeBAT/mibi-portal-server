@@ -1,8 +1,10 @@
-import { createService, IFormValidatorService } from './../formValidation.service';
+import { createService, IFormValidatorService } from '../form-validation.service';
 import { ISampleCollection } from '../..';
 import { ISampleData, ISample } from '../../domain/sample.entity';
 import { ICatalogService } from '../catalog.service';
-import { IAVVFormatProvider } from '../avvFormatProvider.service';
+import { IAVVFormatProvider } from '../avv-format-provider.service';
+import { IValidationErrorProvider } from '../validation-error-provider.service';
+import { INRLSelectorProvider } from '../nrl-selector-provider.service';
 
 jest.mock('./../../domain', () => ({
     createValidator: () => ({
@@ -18,6 +20,8 @@ describe('Validate Sample Use Case', () => {
     // tslint:disable-next-line
     let mockCatalogService: ICatalogService;
     let mockAVVFormatProvider: IAVVFormatProvider;
+    let mockValidationErrorProvider: IValidationErrorProvider;
+    let mockNRLSelectorProvider: INRLSelectorProvider;
     let service: IFormValidatorService;
 
     let genericTestSampleCollection: ISampleCollection;
@@ -31,7 +35,13 @@ describe('Validate Sample Use Case', () => {
         mockAVVFormatProvider = {
             getFormat: jest.fn()
         };
-        service = createService(mockCatalogService, mockAVVFormatProvider);
+        mockValidationErrorProvider = {
+            getError: jest.fn()
+        };
+        mockNRLSelectorProvider = {
+            getSelectors: jest.fn()
+        };
+        service = createService(mockCatalogService, mockAVVFormatProvider, mockValidationErrorProvider, mockNRLSelectorProvider);
         testSampleData = {
             sample_id: '1',
             sample_id_avv: '1-ABC',
@@ -70,22 +80,12 @@ describe('Validate Sample Use Case', () => {
         };
     });
     it('should successfully complete Happy Path', () => {
-        const result = service.validateSamples(genericTestSampleCollection);
-        expect(result).toEqual({
+        const result = service.validateSamples(genericTestSampleCollection, {});
+        expect(result).resolves.toEqual({
             samples: []
-        });
+        }).catch(
+            e => { throw e; }
+        );
     });
-    it('should call setError on testsample twice', () => {
-        const mockSetErrors = jest.fn();
-        const testSample = {
-            ...genericTestSample, ...{
-                setErrors: mockSetErrors
-            }
-        };
-        const testSampleCollection = {
-            samples: [testSample, testSample]
-        };
-        service.validateSamples(testSampleCollection);
-        expect(mockSetErrors.mock.calls.length).toBe(2);
-    });
+
 });

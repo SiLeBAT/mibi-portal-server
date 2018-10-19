@@ -9,11 +9,13 @@ import { Request, Response } from 'express';
 import { logger } from '../../../aspects';
 import { IFormValidatorPort, IFormAutoCorrectionPort, IController, ISampleCollection, ISample, createSample, createSampleCollection } from '../../../app/ports';
 import { ApplicationSystemError } from '../../../app/sharedKernel/errors';
+import { IValidationOptions } from '../../../app/sampleManagement/application';
 
 moment.locale('de');
 
 interface IValidationRequestMeta {
     state: string;
+    nrl: string;
 }
 
 interface IValidationRequest {
@@ -76,8 +78,9 @@ class ValidationController implements IValidationController {
         if (req.is('application/json')) {
             try {
                 const sampleCollection: ISampleCollection = this.fromDTOToSamples(req.body);
-                const validationResult = this.formValidationService.validateSamples(sampleCollection, req.body.meta.state);
-                const autocorrectedSamples = this.formAutoCorrectionService.applyAutoCorrection(validationResult);
+                const validationOptions: IValidationOptions = this.fromDTOToOptions(req.body.meta);
+                const validationResult = await this.formValidationService.validateSamples(sampleCollection, validationOptions);
+                const autocorrectedSamples = await this.formAutoCorrectionService.applyAutoCorrection(validationResult);
                 const validationResultsDTO = this.fromErrorsToDTO(autocorrectedSamples);
                 logger.info('ValidationController.validateSamples, Response sent', validationResultsDTO);
                 res
@@ -126,6 +129,51 @@ class ValidationController implements IValidationController {
         const samples = dto.data.map(s => createSample({ ...s }));
 
         return createSampleCollection(samples);
+    }
+
+    private fromDTOToOptions(meta: IValidationRequestMeta): IValidationOptions {
+        let nrl: string = '';
+
+        // TODO: Should this mapping be elsewhere?
+        switch (meta.nrl) {
+            case 'NRL Überwachung von Bakterien in zweischaligen Weichtieren':
+                nrl = 'NRL-Vibrio';
+                break;
+
+            case 'NRL Escherichia coli einschließlich verotoxinbildende E. coli':
+                nrl = 'NRL-VTEC';
+                break;
+
+            case 'Bacillus spp.':
+            case 'Clostridium spp. (C. difficile)':
+                nrl = 'Sporenbildner';
+                break;
+            case 'NRL koagulasepositive Staphylokokken einschließlich Staphylococcus aureus':
+                nrl = 'NRL-Staph';
+                break;
+
+            case 'NRL Salmonellen(Durchführung von Analysen und Tests auf Zoonosen)':
+                nrl = 'NRL-Salm';
+                break;
+            case 'NRL Listeria monocytogenes':
+                nrl = 'NRL-Listeria';
+                break;
+            case 'NRL Campylobacter':
+                nrl = 'NRL-Campy';
+                break;
+            case 'NRL Antibiotikaresistenz':
+                nrl = 'NRL-AR';
+                break;
+            case 'Yersinia':
+                nrl = 'KL-Yersinia';
+                break;
+            default:
+
+        }
+        return {
+            state: meta.state,
+            nrl
+        };
     }
 
     private getKnimeJobId(req: Request, res: Response, filePath: string) {

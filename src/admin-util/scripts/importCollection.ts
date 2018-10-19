@@ -4,9 +4,7 @@ import * as readline from 'linebyline';
 import * as config from 'config';
 import { Document } from 'mongoose';
 import { logger } from '../../aspects';
-import { createDataStore, DataStoreType } from '../../infrastructure';
-import { IDataStore } from '../../infrastructure/persistence/dataStore/dataStoreFactory';
-import { mapCollectionToRepository } from '../../infrastructure/persistence/dataStore/mongoose/mongoose';
+import { createDataStore, DataStoreType, IDataStore, mapCollectionToRepository } from '../../infrastructure';
 
 start().catch(err => { throw err; });
 
