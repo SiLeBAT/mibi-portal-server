@@ -13,7 +13,7 @@ import {
     matchADVNumberOrString,
     IMatchADVNumberOrStringOptions,
     matchesRegexPattern
-} from './../customValidatorFunctions';
+} from '../custom-validator-functions';
 import { ICatalog } from '../..';
 import { ICatalogService, IValidationError } from '../../application';
 
@@ -655,15 +655,15 @@ describe('Custom Validator Functions', () => {
             RP: ['^2017-[0-9]{8}$'],
             SL: ['^L-2017-[0-9]{5}$'],
             ST: ['^17[0-9]{9}$', '^[0-9]{3}-[0-9]{2}-[0-9]{3}-17$'],
-            SH: ['^[NF]17[0-9]{6}-[0-9]{3}$', '^[NF]18[0-9]{6}-[0-9]{3}$'],
-            SN: ['^L/2017/[0-9]{5,6}$', '^V[L|D]-2017/[0-9]{5}$', '^17(B|L)[0-9]{3}$', '^V[L|D]-2018/[0-9]{5}$'],
+            SH: ['^[NF]17[0-9]{6}-[0-9]{3}$'],
+            SN: ['^L/2017/[0-9]{5,6}$', '^V[L|D]-2017/[0-9]{5}$', '^17(B|L)[0-9]{3}$'],
             TH: ['^B-2017/[0-9]{4,5}$', '^[0-9]{4,5}17$']
         };
 
         it('should validate without errors', () => {
             const error = matchesRegexPattern(testSample.sample_id_avv, {
                 message: validationError,
-                regex: [new RegExp('^17-[LF]-[0-9]{5}-[0-9]-[0-9]$')],
+                regex: ['^17-[LF]-[0-9]{5}-[0-9]-[0-9]$'],
                 ignoreNumbers: false
             }, 'sample_id_avv', testSample);
             expect(error).toBe(null);
@@ -678,7 +678,7 @@ describe('Custom Validator Functions', () => {
                         _.forEach(stateFormats, (regex: string[], st: string) => {
                             const error = matchesRegexPattern(avv, {
                                 message: validationError,
-                                regex: regex.map(s => new RegExp(s)),
+                                regex: regex,
                                 ignoreNumbers: false
                             }, 'sample_id_avv', testSample);
                             if (state === st) {

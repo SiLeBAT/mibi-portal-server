@@ -32,23 +32,28 @@ function dependentFieldEntry(value: string, options: IDependentFieldEntryOptions
 }
 
 export interface IMatchRegexPatternOptions extends IValidatiorFunctionOptions {
-    regex: RegExp[];
+    regex: string[];
     ignoreNumbers: boolean;
 }
 
 function numbersOnlyValue(value: string): boolean {
-    const numbersOnly = /^\d+?/;
+    const numbersOnly = /^\d+$/;
     return numbersOnly.test(value);
 }
 function matchesRegexPattern(value: string, options: IMatchRegexPatternOptions, key: keyof ISampleData, attributes: ISampleData) {
     if (!value || !options.regex.length) {
         return null;
     }
-    if (options.ignoreNumbers && numbersOnlyValue(value)) {
+    if (options.ignoreNumbers) {
         return null;
     }
     let success = false;
-    options.regex.forEach(
+    const regexpAry = options.regex.map(
+        str => {
+            return new RegExp(str);
+        }
+    );
+    regexpAry.forEach(
         regexp => {
             if (regexp.test(value)) {
                 success = true;
@@ -56,6 +61,46 @@ function matchesRegexPattern(value: string, options: IMatchRegexPatternOptions, 
         }
     );
     return success ? null : { ...options.message };
+}
+
+function matchesIdToSpecificYear(value: string, options: IMatchRegexPatternOptions, key: keyof ISampleData, attributes: ISampleData) {
+    if (!value) {
+        return null;
+    }
+    let currentYear = moment();
+    let nextYear = moment().add(1, 'year');
+    let lastYear = moment().subtract(1, 'year');
+    if (attributes['sampling_date']) {
+        currentYear = moment(attributes['sampling_date'], 'DD.MM.YYYY');
+        nextYear = moment(attributes['sampling_date'], 'DD.MM.YYYY').add(1, 'year');
+        lastYear = moment(attributes['sampling_date'], 'DD.MM.YYYY').subtract(1, 'year');
+    }
+
+    const changedArray = _.flatMap(options.regex,
+        (entry: string) => {
+            const result: string[] = [];
+            if (entry.includes('yyyy')) {
+                const currentEntry = entry.replace('yyyy', currentYear.format('YYYY'));
+                const nextEntry = entry.replace('yyyy', nextYear.format('YYYY'));
+                const lastEntry = entry.replace('yyyy', lastYear.format('YYYY'));
+                result.push(lastEntry);
+                result.push(currentEntry);
+                result.push(nextEntry);
+            } else if (entry.includes('yy')) {
+                const currentEntry = entry.replace('yy', currentYear.format('YY'));
+                const nextEntry = entry.replace('yy', nextYear.format('YY'));
+                const lastEntry = entry.replace('yy', lastYear.format('YY'));
+                result.push(lastEntry);
+                result.push(currentEntry);
+                result.push(nextEntry);
+            } else {
+                result.push(entry);
+            }
+            return result;
+        }
+    );
+    options.regex = changedArray;
+    return matchesRegexPattern(value, options, key, attributes);
 }
 
 export interface INonUniqueEntryOptions extends IValidatiorFunctionOptions {
@@ -315,5 +360,6 @@ export {
     registeredZoMo,
     nonUniqueEntry,
     matchADVNumberOrString,
-    matchesRegexPattern
+    matchesRegexPattern,
+    matchesIdToSpecificYear
 };

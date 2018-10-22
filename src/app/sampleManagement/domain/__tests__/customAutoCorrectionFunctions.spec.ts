@@ -1,5 +1,5 @@
 import * as Fuse from 'fuse.js';
-import { autoCorrectPathogen, ICorrectionFunction } from '../customAutoCorrectionFunctions';
+import { autoCorrectPathogen, ICorrectionFunction } from '../custom-auto-correction-functions';
 import { ISampleData, ISample } from '../sample.entity';
 import { IValidationErrorCollection } from '../validator.entity';
 
