@@ -11,7 +11,7 @@
     "build:dev": "npm run clean &&  npm run tsc && npm run cp:view && npm run test",
     "build:notest": "npm run clean &&  npm run tsc && npm run cp:view && npm run cp:scripts",
     "cp:view": "copyfiles -u 1 ./src/**/views/**/* ./lib",
-    "cp:scripts": "copyfiles -u 1 ./src/**/scripts/*.sh ./lib",
+    "cp:scripts": "copyfiles -u 1 ./src/**/*.sh ./lib",
     "tsc": "tsc",
     "build": "npm run clean &&  npm run tsc && npm run cp:view && npm run cp:scripts && npm run test && npm run lint",
     "test": "jest",
