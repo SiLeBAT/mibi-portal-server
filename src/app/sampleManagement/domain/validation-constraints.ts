@@ -162,7 +162,7 @@ export const baseConstraints: IValidationConstraints = {
             error: 69,
             additionalMembers: ['sample_id']
         },
-        matchesRegexPattern: {
+        matchesIdToSpecificYear: {
             error: 72,
             regex: []
         }

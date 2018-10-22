@@ -14,10 +14,11 @@ import {
     registeredZoMo,
     nonUniqueEntry,
     matchADVNumberOrString,
-    matchesRegexPattern
-} from './customValidatorFunctions';
+    matchesRegexPattern,
+    matchesIdToSpecificYear
+} from './custom-validator-functions';
 import { ICatalogService, IValidationError } from '../application';
-import { IValidationConstraints } from './validationConstraints';
+import { IValidationConstraints } from './validation-constraints';
 
 moment.locale('de');
 
@@ -79,6 +80,7 @@ class SampleValidator implements IValidator {
         validate.validators.dependentFieldEntry = dependentFieldEntry;
         validate.validators.numbersOnly = numbersOnly;
         validate.validators.matchesRegexPattern = matchesRegexPattern;
+        validate.validators.matchesIdToSpecificYear = matchesIdToSpecificYear;
         validate.validators.inCatalog = inCatalog(this.catalogService);
         validate.validators.matchADVNumberOrString = matchADVNumberOrString(this.catalogService);
         validate.validators.registeredZoMo = registeredZoMo(this.catalogService);

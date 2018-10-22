@@ -13,6 +13,7 @@ import {
 export interface IValidationOptions {
     state?: string;
     nrl?: string;
+    year?: string;
 }
 export interface IFormValidatorPort {
     validateSamples(sampleCollection: ISampleCollection, validationOptions: IValidationOptions): Promise<ISampleCollection>;
@@ -87,7 +88,7 @@ class FormValidatorService implements IFormValidatorService {
     private getConstraints(set: ConstraintSet, options: IValidationOptions) {
         const newConstraints: IValidationConstraints = { ...baseConstraints };
         // Necessary because of Ticket #49
-        newConstraints['sample_id_avv']['matchesRegexPattern'].regex = this.avvFormatProvider.getFormat(options.state);
+        newConstraints['sample_id_avv']['matchesIdToSpecificYear'].regex = this.avvFormatProvider.getFormat(options.state);
         // Necessary because of Ticket #54
         newConstraints['pathogen_adv']['matchesRegexPattern'].regex = this.nrlSelectorProvider.getSelectors(options.nrl);
         switch (set) {

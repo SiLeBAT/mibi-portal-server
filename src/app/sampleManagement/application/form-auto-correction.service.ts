@@ -1,7 +1,7 @@
 import { ICatalogService } from '.';
 import { logger } from '../../../aspects';
 import { ISampleCollection, ISample } from '../domain';
-import { ICorrectionFunction, autoCorrectPathogen } from '../domain/customAutoCorrectionFunctions';
+import { ICorrectionFunction, autoCorrectPathogen } from '../domain/custom-auto-correction-functions';
 
 export interface IFormAutoCorrectionPort {
     applyAutoCorrection(sampleCollection: ISampleCollection): Promise<ISampleCollection>;
