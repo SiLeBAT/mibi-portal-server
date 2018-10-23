@@ -1,8 +1,8 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import * as config from 'config';
-import { logger } from '../../aspects';
-import { createDataStore, DataStoreType, mapCollectionToRepository } from '../../infrastructure';
+import { logger } from '../../../aspects';
+import { createDataStore, DataStoreType, mapCollectionToRepository } from '../../../infrastructure';
 
 /**
  * Script used to insert AVV entries into existing DB: For Ticket mps#49
