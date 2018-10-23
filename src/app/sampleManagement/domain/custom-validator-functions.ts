@@ -18,6 +18,13 @@ export interface IValidatorFunction<T extends IValidatiorFunctionOptions> {
 export interface IValidatiorFunctionOptions {
     message: IValidationError;
 }
+export interface IMatchIdToYearOptions extends IValidatiorFunctionOptions {
+    regex: string[];
+}
+
+export interface IMatchRegexPatternOptions extends IMatchIdToYearOptions {
+    ignoreNumbers: boolean;
+}
 
 export interface IDependentFieldEntryOptions extends IValidatiorFunctionOptions {
     regex: string;
@@ -31,11 +38,6 @@ function dependentFieldEntry(value: string, options: IDependentFieldEntryOptions
     return null;
 }
 
-export interface IMatchRegexPatternOptions extends IValidatiorFunctionOptions {
-    regex: string[];
-    ignoreNumbers: boolean;
-}
-
 function numbersOnlyValue(value: string): boolean {
     const numbersOnly = /^\d+$/;
     return numbersOnly.test(value);
@@ -44,7 +46,7 @@ function matchesRegexPattern(value: string, options: IMatchRegexPatternOptions, 
     if (!value || !options.regex.length) {
         return null;
     }
-    if (options.ignoreNumbers) {
+    if (options.ignoreNumbers && numbersOnlyValue(value)) {
         return null;
     }
     let success = false;
@@ -63,7 +65,7 @@ function matchesRegexPattern(value: string, options: IMatchRegexPatternOptions, 
     return success ? null : { ...options.message };
 }
 
-function matchesIdToSpecificYear(value: string, options: IMatchRegexPatternOptions, key: keyof ISampleData, attributes: ISampleData) {
+function matchesIdToSpecificYear(value: string, options: IMatchIdToYearOptions, key: keyof ISampleData, attributes: ISampleData) {
     if (!value) {
         return null;
     }
@@ -100,7 +102,7 @@ function matchesIdToSpecificYear(value: string, options: IMatchRegexPatternOptio
         }
     );
     options.regex = changedArray;
-    return matchesRegexPattern(value, options, key, attributes);
+    return matchesRegexPattern(value, { ...options, ...{ ignoreNumbers: false } }, key, attributes);
 }
 
 export interface INonUniqueEntryOptions extends IValidatiorFunctionOptions {

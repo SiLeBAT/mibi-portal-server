@@ -12,7 +12,8 @@ import {
     inCatalog,
     matchADVNumberOrString,
     IMatchADVNumberOrStringOptions,
-    matchesRegexPattern
+    matchesRegexPattern,
+    matchesIdToSpecificYear
 } from '../custom-validator-functions';
 import { ICatalog } from '../..';
 import { ICatalogService, IValidationError } from '../../application';
@@ -639,26 +640,7 @@ describe('Custom Validator Functions', () => {
         });
     });
 
-    describe('avvDataFormat', () => {
-
-        const stateFormats: { [key: string]: string[] } = {
-            BW: ['^17[0-9]{7}$', '^17/[0-9]{5}[\.-][0-9]$'],
-            BY: ['^17-[0-9]{7}-[0-9]{3}$', '^17-[0-9]{7}$'],
-            BE: ['^17-(W|TW|CMO|T|UKF)-[0-9]{1,4}$', '^17[0-9]{5}(MK|T|CMO|TK)( *)[0-9]{1,4}$'],
-            BB: ['^17-(UKF|T|FA|W|CMO)-[0-9]{2,4}$', '^17[0-9]{5}(MK|UKF|UWF|MI|T|CMO|L|MM)( *)[0-9]{1,4}$'],
-            HB: ['^[0-9]{5,7}17[0-9]{4,5}$'],
-            HH: ['^17-[LF]-[0-9]{5}-[0-9]-[0-9]$'],
-            HE: ['^17[0-9]{7}$'],
-            MV: ['^17[A-Za-z]{2,4}[0-9]{4}-[0-9]{2,3}$'],
-            NI: ['^[0-9]{4,5}17[0-9]{4,6}$'],
-            NW: ['^2017-[0-9]{7}$', '^2017(MEL|OWL|RRW|WFL)[0-9]{6}$', '^[0-9]{5}$', '^(D)[0-9]{2,4}$', '^(D)[0-9]{3,4}-[0-9]{2,4}$', '^(K)( *)[0-9]{3,4}$', '^(D)( *)[0-9]{4}-[0-9]{2,4}$'],
-            RP: ['^2017-[0-9]{8}$'],
-            SL: ['^L-2017-[0-9]{5}$'],
-            ST: ['^17[0-9]{9}$', '^[0-9]{3}-[0-9]{2}-[0-9]{3}-17$'],
-            SH: ['^[NF]17[0-9]{6}-[0-9]{3}$'],
-            SN: ['^L/2017/[0-9]{5,6}$', '^V[L|D]-2017/[0-9]{5}$', '^17(B|L)[0-9]{3}$'],
-            TH: ['^B-2017/[0-9]{4,5}$', '^[0-9]{4,5}17$']
-        };
+    describe('matchesRegexPattern', () => {
 
         it('should validate without errors', () => {
             const error = matchesRegexPattern(testSample.sample_id_avv, {
@@ -670,6 +652,26 @@ describe('Custom Validator Functions', () => {
         });
 
         it('should validate list without errors', () => {
+
+            const stateFormats: { [key: string]: string[] } = {
+                BW: ['^17[0-9]{7}$', '^17/[0-9]{5}[\.-][0-9]$'],
+                BY: ['^17-[0-9]{7}-[0-9]{3}$', '^17-[0-9]{7}$'],
+                BE: ['^17-(W|TW|CMO|T|UKF)-[0-9]{1,4}$', '^17[0-9]{5}(MK|T|CMO|TK)( *)[0-9]{1,4}$'],
+                BB: ['^17-(UKF|T|FA|W|CMO)-[0-9]{2,4}$', '^17[0-9]{5}(MK|UKF|UWF|MI|T|CMO|L|MM)( *)[0-9]{1,4}$'],
+                HB: ['^[0-9]{5,7}17[0-9]{4,5}$'],
+                HH: ['^17-[LF]-[0-9]{5}-[0-9]-[0-9]$'],
+                HE: ['^17[0-9]{7}$'],
+                MV: ['^17[A-Za-z]{2,4}[0-9]{4}-[0-9]{2,3}$'],
+                NI: ['^[0-9]{4,5}17[0-9]{4,6}$'],
+                NW: ['^2017-[0-9]{7}$', '^2017(MEL|OWL|RRW|WFL)[0-9]{6}$', '^[0-9]{5}$', '^(D)[0-9]{2,4}$', '^(D)[0-9]{3,4}-[0-9]{2,4}$', '^(K)( *)[0-9]{3,4}$', '^(D)( *)[0-9]{4}-[0-9]{2,4}$'],
+                RP: ['^2017-[0-9]{8}$'],
+                SL: ['^L-2017-[0-9]{5}$'],
+                ST: ['^17[0-9]{9}$', '^[0-9]{3}-[0-9]{2}-[0-9]{3}-17$'],
+                SH: ['^[NF]17[0-9]{6}-[0-9]{3}$'],
+                SN: ['^L/2017/[0-9]{5,6}$', '^V[L|D]-2017/[0-9]{5}$', '^17(B|L)[0-9]{3}$'],
+                TH: ['^B-2017/[0-9]{4,5}$', '^[0-9]{4,5}17$']
+            };
+
             const data = require('./AVVExamples.json');
 
             _.forEach(data, (exampleAVVs: string[], state: string) => {
@@ -689,5 +691,98 @@ describe('Custom Validator Functions', () => {
                 );
             });
         });
+
+        it('should validate without errors because it ignores numbers', () => {
+            const mySample = { ...testSample };
+            mySample.sample_id_avv = '121111112';
+            const error = matchesRegexPattern(mySample.sample_id_avv, {
+                message: validationError,
+                regex: ['^17-[LF]-[0-9]{5}-[0-9]-[0-9]$'],
+                ignoreNumbers: true
+            }, 'sample_id_avv', mySample);
+            expect(error).toBe(null);
+        });
+
+        it('should give validation error because it does not ignore numbers', () => {
+            const mySample = { ...testSample };
+            mySample.sample_id_avv = '121111112';
+            const error = matchesRegexPattern(mySample.sample_id_avv, {
+                message: validationError,
+                regex: ['^17-[LF]-[0-9]{5}-[0-9]-[0-9]$'],
+                ignoreNumbers: false
+            }, 'sample_id_avv', mySample);
+            expect(error).toEqual(validationError);
+        });
+
+        it('should give validation error because this is not a number', () => {
+            const mySample = { ...testSample };
+            mySample.sample_id_avv = 'A21111112';
+            const error = matchesRegexPattern(mySample.sample_id_avv, {
+                message: validationError,
+                regex: ['^17-[LF]-[0-9]{5}-[0-9]-[0-9]$'],
+                ignoreNumbers: true
+            }, 'sample_id_avv', mySample);
+            expect(error).toEqual(validationError);
+        });
+
+    });
+
+    describe('matchesIdToSpecificYear', () => {
+
+        it('should validate without errors because it is the correct date', () => {
+            const mySample = { ...testSample };
+            mySample.sample_id_avv = '17-L-12345-3-2';
+            mySample.sampling_date = '24.12.2017';
+            const error = matchesIdToSpecificYear(testSample.sample_id_avv, {
+                message: validationError,
+                regex: ['^yy-[LF]-[0-9]{5}-[0-9]-[0-9]$']
+            }, 'sample_id_avv', mySample);
+            expect(error).toBe(null);
+        });
+
+        it('should validate without errors because it is 1 year in the past', () => {
+            const mySample = { ...testSample };
+            mySample.sample_id_avv = '17-L-12345-3-2';
+            mySample.sampling_date = '24.12.2016';
+            const error = matchesIdToSpecificYear(testSample.sample_id_avv, {
+                message: validationError,
+                regex: ['^yy-[LF]-[0-9]{5}-[0-9]-[0-9]$']
+            }, 'sample_id_avv', mySample);
+            expect(error).toBe(null);
+        });
+
+        it('should validate without errors because it is 1 year in the future', () => {
+            const mySample = { ...testSample };
+            mySample.sample_id_avv = '17-L-12345-3-2';
+            mySample.sampling_date = '24.12.2018';
+            const error = matchesIdToSpecificYear(testSample.sample_id_avv, {
+                message: validationError,
+                regex: ['^yy-[LF]-[0-9]{5}-[0-9]-[0-9]$']
+            }, 'sample_id_avv', mySample);
+            expect(error).toBe(null);
+        });
+
+        it('should give validation errors because it is 2 year in the past', () => {
+            const mySample = { ...testSample };
+            mySample.sample_id_avv = '17-L-12345-3-2';
+            mySample.sampling_date = '24.12.2015';
+            const error = matchesIdToSpecificYear(testSample.sample_id_avv, {
+                message: validationError,
+                regex: ['^yy-[LF]-[0-9]{5}-[0-9]-[0-9]$']
+            }, 'sample_id_avv', mySample);
+            expect(error).toEqual(validationError);
+        });
+
+        it('should give validation errors because it is 2 year in the future', () => {
+            const mySample = { ...testSample };
+            mySample.sample_id_avv = '17-L-12345-3-2';
+            mySample.sampling_date = '24.12.2019';
+            const error = matchesIdToSpecificYear(testSample.sample_id_avv, {
+                message: validationError,
+                regex: ['^yy-[LF]-[0-9]{5}-[0-9]-[0-9]$']
+            }, 'sample_id_avv', mySample);
+            expect(error).toEqual(validationError);
+        });
+
     });
 });
