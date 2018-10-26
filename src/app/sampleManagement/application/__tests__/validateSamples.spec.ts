@@ -1,6 +1,6 @@
 import { createService, IFormValidatorService } from '../form-validation.service';
 import { ISampleCollection } from '../..';
-import { ISampleData, ISample } from '../../domain/sample.entity';
+import { SampleData, Sample } from '../../domain/sample.entity';
 import { ICatalogService } from '../catalog.service';
 import { IAVVFormatProvider } from '../avv-format-provider.service';
 import { IValidationErrorProvider } from '../validation-error-provider.service';
@@ -25,8 +25,8 @@ describe('Validate Sample Use Case', () => {
     let service: IFormValidatorService;
 
     let genericTestSampleCollection: ISampleCollection;
-    let testSampleData: ISampleData;
-    let genericTestSample: ISample;
+    let testSampleData: SampleData;
+    let genericTestSample: Sample;
     beforeEach(() => {
         mockCatalogService = {
             getCatalog: jest.fn(),
@@ -64,11 +64,13 @@ describe('Validate Sample Use Case', () => {
             comment: ''
         };
         genericTestSample = {
-            autoCorrections: [],
+            correctionSuggestions: [],
+            edits: {},
             getData: jest.fn(),
             pathogenId: '',
             pathogenIdAVV: '',
             setErrors: jest.fn(),
+            addErrors: jest.fn(),
             isZoMo: jest.fn(),
             addErrorTo: jest.fn(),
             getErrors: jest.fn(),

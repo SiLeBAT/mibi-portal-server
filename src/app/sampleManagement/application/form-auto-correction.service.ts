@@ -1,7 +1,8 @@
-import { ICatalogService } from '.';
+import * as _ from 'lodash';
+import { ICatalogService, IValidationErrorProvider } from '.';
 import { logger } from '../../../aspects';
-import { ISampleCollection, ISample } from '../domain';
-import { ICorrectionFunction, autoCorrectPathogen } from '../domain/custom-auto-correction-functions';
+import { ISampleCollection, Sample } from '../domain';
+import { CorrectionFunction, autoCorrectADV16, autoCorrectADV9, autoCorrectADV8, autoCorrectADV12, autoCorrectADV3, autoCorrectADV2 } from '../domain/custom-auto-correction-functions';
 
 export interface IFormAutoCorrectionPort {
     applyAutoCorrection(sampleCollection: ISampleCollection): Promise<ISampleCollection>;
@@ -11,9 +12,9 @@ export interface IFormAutoCorrectionService extends IFormAutoCorrectionPort { }
 
 class FormAutoCorrectionService implements IFormAutoCorrectionService {
 
-    private correctionFunctions: ICorrectionFunction[] = [];
+    private correctionFunctions: CorrectionFunction[] = [];
 
-    constructor(private catalogService: ICatalogService) {
+    constructor(private catalogService: ICatalogService, private validationErrorProvider: IValidationErrorProvider) {
         this.registerCorrectionFunctions();
     }
 
@@ -21,25 +22,47 @@ class FormAutoCorrectionService implements IFormAutoCorrectionService {
 
         logger.verbose('FormAutoCorrectionService.applyAutoCorrection, Starting Sample autoCorrection');
 
-        const results = sampleCollection.samples.map(sample => {
-            const newSample: ISample = sample.clone();
+        let results = sampleCollection.samples.map(sample => {
+            const newSample: Sample = sample.clone();
             this.correctionFunctions.forEach(fn => {
-                const correction = fn(newSample);
+                const correction = fn(newSample.getData());
                 if (correction) {
-                    newSample.autoCorrections.push(correction);
+                    newSample.correctionSuggestions.push(correction);
+                    if (correction.code) {
+                        const err = this.validationErrorProvider.getError(correction.code);
+                        newSample.addErrorTo(correction.field, err);
+                    }
                 }
             });
             return newSample;
         });
+        results = this.resolveSingleAutoCorrectionOffers(results);
         logger.info('Finishing Sample autoCorrection');
         return { samples: results };
     }
 
+    private resolveSingleAutoCorrectionOffers(samples: Sample[]): Sample[] {
+        for (let sample of samples) {
+            const singleCorrections = _.remove(sample.correctionSuggestions, c => c.correctionOffer.length === 1);
+            for (let ac of singleCorrections) {
+                const data = sample.getData();
+                sample.edits[ac.field] = data[ac.field];
+                data[ac.field] = ac.correctionOffer[0];
+            }
+        }
+        return samples;
+    }
+
     private registerCorrectionFunctions() {
-        this.correctionFunctions.push(autoCorrectPathogen(this.catalogService));
+        this.correctionFunctions.push(autoCorrectADV16(this.catalogService));
+        this.correctionFunctions.push(autoCorrectADV9(this.catalogService));
+        this.correctionFunctions.push(autoCorrectADV8(this.catalogService));
+        this.correctionFunctions.push(autoCorrectADV3(this.catalogService));
+        this.correctionFunctions.push(autoCorrectADV12(this.catalogService));
+        this.correctionFunctions.push(autoCorrectADV2(this.catalogService));
     }
 }
 
-export function createService(catalogService: ICatalogService): IFormAutoCorrectionService {
-    return new FormAutoCorrectionService(catalogService);
+export function createService(catalogService: ICatalogService, validationErrorProvider: IValidationErrorProvider): IFormAutoCorrectionService {
+    return new FormAutoCorrectionService(catalogService, validationErrorProvider);
 }

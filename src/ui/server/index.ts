@@ -7,7 +7,7 @@ export {
     createDatasetController,
     IDatasetController,
     createValidationController,
-    IValidationController,
+    ValidationController,
     createRecoveryController,
     IRecoveryController,
     createRegistrationController,

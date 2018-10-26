@@ -47,7 +47,7 @@ export class ServiceFactory implements IServiceFactory {
         this.registrationService = createRegistrationService(userRepository, tokenRepository, institutionRepository, this.notificationService);
         this.passwordService = createPasswordService(userRepository, tokenRepository, this.notificationService);
         this.loginService = createLoginService(userRepository, this.registrationService);
-        this.autoCorrectionService = createFormAutoCorrectionService(this.catalogService);
+        this.autoCorrectionService = createFormAutoCorrectionService(this.catalogService, this.validationErrorProvider);
         this.validationService = createFormValidationService(this.catalogService, this.avvFormatProvider, this.validationErrorProvider, this.nrlSelectorProvider);
 
     }

@@ -2,7 +2,7 @@
 import * as moment from 'moment';
 import * as _ from 'lodash';
 import { ICatalog } from '..';
-import { ISampleData } from './sample.entity';
+import { SampleData } from './sample.entity';
 import { ICatalogService, IValidationError } from '../application';
 import { ApplicationDomainError } from '../../sharedKernel';
 
@@ -13,7 +13,7 @@ export interface ICatalogProvider {
     (catalogName: string): ICatalog<any>;
 }
 export interface IValidatorFunction<T extends IValidatiorFunctionOptions> {
-    (value: string, options: T, key: keyof ISampleData, attributes: ISampleData): IValidationError | null;
+    (value: string, options: T, key: keyof SampleData, attributes: SampleData): IValidationError | null;
 }
 export interface IValidatiorFunctionOptions {
     message: IValidationError;
@@ -28,10 +28,10 @@ export interface IMatchRegexPatternOptions extends IMatchIdToYearOptions {
 
 export interface IDependentFieldEntryOptions extends IValidatiorFunctionOptions {
     regex: string;
-    field: keyof ISampleData;
+    field: keyof SampleData;
 }
 
-function dependentFieldEntry(value: string, options: IDependentFieldEntryOptions, key: keyof ISampleData, attributes: ISampleData) {
+function dependentFieldEntry(value: string, options: IDependentFieldEntryOptions, key: keyof SampleData, attributes: SampleData) {
     const re = new RegExp(options.regex);
     const matchResult = re.test(attributes[options.field]);
     if (matchResult && isEmptyString(attributes[key])) return { ...options.message };
@@ -42,7 +42,7 @@ function numbersOnlyValue(value: string): boolean {
     const numbersOnly = /^\d+$/;
     return numbersOnly.test(value);
 }
-function matchesRegexPattern(value: string, options: IMatchRegexPatternOptions, key: keyof ISampleData, attributes: ISampleData) {
+function matchesRegexPattern(value: string, options: IMatchRegexPatternOptions, key: keyof SampleData, attributes: SampleData) {
     if (!value || !options.regex.length) {
         return null;
     }
@@ -65,7 +65,7 @@ function matchesRegexPattern(value: string, options: IMatchRegexPatternOptions, 
     return success ? null : { ...options.message };
 }
 
-function matchesIdToSpecificYear(value: string, options: IMatchIdToYearOptions, key: keyof ISampleData, attributes: ISampleData) {
+function matchesIdToSpecificYear(value: string, options: IMatchIdToYearOptions, key: keyof SampleData, attributes: SampleData) {
     if (!value) {
         return null;
     }
@@ -108,11 +108,11 @@ function matchesIdToSpecificYear(value: string, options: IMatchIdToYearOptions, 
 export interface INonUniqueEntryOptions extends IValidatiorFunctionOptions {
     catalog: string;
     key: string;
-    differentiator: [string, keyof ISampleData];
+    differentiator: [string, keyof SampleData];
 }
 
 function nonUniqueEntry(catalogService: ICatalogService): IValidatorFunction<INonUniqueEntryOptions> {
-    return (value: string, options: INonUniqueEntryOptions, key: keyof ISampleData, attributes: ISampleData) => {
+    return (value: string, options: INonUniqueEntryOptions, key: keyof SampleData, attributes: SampleData) => {
         if (attributes[key]) {
             const cat = catalogService.getCatalog(options.catalog);
             if (cat && options.key) {
@@ -138,7 +138,7 @@ export interface IInCatalogOptions extends IValidatiorFunctionOptions {
 }
 
 function inCatalog(catalogService: ICatalogService): IValidatorFunction<IInCatalogOptions> {
-    return (value: string, options: IInCatalogOptions, key: keyof ISampleData, attributes: ISampleData) => {
+    return (value: string, options: IInCatalogOptions, key: keyof SampleData, attributes: SampleData) => {
         const trimmedValue = value.trim();
         if (attributes[key]) {
             const cat = catalogService.getCatalog(options.catalog);
@@ -159,7 +159,7 @@ export interface IMatchADVNumberOrStringOptions extends IInCatalogOptions {
 }
 // Matching for ADV16 accorind to #mps53
 function matchADVNumberOrString(catalogService: ICatalogService): IValidatorFunction<IInCatalogOptions> {
-    return (value: string, options: IMatchADVNumberOrStringOptions, key: keyof ISampleData, attributes: ISampleData) => {
+    return (value: string, options: IMatchADVNumberOrStringOptions, key: keyof SampleData, attributes: SampleData) => {
         const trimmedValue = value.trim();
         const altKeys = options.alternateKeys || [];
         if (attributes[key]) {
@@ -192,7 +192,7 @@ function matchADVNumberOrString(catalogService: ICatalogService): IValidatorFunc
 
 interface IGroup {
     code: string;
-    attr: keyof ISampleData;
+    attr: keyof SampleData;
 }
 export interface IRegisteredZoMoOptions extends IValidatiorFunctionOptions {
     year: string[];
@@ -201,8 +201,8 @@ export interface IRegisteredZoMoOptions extends IValidatiorFunctionOptions {
 
 function registeredZoMo(catalogService: ICatalogService): IValidatorFunction<IRegisteredZoMoOptions> {
 
-    return (value: string, options: IRegisteredZoMoOptions, key: keyof ISampleData, attributes: ISampleData) => {
-        const years = options.year.map((y: keyof ISampleData) => {
+    return (value: string, options: IRegisteredZoMoOptions, key: keyof SampleData, attributes: SampleData) => {
+        const years = options.year.map((y: keyof SampleData) => {
             const yearValue = attributes[y];
             const formattedYear = moment.utc(yearValue, 'DD-MM-YYYY').format('YYYY');
             return parseInt(formattedYear, 10);
@@ -229,10 +229,10 @@ function registeredZoMo(catalogService: ICatalogService): IValidatorFunction<IRe
 }
 
 export interface IAtLeastOneOfOptions extends IValidatiorFunctionOptions {
-    additionalMembers: (keyof ISampleData)[];
+    additionalMembers: (keyof SampleData)[];
 }
 
-function atLeastOneOf(value: string, options: IAtLeastOneOfOptions, key: keyof ISampleData, attributes: ISampleData) {
+function atLeastOneOf(value: string, options: IAtLeastOneOfOptions, key: keyof SampleData, attributes: SampleData) {
     if (isEmptyString(attributes[key])) {
         for (let i = 0; i < options.additionalMembers.length; i++) {
             const element = options.additionalMembers[i];
@@ -243,7 +243,7 @@ function atLeastOneOf(value: string, options: IAtLeastOneOfOptions, key: keyof I
     }
     return null;
 }
-function dateAllowEmpty(value: string, options: IAtLeastOneOfOptions, key: keyof ISampleData, attributes: ISampleData) {
+function dateAllowEmpty(value: string, options: IAtLeastOneOfOptions, key: keyof SampleData, attributes: SampleData) {
 
     if (isEmptyString(value)) {
         return null;
@@ -256,10 +256,10 @@ function dateAllowEmpty(value: string, options: IAtLeastOneOfOptions, key: keyof
 }
 
 export interface IDependentFieldsOptions extends IValidatiorFunctionOptions {
-    dependents: (keyof ISampleData)[];
+    dependents: (keyof SampleData)[];
 }
 
-function dependentFields(value: string, options: IDependentFieldsOptions, key: keyof ISampleData, attributes: ISampleData) {
+function dependentFields(value: string, options: IDependentFieldsOptions, key: keyof SampleData, attributes: SampleData) {
     if (attributes[key]) {
         for (let i = 0; i < options.dependents.length; i++) {
             const element = options.dependents[i];
@@ -274,7 +274,7 @@ function dependentFields(value: string, options: IDependentFieldsOptions, key: k
 export interface INumbersOnlyOptions extends IValidatiorFunctionOptions {
 }
 
-function numbersOnly(value: string, options: INumbersOnlyOptions, key: keyof ISampleData, attributes: ISampleData) {
+function numbersOnly(value: string, options: INumbersOnlyOptions, key: keyof SampleData, attributes: SampleData) {
     if (attributes[key]) {
         if (!numbersOnlyValue(value)) {
             return { ...options.message };
@@ -284,8 +284,8 @@ function numbersOnly(value: string, options: INumbersOnlyOptions, key: keyof ISa
 }
 
 export interface IReferenceDateOptions extends IValidatiorFunctionOptions {
-    earliest?: (keyof ISampleData) | string;
-    latest?: (keyof ISampleData) | string;
+    earliest?: (keyof SampleData) | string;
+    latest?: (keyof SampleData) | string;
     modifier?: {
         value: number;
         unit: string;
@@ -293,7 +293,7 @@ export interface IReferenceDateOptions extends IValidatiorFunctionOptions {
 }
 // TODO: Clean this up.
 // tslint:disable-next-line
-function referenceDate(value: string, options: IReferenceDateOptions, key: keyof ISampleData, attributes: any) {
+function referenceDate(value: string, options: IReferenceDateOptions, key: keyof SampleData, attributes: any) {
     if (moment.utc(value, 'DD-MM-YYYY').isValid()) {
         let referenceDateId;
         let refereceOperation;

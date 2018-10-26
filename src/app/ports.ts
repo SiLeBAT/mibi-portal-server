@@ -31,7 +31,7 @@ export {
     IFormAutoCorrectionPort,
     IFormValidatorPort,
     ISampleCollection,
-    ISample,
+    Sample,
     createSample,
     createSampleCollection,
     ICatalog,

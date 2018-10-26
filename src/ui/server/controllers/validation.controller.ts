@@ -7,23 +7,31 @@ import * as unirest from 'unirest';
 import * as config from 'config';
 import { Request, Response } from 'express';
 import { logger } from '../../../aspects';
-import { IFormValidatorPort, IFormAutoCorrectionPort, IController, ISampleCollection, ISample, createSample, createSampleCollection } from '../../../app/ports';
+import { IFormValidatorPort, IFormAutoCorrectionPort, IController, ISampleCollection, Sample, createSample, createSampleCollection } from '../../../app/ports';
 import { ApplicationSystemError } from '../../../app/sharedKernel/errors';
 import { IValidationOptions } from '../../../app/sampleManagement/application';
+import { CorrectionSuggestions, EditValue } from '../../../app/sampleManagement/domain';
 
 moment.locale('de');
 
-interface IValidationRequestMeta {
+interface ValidationRequestMeta {
     state: string;
     nrl: string;
 }
 
-interface IValidationRequest {
-    data: ISampleDTO[];
-    meta: IValidationRequestMeta;
+interface ValidationRequest {
+    data: SampleDTO[];
+    meta: ValidationRequestMeta;
 }
 
-interface ISampleDTO {
+interface ValidationResponseDTO {
+    data: SampleDTO;
+    errors: ErrorResponseDTO;
+    corrections: CorrectionSuggestions[];
+    edits: Record<string, EditValue>;
+}
+
+interface SampleDTO {
     sample_id: string;
     sample_id_avv: string;
     pathogen_adv: string;
@@ -45,31 +53,31 @@ interface ISampleDTO {
     comment: string;
 }
 
-interface IKnimeConfig {
+interface KnimeConfig {
     user: string;
     pass: string;
     urlJobId: string;
     urlResult: string;
 }
 
-interface IErrorDTO {
+interface ErrorDTO {
     code: number;
     level: number;
     message: string;
 }
 
-interface IErrorResponseDTO {
-    [key: string]: IErrorDTO[];
+interface ErrorResponseDTO {
+    [key: string]: ErrorDTO[];
 }
 
-const knimeConfig: IKnimeConfig = config.get('knime');
+const knimeConfig: KnimeConfig = config.get('knime');
 const appRootDir = rootDir.get();
 
-export interface IValidationController extends IController {
+export interface ValidationController extends IController {
     validateSamples(req: Request, res: Response): Promise<void>;
 }
 
-class ValidationController implements IValidationController {
+class DefaultValidationController implements ValidationController {
 
     constructor(private formValidationService: IFormValidatorPort, private formAutoCorrectionService: IFormAutoCorrectionPort) { }
 
@@ -79,9 +87,10 @@ class ValidationController implements IValidationController {
             try {
                 const sampleCollection: ISampleCollection = this.fromDTOToSamples(req.body);
                 const validationOptions: IValidationOptions = this.fromDTOToOptions(req.body.meta);
-                const validationResult = await this.formValidationService.validateSamples(sampleCollection, validationOptions);
-                const autocorrectedSamples = await this.formAutoCorrectionService.applyAutoCorrection(validationResult);
-                const validationResultsDTO = this.fromErrorsToDTO(autocorrectedSamples);
+                // Auto-correction needs to happen before validation?
+                const autocorrectedSamples = await this.formAutoCorrectionService.applyAutoCorrection(sampleCollection);
+                const validationResult = await this.formValidationService.validateSamples(autocorrectedSamples, validationOptions);
+                const validationResultsDTO = this.fromErrorsToDTO(validationResult);
                 logger.info('ValidationController.validateSamples, Response sent', validationResultsDTO);
                 res
                     .status(200)
@@ -101,10 +110,10 @@ class ValidationController implements IValidationController {
 
     }
 
-    private fromErrorsToDTO(sampleCollection: ISampleCollection) {
+    private fromErrorsToDTO(sampleCollection: ISampleCollection): ValidationResponseDTO[] {
 
-        return sampleCollection.samples.map((sample: ISample) => {
-            const errors: IErrorResponseDTO = {};
+        return sampleCollection.samples.map((sample: Sample) => {
+            const errors: ErrorResponseDTO = {};
 
             _.forEach(sample.getErrors(), (e, i) => {
                 errors[i] = e.map(f => ({
@@ -116,13 +125,14 @@ class ValidationController implements IValidationController {
             return {
                 data: sample.getData(),
                 errors: errors,
-                corrections: sample.autoCorrections
+                corrections: sample.correctionSuggestions,
+                edits: sample.edits
             };
 
         });
     }
 
-    private fromDTOToSamples(dto: IValidationRequest): ISampleCollection {
+    private fromDTOToSamples(dto: ValidationRequest): ISampleCollection {
         if (!Array.isArray(dto.data)) {
             throw new ApplicationSystemError(`Invalid input: Array expected, dto.data${dto.data}`);
         }
@@ -131,7 +141,7 @@ class ValidationController implements IValidationController {
         return createSampleCollection(samples);
     }
 
-    private fromDTOToOptions(meta: IValidationRequestMeta): IValidationOptions {
+    private fromDTOToOptions(meta: ValidationRequestMeta): IValidationOptions {
         let nrl: string = '';
 
         // TODO: Should this mapping be elsewhere?
@@ -251,5 +261,5 @@ class ValidationController implements IValidationController {
 }
 
 export function createController(validationService: IFormValidatorPort, autocorrectionService: IFormAutoCorrectionPort) {
-    return new ValidationController(validationService, autocorrectionService);
+    return new DefaultValidationController(validationService, autocorrectionService);
 }

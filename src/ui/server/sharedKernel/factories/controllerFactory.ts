@@ -7,7 +7,7 @@ import {
     createDatasetController,
     IDatasetController,
     createValidationController,
-    IValidationController,
+    ValidationController,
     createRecoveryController,
     IRecoveryController,
     createRegistrationController,
@@ -30,7 +30,7 @@ export class ControllerFactory implements IControllerFactory {
     private recoveryController: IRecoveryController;
     private registrationController: IRegistrationController;
     private resetController: IResetController;
-    private validationController: IValidationController;
+    private validationController: ValidationController;
     private systemInfoController: ISystemInfoController;
 
     constructor(private serviceFactory: IServiceFactory) {
