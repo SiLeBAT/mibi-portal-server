@@ -1,6 +1,6 @@
 import * as moment from 'moment';
 import * as _ from 'lodash';
-import { ISampleData } from './../sample.entity';
+import { SampleData } from './../sample.entity';
 import {
     referenceDate,
     atLeastOneOf,
@@ -22,7 +22,7 @@ moment.locale('de');
 
 describe('Custom Validator Functions', () => {
 
-    let testSample: ISampleData;
+    let testSample: SampleData;
     let validationError: IValidationError;
 
     beforeEach(() => {

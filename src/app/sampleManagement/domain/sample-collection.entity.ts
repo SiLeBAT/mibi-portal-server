@@ -1,16 +1,16 @@
-import { ISample } from './sample.entity';
+import { Sample } from './sample.entity';
 
 export interface ISampleCollection {
-    samples: ISample[];
+    samples: Sample[];
 }
 
 class SampleCollection implements ISampleCollection {
 
-    constructor(public samples: ISample[]) { }
+    constructor(public samples: Sample[]) { }
 
 }
 
-function createSampleCollection(data: ISample[]): ISampleCollection {
+function createSampleCollection(data: Sample[]): ISampleCollection {
     return new SampleCollection(data);
 }
 

@@ -1,6 +1,7 @@
 import { createService, IFormAutoCorrectionService } from '../form-auto-correction.service';
 import { ISampleCollection } from '../..';
-import { ISampleData, ISample } from '../../domain/sample.entity';
+import { SampleData, Sample } from '../../domain/sample.entity';
+import { IValidationErrorProvider } from '../validation-error-provider.service';
 
 describe('Auto-correct Sample Use Case', () => {
     // tslint:disable-next-line
@@ -8,8 +9,9 @@ describe('Auto-correct Sample Use Case', () => {
     let service: IFormAutoCorrectionService;
 
     let genericTestSampleCollection: ISampleCollection;
-    let testSampleData: ISampleData;
-    let genericTestSample: ISample;
+    let testSampleData: SampleData;
+    let genericTestSample: Sample;
+    let mockValidationErrorProvider: IValidationErrorProvider;
     beforeEach(() => {
 
         mockCatalogService = {
@@ -21,8 +23,11 @@ describe('Auto-correct Sample Use Case', () => {
             }),
             getCatalogSearchAliases: jest.fn(() => [])
         };
+        mockValidationErrorProvider = {
+            getError: jest.fn()
+        };
 
-        service = createService(mockCatalogService);
+        service = createService(mockCatalogService, mockValidationErrorProvider);
         testSampleData = {
             sample_id: '1',
             sample_id_avv: '1-ABC',
@@ -45,11 +50,13 @@ describe('Auto-correct Sample Use Case', () => {
             comment: ''
         };
         genericTestSample = {
-            autoCorrections: [],
+            correctionSuggestions: [],
+            edits: {},
             getData: jest.fn(),
             pathogenId: '',
             pathogenIdAVV: '',
             setErrors: jest.fn(),
+            addErrors: jest.fn(),
             isZoMo: jest.fn(),
             addErrorTo: jest.fn(),
             getErrors: jest.fn(),

@@ -3,7 +3,7 @@ import { logger } from '../../../aspects';
 import { ICatalogService, IAVVFormatProvider, IValidationErrorProvider, INRLSelectorProvider } from '.';
 import { ApplicationDomainError } from '../../sharedKernel';
 import {
-    ISample,
+    Sample,
     ISampleCollection,
     createValidator,
     IValidator,
@@ -40,7 +40,8 @@ class FormValidatorService implements IFormValidatorService {
 
         const results = sampleCollection.samples.map(sample => {
             const constraintSet = sample.isZoMo() ? this.getConstraints(ConstraintSet.ZOMO, validationOptions) : this.getConstraints(ConstraintSet.STANDARD, validationOptions);
-            sample.setErrors(this.validator.validateSample(sample, constraintSet));
+            const validationErrors = this.validator.validateSample(sample, constraintSet);
+            sample.addErrors(validationErrors);
             return sample;
         });
 
@@ -52,7 +53,7 @@ class FormValidatorService implements IFormValidatorService {
 
     }
 
-    private checkForDuplicateId(samples: ISample[], uniqueId: keyof ISample): ISample[] {
+    private checkForDuplicateId(samples: Sample[], uniqueId: keyof Sample): Sample[] {
         const config = this.getUniqueIdErrorConfig(uniqueId);
         const pathogenArrayId = samples.map(sample => sample[uniqueId]).filter(x => x);
         const pathogenArrayIdDuplicates = _.filter(pathogenArrayId, function (value, index, iteratee) {

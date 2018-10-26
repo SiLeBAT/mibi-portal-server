@@ -1,29 +1,34 @@
+import * as _ from 'lodash';
 import { IValidationError } from '../application';
 import { IValidationErrorCollection } from './validator.entity';
 
 const ZOMO_CODE: number = 81;
 const ZOMO_STRING: string = 'Zoonosen-Monitoring - Planprobe';
 
-export interface ISample {
+export type EditValue = string;
+export interface Sample {
     readonly pathogenIdAVV?: string;
     readonly pathogenId?: string;
-    autoCorrections: IAutoCorrectedValue[];
-    clone(): ISample;
-    getData(): ISampleData;
-    correctField(key: keyof ISampleData, value: string): void;
+    correctionSuggestions: CorrectionSuggestions[];
+    edits: Record<string, EditValue>;
+    clone(): Sample;
+    getData(): SampleData;
+    correctField(key: keyof SampleData, value: string): void;
     setErrors(errors: IValidationErrorCollection): void;
     addErrorTo(id: string, errors: IValidationError): void;
     getErrors(): IValidationErrorCollection;
+    addErrors(errors: IValidationErrorCollection): void;
     isZoMo(): boolean;
 }
 
-export interface IAutoCorrectedValue {
-    field: keyof ISampleData;
+export interface CorrectionSuggestions {
+    field: keyof SampleData;
     original: string;
     correctionOffer: string[];
+    code: number;
 }
 
-export interface ISampleData {
+export interface SampleData {
     sample_id: string;
     sample_id_avv: string;
     pathogen_adv: string;
@@ -45,14 +50,16 @@ export interface ISampleData {
     comment: string;
 }
 
-class Sample implements ISample {
+class SampleImpl implements Sample {
 
-    autoCorrections: IAutoCorrectedValue[];
+    correctionSuggestions: CorrectionSuggestions[];
+    edits: Record<string, EditValue>;
     private errors: IValidationErrorCollection;
 
-    constructor(private data: ISampleData) {
+    constructor(private data: SampleData) {
         this.errors = {};
-        this.autoCorrections = [];
+        this.edits = {};
+        this.correctionSuggestions = [];
     }
 
     getData() {
@@ -77,6 +84,17 @@ class Sample implements ISample {
         this.errors = errors;
     }
 
+    addErrors(errors: IValidationErrorCollection = {}) {
+        _.forEach(errors, (v, k) => {
+            if (this.errors[k]) {
+                this.errors[k] = [...this.errors[k], ...v];
+            } else {
+                this.errors[k] = [ ...v];
+            }
+
+        });
+    }
+
     getErrors(): IValidationErrorCollection {
         return this.errors;
     }
@@ -93,21 +111,21 @@ class Sample implements ISample {
 
     }
 
-    correctField(key: keyof ISampleData, value: string) {
+    correctField(key: keyof SampleData, value: string) {
         this.data[key] = value;
     }
 
     clone() {
         const d = { ...this.data };
-        const s = new Sample(d);
-        s.autoCorrections = [...this.autoCorrections];
+        const s = new SampleImpl(d);
+        s.correctionSuggestions = [...this.correctionSuggestions];
         s.errors = { ...this.errors };
         return s;
     }
 }
 
-function createSample(data: ISampleData): ISample {
-    return new Sample(data);
+function createSample(data: SampleData): Sample {
+    return new SampleImpl(data);
 }
 
 export {

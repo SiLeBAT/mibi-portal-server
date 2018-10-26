@@ -2,7 +2,7 @@ import * as validate from 'validate.js';
 import * as moment from 'moment';
 import * as _ from 'lodash';
 
-import { ISample } from '../';
+import { Sample } from '../';
 import {
     referenceDate,
     atLeastOneOf,
@@ -23,7 +23,7 @@ import { IValidationConstraints } from './validation-constraints';
 moment.locale('de');
 
 export interface IValidator {
-    validateSample(sample: ISample, constraintSet: IValidationConstraints): IValidationErrorCollection;
+    validateSample(sample: Sample, constraintSet: IValidationConstraints): IValidationErrorCollection;
 }
 
 export interface IValidationErrorCollection {
@@ -64,7 +64,7 @@ class SampleValidator implements IValidator {
         this.registerCustomValidators();
     }
 
-    validateSample(sample: ISample, constraintSet: IValidationConstraints): IValidationErrorCollection {
+    validateSample(sample: Sample, constraintSet: IValidationConstraints): IValidationErrorCollection {
         return validate(sample.getData(), constraintSet);
     }
 
