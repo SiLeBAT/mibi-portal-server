@@ -16,14 +16,14 @@ import {
     matchesIdToSpecificYear
 } from '../custom-validator-functions';
 import { ICatalog } from '../..';
-import { ICatalogService, IValidationError } from '../../application';
+import { ICatalogService, ValidationError } from '../../application';
 
 moment.locale('de');
 
 describe('Custom Validator Functions', () => {
 
     let testSample: SampleData;
-    let validationError: IValidationError;
+    let validationError: ValidationError;
 
     beforeEach(() => {
         validationError = {

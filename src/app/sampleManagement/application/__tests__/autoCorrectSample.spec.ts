@@ -1,17 +1,17 @@
 import { createService, IFormAutoCorrectionService } from '../form-auto-correction.service';
-import { ISampleCollection } from '../..';
+import { SampleCollection } from '../..';
 import { SampleData, Sample } from '../../domain/sample.entity';
-import { IValidationErrorProvider } from '../validation-error-provider.service';
+import { ValidationErrorProvider } from '../validation-error-provider.service';
 
 describe('Auto-correct Sample Use Case', () => {
     // tslint:disable-next-line
     let mockCatalogService: any;
     let service: IFormAutoCorrectionService;
 
-    let genericTestSampleCollection: ISampleCollection;
+    let genericTestSampleCollection: SampleCollection;
     let testSampleData: SampleData;
     let genericTestSample: Sample;
-    let mockValidationErrorProvider: IValidationErrorProvider;
+    let mockValidationErrorProvider: ValidationErrorProvider;
     beforeEach(() => {
 
         mockCatalogService = {

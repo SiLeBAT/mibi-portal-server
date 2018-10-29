@@ -1,20 +1,20 @@
 import * as _ from 'lodash';
 
-export interface IValidationRule {
+export interface ValidationRule {
     error: number;
     // tslint:disable-next-line
     [key: string]: any;
 }
 
-export interface IValidationRuleSet {
-    [key: string]: IValidationRule;
+export interface ValidationRuleSet {
+    [key: string]: ValidationRule;
 }
 
-export interface IValidationConstraints {
-    [key: string]: IValidationRuleSet;
+export interface ValidationConstraints {
+    [key: string]: ValidationRuleSet;
 }
 
-export const zoMoConstraints: IValidationConstraints = {
+export const zoMoConstraints: ValidationConstraints = {
     sample_id_avv: {
         presence: {
             error: 5,
@@ -131,7 +131,7 @@ export const zoMoConstraints: IValidationConstraints = {
     }
 };
 
-export const standardConstraints: IValidationConstraints = {
+export const standardConstraints: ValidationConstraints = {
     sampling_date: {
         atLeastOneOf: {
             error: 19,
@@ -146,7 +146,7 @@ export const standardConstraints: IValidationConstraints = {
     }
 };
 
-export const baseConstraints: IValidationConstraints = {
+export const baseConstraints: ValidationConstraints = {
     sample_id: {
         atLeastOneOf: {
             error: 69,
@@ -168,9 +168,9 @@ export const baseConstraints: IValidationConstraints = {
         }
     },
     pathogen_adv: {
-        atLeastOneOf: {
+        presence: {
             error: 10,
-            additionalMembers: ['pathogen_text']
+            allowEmpty: false
         },
         matchADVNumberOrString: {
             error: 8,
@@ -181,12 +181,6 @@ export const baseConstraints: IValidationConstraints = {
             error: 73,
             regex: [],
             ignoreNumbers: true
-        }
-    },
-    pathogen_text: {
-        atLeastOneOf: {
-            error: 10,
-            additionalMembers: ['pathogen_adv']
         }
     },
     sampling_date: {

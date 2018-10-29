@@ -4,12 +4,12 @@ import {
     createRegistrationService, createPasswordService, ILoginService, createLoginService, createInstitutionService, IInstitutionService
 } from '../../authentication/application';
 import {
-    IFormValidatorService,
+    FormValidatorService,
     createFormValidationService,
     ICatalogService,
     createCatalogService,
     IDatasetService,
-    createDatasetService, createFormAutoCorrectionService, IFormAutoCorrectionService, IAVVFormatProvider, createAVVFormatProvider, IValidationErrorProvider, createValidationErrorProvider, INRLSelectorProvider, createNRLSelectorProvider
+    createDatasetService, createFormAutoCorrectionService, IFormAutoCorrectionService, IAVVFormatProvider, createAVVFormatProvider, ValidationErrorProvider, createValidationErrorProvider, INRLSelectorProvider, createNRLSelectorProvider
 } from '../../sampleManagement/application';
 import { ApplicationSystemError } from '../errors';
 import { INotificationService, createNotificationService } from '../application';
@@ -27,13 +27,13 @@ export class ServiceFactory implements IServiceFactory {
     private registrationService: IRegistrationService;
     private passwordService: IPasswordService;
     private notificationService: INotificationService;
-    private validationService: IFormValidatorService;
+    private validationService: FormValidatorService;
     private catalogService: ICatalogService;
     private datasetService: IDatasetService;
     private autoCorrectionService: IFormAutoCorrectionService;
     private avvFormatProvider: IAVVFormatProvider;
     private nrlSelectorProvider: INRLSelectorProvider;
-    private validationErrorProvider: IValidationErrorProvider;
+    private validationErrorProvider: ValidationErrorProvider;
 
     constructor() {
 

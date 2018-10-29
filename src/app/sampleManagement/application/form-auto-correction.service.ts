@@ -1,11 +1,11 @@
 import * as _ from 'lodash';
-import { ICatalogService, IValidationErrorProvider } from '.';
+import { ICatalogService, ValidationErrorProvider } from '.';
 import { logger } from '../../../aspects';
-import { ISampleCollection, Sample } from '../domain';
+import { SampleCollection, Sample } from '../domain';
 import { CorrectionFunction, autoCorrectADV16, autoCorrectADV9, autoCorrectADV8, autoCorrectADV12, autoCorrectADV3, autoCorrectADV2 } from '../domain/custom-auto-correction-functions';
 
 export interface IFormAutoCorrectionPort {
-    applyAutoCorrection(sampleCollection: ISampleCollection): Promise<ISampleCollection>;
+    applyAutoCorrection(sampleCollection: SampleCollection): Promise<SampleCollection>;
 }
 
 export interface IFormAutoCorrectionService extends IFormAutoCorrectionPort { }
@@ -14,11 +14,11 @@ class FormAutoCorrectionService implements IFormAutoCorrectionService {
 
     private correctionFunctions: CorrectionFunction[] = [];
 
-    constructor(private catalogService: ICatalogService, private validationErrorProvider: IValidationErrorProvider) {
+    constructor(private catalogService: ICatalogService, private validationErrorProvider: ValidationErrorProvider) {
         this.registerCorrectionFunctions();
     }
 
-    async applyAutoCorrection(sampleCollection: ISampleCollection): Promise<ISampleCollection> {
+    async applyAutoCorrection(sampleCollection: SampleCollection): Promise<SampleCollection> {
 
         logger.verbose('FormAutoCorrectionService.applyAutoCorrection, Starting Sample autoCorrection');
 
@@ -63,6 +63,6 @@ class FormAutoCorrectionService implements IFormAutoCorrectionService {
     }
 }
 
-export function createService(catalogService: ICatalogService, validationErrorProvider: IValidationErrorProvider): IFormAutoCorrectionService {
+export function createService(catalogService: ICatalogService, validationErrorProvider: ValidationErrorProvider): IFormAutoCorrectionService {
     return new FormAutoCorrectionService(catalogService, validationErrorProvider);
 }
