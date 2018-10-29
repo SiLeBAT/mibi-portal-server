@@ -241,6 +241,10 @@ function autoCorrectADV16(catalogService: ICatalogService) {
             return searchCache[trimmedEntry];
         }
 
+        if (catalog.containsEntryWithKeyValue('Text1', trimmedEntry)) {
+            return null;
+        }
+
         // Check Number codes
         const numbersOnly = /^\d+$/;
         if (numbersOnly.test(trimmedEntry)) {
