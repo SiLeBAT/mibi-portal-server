@@ -7,9 +7,9 @@ import * as unirest from 'unirest';
 import * as config from 'config';
 import { Request, Response } from 'express';
 import { logger } from '../../../aspects';
-import { IFormValidatorPort, IFormAutoCorrectionPort, IController, ISampleCollection, Sample, createSample, createSampleCollection } from '../../../app/ports';
+import { FormValidatorPort, IFormAutoCorrectionPort, IController, SampleCollection, Sample, createSample, createSampleCollection } from '../../../app/ports';
 import { ApplicationSystemError } from '../../../app/sharedKernel/errors';
-import { IValidationOptions } from '../../../app/sampleManagement/application';
+import { ValidationOptions } from '../../../app/sampleManagement/application';
 import { CorrectionSuggestions, EditValue } from '../../../app/sampleManagement/domain';
 
 moment.locale('de');
@@ -79,14 +79,14 @@ export interface ValidationController extends IController {
 
 class DefaultValidationController implements ValidationController {
 
-    constructor(private formValidationService: IFormValidatorPort, private formAutoCorrectionService: IFormAutoCorrectionPort) { }
+    constructor(private formValidationService: FormValidatorPort, private formAutoCorrectionService: IFormAutoCorrectionPort) { }
 
     async validateSamples(req: Request, res: Response) {
 
         if (req.is('application/json')) {
             try {
-                const sampleCollection: ISampleCollection = this.fromDTOToSamples(req.body);
-                const validationOptions: IValidationOptions = this.fromDTOToOptions(req.body.meta);
+                const sampleCollection: SampleCollection = this.fromDTOToSamples(req.body);
+                const validationOptions: ValidationOptions = this.fromDTOToOptions(req.body.meta);
                 // Auto-correction needs to happen before validation?
                 const autocorrectedSamples = await this.formAutoCorrectionService.applyAutoCorrection(sampleCollection);
                 const validationResult = await this.formValidationService.validateSamples(autocorrectedSamples, validationOptions);
@@ -110,7 +110,7 @@ class DefaultValidationController implements ValidationController {
 
     }
 
-    private fromErrorsToDTO(sampleCollection: ISampleCollection): ValidationResponseDTO[] {
+    private fromErrorsToDTO(sampleCollection: SampleCollection): ValidationResponseDTO[] {
 
         return sampleCollection.samples.map((sample: Sample) => {
             const errors: ErrorResponseDTO = {};
@@ -132,7 +132,7 @@ class DefaultValidationController implements ValidationController {
         });
     }
 
-    private fromDTOToSamples(dto: ValidationRequest): ISampleCollection {
+    private fromDTOToSamples(dto: ValidationRequest): SampleCollection {
         if (!Array.isArray(dto.data)) {
             throw new ApplicationSystemError(`Invalid input: Array expected, dto.data${dto.data}`);
         }
@@ -141,7 +141,7 @@ class DefaultValidationController implements ValidationController {
         return createSampleCollection(samples);
     }
 
-    private fromDTOToOptions(meta: ValidationRequestMeta): IValidationOptions {
+    private fromDTOToOptions(meta: ValidationRequestMeta): ValidationOptions {
         let nrl: string = '';
 
         // TODO: Should this mapping be elsewhere?
@@ -260,6 +260,6 @@ class DefaultValidationController implements ValidationController {
 
 }
 
-export function createController(validationService: IFormValidatorPort, autocorrectionService: IFormAutoCorrectionPort) {
+export function createController(validationService: FormValidatorPort, autocorrectionService: IFormAutoCorrectionPort) {
     return new DefaultValidationController(validationService, autocorrectionService);
 }

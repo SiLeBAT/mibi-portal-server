@@ -1,31 +1,31 @@
 import * as _ from 'lodash';
 import { logger } from '../../../aspects';
-import { ICatalogService, IAVVFormatProvider, IValidationErrorProvider, INRLSelectorProvider } from '.';
+import { ICatalogService, IAVVFormatProvider, ValidationErrorProvider, INRLSelectorProvider } from '.';
 import { ApplicationDomainError } from '../../sharedKernel';
 import {
     Sample,
-    ISampleCollection,
+    SampleCollection,
     createValidator,
-    IValidator,
-    ConstraintSet, IValidationConstraints, IValidationRuleSet, baseConstraints, zoMoConstraints, standardConstraints, IValidationRule
+    Validator,
+    ConstraintSet, ValidationConstraints, ValidationRuleSet, baseConstraints, zoMoConstraints, standardConstraints, ValidationRule
 } from '../domain';
 
-export interface IValidationOptions {
+export interface ValidationOptions {
     state?: string;
     nrl?: string;
     year?: string;
 }
-export interface IFormValidatorPort {
-    validateSamples(sampleCollection: ISampleCollection, validationOptions: IValidationOptions): Promise<ISampleCollection>;
+export interface FormValidatorPort {
+    validateSamples(sampleCollection: SampleCollection, validationOptions: ValidationOptions): Promise<SampleCollection>;
 }
 
-export interface IFormValidatorService extends IFormValidatorPort { }
+export interface FormValidatorService extends FormValidatorPort { }
 
-class FormValidatorService implements IFormValidatorService {
+class DefaultFormValidatorService implements FormValidatorService {
 
-    private validator: IValidator;
+    private validator: Validator;
 
-    constructor(private catalogService: ICatalogService, private avvFormatProvider: IAVVFormatProvider, private validationErrorProvider: IValidationErrorProvider, private nrlSelectorProvider: INRLSelectorProvider) {
+    constructor(private catalogService: ICatalogService, private avvFormatProvider: IAVVFormatProvider, private validationErrorProvider: ValidationErrorProvider, private nrlSelectorProvider: INRLSelectorProvider) {
         this.validator = createValidator({
             dateFormat: 'DD-MM-YYYY',
             dateTimeFormat: 'DD-MM-YYYY hh:mm:ss',
@@ -34,37 +34,53 @@ class FormValidatorService implements IFormValidatorService {
     }
 
     // TODO: Needs to be refactored & tested
-    async validateSamples(sampleCollection: ISampleCollection, validationOptions: IValidationOptions): Promise<ISampleCollection> {
+    async validateSamples(sampleCollection: SampleCollection, validationOptions: ValidationOptions): Promise<SampleCollection> {
 
         logger.verbose('FormValidatorService.validateSamples, Starting Sample validation');
 
-        const results = sampleCollection.samples.map(sample => {
+        let results = this.validateIndividualSamples(sampleCollection.samples, validationOptions);
+        if (results.length > 1) {
+            results = this.validateSamplesBatch(results);
+        }
+
+        logger.info('Finishing Sample validation');
+        sampleCollection.samples = results;
+        return sampleCollection;
+
+    }
+
+    private validateIndividualSamples(samples: Sample[], validationOptions: ValidationOptions): Sample[] {
+        return samples.map(sample => {
             const constraintSet = sample.isZoMo() ? this.getConstraints(ConstraintSet.ZOMO, validationOptions) : this.getConstraints(ConstraintSet.STANDARD, validationOptions);
             const validationErrors = this.validator.validateSample(sample, constraintSet);
             sample.addErrors(validationErrors);
             return sample;
         });
-
-        const checkedForDuplicateIds = this.checkForDuplicateId(results, 'pathogenId');
-        const allChecked = this.checkForDuplicateId(checkedForDuplicateIds, 'pathogenIdAVV');
-        logger.info('Finishing Sample validation');
-        sampleCollection.samples = allChecked;
-        return sampleCollection;
-
     }
 
-    private checkForDuplicateId(samples: Sample[], uniqueId: keyof Sample): Sample[] {
+    private validateSamplesBatch(samples: Sample[]): Sample[] {
+        const checkedForDuplicateIds = this.checkForDuplicateIdEntries(samples, 'pathogenId');
+        return this.checkForDuplicateIdEntries(checkedForDuplicateIds, 'pathogenIdAVV');
+    }
+
+    private checkForDuplicateIdEntries(samples: Sample[], uniqueId: keyof Sample): Sample[] {
         const config = this.getUniqueIdErrorConfig(uniqueId);
-        const pathogenArrayId = samples.map(sample => sample[uniqueId]).filter(x => x);
-        const pathogenArrayIdDuplicates = _.filter(pathogenArrayId, function (value, index, iteratee) {
-            return _.includes(iteratee, value, index + 1);
-        });
+
+        const pathogenArrayIdDuplicates = this.getDuplicateEntries(samples, uniqueId);
+
         _.filter(samples, sample => _.includes(pathogenArrayIdDuplicates, sample[uniqueId]))
             .forEach(e => {
                 e.addErrorTo(config.sampleId, this.validationErrorProvider.getError(config.error));
             });
 
         return [...samples];
+    }
+
+    private getDuplicateEntries(samples: Sample[], uniqueId: keyof Sample) {
+        const pathogenArrayId = samples.map(sample => sample[uniqueId]).filter(x => x);
+        return _.filter(pathogenArrayId, function (value, index, iteratee) {
+            return _.includes(iteratee, value, index + 1);
+        });
     }
 
     private getUniqueIdErrorConfig(uniqueId: string) {
@@ -86,15 +102,20 @@ class FormValidatorService implements IFormValidatorService {
 
     }
 
-    private getConstraints(set: ConstraintSet, options: IValidationOptions) {
-        const newConstraints: IValidationConstraints = { ...baseConstraints };
-        // Necessary because of Ticket #49
-        newConstraints['sample_id_avv']['matchesIdToSpecificYear'].regex = this.avvFormatProvider.getFormat(options.state);
-        // Necessary because of Ticket #54
-        newConstraints['pathogen_adv']['matchesRegexPattern'].regex = this.nrlSelectorProvider.getSelectors(options.nrl);
+    private getConstraints(set: ConstraintSet, options: ValidationOptions) {
+        const newConstraints: ValidationConstraints = { ...baseConstraints };
+        if (newConstraints['sample_id_avv'] && newConstraints['sample_id_avv']['matchesIdToSpecificYear']) {
+            // Necessary because of Ticket #49
+            newConstraints['sample_id_avv']['matchesIdToSpecificYear'].regex = this.avvFormatProvider.getFormat(options.state);
+        }
+        if (newConstraints['pathogen_adv'] && newConstraints['pathogen_adv']['matchesRegexPattern']) {
+            // Necessary because of Ticket #54
+            newConstraints['pathogen_adv']['matchesRegexPattern'].regex = this.nrlSelectorProvider.getSelectors(options.nrl);
+        }
+
         switch (set) {
             case ConstraintSet.ZOMO:
-                _.forEach(newConstraints, (value: IValidationRuleSet, key) => {
+                _.forEach(newConstraints, (value: ValidationRuleSet, key) => {
                     if (zoMoConstraints.hasOwnProperty(key)) {
                         newConstraints[key] = { ...value, ...zoMoConstraints[key] };
                     }
@@ -102,14 +123,14 @@ class FormValidatorService implements IFormValidatorService {
                 break;
             case ConstraintSet.STANDARD:
             default:
-                _.forEach(newConstraints, (value: IValidationRuleSet, key) => {
+                _.forEach(newConstraints, (value: ValidationRuleSet, key) => {
                     if (standardConstraints.hasOwnProperty(key)) {
                         newConstraints[key] = { ...value, ...standardConstraints[key] };
                     }
                 });
         }
-        _.forEach(newConstraints, (v: IValidationRuleSet, k) => {
-            _.forEach(v, (v2: IValidationRule, k2) => {
+        _.forEach(newConstraints, (v: ValidationRuleSet, k) => {
+            _.forEach(v, (v2: ValidationRule, k2) => {
                 v2['message'] = this.validationErrorProvider.getError(v2['error']);
             });
         });
@@ -117,6 +138,6 @@ class FormValidatorService implements IFormValidatorService {
     }
 }
 
-export function createService(catalogService: ICatalogService, avvFormatProvider: IAVVFormatProvider, validationErrorProvider: IValidationErrorProvider, nrlSelectorProvider: INRLSelectorProvider): IFormValidatorService {
-    return new FormValidatorService(catalogService, avvFormatProvider, validationErrorProvider, nrlSelectorProvider);
+export function createService(catalogService: ICatalogService, avvFormatProvider: IAVVFormatProvider, validationErrorProvider: ValidationErrorProvider, nrlSelectorProvider: INRLSelectorProvider): FormValidatorService {
+    return new DefaultFormValidatorService(catalogService, avvFormatProvider, validationErrorProvider, nrlSelectorProvider);
 }

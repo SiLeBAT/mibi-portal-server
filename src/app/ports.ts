@@ -1,4 +1,4 @@
-import { ICatalog, INRL, IValidationError } from './sampleManagement';
+import { ICatalog, INRL, ValidationError } from './sampleManagement';
 import { IUserToken, IUser, IInstitution } from './authentication';
 
 export {
@@ -29,8 +29,8 @@ export {
 
 export {
     IFormAutoCorrectionPort,
-    IFormValidatorPort,
-    ISampleCollection,
+    FormValidatorPort,
+    SampleCollection,
     Sample,
     createSample,
     createSampleCollection,
@@ -39,7 +39,7 @@ export {
 	IDatasetFile,
 	ISenderInfo,
     IDatasetPort,
-    IValidationError,
+    ValidationError,
     INRL
 } from './sampleManagement';
 
@@ -104,7 +104,7 @@ export interface IUserRepository {
 }
 
 export interface IValidationErrorRepository {
-    getAllErrors(): Promise<IValidationError[]>;
+    getAllErrors(): Promise<ValidationError[]>;
 }
 export interface IStateRepository {
     getAllFormats(): Promise<IAVVFormatCollection>;

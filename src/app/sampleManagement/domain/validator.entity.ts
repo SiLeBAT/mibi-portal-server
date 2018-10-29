@@ -17,30 +17,30 @@ import {
     matchesRegexPattern,
     matchesIdToSpecificYear
 } from './custom-validator-functions';
-import { ICatalogService, IValidationError } from '../application';
-import { IValidationConstraints } from './validation-constraints';
+import { ICatalogService, ValidationError } from '../application';
+import { ValidationConstraints } from './validation-constraints';
 
 moment.locale('de');
 
-export interface IValidator {
-    validateSample(sample: Sample, constraintSet: IValidationConstraints): IValidationErrorCollection;
+export interface Validator {
+    validateSample(sample: Sample, constraintSet: ValidationConstraints): ValidationErrorCollection;
 }
 
-export interface IValidationErrorCollection {
-    [key: string]: IValidationError[];
+export interface ValidationErrorCollection {
+    [key: string]: ValidationError[];
 }
 
-export interface IValidatorConfig {
+export interface ValidatorConfig {
     dateFormat: string;
     dateTimeFormat: string;
     catalogService: ICatalogService;
 }
 
-class SampleValidator implements IValidator {
+class SampleValidator implements Validator {
 
     private catalogService: ICatalogService;
 
-    constructor(config: IValidatorConfig) {
+    constructor(config: ValidatorConfig) {
 
         // Before using it we must add the parse and format functions
         // Here is a sample implementation using moment.js
@@ -64,7 +64,7 @@ class SampleValidator implements IValidator {
         this.registerCustomValidators();
     }
 
-    validateSample(sample: Sample, constraintSet: IValidationConstraints): IValidationErrorCollection {
+    validateSample(sample: Sample, constraintSet: ValidationConstraints): ValidationErrorCollection {
         return validate(sample.getData(), constraintSet);
     }
 
@@ -89,7 +89,7 @@ class SampleValidator implements IValidator {
 
 }
 
-function createValidator(config: IValidatorConfig): IValidator {
+function createValidator(config: ValidatorConfig): Validator {
     return new SampleValidator(config);
 }
 

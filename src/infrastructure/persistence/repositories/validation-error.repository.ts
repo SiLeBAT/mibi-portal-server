@@ -1,18 +1,18 @@
 import { createRepository, IValidationErrorModel, ValidationErrorSchema } from '../data-store';
 import { IValidationErrorRepository, IRead } from '../../../app/ports';
 import { mapModelToValidationError } from './data-mappers';
-import { IValidationError } from '../../../app/sampleManagement/application';
+import { ValidationError } from '../../../app/sampleManagement/application';
 
 class ValidationErrorRepository implements IValidationErrorRepository {
 
     constructor(private baseRepo: IRead<IValidationErrorModel>) {
     }
 
-    getAllErrors(): Promise<IValidationError[]> {
+    getAllErrors(): Promise<ValidationError[]> {
         return this.retrieve();
     }
 
-    private retrieve(): Promise<IValidationError[]> {
+    private retrieve(): Promise<ValidationError[]> {
         return this.baseRepo.retrieve().then(
             modelArray => {
                 return modelArray.map(m => mapModelToValidationError(m));

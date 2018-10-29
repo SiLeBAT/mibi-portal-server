@@ -3,7 +3,7 @@ import * as moment from 'moment';
 import * as _ from 'lodash';
 import { ICatalog } from '..';
 import { SampleData } from './sample.entity';
-import { ICatalogService, IValidationError } from '../application';
+import { ICatalogService, ValidationError } from '../application';
 import { ApplicationDomainError } from '../../sharedKernel';
 
 moment.locale('de');
@@ -13,10 +13,10 @@ export interface ICatalogProvider {
     (catalogName: string): ICatalog<any>;
 }
 export interface IValidatorFunction<T extends IValidatiorFunctionOptions> {
-    (value: string, options: T, key: keyof SampleData, attributes: SampleData): IValidationError | null;
+    (value: string, options: T, key: keyof SampleData, attributes: SampleData): ValidationError | null;
 }
 export interface IValidatiorFunctionOptions {
-    message: IValidationError;
+    message: ValidationError;
 }
 export interface IMatchIdToYearOptions extends IValidatiorFunctionOptions {
     regex: string[];
@@ -123,7 +123,7 @@ function nonUniqueEntry(catalogService: ICatalogService): IValidatorFunction<INo
                     if (n.length === 1) return null;
                 }
                 // TODO: find better way to do this
-                const newMessage: IValidationError = { ...options.message };
+                const newMessage: ValidationError = { ...options.message };
                 newMessage.message += ` Entweder '${entries[0].Kodiersystem}' für '${entries[0].Text1}' oder '${entries[1].Kodiersystem}' für '${entries[1].Text1}'.`;
                 return newMessage;
             }

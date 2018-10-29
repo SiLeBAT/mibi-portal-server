@@ -3,21 +3,21 @@ import { ApplicationDomainError, ApplicationSystemError } from '../../sharedKern
 import { IValidationErrorRepository } from '../../ports';
 import { logger } from '../../../aspects';
 
-export interface IValidationErrorProviderPort {
+export interface ValidationErrorProviderPort {
 }
 
-export interface IValidationErrorProvider extends IValidationErrorProviderPort {
-    getError(id: number): IValidationError;
+export interface ValidationErrorProvider extends ValidationErrorProviderPort {
+    getError(id: number): ValidationError;
 }
 
-export interface IValidationError {
+export interface ValidationError {
     code: number;
     level: number;
     message: string;
 }
 
-class ValidationErrorProvider implements IValidationErrorProvider {
-    private errors: IValidationError[] = [];
+class DefaultValidationErrorProvider implements ValidationErrorProvider {
+    private errors: ValidationError[] = [];
 
     constructor(private validationErrorRepository: IValidationErrorRepository) {
         this.validationErrorRepository.getAllErrors().then(
@@ -30,15 +30,15 @@ class ValidationErrorProvider implements IValidationErrorProvider {
         );
     }
 
-    getError(id: number): IValidationError {
-        const error = _.find(this.errors, e => e.code === id);
+    getError(code: number): ValidationError {
+        const error = _.find(this.errors, e => e.code === code);
         if (!error) {
-            throw new ApplicationDomainError(`Error code not found, id=${id}`);
+            throw new ApplicationDomainError(`Error code not found, code=${code}`);
         }
         return error;
     }
 }
 
-export function createService(repository: IValidationErrorRepository): IValidationErrorProvider {
-    return new ValidationErrorProvider(repository);
+export function createService(repository: IValidationErrorRepository): ValidationErrorProvider {
+    return new DefaultValidationErrorProvider(repository);
 }

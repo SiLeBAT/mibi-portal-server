@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
-import { IValidationError } from '../application';
-import { IValidationErrorCollection } from './validator.entity';
+import { ValidationError } from '../application';
+import { ValidationErrorCollection } from './validator.entity';
 
 const ZOMO_CODE: number = 81;
 const ZOMO_STRING: string = 'Zoonosen-Monitoring - Planprobe';
@@ -14,10 +14,10 @@ export interface Sample {
     clone(): Sample;
     getData(): SampleData;
     correctField(key: keyof SampleData, value: string): void;
-    setErrors(errors: IValidationErrorCollection): void;
-    addErrorTo(id: string, errors: IValidationError): void;
-    getErrors(): IValidationErrorCollection;
-    addErrors(errors: IValidationErrorCollection): void;
+    setErrors(errors: ValidationErrorCollection): void;
+    addErrorTo(id: string, errors: ValidationError): void;
+    getErrors(): ValidationErrorCollection;
+    addErrors(errors: ValidationErrorCollection): void;
     isZoMo(): boolean;
 }
 
@@ -54,7 +54,7 @@ class SampleImpl implements Sample {
 
     correctionSuggestions: CorrectionSuggestions[];
     edits: Record<string, EditValue>;
-    private errors: IValidationErrorCollection;
+    private errors: ValidationErrorCollection;
 
     constructor(private data: SampleData) {
         this.errors = {};
@@ -70,32 +70,32 @@ class SampleImpl implements Sample {
         if (!this.data.sample_id || !this.data.pathogen_adv) {
             return;
         }
-        return (this.data.sample_id + this.data.pathogen_adv + (this.data.pathogen_text === this.data.pathogen_adv ? '' : this.data.pathogen_text)).replace(/\s+/g, '');
+        return this.data.sample_id + this.data.pathogen_adv;
     }
 
     get pathogenIdAVV(): string | undefined {
         if (!this.data.sample_id_avv || !this.data.pathogen_adv) {
             return;
         }
-        return (this.data.sample_id_avv + this.data.pathogen_adv + (this.data.pathogen_text === this.data.pathogen_adv ? '' : this.data.pathogen_text)).replace(/\s+/g, '');
+        return this.data.sample_id_avv + this.data.pathogen_adv + (this.data.sample_id ? this.data.sample_id : '');
     }
 
-    setErrors(errors: IValidationErrorCollection = {}) {
+    setErrors(errors: ValidationErrorCollection = {}) {
         this.errors = errors;
     }
 
-    addErrors(errors: IValidationErrorCollection = {}) {
+    addErrors(errors: ValidationErrorCollection = {}) {
         _.forEach(errors, (v, k) => {
             if (this.errors[k]) {
                 this.errors[k] = [...this.errors[k], ...v];
             } else {
-                this.errors[k] = [ ...v];
+                this.errors[k] = [...v];
             }
 
         });
     }
 
-    getErrors(): IValidationErrorCollection {
+    getErrors(): ValidationErrorCollection {
         return this.errors;
     }
 
@@ -103,7 +103,7 @@ class SampleImpl implements Sample {
         return this.getData().sampling_reason_adv === ('' + ZOMO_CODE) || this.getData().sampling_reason_text === ZOMO_STRING;
     }
 
-    addErrorTo(id: string, error: IValidationError) {
+    addErrorTo(id: string, error: ValidationError) {
         if (!this.errors[id]) {
             this.errors[id] = [];
         }
