@@ -41,7 +41,7 @@ describe('Custom Auto-correction Functions', () => {
                         dump: () => mockADVEntries,
                         getFuzzyIndex: (options: Fuse.FuseOptions) => new Fuse(mockADVEntries, options),
                         // @ts-ignore
-                        containsEntryWithKeyValue: (k: string, v: string) => mockADVEntries[k] === v,
+                        containsEntryWithKeyValue: (k: string, v: string) => !!_.filter(mockADVEntries, e => e[k] === v)[0],
                         // @ts-ignore
                         containsEntryWithId: (v: string) => !!_.filter(mockADVEntries, e => e['Kode'] === v)[0],
                         // @ts-ignore
@@ -85,6 +85,17 @@ describe('Custom Auto-correction Functions', () => {
                 correctField: jest.fn(),
                 clone: jest.fn()
             };
+        });
+
+        it('should not attempt to correct string Escherichia coli in pathogen_adv', () => {
+            const specificSampleData = {
+                ...genericSampleData
+            };
+
+            const correctionFunction: CorrectionFunction = autoCorrectADV16(mockCatalogService);
+
+            const autoCorrection = correctionFunction(specificSampleData);
+            expect(autoCorrection).toEqual(null);
         });
 
         it('should successfully autocorrect Escherigia coli in pathogen_adv', () => {
@@ -224,7 +235,7 @@ describe('Custom Auto-correction Functions', () => {
                         dump: () => mockADVEntries,
                         getFuzzyIndex: (options: Fuse.FuseOptions) => new Fuse(mockADVEntries, options),
                         // @ts-ignore
-                        containsEntryWithKeyValue: (k: string, v: string) => mockADVEntries[k] === v,
+                        containsEntryWithKeyValue: (k: string, v: string) => !!_.filter(mockADVEntries, e => e[k] === v)[0],
                         // @ts-ignore
                         containsEntryWithId: (v: string) => !!_.filter(mockADVEntries, e => e['Kode'] === v)[0],
                         // @ts-ignore
@@ -378,7 +389,7 @@ describe('Custom Auto-correction Functions', () => {
                         dump: () => mockADVEntries,
                         getFuzzyIndex: (options: Fuse.FuseOptions) => new Fuse(mockADVEntries, options),
                         // @ts-ignore
-                        containsEntryWithKeyValue: (k: string, v: string) => mockADVEntries[k] === v,
+                        containsEntryWithKeyValue: (k: string, v: string) => !!_.filter(mockADVEntries, e => e[k] === v)[0],
                         // @ts-ignore
                         containsEntryWithId: (v: string) => !!_.filter(mockADVEntries, e => e['Kode'] === v)[0],
                         // @ts-ignore
@@ -512,7 +523,7 @@ describe('Custom Auto-correction Functions', () => {
                         dump: () => mockADVEntries,
                         getFuzzyIndex: (options: Fuse.FuseOptions) => new Fuse(mockADVEntries, options),
                         // @ts-ignore
-                        containsEntryWithKeyValue: (k: string, v: string) => mockADVEntries[k] === v,
+                        containsEntryWithKeyValue: (k: string, v: string) => !!_.filter(mockADVEntries, e => e[k] === v)[0],
                         // @ts-ignore
                         containsEntryWithId: (v: string) => !!_.filter(mockADVEntries, e => e['Kode'] === v)[0],
                         // @ts-ignore
