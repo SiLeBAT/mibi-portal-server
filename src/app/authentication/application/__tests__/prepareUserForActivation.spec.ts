@@ -1,4 +1,4 @@
-import { createService, IRegistrationService } from './../registration.service';
+import { createService, RegistrationService } from './../registration.service';
 import { generateToken, createUser, IUser } from '../../domain';
 import { IRecoveryData } from '../../../sharedKernel';
  // tslint:disable
@@ -28,7 +28,7 @@ describe('Prepare User for Activation Use Case', () => {
     let mockNotificationService: any;
 
     let mockInstitutionRepository: any;
-    let service: IRegistrationService;
+    let service: RegistrationService;
     let user: IUser;
     let recoveryData: IRecoveryData;
     beforeEach(() => {

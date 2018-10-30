@@ -1,10 +1,5 @@
-import * as path from 'path';
-import * as fs from 'fs';
 import * as moment from 'moment';
 import * as _ from 'lodash';
-import * as rootDir from 'app-root-dir';
-import * as unirest from 'unirest';
-import * as config from 'config';
 import { Request, Response } from 'express';
 import { logger } from '../../../aspects';
 import { FormValidatorPort, IFormAutoCorrectionPort, IController, SampleCollection, Sample, createSample, createSampleCollection } from '../../../app/ports';
@@ -53,13 +48,6 @@ interface SampleDTO {
     comment: string;
 }
 
-interface KnimeConfig {
-    user: string;
-    pass: string;
-    urlJobId: string;
-    urlResult: string;
-}
-
 interface ErrorDTO {
     code: number;
     level: number;
@@ -69,9 +57,6 @@ interface ErrorDTO {
 interface ErrorResponseDTO {
     [key: string]: ErrorDTO[];
 }
-
-const knimeConfig: KnimeConfig = config.get('knime');
-const appRootDir = rootDir.get();
 
 export interface ValidationController extends IController {
     validateSamples(req: Request, res: Response): Promise<void>;
@@ -92,18 +77,15 @@ class DefaultValidationController implements ValidationController {
                 const validationResult = await this.formValidationService.validateSamples(autocorrectedSamples, validationOptions);
                 const validationResultsDTO = this.fromErrorsToDTO(validationResult);
                 logger.info('ValidationController.validateSamples, Response sent', validationResultsDTO);
-                res
-                    .status(200)
+                res.status(200)
                     .json(validationResultsDTO);
             } catch (err) {
-                res
-                    .status(500).end();
+                res.status(500).end();
                 throw err;
             }
 
         } else {
-            const uploadedFilePath = path.join(appRootDir, req.file.path);
-            this.getKnimeJobId(req, res, uploadedFilePath);
+            res.status(501);
         }
 
         return res.end();
@@ -184,78 +166,6 @@ class DefaultValidationController implements ValidationController {
             state: meta.state,
             nrl
         };
-    }
-
-    private getKnimeJobId(req: Request, res: Response, filePath: string) {
-        logger.info('ValidationController.getKnimeJobId, Retrieving Knime Job ID.');
-
-        const urlJobId = knimeConfig.urlJobId;
-        const user = knimeConfig.user;
-        const pass = knimeConfig.pass;
-
-        unirest
-            .post(urlJobId)
-            .auth({
-                user: user,
-                pass: pass
-            })
-            // tslint:disable-next-line
-            .end((response: any) => {
-                if (response.error) {
-                    logger.error('knime id error: ', response.error);
-
-                    return res
-                        .status(400)
-                        .json({
-                            title: 'knime id error',
-                            obj: response.error
-                        });
-                }
-
-                const jobId = response.body['id'];
-                this.doKnimeValidation(req, res, jobId, filePath);
-            });
-
-    }
-
-    private doKnimeValidation(req: Request, res: Response, jobId: string, filePath: string) {
-
-        const urlResult = knimeConfig.urlResult + jobId;
-        const user = knimeConfig.user;
-        const pass = knimeConfig.pass;
-
-        unirest
-            .post(urlResult)
-            .headers({
-                'content-type': 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW'
-            })
-            .auth({
-                user: user,
-                pass: pass
-            })
-            .attach({
-                'file-upload-210': fs.createReadStream(filePath)
-            })
-            // tslint:disable-next-line
-            .end((response: any) => {
-                if (response.error) {
-                    logger.error('knime validation error: ', response.error);
-
-                    return res
-                        .status(400)
-                        .json({
-                            title: 'knime validation error',
-                            obj: response.error
-                        });
-                }
-
-                return res
-                    .status(200)
-                    .json({
-                        title: 'file upload and knime validation ok',
-                        obj: response.raw_body
-                    });
-            });
     }
 
 }

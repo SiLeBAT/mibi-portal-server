@@ -13,12 +13,6 @@
         "fromAddress": "",
         "replyToAddress": ""
     },
-    "knime": {
-        "user": "",
-        "pass": "",
-        "urlJobId": "",
-        "urlResult": ""
-    },
     "login": {
     "threshold": 5,
     "secondsDelay": 600

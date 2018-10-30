@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { IController, ILoginPort, ILoginResponse, IUserLoginInformation } from '../../../app/ports';
+import { IController, LoginPort, LoginResponse, UserLoginInformation } from '../../../app/ports';
 import { logger } from '../../../aspects';
 
 export interface ILoginController extends IController {
@@ -14,10 +14,10 @@ export interface ILoginResponseDTO {
 // TODO Clear up response
 class LoginController implements ILoginController {
 
-    constructor(private loginService: ILoginPort) { }
+    constructor(private loginService: LoginPort) { }
     async login(req: Request, res: Response) {
-        let response: ILoginResponse;
-        const userLoginInfo: IUserLoginInformation = this.mapRequestDTOToUserLoginInfo(req);
+        let response: LoginResponse;
+        const userLoginInfo: UserLoginInformation = this.mapRequestDTOToUserLoginInfo(req);
         logger.info('LoginController.login, Request received');
         try {
             response = await this.loginService.loginUser(userLoginInfo);
@@ -43,7 +43,7 @@ class LoginController implements ILoginController {
         };
     }
     // FIXME: Do we really need to return all of this information?
-    private fromLoginResponseToResponseDTO(response: ILoginResponse): ILoginResponseDTO {
+    private fromLoginResponseToResponseDTO(response: LoginResponse): ILoginResponseDTO {
         if (response.timeToWait) {
             return {
                 title: `Zu viele fehlgeschlagene Logins, bitte warten Sie ${response.timeToWait}.`,
@@ -65,6 +65,6 @@ class LoginController implements ILoginController {
     }
 }
 
-export function createController(service: ILoginPort) {
+export function createController(service: LoginPort) {
     return new LoginController(service);
 }

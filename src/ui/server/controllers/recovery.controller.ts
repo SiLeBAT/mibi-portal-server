@@ -1,7 +1,7 @@
 
 import { Request, Response } from 'express';
 import { logger } from '../../../aspects';
-import { IController, IPasswordPort } from '../../../app/ports';
+import { IController, PasswordPort } from '../../../app/ports';
 
 export interface IRecoveryController extends IController {
     recovery(req: Request, res: Response): void;
@@ -9,7 +9,7 @@ export interface IRecoveryController extends IController {
 
 class RecoveryController implements IRecoveryController {
 
-    constructor(private passwordService: IPasswordPort) { }
+    constructor(private passwordService: PasswordPort) { }
 
     async recovery(req: Request, res: Response) {
 
@@ -38,6 +38,6 @@ class RecoveryController implements IRecoveryController {
     }
 }
 
-export function createController(service: IPasswordPort) {
+export function createController(service: PasswordPort) {
     return new RecoveryController(service);
 }
