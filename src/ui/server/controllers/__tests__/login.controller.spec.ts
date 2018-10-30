@@ -1,7 +1,7 @@
 import { createController, ILoginController } from './../login.controller';
 import * as mockReq from 'mock-express-request';
 import * as mockRes from 'mock-express-response';
-import { LoginResult, ILoginPort } from '../../../../app/ports';
+import { LoginResult, LoginPort } from '../../../../app/ports';
  // tslint:disable
 jest.genMockFromModule('./../../../../aspects');
 jest.mock('./../../../../aspects');
@@ -16,7 +16,7 @@ jest.mock('./../../../../app/ports', () => ({
 describe('Login controller', () => {
 
     let controller: ILoginController;
-    let mockLoginService: ILoginPort = {
+    let mockLoginService: LoginPort = {
         loginUser: jest.fn()
     };
     beforeEach(() => {

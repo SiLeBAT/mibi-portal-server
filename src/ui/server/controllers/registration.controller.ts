@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import * as config from 'config';
 import { logger } from '../../../aspects';
-import { IController, IRegistrationPort } from '../../../app/ports';
+import { IController, RegistrationPort } from '../../../app/ports';
 
 export interface IRegistrationController extends IController {
     register(req: Request, res: Response): void;
@@ -12,7 +12,7 @@ const SUPPORT_CONTACT = config.get('supportContact');
 
 class RegistrationController implements IRegistrationController {
 
-    constructor(private registrationService: IRegistrationPort) { }
+    constructor(private registrationService: RegistrationPort) { }
 
     async activate(req: Request, res: Response) {
         let dto;
@@ -93,6 +93,6 @@ class RegistrationController implements IRegistrationController {
     }
 }
 
-export function createRegistrationController(service: IRegistrationPort) {
+export function createRegistrationController(service: RegistrationPort) {
     return new RegistrationController(service);
 }

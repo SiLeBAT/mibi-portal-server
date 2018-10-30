@@ -1,4 +1,4 @@
-import { createService, IRegistrationService } from './../registration.service';
+import { createService, RegistrationService } from './../registration.service';
 import { verifyToken, generateToken } from '../../domain';
  // tslint:disable
 jest.mock('./../../../sharedKernel', () => ({
@@ -21,7 +21,7 @@ describe('Activate User Use Case', () => {
     let mockNotificationService: any;
    
     let mockInstitutionRepository: any;
-    let service: IRegistrationService;
+    let service: RegistrationService;
     let token: string;
     beforeEach(() => {
         mockUserRepository = {

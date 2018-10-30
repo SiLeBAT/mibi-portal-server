@@ -1,4 +1,4 @@
-import { createService, IRegistrationService } from './../registration.service';
+import { createService, RegistrationService } from './../registration.service';
 import { generateAdminToken, createUser, IUser } from '../../domain';
  // tslint:disable
 jest.mock('./../../domain', () => ({
@@ -27,7 +27,7 @@ describe('Prepare User for Activation Use Case', () => {
     let mockNotificationService: any;
 
     let mockInstitutionRepository: any;
-    let service: IRegistrationService;
+    let service: RegistrationService;
     let user: IUser;
     beforeEach(() => {
         mockUserRepository = {

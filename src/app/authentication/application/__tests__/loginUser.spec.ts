@@ -1,4 +1,4 @@
-import { createService, ILoginService } from './../login.service';
+import { createService, LoginService } from './../login.service';
 import { LoginResult } from '../../domain';
  // tslint:disable
 jest.mock('./../../../sharedKernel', () => ({
@@ -11,7 +11,7 @@ describe('Login User Use Case', () => {
   
     let mockUserRepository: any;
     let mockActivationService: any;
-    let service: ILoginService;
+    let service: LoginService;
     beforeEach(() => {
 
         mockUserRepository = jest.fn(() => ({

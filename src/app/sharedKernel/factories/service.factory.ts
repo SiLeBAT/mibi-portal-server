@@ -1,7 +1,7 @@
 import {
-    IRegistrationService,
-    IPasswordService,
-    createRegistrationService, createPasswordService, ILoginService, createLoginService, createInstitutionService, IInstitutionService
+    RegistrationService,
+    PasswordService,
+    createRegistrationService, createPasswordService, LoginService, createLoginService, createInstitutionService, IInstitutionService
 } from '../../authentication/application';
 import {
     FormValidatorService,
@@ -22,10 +22,10 @@ export interface IServiceFactory {
 }
 
 export class ServiceFactory implements IServiceFactory {
-    private loginService: ILoginService;
+    private loginService: LoginService;
     private institutionService: IInstitutionService;
-    private registrationService: IRegistrationService;
-    private passwordService: IPasswordService;
+    private registrationService: RegistrationService;
+    private passwordService: PasswordService;
     private notificationService: INotificationService;
     private validationService: FormValidatorService;
     private catalogService: ICatalogService;

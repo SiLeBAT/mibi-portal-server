@@ -11,20 +11,20 @@ const API_URL = config.get('server.apiUrl');
 const SUPPORT_CONTACT = config.get('supportContact');
 const JOB_RECIPIENT = config.get('jobRecipient');
 
-export interface IRegistrationPort {
+export interface RegistrationPort {
     activateUser(token: string): Promise<void>;
     adminActivateUser(token: string): Promise<string>;
-    registerUser(credentials: IUserRegistration): Promise<void>;
+    registerUser(credentials: UserRegistration): Promise<void>;
 }
 
-export interface IRegistrationService extends IRegistrationPort {
+export interface RegistrationService extends RegistrationPort {
     prepareUserForActivation(user: IUser, recoveryData: IRecoveryData): Promise<void>;
     prepareUserForAdminActivation(user: IUser): Promise<void>;
     handleUserIfNotAdminActivated(user: IUser): Promise<void>;
 }
 
 // TODO: Fix or remove this interface
-export interface IUserRegistration {
+export interface UserRegistration {
     firstName: string;
     lastName: string;
     email: string;
@@ -34,7 +34,7 @@ export interface IUserRegistration {
     host: string;
 }
 
-class RegistrationService implements IRegistrationService {
+class DefaultRegistrationService implements RegistrationService {
 
     constructor(
         private userRepository: IUserRepository,
@@ -75,7 +75,7 @@ class RegistrationService implements IRegistrationService {
         return userName;
     }
 
-    async registerUser(credentials: IUserRegistration): Promise<void> {
+    async registerUser(credentials: UserRegistration): Promise<void> {
         let instituteIsUnknown = false;
         const result = await this.userRepository.hasUser(credentials.email);
         if (result) {
@@ -164,7 +164,7 @@ class RegistrationService implements IRegistrationService {
         return this.notificationService.sendNotification(requestAdminActivationReminder);
     }
 
-    async handleAlreadyRegisteredUser(credentials: IUserRegistration): Promise<void> {
+    async handleAlreadyRegisteredUser(credentials: UserRegistration): Promise<void> {
         const userAlreadyRegisteredNotification = this.createAlreadyRegisteredUserNotification(credentials);
         return this.notificationService.sendNotification(userAlreadyRegisteredNotification);
     }
@@ -296,7 +296,7 @@ class RegistrationService implements IRegistrationService {
 	    };
     }
 
-    private createAlreadyRegisteredUserNotification(credentials: IUserRegistration) {
+    private createAlreadyRegisteredUserNotification(credentials: UserRegistration) {
         const fullName = credentials.firstName + ' ' + credentials.lastName;
 
 	    return {
@@ -314,6 +314,6 @@ class RegistrationService implements IRegistrationService {
     }
 }
 
-export function createService(userRepository: IUserRepository, tokenRepository: ITokenRepository, institutionRepository: IInstitutionRepository, notificationService: INotificationService): IRegistrationService {
-    return new RegistrationService(userRepository, tokenRepository, institutionRepository, notificationService);
+export function createService(userRepository: IUserRepository, tokenRepository: ITokenRepository, institutionRepository: IInstitutionRepository, notificationService: INotificationService): RegistrationService {
+    return new DefaultRegistrationService(userRepository, tokenRepository, institutionRepository, notificationService);
 }

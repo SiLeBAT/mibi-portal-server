@@ -11,9 +11,9 @@ export {
 } from './sharedKernel';
 
 export {
-    IRegistrationPort,
-    IPasswordPort,
-    ILoginPort,
+    RegistrationPort,
+    PasswordPort,
+    LoginPort,
     IInstitutionPort,
     LoginResult,
     IInstitution,
@@ -22,8 +22,8 @@ export {
     createUser,
     IUser,
     IUserToken,
-    IUserLoginInformation,
-    ILoginResponse,
+    UserLoginInformation,
+    LoginResponse,
     IUserBase
 } from './authentication';
 

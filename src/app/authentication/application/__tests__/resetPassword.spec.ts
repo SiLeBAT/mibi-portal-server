@@ -1,4 +1,4 @@
-import { createService, IPasswordService } from './../password.service';
+import { createService, PasswordService } from './../password.service';
 import { verifyToken } from '../../domain';
  // tslint:disable
 jest.mock('./../../domain', () => ({
@@ -19,7 +19,7 @@ describe('Reset Password Use Case', () => {
     let mockTokenRepository: any;
  
     let mockNotificationService: any;
-    let service: IPasswordService;
+    let service: PasswordService;
     let token: string;
     let password: string;
     beforeEach(() => {

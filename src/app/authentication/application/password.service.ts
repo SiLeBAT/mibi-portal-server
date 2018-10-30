@@ -10,15 +10,15 @@ const APP_NAME = config.get('appName');
 const API_URL = config.get('server.apiUrl');
 const SUPPORT_CONTACT = config.get('supportContact');
 
-export interface IPasswordPort {
+export interface PasswordPort {
     recoverPassword(recoveryData: IRecoveryData): Promise<void>;
     resetPassword(token: string, password: string): Promise<void>;
 }
 
-export interface IPasswordService extends IPasswordPort {
+export interface PasswordService extends PasswordPort {
 }
 
-class PasswordService implements IPasswordService {
+class DefaultPasswordService implements PasswordService {
 
     constructor(
         private userRepository: IUserRepository,
@@ -104,6 +104,6 @@ class PasswordService implements IPasswordService {
     }
 }
 
-export function createService(userRepository: IUserRepository, tokenRepository: ITokenRepository, notifcationService: INotificationService): IPasswordService {
-    return new PasswordService(userRepository, tokenRepository, notifcationService);
+export function createService(userRepository: IUserRepository, tokenRepository: ITokenRepository, notifcationService: INotificationService): PasswordService {
+    return new DefaultPasswordService(userRepository, tokenRepository, notifcationService);
 }

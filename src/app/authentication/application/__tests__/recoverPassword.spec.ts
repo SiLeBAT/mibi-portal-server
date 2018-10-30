@@ -1,4 +1,4 @@
-import { createService, IPasswordService } from './../password.service';
+import { createService, PasswordService } from './../password.service';
 import { generateToken } from '../../domain';
 import { IRecoveryData } from '../../../sharedKernel';
  // tslint:disable
@@ -23,7 +23,7 @@ describe('Recover Password Use Case', () => {
     let mockTokenRepository: any;
  
     let mockNotificationService: any;
-    let service: IPasswordService;
+    let service: PasswordService;
     let credentials: IRecoveryData;
     beforeEach(() => {
 
