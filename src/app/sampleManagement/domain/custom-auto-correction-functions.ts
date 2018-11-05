@@ -237,7 +237,7 @@ function autoCorrectADV16(catalogService: ICatalogService) {
             return null;
         }
         // Return cached result
-        if (searchCache[sampleData[property]]) {
+        if (searchCache[trimmedEntry]) {
             return searchCache[trimmedEntry];
         }
 
