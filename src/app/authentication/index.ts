@@ -1,11 +1,11 @@
 export {
-    IInstitution,
+    Institution,
     createInstitution,
     createUser,
     IUser,
     IUserToken,
     LoginResult,
-    IAddress,
+    Address,
     IUserBase
 } from './domain';
 

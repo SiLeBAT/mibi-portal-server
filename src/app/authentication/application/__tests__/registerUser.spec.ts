@@ -55,7 +55,6 @@ describe('Register User Use Case', () => {
 
         service = createService(mockUserRepository, mockTokenRepository, mockInstitutionRepository, mockNotificationService);
         service.prepareUserForActivation = jest.fn(() => Promise.resolve(true));
-        service.prepareUserForAdminActivation = jest.fn(() => Promise.resolve(true));
 
     });
 
@@ -121,12 +120,6 @@ describe('Register User Use Case', () => {
         expect.assertions(1);
         return service.registerUser(credentials).then(
             result => expect((service.prepareUserForActivation as any).mock.calls.length).toBe(1)
-        );
-    });
-    it('should prepare user for admin activation', () => {
-        expect.assertions(1);
-        return service.registerUser(credentials).then(
-            result => expect((service.prepareUserForAdminActivation as any).mock.calls.length).toBe(1)
         );
     });
 });

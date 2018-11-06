@@ -1,5 +1,5 @@
 import { createRepository, InstitutionSchema, IInstitutionModel } from '../data-store';
-import { IRepositoryBase, IInstitutionRepository, IInstitution, createInstitution } from '../../../app/ports';
+import { IRepositoryBase, IInstitutionRepository, Institution, createInstitution } from '../../../app/ports';
 import { mapModelToInstitution } from './data-mappers';
 
 class InstitutionRepository implements IInstitutionRepository {
@@ -7,7 +7,7 @@ class InstitutionRepository implements IInstitutionRepository {
     constructor(private baseRepo: IRepositoryBase<IInstitutionModel>) {
     }
 
-    findById(id: string): Promise<IInstitution | null> {
+    findById(id: string): Promise<Institution | null> {
         return this.baseRepo.findById(id).then(
             m => {
                 if (!m) return null;
@@ -16,7 +16,7 @@ class InstitutionRepository implements IInstitutionRepository {
         );
     }
 
-    retrieve(): Promise<IInstitution[]> {
+    retrieve(): Promise<Institution[]> {
         return this.baseRepo.retrieve().then(
             modelArray => {
                 return modelArray.map(m => mapModelToInstitution(m));
@@ -24,9 +24,9 @@ class InstitutionRepository implements IInstitutionRepository {
         );
     }
 
-    createInstitution(institution: IInstitution): Promise<IInstitution> {
+    createInstitution(institution: Institution): Promise<Institution> {
         const newInstitution = new InstitutionSchema({
-            short: institution.stateShort,
+            state_short: institution.stateShort,
             name1: institution.name1,
             location: institution.location,
             phone: institution.phone,
@@ -37,7 +37,7 @@ class InstitutionRepository implements IInstitutionRepository {
         );
     }
 
-    findByInstitutionName(name: string): Promise<IInstitution | null> {
+    findByInstitutionName(name: string): Promise<Institution | null> {
         return this.baseRepo.findOne({ name1: name }).then(
             (model: IInstitutionModel | null) => {
                 if (!model) return null;

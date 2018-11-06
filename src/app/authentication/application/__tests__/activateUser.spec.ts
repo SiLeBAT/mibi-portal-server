@@ -1,15 +1,22 @@
 import { createService, RegistrationService } from './../registration.service';
-import { verifyToken, generateToken } from '../../domain';
- // tslint:disable
+import { verifyToken, generateToken, IUser } from '../../domain';
+// tslint:disable
 jest.mock('./../../../sharedKernel', () => ({
     RepositoryType: {
         USER: 0
+    },
+    NotificationType: {
+        REQUEST_ADMIN_ACTIVATION: 1
     }
 }));
 
 jest.mock('./../../domain', () => ({
     generateToken: jest.fn(),
-    verifyToken: jest.fn()
+    generateAdminToken: jest.fn(),
+    verifyToken: jest.fn(),
+    TokenType: {
+        ADMIN: 0
+    }
 }));
 
 describe('Activate User Use Case', () => {
@@ -17,23 +24,60 @@ describe('Activate User Use Case', () => {
     let mockUserRepository: any;
 
     let mockTokenRepository: any;
-  
+
     let mockNotificationService: any;
-   
+
     let mockInstitutionRepository: any;
     let service: RegistrationService;
     let token: string;
+    let user: IUser;
     beforeEach(() => {
+        user = {
+            uniqueId: 'test',
+            firstName: 'test',
+            lastName: 'test',
+            email: 'test',
+            password: 'test',
+            institution: {
+                uniqueId: 'test',
+                stateShort: 'test',
+                name1: 'test',
+                name2: 'test',
+                location: 'test',
+                address1: {
+                    city: 'test',
+                    street: 'test'
+                },
+                address2: {
+                    city: 'test',
+                    street: 'test'
+                },
+                phone: 'test',
+                fax: 'test',
+                email: []
+            },
+            isAuthorized: jest.fn(),
+            isActivated: jest.fn(),
+            isAdminActivated: jest.fn(),
+            updatePassword: jest.fn(),
+            getNumberOfFailedAttempts: jest.fn(),
+            getLastLoginAttempt: jest.fn(),
+            updateNumberOfFailedAttempts: jest.fn(),
+            updateLastLoginAttempt: jest.fn()
+
+        };
+
         mockUserRepository = {
-            findById: jest.fn(() => ({
-                isActivated: jest.fn()
-            })),
+            findById: jest.fn(() => user),
             updateUser: jest.fn(() => true)
         };
 
         mockTokenRepository = {
-            getUserTokenByJWT: jest.fn(() => true),
-            deleteTokenForUser: jest.fn(() => true)
+            getUserTokenByJWT: jest.fn(() => user),
+            deleteTokenForUser: jest.fn(() => true),
+            deleteAdminTokenForUser: jest.fn(() => true),
+            saveToken: jest.fn(() => true),
+            hasAdminTokenForUser: jest.fn(() => false)
         };
 
         mockInstitutionRepository = {
@@ -43,9 +87,9 @@ describe('Activate User Use Case', () => {
             sendNotification: jest.fn(() => true)
         };
 
-       
+
         (verifyToken as any).mockReset();
-      
+
         (generateToken as any).mockReset();
         token = 'test';
 
@@ -78,9 +122,7 @@ describe('Activate User Use Case', () => {
     it('should activate the user', () => {
         expect.assertions(1);
         const isActivated = jest.fn();
-        mockUserRepository.findById.mockReturnValueOnce({
-            isActivated
-        });
+        mockUserRepository.findById.mockReturnValueOnce({ ...user, ...{ isActivated } });
         return service.activateUser(token).then(
             result => expect(isActivated.mock.calls.length).toBe(1)
         );

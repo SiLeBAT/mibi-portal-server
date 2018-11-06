@@ -1,5 +1,5 @@
 import { Schema, Document } from 'mongoose';
-import { IAddress } from '../../../../../app/ports';
+import { Address } from '../../../../../app/ports';
 
 export interface IInstitutionModel extends Document {
     created: Date;
@@ -8,8 +8,8 @@ export interface IInstitutionModel extends Document {
     name1: string;
     name2: string;
     location: string;
-    address1: IAddress;
-    address2: IAddress;
+    address1: Address;
+    address2: Address;
     phone: string;
     fax: string;
     email: string[];

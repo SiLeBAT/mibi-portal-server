@@ -1,7 +1,7 @@
-import { IInstitution, createInstitution, createUser, IUser, IState, ValidationError, INRL } from '../../../app/ports';
+import { Institution, createInstitution, createUser, IUser, IState, ValidationError, INRL } from '../../../app/ports';
 import { IValidationErrorModel, IInstitutionModel, IUserModel, IStateModel, INRLModel } from '../data-store';
 
-function mapModelToInstitution(i: IInstitutionModel): IInstitution {
+function mapModelToInstitution(i: IInstitutionModel): Institution {
     const inst = createInstitution(i._id);
     return {
         ...inst, ...{

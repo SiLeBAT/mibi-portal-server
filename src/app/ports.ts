@@ -1,5 +1,5 @@
 import { ICatalog, INRL, ValidationError } from './sampleManagement';
-import { IUserToken, IUser, IInstitution } from './authentication';
+import { IUserToken, IUser, Institution } from './authentication';
 
 export {
     IServiceFactory,
@@ -16,8 +16,8 @@ export {
     LoginPort,
     IInstitutionPort,
     LoginResult,
-    IInstitution,
-    IAddress,
+    Institution,
+    Address,
     createInstitution,
     createUser,
     IUser,
@@ -77,10 +77,10 @@ export interface IUserModelAttributes extends IModelAttributes {
 }
 
 export interface IInstitutionRepository {
-    retrieve(): Promise<IInstitution[]>;
-    findById(id: string): Promise<IInstitution | null>;
-    createInstitution(institution: IInstitution): Promise<IInstitution>;
-    findByInstitutionName(name: string): Promise<IInstitution | null>;
+    retrieve(): Promise<Institution[]>;
+    findById(id: string): Promise<Institution | null>;
+    createInstitution(institution: Institution): Promise<Institution>;
+    findByInstitutionName(name: string): Promise<Institution | null>;
 }
 
 export interface ITokenRepository {
