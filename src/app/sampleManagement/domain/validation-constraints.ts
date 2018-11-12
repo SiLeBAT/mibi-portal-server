@@ -296,6 +296,10 @@ export const baseConstraints: ValidationConstraints = {
         }
     },
     topic_adv: {
+        atLeastOneOf: {
+            error: 37,
+            additionalMembers: ['matrix_adv', 'matrix_text']
+        },
         length: {
             error: 76,
             is: 2,
@@ -315,7 +319,7 @@ export const baseConstraints: ValidationConstraints = {
     matrix_adv: {
         atLeastOneOf: {
             error: 37,
-            additionalMembers: ['matrix_text']
+            additionalMembers: ['matrix_text', 'topic_adv']
         },
         presence: {
             error: 32,
@@ -347,7 +351,7 @@ export const baseConstraints: ValidationConstraints = {
     matrix_text: {
         atLeastOneOf: {
             error: 37,
-            additionalMembers: ['matrix_adv']
+            additionalMembers: ['matrix_adv', 'topic_adv']
         }
     },
     process_state_adv: {

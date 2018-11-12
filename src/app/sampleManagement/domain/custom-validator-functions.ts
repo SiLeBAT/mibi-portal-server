@@ -236,10 +236,11 @@ function atLeastOneOf(value: string, options: IAtLeastOneOfOptions, key: keyof S
     if (isEmptyString(attributes[key])) {
         for (let i = 0; i < options.additionalMembers.length; i++) {
             const element = options.additionalMembers[i];
-            if (isEmptyString(attributes[element])) {
-                return { ...options.message };
+            if (!isEmptyString(attributes[element])) {
+                return null;
             }
         }
+        return { ...options.message };
     }
     return null;
 }
@@ -348,7 +349,7 @@ function dateIsSameOrBeforeReference(date: moment.Moment, referenceDate: moment.
 }
 
 function isEmptyString(str: string): boolean {
-    return !('' + str).replace(/\s/g, '');
+    return !(('' + str).trim());
 }
 
 export {

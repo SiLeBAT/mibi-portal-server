@@ -98,7 +98,9 @@ describe('Custom Validator Functions', () => {
     });
 
     describe('atLeastOneOf', () => {
-        it('should validate without errors', () => {
+
+        it('should validate without errors because sampling_reason_adv & sampling_reason_text present', () => {
+
             const error = atLeastOneOf(testSample.sampling_reason_adv, {
                 message: validationError,
                 additionalMembers: ['sampling_reason_text']
@@ -106,7 +108,8 @@ describe('Custom Validator Functions', () => {
             expect(error).toBe(null);
         });
 
-        it('should validate without errors', () => {
+        it('should validate without errors because sampling_reason_adv present', () => {
+
             const error = atLeastOneOf(testSample.sampling_reason_adv, {
                 message: validationError,
                 additionalMembers: ['comment']
@@ -114,12 +117,45 @@ describe('Custom Validator Functions', () => {
             expect(error).toBe(null);
         });
 
-        it('should fail validation with error message', () => {
+        it('should fail validation with error message because vvvo & comment absent', () => {
+
             const error = atLeastOneOf(testSample.vvvo, {
                 message: validationError,
                 additionalMembers: ['comment']
             }, 'vvvo', testSample);
             expect(error).toEqual(validationError);
+        });
+        it('should fail validation with error message because vvvo, comment & pathogen_text absent', () => {
+
+            const error = atLeastOneOf(testSample.vvvo, {
+                message: validationError,
+                additionalMembers: ['comment', 'pathogen_text']
+            }, 'vvvo', testSample);
+            expect(error).toEqual(validationError);
+        });
+        it('should validate without errors because sampling_reason_adv present', () => {
+
+            const error = atLeastOneOf(testSample.comment, {
+                message: validationError,
+                additionalMembers: ['sampling_reason_adv']
+            }, 'sampling_reason_adv', testSample);
+            expect(error).toBe(null);
+        });
+        it('should validate without errors because sampling_reason_adv present', () => {
+
+            const error = atLeastOneOf(testSample.comment, {
+                message: validationError,
+                additionalMembers: ['sampling_reason_adv', 'pathogen_text']
+            }, 'sampling_reason_adv', testSample);
+            expect(error).toBe(null);
+        });
+        it('should validate without errors because sampling_reason_adv present', () => {
+
+            const error = atLeastOneOf(testSample.comment, {
+                message: validationError,
+                additionalMembers: ['pathogen_text', 'sampling_reason_adv']
+            }, 'sampling_reason_adv', testSample);
+            expect(error).toBe(null);
         });
     });
 
@@ -306,8 +342,8 @@ describe('Custom Validator Functions', () => {
             // tslint:disable-next-line
             const mockCatalog: ICatalog<any> = {
                 getEntriesWithKeyValue: (key: string, value: string) => ([fakeEntry]),
-                getEntryWithId: (id: string) => ({}),
-                containsEntryWithId: (id: string) => true,
+                getUniqueEntryWithId: (id: string) => ({}),
+                containsUniqueEntryWithId: (id: string) => true,
                 containsEntryWithKeyValue: (key: string, value: string) => true,
                 hasUniqueId: () => true,
                 getUniqueId: () => '',
@@ -343,8 +379,8 @@ describe('Custom Validator Functions', () => {
             // tslint:disable-next-line
             const mockCatalog: ICatalog<any> = {
                 getEntriesWithKeyValue: (key: string, value: string) => ([]),
-                getEntryWithId: (id: string) => ({}),
-                containsEntryWithId: (id: string) => true,
+                getUniqueEntryWithId: (id: string) => ({}),
+                containsUniqueEntryWithId: (id: string) => true,
                 containsEntryWithKeyValue: (key: string, value: string) => true,
                 hasUniqueId: () => true,
                 getUniqueId: () => '',
@@ -380,8 +416,8 @@ describe('Custom Validator Functions', () => {
                         Text1: 'Test2'
                     }
                 ]),
-                getEntryWithId: (id: string) => ({}),
-                containsEntryWithId: (id: string) => true,
+                getUniqueEntryWithId: (id: string) => ({}),
+                containsUniqueEntryWithId: (id: string) => true,
                 containsEntryWithKeyValue: (key: string, value: string) => true,
                 hasUniqueId: () => true,
                 getUniqueId: () => '',
@@ -419,8 +455,8 @@ describe('Custom Validator Functions', () => {
                         Text1: 'Test2'
                     }
                 ]),
-                getEntryWithId: (id: string) => ({}),
-                containsEntryWithId: (id: string) => true,
+                getUniqueEntryWithId: (id: string) => ({}),
+                containsUniqueEntryWithId: (id: string) => true,
                 containsEntryWithKeyValue: (key: string, value: string) => true,
                 hasUniqueId: () => true,
                 getUniqueId: () => '',
@@ -460,8 +496,8 @@ describe('Custom Validator Functions', () => {
                         Text1: 'Test2'
                     }
                 ]),
-                getEntryWithId: (id: string) => ({}),
-                containsEntryWithId: (id: string) => true,
+                getUniqueEntryWithId: (id: string) => ({}),
+                containsUniqueEntryWithId: (id: string) => true,
                 containsEntryWithKeyValue: (key: string, value: string) => true,
                 hasUniqueId: () => true,
                 getUniqueId: () => '',
@@ -492,8 +528,8 @@ describe('Custom Validator Functions', () => {
         beforeEach(() => {
             mockCatalog = {
                 getEntriesWithKeyValue: (key: string, value: string) => ([]),
-                getEntryWithId: (id: string) => ({}),
-                containsEntryWithId: (id: string) => true,
+                getUniqueEntryWithId: (id: string) => ({}),
+                containsUniqueEntryWithId: (id: string) => true,
                 containsEntryWithKeyValue: (key: string, value: string) => true,
                 hasUniqueId: () => true,
                 getUniqueId: () => '',
@@ -538,8 +574,8 @@ describe('Custom Validator Functions', () => {
             // tslint:disable-next-line
             mockCatalog = {
                 getEntriesWithKeyValue: (key: string, value: string) => ([]),
-                getEntryWithId: (id: string) => ({}),
-                containsEntryWithId: (id: string) => true,
+                getUniqueEntryWithId: (id: string) => ({}),
+                containsUniqueEntryWithId: (id: string) => true,
                 containsEntryWithKeyValue: (key: string, value: string) => {
                     switch (value) {
                         case '1234567':

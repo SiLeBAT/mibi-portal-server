@@ -125,7 +125,11 @@ class SampleImpl implements Sample {
 }
 
 function createSample(data: SampleData): Sample {
-    return new SampleImpl(data);
+    const cleanedData = { ...data };
+    _.forEach(cleanedData, (v: string, k: keyof SampleData) => {
+        cleanedData[k] = ('' + v).trim();
+    });
+    return new SampleImpl(cleanedData);
 }
 
 export {

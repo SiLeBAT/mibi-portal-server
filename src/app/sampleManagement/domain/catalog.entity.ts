@@ -4,8 +4,8 @@ import { ApplicationDomainError } from '../../sharedKernel/errors';
 
 export interface ICatalog<T> {
     getEntriesWithKeyValue(key: string, value: string): T[];
-    getEntryWithId(id: string): T;
-    containsEntryWithId(id: string): boolean;
+    getUniqueEntryWithId(id: string): T;
+    containsUniqueEntryWithId(id: string): boolean;
     containsEntryWithKeyValue(key: string, value: string): boolean;
     hasUniqueId(): boolean;
     getUniqueId(): string;
@@ -20,8 +20,8 @@ export class Catalog<T> implements ICatalog<T> {
 
     }
 
-    containsEntryWithId(id: string): boolean {
-        return !!this.getEntryWithId(id);
+    containsUniqueEntryWithId(id: string): boolean {
+        return !!this.getUniqueEntryWithId(id);
     }
 
     containsEntryWithKeyValue(key: string, value: string): boolean {
@@ -41,7 +41,7 @@ export class Catalog<T> implements ICatalog<T> {
         return _.filter(this.data, (e: any) => e[key] === value);
     }
 
-    getEntryWithId(id: string): T {
+    getUniqueEntryWithId(id: string): T {
         if (!this.hasUniqueId()) {
             throw new ApplicationDomainError(`Invalid Operation: No Unique Id defined for this Catalog id=${id}`);
         }

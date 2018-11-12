@@ -43,9 +43,9 @@ describe('Custom Auto-correction Functions', () => {
                         // @ts-ignore
                         containsEntryWithKeyValue: (k: string, v: string) => !!_.filter(mockADVEntries, e => e[k] === v)[0],
                         // @ts-ignore
-                        containsEntryWithId: (v: string) => !!_.filter(mockADVEntries, e => e['Kode'] === v)[0],
+                        containsUniqueEntryWithId: (v: string) => !!_.filter(mockADVEntries, e => e['Kode'] === v)[0],
                         // @ts-ignore
-                        getEntryWithId: (v: string) => _.filter(mockADVEntries, e => e['Kode'] === v)[0]
+                        getUniqueEntryWithId: (v: string) => _.filter(mockADVEntries, e => e['Kode'] === v)[0]
                     };
                 }),
                 getCatalogSearchAliases: () => []
@@ -237,9 +237,9 @@ describe('Custom Auto-correction Functions', () => {
                         // @ts-ignore
                         containsEntryWithKeyValue: (k: string, v: string) => !!_.filter(mockADVEntries, e => e[k] === v)[0],
                         // @ts-ignore
-                        containsEntryWithId: (v: string) => !!_.filter(mockADVEntries, e => e['Kode'] === v)[0],
+                        containsUniqueEntryWithId: (v: string) => !!_.filter(mockADVEntries, e => e['Kode'] === v)[0],
                         // @ts-ignore
-                        getEntryWithId: (v: string) => _.filter(mockADVEntries, e => e['Kode'] === v)[0]
+                        getUniqueEntryWithId: (v: string) => _.filter(mockADVEntries, e => e['Kode'] === v)[0]
                     };
                 }),
                 getCatalogSearchAliases: () => []
@@ -391,9 +391,9 @@ describe('Custom Auto-correction Functions', () => {
                         // @ts-ignore
                         containsEntryWithKeyValue: (k: string, v: string) => !!_.filter(mockADVEntries, e => e[k] === v)[0],
                         // @ts-ignore
-                        containsEntryWithId: (v: string) => !!_.filter(mockADVEntries, e => e['Kode'] === v)[0],
+                        containsUniqueEntryWithId: (v: string) => !!_.filter(mockADVEntries, e => e['Kode'] === v)[0],
                         // @ts-ignore
-                        getEntryWithId: (v: string) => _.filter(mockADVEntries, e => e['Kode'] === v)[0]
+                        getUniqueEntryWithId: (v: string) => _.filter(mockADVEntries, e => e['Kode'] === v)[0]
                     };
                 }),
                 getCatalogSearchAliases: () => []
@@ -525,9 +525,9 @@ describe('Custom Auto-correction Functions', () => {
                         // @ts-ignore
                         containsEntryWithKeyValue: (k: string, v: string) => !!_.filter(mockADVEntries, e => e[k] === v)[0],
                         // @ts-ignore
-                        containsEntryWithId: (v: string) => !!_.filter(mockADVEntries, e => e['Kode'] === v)[0],
+                        containsUniqueEntryWithId: (v: string) => !!_.filter(mockADVEntries, e => e['Kode'] === v)[0],
                         // @ts-ignore
-                        getEntryWithId: (v: string) => _.filter(mockADVEntries, e => e['Kode'] === v)[0]
+                        getUniqueEntryWithId: (v: string) => _.filter(mockADVEntries, e => e['Kode'] === v)[0]
                     };
                 }),
                 getCatalogSearchAliases: () => []
@@ -632,9 +632,9 @@ describe('Custom Auto-correction Functions', () => {
                         // @ts-ignore
                         containsEntryWithKeyValue: (k: string, v: string) => !!_.filter(mockADVEntries, e => e[k] === v)[0],
                         // @ts-ignore
-                        containsEntryWithId: (v: string) => !!_.filter(mockADVEntries, e => e['Kode'] === v)[0],
+                        containsUniqueEntryWithId: (v: string) => !!_.filter(mockADVEntries, e => e['Kode'] === v)[0],
                         // @ts-ignore
-                        getEntryWithId: (v: string) => _.filter(mockADVEntries, e => e['Kode'] === v)[0],
+                        getUniqueEntryWithId: (v: string) => _.filter(mockADVEntries, e => e['Kode'] === v)[0],
                         // @ts-ignore
                         getEntriesWithKeyValue: (k: string, v: string) => _.filter(mockADVEntries, e => e[k] === v)
                     };
@@ -815,7 +815,7 @@ describe('Custom Auto-correction Functions', () => {
             expect(autoCorrection).toEqual(null);
         });
 
-        it('should not attempt to correct empty string topic_adv', () => {
+        it('should attempt to correct empty string topic_adv', () => {
             const specificSampleData = {
                 ...genericSampleData,
                 ...{
@@ -826,7 +826,7 @@ describe('Custom Auto-correction Functions', () => {
             const correctionFunction: CorrectionFunction = autoCorrectADV2(mockCatalogService);
 
             const autoCorrection = correctionFunction(specificSampleData);
-            expect(autoCorrection).toEqual(null);
+            expect(autoCorrection).toEqual({ 'code': 93, 'correctionOffer': ['15'], 'field': 'topic_adv', 'original': '' });
         });
 
         it('should correct topic 01 topic_adv to 15', () => {

@@ -25,27 +25,31 @@ interface FuzzySearchResultEntry {
 }
 
 function autoCorrectADV2(catalogService: ICatalogService) {
+    const catalogName = 'adv2';
     const dependencyCatalogName = 'adv3';
     const property: keyof SampleData = 'topic_adv';
     const dependencyProperty: keyof SampleData = 'matrix_adv';
+    const catalog = catalogService.getCatalog(catalogName);
     const dependencyCatalog = catalogService.getCatalog(dependencyCatalogName);
     logger.debug('Initializing auto-correction: Topic (ADV-2) & creating closure');
 
     return (sampleData: SampleData): CorrectionSuggestions | null => {
 
         let trimmedEntry = sampleData[property].trim();
-        // Ignore empty entries
-        if (!trimmedEntry) {
-            return null;
-        }
 
         const dependencies = dependencyCatalog.getEntriesWithKeyValue('Kode', sampleData[dependencyProperty]);
 
         if (dependencies.length === 0) {
+            if (trimmedEntry !== sampleData[property] && catalog.containsUniqueEntryWithId(trimmedEntry)) {
+                return createCacheEntry(property, sampleData[property], [catalog.getUniqueEntryWithId(trimmedEntry)['Kode']], 94);
+            }
             return null;
         } else if (dependencies.length === 1) {
             const value = dependencies[0]['Kodiersystem'];
             if (sampleData[property] === value) {
+                if (trimmedEntry !== sampleData[property] && catalog.containsUniqueEntryWithId(trimmedEntry)) {
+                    return createCacheEntry(property, sampleData[property], [catalog.getUniqueEntryWithId(trimmedEntry)['Kode']], 93);
+                }
                 return null;
 
             } else {
@@ -72,14 +76,14 @@ function autoCorrectADV12(catalogService: ICatalogService) {
             return null;
         }
         // Return cached result
-        if (searchCache[sampleData[property]]) {
+        if (hasAlreadyBeenCorrected(sampleData[property], trimmedEntry, searchCache[sampleData[property]])) {
             return searchCache[trimmedEntry];
         }
 
         // Check Number codes
         let alteredEntry = checkAndUnshift(trimmedEntry, /^\d{2}$/, '0');
-        if (alteredEntry && catalog.containsEntryWithId(alteredEntry)) {
-            searchCache[trimmedEntry] = createCacheEntry(property, sampleData[property], [catalog.getEntryWithId(alteredEntry)['Kode']], 92);
+        if (alteredEntry && catalog.containsUniqueEntryWithId(alteredEntry)) {
+            searchCache[trimmedEntry] = createCacheEntry(property, sampleData[property], [catalog.getUniqueEntryWithId(alteredEntry)['Kode']], 92);
             return searchCache[trimmedEntry];
         }
 
@@ -113,14 +117,19 @@ function autoCorrectADV3(catalogService: ICatalogService) {
             return null;
         }
         // Return cached result
-        if (searchCache[sampleData[property]]) {
+        if (hasAlreadyBeenCorrected(sampleData[property], trimmedEntry, searchCache[sampleData[property]])) {
+            return searchCache[trimmedEntry];
+        }
+
+        if (trimmedEntry !== sampleData[property] && catalog.containsEntryWithKeyValue('Kode', trimmedEntry)) {
+            searchCache[trimmedEntry] = createCacheEntry(property, sampleData[property], [trimmedEntry], 91);
             return searchCache[trimmedEntry];
         }
 
         // Check Number codes
         let alteredEntry = checkAndUnshift(trimmedEntry, /^\d{5}$/, '0');
-        if (alteredEntry && catalog.containsEntryWithId(alteredEntry)) {
-            searchCache[trimmedEntry] = createCacheEntry(property, sampleData[property], [catalog.getEntryWithId(alteredEntry)['Kode']], 91);
+        if (alteredEntry && catalog.containsEntryWithKeyValue('Kode', alteredEntry)) {
+            searchCache[trimmedEntry] = createCacheEntry(property, sampleData[property], [alteredEntry], 91);
             return searchCache[trimmedEntry];
         }
 
@@ -144,12 +153,16 @@ function autoCorrectADV8(catalogService: ICatalogService) {
             return null;
         }
         // Return cached result
-        if (searchCache[sampleData[property]]) {
+        if (hasAlreadyBeenCorrected(sampleData[property], trimmedEntry, searchCache[sampleData[property]])) {
+            return searchCache[trimmedEntry];
+        }
+
+        if (trimmedEntry !== sampleData[property] && catalog.containsUniqueEntryWithId(trimmedEntry)) {
+            searchCache[trimmedEntry] = createCacheEntry(property, sampleData[property], [catalog.getUniqueEntryWithId(trimmedEntry)['Kode']], 90);
             return searchCache[trimmedEntry];
         }
 
         // Check Number codes
-
         const replacements = [
             {
                 pattern: /xxx$/,
@@ -167,8 +180,8 @@ function autoCorrectADV8(catalogService: ICatalogService) {
 
         for (let rep of replacements) {
             let alteredEntry = checkAndReplace(trimmedEntry, rep.pattern, rep.replacement);
-            if (alteredEntry && catalog.containsEntryWithId(alteredEntry)) {
-                searchCache[trimmedEntry] = createCacheEntry(property, sampleData[property], [catalog.getEntryWithId(alteredEntry)['Kode']], 90);
+            if (alteredEntry && catalog.containsUniqueEntryWithId(alteredEntry)) {
+                searchCache[trimmedEntry] = createCacheEntry(property, sampleData[property], [catalog.getUniqueEntryWithId(alteredEntry)['Kode']], 90);
                 return searchCache[trimmedEntry];
             }
         }
@@ -193,20 +206,24 @@ function autoCorrectADV9(catalogService: ICatalogService) {
             return null;
         }
         // Return cached result
-        if (searchCache[sampleData[property]]) {
+        if (hasAlreadyBeenCorrected(sampleData[property], trimmedEntry, searchCache[sampleData[property]])) {
             return searchCache[trimmedEntry];
         }
 
+        if (trimmedEntry !== sampleData[property] && catalog.containsUniqueEntryWithId(trimmedEntry)) {
+            searchCache[trimmedEntry] = createCacheEntry(property, sampleData[property], [catalog.getUniqueEntryWithId(trimmedEntry)['Kode']], 89);
+            return searchCache[trimmedEntry];
+        }
         // Check Number codes
         let alteredEntry = checkAndReplace(trimmedEntry, /xxx$/, '');
-        if (alteredEntry && catalog.containsEntryWithId(alteredEntry)) {
-            searchCache[trimmedEntry] = createCacheEntry(property, sampleData[property], [catalog.getEntryWithId(alteredEntry)['Kode']], 89);
+        if (alteredEntry && catalog.containsUniqueEntryWithId(alteredEntry)) {
+            searchCache[trimmedEntry] = createCacheEntry(property, sampleData[property], [catalog.getUniqueEntryWithId(alteredEntry)['Kode']], 89);
             return searchCache[trimmedEntry];
         }
 
         alteredEntry = checkAndUnshift(trimmedEntry, /^\d{7}$/, '0');
-        if (alteredEntry && catalog.containsEntryWithId(alteredEntry)) {
-            searchCache[trimmedEntry] = createCacheEntry(property, sampleData[property], [catalog.getEntryWithId(alteredEntry)['Kode']], 89);
+        if (alteredEntry && catalog.containsUniqueEntryWithId(alteredEntry)) {
+            searchCache[trimmedEntry] = createCacheEntry(property, sampleData[property], [catalog.getUniqueEntryWithId(alteredEntry)['Kode']], 89);
             return searchCache[trimmedEntry];
         }
 
@@ -237,7 +254,7 @@ function autoCorrectADV16(catalogService: ICatalogService) {
             return null;
         }
         // Return cached result
-        if (searchCache[trimmedEntry]) {
+        if (hasAlreadyBeenCorrected(sampleData[property], trimmedEntry, searchCache[sampleData[property]])) {
             return searchCache[trimmedEntry];
         }
 
@@ -249,8 +266,8 @@ function autoCorrectADV16(catalogService: ICatalogService) {
         const numbersOnly = /^\d+$/;
         if (numbersOnly.test(trimmedEntry)) {
             trimmedEntry = checkAndUnshift(trimmedEntry, /^\d{6}$/, '0') || trimmedEntry;
-            if (catalog.containsEntryWithId(trimmedEntry)) {
-                searchCache[trimmedEntry] = createCacheEntry(property, sampleData[property], [catalog.getEntryWithId(trimmedEntry)['Text1']], 87);
+            if (catalog.containsUniqueEntryWithId(trimmedEntry)) {
+                searchCache[trimmedEntry] = createCacheEntry(property, sampleData[property], [catalog.getUniqueEntryWithId(trimmedEntry)['Text1']], 87);
                 return searchCache[trimmedEntry];
             }
         }
@@ -385,6 +402,10 @@ function createCatalogEnhancements(catalogService: ICatalogService, catalogName:
         })
         .flattenDeep()
         .value();
+}
+
+function hasAlreadyBeenCorrected(original: string, trimmed: string, cachedEntry: CorrectionSuggestions): boolean {
+    return original !== trimmed && !!cachedEntry;
 }
 
 export {
