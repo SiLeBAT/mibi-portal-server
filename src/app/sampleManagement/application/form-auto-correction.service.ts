@@ -32,25 +32,19 @@ class FormAutoCorrectionService implements IFormAutoCorrectionService {
                         const err = this.validationErrorProvider.getError(correction.code);
                         newSample.addErrorTo(correction.field, err);
                     }
+                    // Resolve single suggestion corrections
+                    const singleCorrections = _.remove(newSample.correctionSuggestions, c => c.correctionOffer.length === 1);
+                    for (let ac of singleCorrections) {
+                        const data = newSample.getData();
+                        newSample.edits[ac.field] = data[ac.field];
+                        data[ac.field] = ac.correctionOffer[0];
+                    }
                 }
             });
             return newSample;
         });
-        results = this.resolveSingleAutoCorrectionOffers(results);
         logger.info('Finishing Sample autoCorrection');
         return { samples: results };
-    }
-
-    private resolveSingleAutoCorrectionOffers(samples: Sample[]): Sample[] {
-        for (let sample of samples) {
-            const singleCorrections = _.remove(sample.correctionSuggestions, c => c.correctionOffer.length === 1);
-            for (let ac of singleCorrections) {
-                const data = sample.getData();
-                sample.edits[ac.field] = data[ac.field];
-                data[ac.field] = ac.correctionOffer[0];
-            }
-        }
-        return samples;
     }
 
     private registerCorrectionFunctions() {
