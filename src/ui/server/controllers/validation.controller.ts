@@ -76,7 +76,8 @@ class DefaultValidationController implements ValidationController {
                 const autocorrectedSamples = await this.formAutoCorrectionService.applyAutoCorrection(sampleCollection);
                 const validationResult = await this.formValidationService.validateSamples(autocorrectedSamples, validationOptions);
                 const validationResultsDTO = this.fromErrorsToDTO(validationResult);
-                logger.info('ValidationController.validateSamples, Response sent', validationResultsDTO);
+                logger.info('ValidationController.validateSamples, Response sent');
+                logger.verbose('Response:', validationResultsDTO);
                 res.status(200)
                     .json(validationResultsDTO);
             } catch (err) {

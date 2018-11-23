@@ -76,7 +76,8 @@ function autoCorrectADV12(catalogService: ICatalogService) {
             return null;
         }
         // Return cached result
-        if (hasAlreadyBeenCorrected(sampleData[property], trimmedEntry, searchCache[sampleData[property]])) {
+        if (searchCache[trimmedEntry]) {
+            logger.trace('Returning cached result for ', trimmedEntry);
             return searchCache[trimmedEntry];
         }
 
@@ -117,7 +118,8 @@ function autoCorrectADV3(catalogService: ICatalogService) {
             return null;
         }
         // Return cached result
-        if (hasAlreadyBeenCorrected(sampleData[property], trimmedEntry, searchCache[sampleData[property]])) {
+        if (searchCache[trimmedEntry]) {
+            logger.trace('Returning cached result for ', trimmedEntry);
             return searchCache[trimmedEntry];
         }
 
@@ -153,7 +155,8 @@ function autoCorrectADV8(catalogService: ICatalogService) {
             return null;
         }
         // Return cached result
-        if (hasAlreadyBeenCorrected(sampleData[property], trimmedEntry, searchCache[sampleData[property]])) {
+        if (searchCache[trimmedEntry]) {
+            logger.trace('Returning cached result for ', trimmedEntry);
             return searchCache[trimmedEntry];
         }
 
@@ -206,7 +209,8 @@ function autoCorrectADV9(catalogService: ICatalogService) {
             return null;
         }
         // Return cached result
-        if (hasAlreadyBeenCorrected(sampleData[property], trimmedEntry, searchCache[sampleData[property]])) {
+        if (searchCache[trimmedEntry]) {
+            logger.trace('Returning cached result for ', trimmedEntry);
             return searchCache[trimmedEntry];
         }
 
@@ -254,7 +258,8 @@ function autoCorrectADV16(catalogService: ICatalogService) {
             return null;
         }
         // Return cached result
-        if (hasAlreadyBeenCorrected(sampleData[property], trimmedEntry, searchCache[sampleData[property]])) {
+        if (searchCache[trimmedEntry]) {
+            logger.trace('Returning cached result for ', trimmedEntry);
             return searchCache[trimmedEntry];
         }
 
@@ -402,10 +407,6 @@ function createCatalogEnhancements(catalogService: ICatalogService, catalogName:
         })
         .flattenDeep()
         .value();
-}
-
-function hasAlreadyBeenCorrected(original: string, trimmed: string, cachedEntry: CorrectionSuggestions): boolean {
-    return original !== trimmed && !!cachedEntry;
 }
 
 export {
