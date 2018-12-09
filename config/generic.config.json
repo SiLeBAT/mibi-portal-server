@@ -13,17 +13,18 @@
         "fromAddress": "",
         "replyToAddress": ""
     },
-    "knime": {
-        "user": "",
-        "pass": "",
-        "urlJobId": "",
-        "urlResult": ""
-    },
     "login": {
       "threshold": 0,
       "secondsDelay": 0
     },
     "appName": "MiBi-Portal",
     "supportContact": "",
-    "jobRecipient": ""
+    "jobRecipient": "",
+    "searchAlias": [
+        {
+            "catalog": "",
+            "token": "",
+            "alias" : []
+        }
+    ]
 }

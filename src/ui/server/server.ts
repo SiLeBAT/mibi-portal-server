@@ -44,11 +44,17 @@ class AppServer implements IAppServer {
         this.server.set('logger', logger);
         this.server.set('controllerFactory', serverConfig.controllerFactory);
 
-        this.server.use(bodyParser.json());
+        this.server.use(bodyParser.json({ limit: '50mb' }));
         this.server.use(bodyParser.urlencoded({
             extended: false
         }));
 
+        this.server.use((req, res, next) => {
+            res.setHeader('X-Frame-Options', 'deny');
+            res.setHeader('Cache-Control', 'no-cache');
+            res.setHeader('Pragma', 'no-cache');
+            return next();
+        });
         this.server.use(validateToken(serverConfig.jwtSecret));
 
         this.server.use(cors());

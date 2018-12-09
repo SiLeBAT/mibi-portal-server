@@ -1,4 +1,4 @@
-import { IServiceFactory, IController } from './../../../../app/ports';
+import { IServiceFactory, IController } from '../../../../app/ports';
 import {
     ILoginController,
     createLoginController,
@@ -7,14 +7,16 @@ import {
     createDatasetController,
     IDatasetController,
     createValidationController,
-    IValidationController,
+    ValidationController,
     createRecoveryController,
     IRecoveryController,
     createRegistrationController,
     IRegistrationController,
     createResetController,
-    IResetController
-} from './../../controllers';
+    IResetController,
+    ISystemInfoController,
+    createSystemInfoController
+} from '../../controllers';
 
 export interface IControllerFactory {
     // tslint:disable-next-line
@@ -28,16 +30,18 @@ export class ControllerFactory implements IControllerFactory {
     private recoveryController: IRecoveryController;
     private registrationController: IRegistrationController;
     private resetController: IResetController;
-    private validationController: IValidationController;
+    private validationController: ValidationController;
+    private systemInfoController: ISystemInfoController;
 
     constructor(private serviceFactory: IServiceFactory) {
-        this.validationController = createValidationController(this.serviceFactory.getService('VALIDATION'));
+        this.validationController = createValidationController(this.serviceFactory.getService('VALIDATION'), this.serviceFactory.getService('AUTOCORRECTION'));
         this.loginController = createLoginController(this.serviceFactory.getService('LOGIN'));
         this.institutionsController = createInstitutionController(this.serviceFactory.getService('INSTITUTION'));
-        this.datasetController = createDatasetController(this.serviceFactory.getService('DATASET'), (this.getController('VALIDATION') as IValidationController));
+        this.datasetController = createDatasetController(this.serviceFactory.getService('DATASET'));
         this.recoveryController = createRecoveryController(this.serviceFactory.getService('PASSWORD'));
         this.registrationController = createRegistrationController(this.serviceFactory.getService('REGISTRATION'));
         this.resetController = createResetController(this.serviceFactory.getService('PASSWORD'));
+        this.systemInfoController = createSystemInfoController();
     }
 
     getController(controller: string): IController {
@@ -56,6 +60,8 @@ export class ControllerFactory implements IControllerFactory {
                 return this.resetController;
             case 'VALIDATION':
                 return this.validationController;
+            case 'SYSTEM_INFO':
+                return this.systemInfoController;
             default:
                 throw new Error(`Unknown controller, controller=${controller}`);
         }

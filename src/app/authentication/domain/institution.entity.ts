@@ -1,34 +1,32 @@
-export interface IInstitution {
+export interface Institution {
     uniqueId: string;
-    short: string;
+    stateShort: string;
     name1: string;
     name2: string;
     location: string;
-    address1: IAddress;
-    address2: IAddress;
+    address1: Address;
+    address2: Address;
     phone: string;
     fax: string;
     email: string[];
-    stateId: string;
 }
 
-export interface IAddress {
+export interface Address {
     street: string;
     city: string;
 }
 
-class Institution implements IInstitution {
+class DefalultInstitution implements Institution {
     uniqueId: string;
-    short: string;
+    stateShort: string;
     name1: string;
     name2: string;
     location: string;
-    address1: IAddress;
-    address2: IAddress;
+    address1: Address;
+    address2: Address;
     phone: string;
     fax: string;
     email: string[];
-    stateId: string;
 
     constructor(id: string) {
         this.uniqueId = id;
@@ -36,6 +34,6 @@ class Institution implements IInstitution {
     }
 }
 
-export function createInstitution(id: string): IInstitution {
-    return new Institution(id);
+export function createInstitution(id: string): Institution {
+    return new DefalultInstitution(id);
 }

@@ -18,13 +18,21 @@ export class Logger {
     private _logger: winston.Logger;
 
     constructor() {
+        let logLevel: string = 'info';
+        try {
+            logLevel = config.get('server.logLevel');
+        } catch (err) {
+            // tslint:disable-next-line:no-console
+            console.warn('Log Level configuration not found. Using defauilt: ' + logLevel);
+        }
+
         this._logger = winston.createLogger({
-            level: Logger.mapLogLevels(config.get('server.logLevel')),
+            level: Logger.mapLogLevels(logLevel),
             format: winston.format.combine(
-				winston.format.colorize(),
-				winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-				winston.format.printf(info => Logger.mapLogMessage(info))
-			),
+                winston.format.colorize(),
+                winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+                winston.format.printf(info => Logger.mapLogMessage(info))
+            ),
             transports: [
                 new winston.transports.Console()
             ]
@@ -34,8 +42,8 @@ export class Logger {
     static mapLogMessage(info: TransformableInfo): string {
         let logMsg = `${info.timestamp} ${info.level} ${info.message}`;
         logMsg = (info.meta !== undefined) ?
-				 logMsg + ' ' + (typeof(info.meta) === 'object' ? JSON.stringify(info.meta) : info.meta) :
-				 logMsg;
+            logMsg + ' ' + (typeof (info.meta) === 'object' ? JSON.stringify(info.meta) : info.meta) :
+            logMsg;
 
         return logMsg;
     }

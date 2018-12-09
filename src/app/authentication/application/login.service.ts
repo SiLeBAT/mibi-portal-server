@@ -3,35 +3,35 @@ import * as moment from 'moment';
 import { IUser, IUserCredentials, generateToken } from './../domain';
 import { IUserRepository } from '../../ports';
 import { logger } from './../../../aspects';
-import { IRegistrationService } from '.';
+import { RegistrationService } from '.';
 import { ApplicationDomainError } from '../../sharedKernel/errors';
 import { IRecoveryData } from '../../sharedKernel';
 
 const THRESHOLD: number = config.has('login.threshold') ? config.get('login.threshold') : 5;
 const SECONDS_DELAY: number = config.has('login.secondsDelay') ? config.get('login.secondsDelay') : 300;
 
-export interface IUserLoginInformation extends IUserCredentials {
+export interface UserLoginInformation extends IUserCredentials {
     userAgent: string | string[] | undefined;
     host: string | undefined;
 }
 
-export interface ILoginResponse {
+export interface LoginResponse {
     user: IUser;
     token: string;
     timeToWait?: string;
 }
 
-export interface ILoginPort {
-    loginUser(credentials: IUserLoginInformation): Promise<ILoginResponse>;
+export interface LoginPort {
+    loginUser(credentials: UserLoginInformation): Promise<LoginResponse>;
 }
 
-export interface ILoginService extends ILoginPort { }
+export interface LoginService extends LoginPort { }
 
-class LoginService implements ILoginService {
+class DefaultLoginService implements LoginService {
 
-    constructor(private userRepository: IUserRepository, private activationService: IRegistrationService) { }
+    constructor(private userRepository: IUserRepository, private activationService: RegistrationService) { }
 
-    async loginUser(credentials: IUserLoginInformation): Promise<ILoginResponse> {
+    async loginUser(credentials: UserLoginInformation): Promise<LoginResponse> {
 
         const user = await this.userRepository.findByUsername(credentials.email);
 
@@ -78,7 +78,7 @@ class LoginService implements ILoginService {
         throw new ApplicationDomainError(`User not authorized. user=${user.email}`);
     }
 
-    private async rejectInactiveUser(user: IUser, recoveryData: IRecoveryData): Promise<ILoginResponse> {
+    private async rejectInactiveUser(user: IUser, recoveryData: IRecoveryData): Promise<LoginResponse> {
         logger.verbose('LoginService.rejectInactiveUser, Inactive account failed to log in.');
         return this.activationService.prepareUserForActivation(user, recoveryData).then(
             () => {
@@ -87,7 +87,7 @@ class LoginService implements ILoginService {
         );
     }
 
-    private async rejectAdminInactiveUser(user: IUser): Promise<ILoginResponse> {
+    private async rejectAdminInactiveUser(user: IUser): Promise<LoginResponse> {
         logger.verbose('LoginService.rejectAdminInactiveUser, Admin inactive account failed to log in.');
         return this.activationService.handleUserIfNotAdminActivated(user).then(
             () => {
@@ -122,6 +122,6 @@ class LoginService implements ILoginService {
 
 }
 
-export function createService(userRepository: IUserRepository, activationService: IRegistrationService): ILoginService {
-    return new LoginService(userRepository, activationService);
+export function createService(userRepository: IUserRepository, activationService: RegistrationService): LoginService {
+    return new DefaultLoginService(userRepository, activationService);
 }

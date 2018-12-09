@@ -2,10 +2,7 @@ import * as validate from 'validate.js';
 import * as moment from 'moment';
 import * as _ from 'lodash';
 
-import { getConstraints } from './validationConstraints';
-import { ISample } from '../';
-import { IValidationError } from './validationErrorProvider.entity';
-import { IPathogenIndex, createPathogenIndex } from './pathogenIndex.entity';
+import { Sample } from '../';
 import {
     referenceDate,
     atLeastOneOf,
@@ -16,33 +13,34 @@ import {
     inCatalog,
     registeredZoMo,
     nonUniqueEntry,
-    inPathogenIndex
-} from './customValidatorFunctions';
-import { ICatalogService } from '../application';
-import { ConstraintSet } from '.';
+    matchADVNumberOrString,
+    matchesRegexPattern,
+    matchesIdToSpecificYear
+} from './custom-validator-functions';
+import { ICatalogService, ValidationError } from '../application';
+import { ValidationConstraints } from './validation-constraints';
 
 moment.locale('de');
 
-export interface IValidator {
-    validateSample(sample: ISample): IValidationErrorCollection;
+export interface Validator {
+    validateSample(sample: Sample, constraintSet: ValidationConstraints): ValidationErrorCollection;
 }
 
-export interface IValidationErrorCollection {
-    [key: string]: IValidationError[];
+export interface ValidationErrorCollection {
+    [key: string]: ValidationError[];
 }
 
-export interface IValidatorConfig {
+export interface ValidatorConfig {
     dateFormat: string;
     dateTimeFormat: string;
     catalogService: ICatalogService;
 }
 
-class SampleValidator implements IValidator {
+class SampleValidator implements Validator {
 
     private catalogService: ICatalogService;
-    private pathogenIndex: IPathogenIndex;
 
-    constructor(config: IValidatorConfig) {
+    constructor(config: ValidatorConfig) {
 
         // Before using it we must add the parse and format functions
         // Here is a sample implementation using moment.js
@@ -63,12 +61,10 @@ class SampleValidator implements IValidator {
             }
         });
         this.catalogService = config.catalogService;
-        this.pathogenIndex = createPathogenIndex(this.catalogService.getCatalog('adv16').dump());
         this.registerCustomValidators();
     }
 
-    validateSample(sample: ISample): IValidationErrorCollection {
-        const constraintSet = sample.isZoMo() ? getConstraints(ConstraintSet.ZOMO) : getConstraints(ConstraintSet.STANDARD);
+    validateSample(sample: Sample, constraintSet: ValidationConstraints): ValidationErrorCollection {
         return validate(sample.getData(), constraintSet);
     }
 
@@ -83,15 +79,17 @@ class SampleValidator implements IValidator {
         validate.validators.dependentFields = dependentFields;
         validate.validators.dependentFieldEntry = dependentFieldEntry;
         validate.validators.numbersOnly = numbersOnly;
+        validate.validators.matchesRegexPattern = matchesRegexPattern;
+        validate.validators.matchesIdToSpecificYear = matchesIdToSpecificYear;
         validate.validators.inCatalog = inCatalog(this.catalogService);
+        validate.validators.matchADVNumberOrString = matchADVNumberOrString(this.catalogService);
         validate.validators.registeredZoMo = registeredZoMo(this.catalogService);
         validate.validators.nonUniqueEntry = nonUniqueEntry(this.catalogService);
-        validate.validators.inPathogenIndex = inPathogenIndex(this.pathogenIndex);
     }
 
 }
 
-function createValidator(config: IValidatorConfig): IValidator {
+function createValidator(config: ValidatorConfig): Validator {
     return new SampleValidator(config);
 }
 

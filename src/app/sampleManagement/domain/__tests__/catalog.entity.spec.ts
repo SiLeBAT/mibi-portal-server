@@ -59,19 +59,19 @@ describe('Pathogen Index', () => {
     });
 
     it('should contain with id 803101', () => {
-        expect(catalog.containsEntryWithId('803101')).toBe(true);
+        expect(catalog.containsUniqueEntryWithId('803101')).toBe(true);
     });
 
     it('should return entry with id 803101', () => {
-        expect(catalog.getEntryWithId('803101')).toEqual(testData[2]);
+        expect(catalog.getUniqueEntryWithId('803101')).toEqual(testData[2]);
     });
 
     it('should not contain entry with id 803102', () => {
-        expect(catalog.containsEntryWithId('803102')).toBe(false);
+        expect(catalog.containsUniqueEntryWithId('803102')).toBe(false);
     });
 
     it('should not return entry with id 803102', () => {
-        expect(catalog.getEntryWithId('803102')).toBeUndefined();
+        expect(catalog.getUniqueEntryWithId('803102')).toBeUndefined();
     });
 
 });

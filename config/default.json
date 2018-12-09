@@ -1,0 +1,30 @@
+{
+    "server": {
+        "port": 3000,
+        "jwtSecret": "0",
+        "apiUrl": "",
+        "logLevel": "trace"
+    },
+    "dataStore": {
+        "connectionString": "mongodb://localhost/datadevdb",
+        "dataDir": "./datadev"
+    },
+    "mail": {
+        "fromAddress": "",
+        "replyToAddress": ""
+    },
+    "login": {
+    "threshold": 5,
+    "secondsDelay": 600
+    },
+    "appName": "Portal",
+    "supportContact": "",
+    "jobRecipient": "",
+    "searchAlias": [
+        {
+            "catalog": "adv16",
+            "token": "Escherichia coli",
+            "alias" : ["E. coli"]
+        }
+    ]
+}

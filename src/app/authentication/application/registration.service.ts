@@ -11,20 +11,19 @@ const API_URL = config.get('server.apiUrl');
 const SUPPORT_CONTACT = config.get('supportContact');
 const JOB_RECIPIENT = config.get('jobRecipient');
 
-export interface IRegistrationPort {
+export interface RegistrationPort {
     activateUser(token: string): Promise<void>;
     adminActivateUser(token: string): Promise<string>;
-    registerUser(credentials: IUserRegistration): Promise<void>;
+    registerUser(credentials: UserRegistration): Promise<void>;
 }
 
-export interface IRegistrationService extends IRegistrationPort {
+export interface RegistrationService extends RegistrationPort {
     prepareUserForActivation(user: IUser, recoveryData: IRecoveryData): Promise<void>;
-    prepareUserForAdminActivation(user: IUser): Promise<void>;
     handleUserIfNotAdminActivated(user: IUser): Promise<void>;
 }
 
 // TODO: Fix or remove this interface
-export interface IUserRegistration {
+export interface UserRegistration {
     firstName: string;
     lastName: string;
     email: string;
@@ -34,7 +33,7 @@ export interface IUserRegistration {
     host: string;
 }
 
-class RegistrationService implements IRegistrationService {
+class DefaultRegistrationService implements RegistrationService {
 
     constructor(
         private userRepository: IUserRepository,
@@ -52,6 +51,7 @@ class RegistrationService implements IRegistrationService {
         user.isActivated(true);
         await this.userRepository.updateUser(user);
         await this.tokenRepository.deleteTokenForUser(user);
+        await this.prepareUserForAdminActivation(user);
         logger.verbose('RegistrationService.activateUser, User activation successful');
         return;
     }
@@ -75,7 +75,7 @@ class RegistrationService implements IRegistrationService {
         return userName;
     }
 
-    async registerUser(credentials: IUserRegistration): Promise<void> {
+    async registerUser(credentials: UserRegistration): Promise<void> {
         let instituteIsUnknown = false;
         const result = await this.userRepository.hasUser(credentials.email);
         if (result) {
@@ -106,10 +106,11 @@ class RegistrationService implements IRegistrationService {
             host: credentials.host
         };
 
-        await this.prepareUserForActivation(user, recoveryData);
-        const adminActivationResult = await this.prepareUserForAdminActivation(user, instituteIsUnknown ? credentials.institution : null);
-
-        return adminActivationResult;
+        if (instituteIsUnknown) {
+            const requestAdminActivationNotification = this.createRequestForUnknownInstituteNotification(user, credentials.institution);
+            this.notificationService.sendNotification(requestAdminActivationNotification);
+        }
+        return this.prepareUserForActivation(user, recoveryData);
     }
 
     async prepareUserForActivation(user: IUser, recoveryData: IRecoveryData): Promise<void> {
@@ -131,7 +132,16 @@ class RegistrationService implements IRegistrationService {
         return this.notificationService.sendNotification(requestActivationNotification);
     }
 
-    async prepareUserForAdminActivation(user: IUser, institution?: string | null): Promise<void> {
+    async handleUserIfNotAdminActivated(user: IUser): Promise<void> {
+        const requestNotAdminActivatedNotification = this.createNotAdminActivatedNotification(user);
+        this.notificationService.sendNotification(requestNotAdminActivatedNotification);
+
+        const requestAdminActivationReminder = this.createAdminActivationReminder(user);
+
+        return this.notificationService.sendNotification(requestAdminActivationReminder);
+    }
+
+    private async prepareUserForAdminActivation(user: IUser): Promise<void> {
         const hasOldAdminToken = await this.tokenRepository.hasAdminTokenForUser(user);
         if (hasOldAdminToken) {
             await this.tokenRepository.deleteAdminTokenForUser(user);
@@ -145,26 +155,12 @@ class RegistrationService implements IRegistrationService {
             userId: user.uniqueId
         });
 
-        let requestAdminActivationNotification;
-        if (!institution) {
-            requestAdminActivationNotification = this.createRequestAdminActivationNotification(user, adminActivationToken);
-        } else {
-            requestAdminActivationNotification = this.createRequestForUnknownInstituteNotification(user, adminActivationToken, institution);
-        }
+        const requestAdminActivationNotification = this.createRequestAdminActivationNotification(user, adminActivationToken);
 
         return this.notificationService.sendNotification(requestAdminActivationNotification);
     }
 
-    async handleUserIfNotAdminActivated(user: IUser): Promise<void> {
-        const requestNotAdminActivatedNotification = this.createNotAdminActivatedNotification(user);
-        this.notificationService.sendNotification(requestNotAdminActivatedNotification);
-
-        const requestAdminActivationReminder = this.createAdminActivationReminder(user);
-
-        return this.notificationService.sendNotification(requestAdminActivationReminder);
-    }
-
-    async handleAlreadyRegisteredUser(credentials: IUserRegistration): Promise<void> {
+    private async handleAlreadyRegisteredUser(credentials: UserRegistration): Promise<void> {
         const userAlreadyRegisteredNotification = this.createAlreadyRegisteredUserNotification(credentials);
         return this.notificationService.sendNotification(userAlreadyRegisteredNotification);
     }
@@ -173,7 +169,7 @@ class RegistrationService implements IRegistrationService {
         let inst = await this.institutionRepository.findByInstitutionName('dummy');
         if (!inst) {
             const newInstitution = createInstitution('0000');
-            newInstitution.short = 'dummy';
+            newInstitution.stateShort = 'dummy';
             newInstitution.name1 = 'dummy';
             newInstitution.location = 'dummy';
             newInstitution.phone = 'dummy';
@@ -186,22 +182,22 @@ class RegistrationService implements IRegistrationService {
     }
 
     private createRequestActivationNotification(user: IUser, recoveryData: IRecoveryData, activationToken: IUserToken) {
-    	return {
-      		type: NotificationType.REQUEST_ACTIVATION,
-	        title: `Aktivieren Sie Ihr Konto für ${APP_NAME} `,// `Activate your account for ${APP_NAME}`;
-	        payload: {
-	            'name': user.firstName + ' ' + user.lastName,
-	            'action_url': API_URL + '/users/activate/' + activationToken.token,
-	            'api_url': API_URL,
-	            'operating_system': recoveryData.host,
-	            'user_agent': recoveryData.userAgent,
-	            'support_contact': SUPPORT_CONTACT,
-	            'appName': APP_NAME
-	        },
-	        meta: {
-	            email: user.email
-	        }
-	    };
+        return {
+            type: NotificationType.REQUEST_ACTIVATION,
+            title: `Aktivieren Sie Ihr Konto für ${APP_NAME} `,// `Activate your account for ${APP_NAME}`;
+            payload: {
+                'name': user.firstName + ' ' + user.lastName,
+                'action_url': API_URL + '/users/activate/' + activationToken.token,
+                'api_url': API_URL,
+                'operating_system': recoveryData.host,
+                'user_agent': recoveryData.userAgent,
+                'support_contact': SUPPORT_CONTACT,
+                'appName': APP_NAME
+            },
+            meta: {
+                email: user.email
+            }
+        };
     }
 
     private createRequestAdminActivationNotification(user: IUser, adminActivationToken: IUserToken) {
@@ -225,7 +221,7 @@ class RegistrationService implements IRegistrationService {
         };
     }
 
-    private createRequestForUnknownInstituteNotification(user: IUser, adminActivationToken: IUserToken, institution: string) {
+    private createRequestForUnknownInstituteNotification(user: IUser, institution: string) {
         const fullName = user.firstName + ' ' + user.lastName;
 
         return {
@@ -233,7 +229,6 @@ class RegistrationService implements IRegistrationService {
             title: `Aktivierungsanfrage für das ${APP_NAME} Konto von ${fullName} mit nicht registriertem Institut`,
             payload: {
                 'name': fullName,
-                'action_url': API_URL + '/users/adminactivate/' + adminActivationToken.token,
                 'api_url': API_URL,
                 'email': user.email,
                 'institution': institution,
@@ -246,74 +241,74 @@ class RegistrationService implements IRegistrationService {
     }
 
     private createAdminActivationNotification(user: IUser) {
-	    const fullName = user.firstName + ' ' + user.lastName;
+        const fullName = user.firstName + ' ' + user.lastName;
 
-	    return {
-	        type: NotificationType.NOTIFICATION_ADMIN_ACTIVATION,
-	        title: `Admin Aktivierung Ihres ${APP_NAME} Kontos`,
-	        payload: {
-	            'name': fullName,
-	            'appName': APP_NAME
-	        },
-	        meta: {
-	            email: user.email
-	        }
-	    };
+        return {
+            type: NotificationType.NOTIFICATION_ADMIN_ACTIVATION,
+            title: `Admin Aktivierung Ihres ${APP_NAME} Kontos`,
+            payload: {
+                'name': fullName,
+                'appName': APP_NAME
+            },
+            meta: {
+                email: user.email
+            }
+        };
     }
 
     private createNotAdminActivatedNotification(user: IUser) {
-	    const fullName = user.firstName + ' ' + user.lastName;
+        const fullName = user.firstName + ' ' + user.lastName;
 
-	    return {
-	        type: NotificationType.NOTIFICATION_NOT_ADMIN_ACTIVATED,
-	        title: `Noch keine Admin Aktivierung Ihres ${APP_NAME} Kontos`,
-	        payload: {
-	            'name': fullName,
-	            'appName': APP_NAME
-	        },
-	        meta: {
-	            email: user.email
-	        }
-	    };
+        return {
+            type: NotificationType.NOTIFICATION_NOT_ADMIN_ACTIVATED,
+            title: `Noch keine Admin Aktivierung Ihres ${APP_NAME} Kontos`,
+            payload: {
+                'name': fullName,
+                'appName': APP_NAME
+            },
+            meta: {
+                email: user.email
+            }
+        };
     }
 
     private createAdminActivationReminder(user: IUser) {
-	    const fullName = user.firstName + ' ' + user.lastName;
+        const fullName = user.firstName + ' ' + user.lastName;
 
-	    return {
-	        type: NotificationType.REMINDER_ADMIN_ACTIVATION,
-	        title: `Erinnerung: Bitte aktivieren Sie das ${APP_NAME} Konto für ${fullName}`,
-	        payload: {
-	            'name': fullName,
-	            'email': user.email,
-	            'institution': user.institution.name1,
-	            'location': user.institution.name2,
-	            'appName': APP_NAME
-	        },
-	        meta: {
-	            email: JOB_RECIPIENT
-	        }
-	    };
+        return {
+            type: NotificationType.REMINDER_ADMIN_ACTIVATION,
+            title: `Erinnerung: Bitte aktivieren Sie das ${APP_NAME} Konto für ${fullName}`,
+            payload: {
+                'name': fullName,
+                'email': user.email,
+                'institution': user.institution.name1,
+                'location': user.institution.name2,
+                'appName': APP_NAME
+            },
+            meta: {
+                email: JOB_RECIPIENT
+            }
+        };
     }
 
-    private createAlreadyRegisteredUserNotification(credentials: IUserRegistration) {
+    private createAlreadyRegisteredUserNotification(credentials: UserRegistration) {
         const fullName = credentials.firstName + ' ' + credentials.lastName;
 
-	    return {
-	        type: NotificationType.NOTIFICATION_ALREADY_REGISTERED,
-	        title: `Ihre Registrierung für ein ${APP_NAME} Konto`,
-	        payload: {
-            'name': fullName,
-            'action_url': API_URL + '/users/recovery',
-	        'appName': APP_NAME
-	        },
-	        meta: {
-	            email: credentials.email
-	        }
-	    };
+        return {
+            type: NotificationType.NOTIFICATION_ALREADY_REGISTERED,
+            title: `Ihre Registrierung für ein ${APP_NAME} Konto`,
+            payload: {
+                'name': fullName,
+                'action_url': API_URL + '/users/recovery',
+                'appName': APP_NAME
+            },
+            meta: {
+                email: credentials.email
+            }
+        };
     }
 }
 
-export function createService(userRepository: IUserRepository, tokenRepository: ITokenRepository, institutionRepository: IInstitutionRepository, notificationService: INotificationService): IRegistrationService {
-    return new RegistrationService(userRepository, tokenRepository, institutionRepository, notificationService);
+export function createService(userRepository: IUserRepository, tokenRepository: ITokenRepository, institutionRepository: IInstitutionRepository, notificationService: INotificationService): RegistrationService {
+    return new DefaultRegistrationService(userRepository, tokenRepository, institutionRepository, notificationService);
 }

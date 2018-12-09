@@ -1,19 +1,32 @@
-import * as path from 'path';
-import * as fs from 'fs';
 import * as moment from 'moment';
 import * as _ from 'lodash';
-import * as rootDir from 'app-root-dir';
-import * as unirest from 'unirest';
-import * as config from 'config';
 import { Request, Response } from 'express';
-import { logger } from './../../../aspects';
-import { IFormValidatorPort, IController, ISampleCollection, ISample, createSample, createSampleCollection } from '../../../app/ports';
+import { logger } from '../../../aspects';
+import { FormValidatorPort, IFormAutoCorrectionPort, IController, SampleCollection, Sample, createSample, createSampleCollection } from '../../../app/ports';
+import { ApplicationSystemError } from '../../../app/sharedKernel/errors';
+import { ValidationOptions } from '../../../app/sampleManagement/application';
+import { CorrectionSuggestions, EditValue } from '../../../app/sampleManagement/domain';
 
 moment.locale('de');
 
-interface IValidationRequest extends Array<ISampleDTO> { }
+interface ValidationRequestMeta {
+    state: string;
+    nrl: string;
+}
 
-interface ISampleDTO {
+interface ValidationRequest {
+    data: SampleDTO[];
+    meta: ValidationRequestMeta;
+}
+
+interface ValidationResponseDTO {
+    data: SampleDTO;
+    errors: ErrorResponseDTO;
+    corrections: CorrectionSuggestions[];
+    edits: Record<string, EditValue>;
+}
+
+interface SampleDTO {
     sample_id: string;
     sample_id_avv: string;
     pathogen_adv: string;
@@ -35,63 +48,57 @@ interface ISampleDTO {
     comment: string;
 }
 
-interface IKnimeConfig {
-    user: string;
-    pass: string;
-    urlJobId: string;
-    urlResult: string;
-}
-
-interface IErrorDTO {
+interface ErrorDTO {
     code: number;
     level: number;
     message: string;
 }
 
-interface IErrorResponseDTO {
-    [key: string]: IErrorDTO[];
+interface ErrorResponseDTO {
+    [key: string]: ErrorDTO[];
 }
 
-const knimeConfig: IKnimeConfig = config.get('knime');
-const appRootDir = rootDir.get();
-
-export interface IValidationController extends IController {
+export interface ValidationController extends IController {
     validateSamples(req: Request, res: Response): Promise<void>;
 }
 
-class ValidationController implements IValidationController {
+class DefaultValidationController implements ValidationController {
 
-    constructor(private formValidationService: IFormValidatorPort) { }
+    constructor(private formValidationService: FormValidatorPort, private formAutoCorrectionService: IFormAutoCorrectionPort) { }
 
     async validateSamples(req: Request, res: Response) {
 
         if (req.is('application/json')) {
-            const validationResult = this.validateSamplesViaJS(req, res);
-            logger.info('ValidationController.validateSamples, Response sent', validationResult);
-            res
-                .status(200)
-                .json(validationResult);
+            try {
+                const sampleCollection: SampleCollection = this.fromDTOToSamples(req.body);
+                const validationOptions: ValidationOptions = this.fromDTOToOptions(req.body.meta);
+                // Auto-correction needs to happen before validation?
+                const autocorrectedSamples = await this.formAutoCorrectionService.applyAutoCorrection(sampleCollection);
+                const validationResult = await this.formValidationService.validateSamples(autocorrectedSamples, validationOptions);
+                const validationResultsDTO = this.fromErrorsToDTO(validationResult);
+                logger.info('ValidationController.validateSamples, Response sent');
+                logger.verbose('Response:', validationResultsDTO);
+                res.status(200)
+                    .json(validationResultsDTO);
+            } catch (err) {
+                res.status(500).end();
+                throw err;
+            }
+
         } else {
-            const uploadedFilePath = path.join(appRootDir, req.file.path);
-            this.getKnimeJobId(req, res, uploadedFilePath);
+            res.status(501);
         }
 
         return res.end();
 
     }
 
-    private validateSamplesViaJS(req: Request, res: Response) {
-        logger.info('ValidationController.validateSamplesViaJS, Request received', req.body);
-        const sampleCollection: ISampleCollection = this.fromDTOToSamples(req.body);
-        const rawValidationResult = this.formValidationService.validateSamples(sampleCollection);
-        return this.fromErrorsToDTO(rawValidationResult);
-    }
+    private fromErrorsToDTO(sampleCollection: SampleCollection): ValidationResponseDTO[] {
 
-    private fromErrorsToDTO(sampleCollection: ISampleCollection) {
+        return sampleCollection.samples.map((sample: Sample) => {
+            const errors: ErrorResponseDTO = {};
 
-        return sampleCollection.samples.map((s: ISample) => {
-            let errors: IErrorResponseDTO = {};
-            _.forEach(s.getErrors(), (e, i) => {
+            _.forEach(sample.getErrors(), (e, i) => {
                 errors[i] = e.map(f => ({
                     code: f.code,
                     level: f.level,
@@ -99,96 +106,71 @@ class ValidationController implements IValidationController {
                 }));
             });
             return {
-                data: s.getData(),
-                errors: errors
+                data: sample.getData(),
+                errors: errors,
+                corrections: sample.correctionSuggestions,
+                edits: sample.edits
             };
 
         });
     }
 
-    private fromDTOToSamples(dto: IValidationRequest): ISampleCollection {
-        if (!Array.isArray(dto)) {
-            throw new Error(`Invalid input: Array expected, dto=${dto}`);
+    private fromDTOToSamples(dto: ValidationRequest): SampleCollection {
+        if (!Array.isArray(dto.data)) {
+            throw new ApplicationSystemError(`Invalid input: Array expected, dto.data${dto.data}`);
         }
-        const samples = dto.map(s => createSample({ ...s }));
+        const samples = dto.data.map(s => createSample({ ...s }));
 
         return createSampleCollection(samples);
     }
 
-    private getKnimeJobId(req: Request, res: Response, filePath: string) {
-        logger.info('ValidationController.getKnimeJobId, Retrieving Knime Job ID.');
+    private fromDTOToOptions(meta: ValidationRequestMeta): ValidationOptions {
+        let nrl: string = '';
 
-        const urlJobId = knimeConfig.urlJobId;
-        const user = knimeConfig.user;
-        const pass = knimeConfig.pass;
+        // TODO: Should this mapping be elsewhere?
+        switch (meta.nrl) {
+            case 'NRL Überwachung von Bakterien in zweischaligen Weichtieren':
+                nrl = 'NRL-Vibrio';
+                break;
 
-        unirest
-            .post(urlJobId)
-            .auth({
-                user: user,
-                pass: pass
-            })
-            // tslint:disable-next-line
-            .end((response: any) => {
-                if (response.error) {
-                    logger.error('knime id error: ', response.error);
+            case 'NRL Escherichia coli einschließlich verotoxinbildende E. coli':
+                nrl = 'NRL-VTEC';
+                break;
 
-                    return res
-                        .status(400)
-                        .json({
-                            title: 'knime id error',
-                            obj: response.error
-                        });
-                }
+            case 'Bacillus spp.':
+            case 'Clostridium spp. (C. difficile)':
+                nrl = 'Sporenbildner';
+                break;
+            case 'NRL koagulasepositive Staphylokokken einschließlich Staphylococcus aureus':
+                nrl = 'NRL-Staph';
+                break;
 
-                const jobId = response.body['id'];
-                this.doKnimeValidation(req, res, jobId, filePath);
-            });
+            case 'NRL Salmonellen(Durchführung von Analysen und Tests auf Zoonosen)':
+                nrl = 'NRL-Salm';
+                break;
+            case 'NRL Listeria monocytogenes':
+                nrl = 'NRL-Listeria';
+                break;
+            case 'NRL Campylobacter':
+                nrl = 'NRL-Campy';
+                break;
+            case 'NRL Antibiotikaresistenz':
+                nrl = 'NRL-AR';
+                break;
+            case 'Yersinia':
+                nrl = 'KL-Yersinia';
+                break;
+            default:
 
-    }
-
-    private doKnimeValidation(req: Request, res: Response, jobId: string, filePath: string) {
-
-        const urlResult = knimeConfig.urlResult + jobId;
-        const user = knimeConfig.user;
-        const pass = knimeConfig.pass;
-
-        unirest
-            .post(urlResult)
-            .headers({
-                'content-type': 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW'
-            })
-            .auth({
-                user: user,
-                pass: pass
-            })
-            .attach({
-                'file-upload-210': fs.createReadStream(filePath)
-            })
-            // tslint:disable-next-line
-            .end((response: any) => {
-                if (response.error) {
-                    logger.error('knime validation error: ', response.error);
-
-                    return res
-                        .status(400)
-                        .json({
-                            title: 'knime validation error',
-                            obj: response.error
-                        });
-                }
-
-                return res
-                    .status(200)
-                    .json({
-                        title: 'file upload and knime validation ok',
-                        obj: response.raw_body
-                    });
-            });
+        }
+        return {
+            state: meta.state,
+            nrl
+        };
     }
 
 }
 
-export function createController(service: IFormValidatorPort) {
-    return new ValidationController(service);
+export function createController(validationService: FormValidatorPort, autocorrectionService: IFormAutoCorrectionPort) {
+    return new DefaultValidationController(validationService, autocorrectionService);
 }

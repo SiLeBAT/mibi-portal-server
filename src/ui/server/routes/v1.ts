@@ -13,6 +13,10 @@ function getRouter(controllerFactory: IControllerFactory) {
     router.use('/validation', getBaseRouter(RouterType.VALIDATE, controllerFactory));
     logger.verbose('Registering Route', { route: '/job' });
     router.use('/job', getBaseRouter(RouterType.JOB, controllerFactory));
+    logger.verbose('Registering Route', { route: '/users' });
+    router.use('/users', getBaseRouter(RouterType.USER, controllerFactory));
+    logger.verbose('Registering Route', { route: '/catalog-search' });
+    router.use('/util', getBaseRouter(RouterType.UTIL, controllerFactory));
     return router;
 }
 

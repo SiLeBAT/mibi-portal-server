@@ -1,27 +1,45 @@
-import { createService, IFormValidatorService } from './../formValidation.service';
-import { ISampleCollection } from '../..';
-import { ISampleData, ISample } from '../../domain/sample.entity';
+import { createService, FormValidatorService } from '../form-validation.service';
+import { SampleCollection } from '../..';
+import { SampleData, Sample, createSample } from '../../domain/sample.entity';
+import { ICatalogService } from '../catalog.service';
+import { IAVVFormatProvider } from '../avv-format-provider.service';
+import { ValidationErrorProvider, ValidationError } from '../validation-error-provider.service';
+import { INRLSelectorProvider } from '../nrl-selector-provider.service';
 
-jest.mock('./../../domain', () => ({
-    createValidator: () => ({
-        validateSample: jest.fn()
-    })
-}));
+jest.mock('./../../domain');
 
 describe('Validate Sample Use Case', () => {
     // tslint:disable-next-line
-    let mockCatalogService: any;
-    let service: IFormValidatorService;
+    let mockCatalogService: ICatalogService;
+    let mockAVVFormatProvider: IAVVFormatProvider;
+    let mockValidationErrorProvider: ValidationErrorProvider;
+    let mockNRLSelectorProvider: INRLSelectorProvider;
+    let service: FormValidatorService;
 
-    let genericTestSampleCollection: ISampleCollection;
-    let testSampleData: ISampleData;
-    let genericTestSample: ISample;
+    let genericTestSampleCollection: SampleCollection;
+    let testSampleData: SampleData;
+    let genericTestSample: Sample;
+    let validationError: ValidationError;
     beforeEach(() => {
-        mockCatalogService = {
-            getCatalog: jest.fn()
+        validationError = {
+            code: 0,
+            level: 1,
+            message: 'TEST ERROR MESSAGE'
         };
-
-        service = createService(mockCatalogService);
+        mockCatalogService = {
+            getCatalog: jest.fn(),
+            getCatalogSearchAliases: jest.fn()
+        };
+        mockAVVFormatProvider = {
+            getFormat: jest.fn()
+        };
+        mockValidationErrorProvider = {
+            getError: () => validationError
+        };
+        mockNRLSelectorProvider = {
+            getSelectors: jest.fn()
+        };
+        service = createService(mockCatalogService, mockAVVFormatProvider, mockValidationErrorProvider, mockNRLSelectorProvider);
         testSampleData = {
             sample_id: '1',
             sample_id_avv: '1-ABC',
@@ -43,36 +61,159 @@ describe('Validate Sample Use Case', () => {
             vvvo: '',
             comment: ''
         };
-        genericTestSample = {
-            getData: jest.fn(),
-            pathogenId: '',
-            pathogenIdAVV: '',
-            setErrors: jest.fn(),
-            isZoMo: jest.fn(),
-            addErrorTo: jest.fn(),
-            getErrors: jest.fn()
-        };
+        genericTestSample = createSample(testSampleData);
         genericTestSampleCollection = {
             samples: []
         };
     });
-    it('should successfully complete Happy Path', () => {
-        const result = service.validateSamples(genericTestSampleCollection);
+    it('should successfully complete Happy Path with empty sampleCollection', async () => {
+        expect.assertions(1);
+        const result = await service.validateSamples(genericTestSampleCollection, {});
         expect(result).toEqual({
             samples: []
         });
     });
-    it('should call setError on testsample twice', () => {
-        const mockSetErrors = jest.fn();
-        const testSample = {
-            ...genericTestSample, ...{
-                setErrors: mockSetErrors
-            }
+
+    it('should successfully complete Happy Path with single entry sample collection', async () => {
+        const specificTestSampleCollection = {
+            samples: [genericTestSample]
         };
-        const testSampleCollection = {
-            samples: [testSample, testSample]
-        };
-        service.validateSamples(testSampleCollection);
-        expect(mockSetErrors.mock.calls.length).toBe(2);
+        expect.assertions(2);
+        const result = await service.validateSamples(specificTestSampleCollection, {});
+        const errors = result.samples[0].getErrors();
+
+        expect(errors['sample_id']).toBe(undefined);
+        expect(errors['sample_id_avv']).toBe(undefined);
     });
+
+    it('should not cause error because of different sample_id', async () => {
+        const specificSample = { ...testSampleData };
+        specificSample.sample_id = '2';
+        const secondSample = createSample(specificSample);
+        const specificTestSampleCollection = {
+            samples: [genericTestSample, secondSample]
+        };
+
+        expect.assertions(2);
+        const result = await service.validateSamples(specificTestSampleCollection, {});
+        const errors = result.samples[0].getErrors();
+
+        expect(errors['sample_id']).toBe(undefined);
+        expect(errors['sample_id_avv']).toBe(undefined);
+    });
+
+    it('should not cause error because of different pathogen_adv', async () => {
+        const specificSample = { ...testSampleData };
+        specificSample.pathogen_adv = 'Listeria monocytogenes';
+        const secondSample = createSample(specificSample);
+        const specificTestSampleCollection = {
+            samples: [genericTestSample, secondSample]
+        };
+
+        expect.assertions(2);
+        const result = await service.validateSamples(specificTestSampleCollection, {});
+        const errors = result.samples[0].getErrors();
+
+        expect(errors['sample_id']).toBe(undefined);
+        expect(errors['sample_id_avv']).toBe(undefined);
+    });
+
+    it('should flag an identical ID error because of identical AVV IDs', async () => {
+        const sampleOne = { ...testSampleData };
+        const sampleTwo = { ...testSampleData };
+        sampleOne.sample_id = '';
+        sampleTwo.sample_id = '';
+
+        const firstSample = createSample(sampleOne);
+        const secondSample = createSample(sampleTwo);
+
+        const specificTestSampleCollection = {
+            samples: [firstSample, secondSample]
+        };
+
+        expect.assertions(2);
+        const result = await service.validateSamples(specificTestSampleCollection, {});
+        const errors = result.samples[0].getErrors();
+
+        expect(errors['sample_id_avv'][0]).toEqual(validationError);
+        expect(errors['sample_id']).toBe(undefined);
+    });
+
+    it('should flag an identical ID error because of identical AVV IDs', async () => {
+        const sampleOne = { ...testSampleData };
+        const sampleTwo = { ...testSampleData };
+        sampleOne.sample_id = '5';
+        sampleTwo.sample_id = '5';
+
+        const firstSample = createSample(sampleOne);
+        const secondSample = createSample(sampleTwo);
+
+        const specificTestSampleCollection = {
+            samples: [firstSample, secondSample]
+        };
+
+        expect.assertions(2);
+        const result = await service.validateSamples(specificTestSampleCollection, {});
+        const errors = result.samples[0].getErrors();
+
+        expect(errors['sample_id_avv'][0]).toEqual(validationError);
+        expect(errors['sample_id'][0]).toEqual(validationError);
+    });
+
+    it('should not flag an identical ID error because of identical AVV IDs', async () => {
+        const sampleOne = { ...testSampleData };
+        const sampleTwo = { ...testSampleData };
+        sampleOne.sample_id = '5';
+        sampleTwo.sample_id = '4';
+
+        const firstSample = createSample(sampleOne);
+        const secondSample = createSample(sampleTwo);
+
+        const specificTestSampleCollection = {
+            samples: [firstSample, secondSample]
+        };
+
+        expect.assertions(2);
+        const result = await service.validateSamples(specificTestSampleCollection, {});
+        const errors = result.samples[0].getErrors();
+
+        expect(errors['sample_id_avv']).toBe(undefined);
+        expect(errors['sample_id']).toBe(undefined);
+    });
+
+    it('should flag an identical ID error because of identical IDs', async () => {
+        const sampleOne = { ...testSampleData };
+        const sampleTwo = { ...testSampleData };
+        sampleOne.sample_id_avv = '';
+        sampleTwo.sample_id_avv = '';
+
+        const firstSample = createSample(sampleOne);
+        const secondSample = createSample(sampleTwo);
+
+        const specificTestSampleCollection = {
+            samples: [firstSample, secondSample]
+        };
+
+        expect.assertions(2);
+        const result = await service.validateSamples(specificTestSampleCollection, {});
+        const errors = result.samples[0].getErrors();
+
+        expect(errors['sample_id'][0]).toEqual(validationError);
+        expect(errors['sample_id_avv']).toBe(undefined);
+    });
+
+    it('should flag an identical ID error with two entry sample collection', async () => {
+        const identicalSample = createSample(testSampleData);
+        const specificTestSampleCollection = {
+            samples: [genericTestSample, identicalSample]
+        };
+
+        expect.assertions(2);
+        const result = await service.validateSamples(specificTestSampleCollection, {});
+        const errors = result.samples[0].getErrors();
+
+        expect(errors['sample_id'][0]).toEqual(validationError);
+        expect(errors['sample_id_avv'][0]).toEqual(validationError);
+    });
+
 });

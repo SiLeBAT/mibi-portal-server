@@ -1,6 +1,6 @@
-import { createService, ILoginService } from './../login.service';
+import { createService, LoginService } from './../login.service';
 import { LoginResult } from '../../domain';
-
+ // tslint:disable
 jest.mock('./../../../sharedKernel', () => ({
     RepositoryType: {
         USER: 0
@@ -8,11 +8,10 @@ jest.mock('./../../../sharedKernel', () => ({
 }));
 
 describe('Login User Use Case', () => {
-    // tslint:disable-next-line
+  
     let mockUserRepository: any;
-    // tslint:disable-next-line
     let mockActivationService: any;
-    let service: ILoginService;
+    let service: LoginService;
     beforeEach(() => {
 
         mockUserRepository = jest.fn(() => ({
@@ -87,7 +86,7 @@ describe('Login User Use Case', () => {
             userAgent: 'test',
             host: 'test'
         };
-       // expect(service.loginUser(credentials)).toThrowError();
+       
         const result = service.loginUser(credentials);
         expect.assertions(1);
         return result.then(

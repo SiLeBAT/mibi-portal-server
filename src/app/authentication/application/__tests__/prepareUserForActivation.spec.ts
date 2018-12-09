@@ -1,7 +1,7 @@
-import { createService, IRegistrationService } from './../registration.service';
+import { createService, RegistrationService } from './../registration.service';
 import { generateToken, createUser, IUser } from '../../domain';
 import { IRecoveryData } from '../../../sharedKernel';
-
+ // tslint:disable
 jest.mock('./../../domain', () => ({
     generateToken: jest.fn(),
     verifyToken: jest.fn(),
@@ -20,15 +20,15 @@ jest.mock('./../../domain', () => ({
 }));
 
 describe('Prepare User for Activation Use Case', () => {
-    // tslint:disable-next-line
+   
     let mockUserRepository: any;
-    // tslint:disable-next-line
+    
     let mockTokenRepository: any;
-    // tslint:disable-next-line
+  
     let mockNotificationService: any;
-    // tslint:disable-next-line
+
     let mockInstitutionRepository: any;
-    let service: IRegistrationService;
+    let service: RegistrationService;
     let user: IUser;
     let recoveryData: IRecoveryData;
     beforeEach(() => {
@@ -59,7 +59,7 @@ describe('Prepare User for Activation Use Case', () => {
             password: 'test',
             institution: {
                 uniqueId: 'test',
-                short: 'test',
+                stateShort: 'test',
                 name1: 'test',
                 name2: 'test',
                 location: 'test',
@@ -73,8 +73,7 @@ describe('Prepare User for Activation Use Case', () => {
                 },
                 phone: 'test',
                 fax: 'test',
-                email: [],
-                stateId: 'test'
+                email: []
             },
             isAuthorized: jest.fn(),
             isActivated: jest.fn(),
@@ -91,9 +90,9 @@ describe('Prepare User for Activation Use Case', () => {
             userAgent: 'test',
             host: 'test'
         };
-        // tslint:disable-next-line
+    
         (createUser as any).mockClear();
-        // tslint:disable-next-line
+       
         (generateToken as any).mockClear();
 
         service = createService(mockUserRepository, mockTokenRepository, mockInstitutionRepository, mockNotificationService);
@@ -127,7 +126,7 @@ describe('Prepare User for Activation Use Case', () => {
     it('should generate a new token', () => {
         expect.assertions(1);
         return service.prepareUserForActivation(user, recoveryData).then(
-            // tslint:disable-next-line
+    
             result => expect((generateToken as any).mock.calls.length).toBe(1)
         );
     });

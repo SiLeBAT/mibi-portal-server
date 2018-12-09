@@ -1,6 +1,6 @@
-import { createService, IRegistrationService } from './../registration.service';
+import { createService, RegistrationService } from './../registration.service';
 import { verifyToken, generateAdminToken } from '../../domain';
-
+ // tslint:disable
 jest.mock('./../../../sharedKernel', () => ({
     RepositoryType: {
         USER: 0
@@ -16,15 +16,15 @@ jest.mock('./../../domain', () => ({
 }));
 
 describe('Admin activate User Use Case', () => {
-    // tslint:disable-next-line
+   
     let mockUserRepository: any;
-    // tslint:disable-next-line
+    
     let mockTokenRepository: any;
-    // tslint:disable-next-line
+    
     let mockNotificationService: any;
-    // tslint:disable-next-line
+   
     let mockInstitutionRepository: any;
-    let service: IRegistrationService;
+    let service: RegistrationService;
     let token: string;
     beforeEach(() => {
         mockUserRepository = {
@@ -46,9 +46,9 @@ describe('Admin activate User Use Case', () => {
             sendNotification: jest.fn(() => true)
         };
 
-        // tslint:disable-next-line
+        
         (verifyToken as any).mockReset();
-         // tslint:disable-next-line
+        
         (generateAdminToken as any).mockReset();
         token = 'test';
 
@@ -69,7 +69,6 @@ describe('Admin activate User Use Case', () => {
     it('should verify the token against the retrieved userId', () => {
         expect.assertions(1);
         return service.adminActivateUser(token).then(
-            // tslint:disable-next-line
             result => expect((verifyToken as any).mock.calls.length).toBe(1)
         );
     });

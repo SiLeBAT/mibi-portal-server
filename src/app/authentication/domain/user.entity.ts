@@ -1,5 +1,5 @@
 import * as argon2 from 'argon2';
-import { IInstitution } from './institution.entity';
+import { Institution } from './institution.entity';
 
 const defaultHashOptions = {
     hashLength: 128,
@@ -18,7 +18,7 @@ export interface IUserBase {
     firstName: string;
     lastName: string;
     email: string;
-    institution: IInstitution;
+    institution: Institution;
 }
 
 export interface IUser extends IUserBase {
@@ -39,13 +39,13 @@ class GenericUser implements IUser {
     firstName: string;
     lastName: string;
     email: string;
-    institution: IInstitution;
+    institution: Institution;
 
     constructor(id: string,
 				email: string,
 				fname: string,
 				lname: string,
-				inst: IInstitution,
+				inst: Institution,
 				private _password: string,
 				private enabled: boolean,
 				private adminEnabled: boolean,
@@ -116,7 +116,7 @@ export function createUser(id: string,
 						   email: string,
 						   fname: string,
 						   lname: string,
-						   inst: IInstitution,
+						   inst: Institution,
 						   password: string,
 						   enabled: boolean = false,
 						   adminEnabled: boolean = false,

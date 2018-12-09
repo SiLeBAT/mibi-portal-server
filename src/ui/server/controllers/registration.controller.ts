@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import * as config from 'config';
 import { logger } from '../../../aspects';
-import { IController, IRegistrationPort } from '../../../app/ports';
+import { IController, RegistrationPort } from '../../../app/ports';
 
 export interface IRegistrationController extends IController {
     register(req: Request, res: Response): void;
@@ -12,19 +12,21 @@ const SUPPORT_CONTACT = config.get('supportContact');
 
 class RegistrationController implements IRegistrationController {
 
-    constructor(private registrationService: IRegistrationPort) { }
+    constructor(private registrationService: RegistrationPort) { }
 
     async activate(req: Request, res: Response) {
         let dto;
         try {
             await this.registrationService.activateUser(req.params.token);
             dto = {
-                title: 'Kontoaktivierung erfolgreich!' // 'Account Activation successful!'
+                activation: true
             };
             res.status(200);
         } catch (err) {
             logger.error('Unable to activate user', { error: err });
-            dto = {};
+            dto = {
+                activation: false
+            };
             res.status(400);
         }
         logger.info('RegistrationController.activate, Response sent');
@@ -37,12 +39,15 @@ class RegistrationController implements IRegistrationController {
             const userName = await this.registrationService.adminActivateUser(req.params.token);
             dto = {
                 title: `Admin Kontoaktivierung erfolgreich! Bestätigung gesendet an ${userName}`, // 'Account Activation successful!'
-                obj: userName
+                obj: userName,
+                activation: true
             };
             res.status(200);
         } catch (err) {
             logger.error('Unable to admin activate user', { error: err });
-            dto = {};
+            dto = {
+                activation: false
+            };
             res.status(400);
         }
         logger.info('RegistrationController.adminactivate, Response sent');
@@ -88,6 +93,6 @@ class RegistrationController implements IRegistrationController {
     }
 }
 
-export function createRegistrationController(service: IRegistrationPort) {
+export function createRegistrationController(service: RegistrationPort) {
     return new RegistrationController(service);
 }

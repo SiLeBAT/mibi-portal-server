@@ -24,6 +24,7 @@
             true,
             "no-public"
         ],
-        "no-console": [true]
+        "no-console": [true],
+        "no-debugger": true
     }
 }

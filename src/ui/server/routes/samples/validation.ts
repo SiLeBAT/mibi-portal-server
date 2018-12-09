@@ -5,7 +5,7 @@ function getRouter(controllerFactory: IControllerFactory) {
     const router = express.Router();
     const controller = controllerFactory.getController('VALIDATION');
 
-    router.route('/:token')
+    router.route('/')
         .post(controller.validateSamples.bind(controller));
     return router;
 }

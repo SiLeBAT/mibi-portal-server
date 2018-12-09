@@ -1,4 +1,3 @@
-export { RepositoryType, IRepositoryFactory, RepositoryFactory } from './repositoryFactory';
-export { IServiceFactory, ServiceFactory } from './serviceFactory';
+export { IServiceFactory, ServiceFactory } from './service.factory';
 
 export interface IController { }

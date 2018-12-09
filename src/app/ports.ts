@@ -1,10 +1,8 @@
-import { ICatalog } from './sampleManagement';
-import { IUserToken, IUser, IInstitution } from './authentication';
+import { ICatalog, INRL, ValidationError } from './sampleManagement';
+import { IUserToken, IUser, Institution } from './authentication';
 
 export {
-    IRepositoryFactory,
     IServiceFactory,
-    RepositoryFactory,
     ServiceFactory,
     IController,
     INotification,
@@ -13,33 +11,36 @@ export {
 } from './sharedKernel';
 
 export {
-    IRegistrationPort,
-    IPasswordPort,
-    ILoginPort,
+    RegistrationPort,
+    PasswordPort,
+    LoginPort,
     IInstitutionPort,
     LoginResult,
-    IInstitution,
-    IAddress,
+    Institution,
+    Address,
     createInstitution,
     createUser,
     IUser,
     IUserToken,
-    IUserLoginInformation,
-    ILoginResponse,
+    UserLoginInformation,
+    LoginResponse,
     IUserBase
 } from './authentication';
 
 export {
-    IFormValidatorPort,
-    ISampleCollection,
-    ISample,
+    IFormAutoCorrectionPort,
+    FormValidatorPort,
+    SampleCollection,
+    Sample,
     createSample,
     createSampleCollection,
     ICatalog,
     Catalog,
 	IDatasetFile,
 	ISenderInfo,
-    IDatasetPort
+    IDatasetPort,
+    ValidationError,
+    INRL
 } from './sampleManagement';
 
 export interface IModelAttributes {
@@ -76,10 +77,10 @@ export interface IUserModelAttributes extends IModelAttributes {
 }
 
 export interface IInstitutionRepository {
-    retrieve(): Promise<IInstitution[]>;
-    findById(id: string): Promise<IInstitution | null>;
-    createInstitution(institution: IInstitution): Promise<IInstitution>;
-    findByInstitutionName(name: string): Promise<IInstitution | null>;
+    retrieve(): Promise<Institution[]>;
+    findById(id: string): Promise<Institution | null>;
+    createInstitution(institution: Institution): Promise<Institution>;
+    findByInstitutionName(name: string): Promise<Institution | null>;
 }
 
 export interface ITokenRepository {
@@ -102,7 +103,27 @@ export interface IUserRepository {
     updateUser(user: IUser): Promise<IUser | null>;
 }
 
+export interface IValidationErrorRepository {
+    getAllErrors(): Promise<ValidationError[]>;
+}
+export interface IStateRepository {
+    getAllFormats(): Promise<IAVVFormatCollection>;
+}
+
+export interface INRLRepository {
+    getAllNRLs(): Promise<INRL[]> ;
+}
+
 export interface ICatalogRepository {
     // tslint:disable-next-line
     getCatalog(catalogName: string): ICatalog<any>;
+}
+
+export interface IAVVFormatCollection {
+    [key: string]: string[];
+}
+export interface IState {
+    name: string;
+    short: string;
+    AVV: string[];
 }

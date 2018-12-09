@@ -1,21 +1,21 @@
 export {
-    IInstitution,
+    Institution,
     createInstitution,
     createUser,
     IUser,
     IUserToken,
     LoginResult,
-    IAddress,
+    Address,
     IUserBase
 } from './domain';
 
 export {
-    ILoginService,
-    ILoginResponse,
-    IUserLoginInformation,
-    IRegistrationService,
-    IRegistrationPort,
-    IPasswordPort,
+    LoginService,
+    LoginResponse,
+    UserLoginInformation,
+    RegistrationService,
+    RegistrationPort,
+    PasswordPort,
     IInstitutionPort,
-    ILoginPort
+    LoginPort
 } from './application';

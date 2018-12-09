@@ -1,6 +1,7 @@
 export { ICatalog, Catalog } from './catalog.entity';
-export { ISample, createSample } from './sample.entity';
-export { createSampleCollection, ISampleCollection } from './sampleCollection.entity';
-export { createValidator, IValidator } from './validator.entity';
-export { IDatasetFile, ISenderInfo } from './datasetFile.entity';
+export { Sample, createSample, SampleData, CorrectionSuggestions, EditValue } from './sample.entity';
+export { createSampleCollection, SampleCollection } from './sample-collection.entity';
+export { createValidator, Validator } from './validator.entity';
+export { IDatasetFile, ISenderInfo } from './dataset-file.entity';
+export { ValidationConstraints, ValidationRuleSet, baseConstraints, zoMoConstraints, standardConstraints, ValidationRule } from './validation-constraints';
 export * from './enums';

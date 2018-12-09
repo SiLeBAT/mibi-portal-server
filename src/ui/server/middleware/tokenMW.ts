@@ -2,22 +2,18 @@ import * as jwt from 'express-jwt';
 
 function validateToken(secret: string) {
     const whiteList = [
-        '/index.html',
-        { url: '/', methods: ['GET'] },
-        /\/public\/*/,
-        /assets\/*/,
-        /\/*.ico/,
-        /\/*.js/,
+        /((?!\/api\/).)*$/,
+        '/api/v1/catalog-search',
+        '/api/v1/system-info',
         '/api/v1/institutions',
-        '/users/login',
-        '/users/register',
-        '/users/recovery',
-        /\/users\/reset\/*/,
-        /\/users\/activate\/*/,
-        /\/users\/adminactivate\/*/,
+        '/api/v1/users/login',
+        '/api/v1/users/register',
+        '/api/v1/users/recovery',
+        /\/api\/v1\/users\/reset\/*/,
+        /\/api\/v1\/users\/activate\/*/,
+        /\/api\/v1\/users\/adminactivate\/*/,
         '/api/v1/upload',
         '/api/v1/validation',
-        // FIXME
         '/api/v1/job'
     ];
 

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { IInstitutionPort, IController, IInstitution, IAddress } from '../../../app/ports';
+import { IInstitutionPort, IController, Institution, Address } from '../../../app/ports';
 import { logger } from '../../../aspects';
 
 interface IInstitutionDTO {
@@ -13,7 +13,6 @@ interface IInstitutionDTO {
     phone: string;
     fax: string;
     email: string[];
-    state_id: string;
 }
 
 interface IAddressDTO {
@@ -50,10 +49,10 @@ class InstitutionController implements IInstitutionController {
         return res.end();
     }
 
-    private fromInstitutionEntityToDTO(inst: IInstitution): IInstitutionDTO {
+    private fromInstitutionEntityToDTO(inst: Institution): IInstitutionDTO {
         return {
             _id: inst.uniqueId,
-            short: inst.short,
+            short: inst.stateShort,
             name1: inst.name1,
             name2: inst.name2,
             location: inst.location,
@@ -61,12 +60,11 @@ class InstitutionController implements IInstitutionController {
             address2: this.fromAddressEntityToDTO(inst.address2),
             phone: inst.phone,
             fax: inst.fax,
-            email: inst.email,
-            state_id: inst.stateId
+            email: inst.email
         };
     }
 
-    private fromAddressEntityToDTO(addr: IAddress): IAddressDTO {
+    private fromAddressEntityToDTO(addr: Address): IAddressDTO {
         return addr;
     }
 }
