@@ -93,16 +93,10 @@ class FileCatalogRepository implements ICatalogRepository {
                 filename: 'PLZ.csv',
                 id: 'plz',
                 uId: 'plz'
-            },
-            {
-                filename: 'ZSP2017.csv',
-                id: 'zsp2017'
-            },
-            {
-                filename: 'ZSP2018.csv',
-                id: 'zsp2018'
             }
         ];
+
+        this.addZoMoDates(catalogsConfig);
 
         const promiseArray = catalogsConfig.map(catalogConfig => {
             const filePath = path.join(this.dataDir, catalogConfig.filename);
@@ -126,6 +120,31 @@ class FileCatalogRepository implements ICatalogRepository {
 
     getCatalog(catalogName: string): ICatalog<CatalogData> {
         return this.catalogs[catalogName];
+    }
+
+    private addZoMoDates(catalogsConfig: CatalogConfig[]): CatalogConfig[] {
+        const currentYear = new Date().getFullYear();
+
+        const currentName: string = 'zsp' + currentYear;
+        const lastName: string = 'zsp' + (currentYear - 1);
+        const futureName: string = 'zsp' + (currentYear + 1);
+
+        catalogsConfig.push({
+            filename: currentName.toUpperCase() + '.csv',
+            id: currentName
+        });
+
+        catalogsConfig.push({
+            filename: lastName.toUpperCase() + '.csv',
+            id: lastName
+        });
+
+        catalogsConfig.push({
+            filename: futureName.toUpperCase() + '.csv',
+            id: futureName
+        });
+
+        return catalogsConfig;
     }
 
     private importCSVFile(filePath: string, entryFilter: Function = () => true): Promise<CatalogData[]> {

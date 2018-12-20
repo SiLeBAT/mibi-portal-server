@@ -51,8 +51,10 @@ class AppServer implements IAppServer {
 
         this.server.use((req, res, next) => {
             res.setHeader('X-Frame-Options', 'deny');
-            res.setHeader('Cache-Control', 'no-cache');
+            res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
             res.setHeader('Pragma', 'no-cache');
+            res.setHeader('X-XSS-Protection', '1; mode=block');
+            res.setHeader('X-Content-Type-Options', 'nosniff');
             return next();
         });
         this.server.use(validateToken(serverConfig.jwtSecret));
