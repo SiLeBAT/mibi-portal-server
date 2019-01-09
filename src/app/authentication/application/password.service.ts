@@ -2,10 +2,8 @@ import * as config from 'config';
 import { IUserRepository, ITokenRepository } from '../../ports';
 import { IUser, TokenType, generateToken, verifyToken, IUserToken } from './../domain';
 import { IRecoveryData, INotificationService, NotificationType } from './../../sharedKernel';
-import { ApplicationDomainError } from '../../sharedKernel/errors';
 import { logger } from '../../../aspects';
 
-// TODO: Should these be here?  Should they not be added later?
 const APP_NAME = config.get('appName');
 const API_URL = config.get('server.apiUrl');
 const SUPPORT_CONTACT = config.get('supportContact');
@@ -30,7 +28,7 @@ class DefaultPasswordService implements PasswordService {
         try {
             user = await this.userRepository.findByUsername(recoveryData.email);
         } catch (err) {
-            logger.error('recoverPassword: no user for provided email found, error=', err);
+            logger.error(`recoverPassword: no user for provided email found, error=${err}`);
         }
 
         if (!user) {
@@ -55,11 +53,9 @@ class DefaultPasswordService implements PasswordService {
     async resetPassword(token: string, password: string): Promise<void> {
 
         const userToken = await this.tokenRepository.getUserTokenByJWT(token);
-        if (!userToken) throw new ApplicationDomainError('No UserToken for JWT Token.');
         const userId = userToken.userId;
         verifyToken(token, String(userId));
         const user = await this.userRepository.findById(userId);
-        if (!user) throw new ApplicationDomainError(`Unknown user. id=${userId}`);
         await user.updatePassword(password);
         await this.userRepository.updateUser(user);
         await this.tokenRepository.deleteResetTokenForUser(user);

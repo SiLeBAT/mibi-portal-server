@@ -78,9 +78,9 @@ export interface IUserModelAttributes extends IModelAttributes {
 
 export interface IInstitutionRepository {
     retrieve(): Promise<Institution[]>;
-    findById(id: string): Promise<Institution | null>;
+    findById(id: string): Promise<Institution>;
     createInstitution(institution: Institution): Promise<Institution>;
-    findByInstitutionName(name: string): Promise<Institution | null>;
+    findByInstitutionName(name: string): Promise<Institution>;
 }
 
 export interface ITokenRepository {
@@ -91,16 +91,16 @@ export interface ITokenRepository {
     deleteResetTokenForUser(user: IUser): Promise<boolean>;
     deleteAdminTokenForUser(user: IUser): Promise<boolean>;
     saveToken(token: IUserToken): Promise<IUserToken>;
-    getUserTokenByJWT(token: string): Promise<IUserToken | null>;
+    getUserTokenByJWT(token: string): Promise<IUserToken>;
 }
 
 export interface IUserRepository {
-    findById(id: string): Promise<IUser | null>;
-    getPasswordForUser(username: string): Promise<string | null>;
-    findByUsername(username: string): Promise<IUser | null>;
+    findById(id: string): Promise<IUser>;
+    getPasswordForUser(username: string): Promise<string>;
+    findByUsername(username: string): Promise<IUser>;
     hasUser(username: string): Promise<boolean>;
     createUser(user: IUser): Promise<IUser>;
-    updateUser(user: IUser): Promise<IUser | null>;
+    updateUser(user: IUser): Promise<IUser>;
 }
 
 export interface IValidationErrorRepository {

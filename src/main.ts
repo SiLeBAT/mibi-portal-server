@@ -24,7 +24,7 @@ initialiseCatalogRepository().then(
         application.startServer();
 
         process.on('uncaughtException', (err) => {
-            logger.error('Uncaught Exception', { error: err });
+            logger.error(`Uncaught Exception. error=${err}`);
             process.exit(1);
         });
     }

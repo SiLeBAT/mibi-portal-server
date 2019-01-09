@@ -37,7 +37,7 @@ class InstitutionController implements IInstitutionController {
             res.status(200)
                 .json(dto);
         }).catch((err) => {
-            logger.error('Unable to retrieve institutions.', { error: err });
+            logger.error(`Unable to retrieve institutions. error=${err}`);
             dto = {
                 title: 'Error getting all institutions',
                 obj: err

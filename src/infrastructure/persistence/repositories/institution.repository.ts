@@ -1,16 +1,17 @@
 import { createRepository, InstitutionSchema, IInstitutionModel } from '../data-store';
 import { IRepositoryBase, IInstitutionRepository, Institution, createInstitution } from '../../../app/ports';
 import { mapModelToInstitution } from './data-mappers';
+import { ApplicationDomainError } from '../../../app/sharedKernel';
 
 class InstitutionRepository implements IInstitutionRepository {
 
     constructor(private baseRepo: IRepositoryBase<IInstitutionModel>) {
     }
 
-    findById(id: string): Promise<Institution | null> {
+    findById(id: string): Promise<Institution> {
         return this.baseRepo.findById(id).then(
             m => {
-                if (!m) return null;
+                if (!m) throw new ApplicationDomainError(`Institute not found. id=${id}`);
                 return mapModelToInstitution(m);
             }
         );
@@ -37,10 +38,10 @@ class InstitutionRepository implements IInstitutionRepository {
         );
     }
 
-    findByInstitutionName(name: string): Promise<Institution | null> {
+    findByInstitutionName(name: string): Promise<Institution> {
         return this.baseRepo.findOne({ name1: name }).then(
-            (model: IInstitutionModel | null) => {
-                if (!model) return null;
+            (model: IInstitutionModel) => {
+                if (!model) throw new ApplicationDomainError(`Institute not found. name=${name}`);
                 return createInstitution(model._id.toHexString());
             }
         );

@@ -25,7 +25,7 @@ class LoginController implements ILoginController {
             logger.info('LoginController.login, Response sent');
             res.status(200).json(dto);
         } catch (err) {
-            logger.error('Login failed', { error: err });
+            logger.error(`Login failed. error=${err}`);
             res.status(401).json({
                 error: 'Unauthorized'
             });

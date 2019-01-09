@@ -1,6 +1,7 @@
 import { createRepository, ResetTokenSchema, IResetTokenModel } from '../data-store';
 import { IRepositoryBase, ITokenRepository, IUserToken, IUser } from '../../../app/ports';
 import { TokenType } from '../../../app/authentication/domain';
+import { ApplicationDomainError } from '../../../app/sharedKernel';
 
 class TokenRepository implements ITokenRepository {
     constructor(private baseRepo: IRepositoryBase<IResetTokenModel>) {
@@ -51,10 +52,10 @@ class TokenRepository implements ITokenRepository {
             res => newToken
         );
     }
-    getUserTokenByJWT(token: string): Promise<IUserToken | null> {
+    getUserTokenByJWT(token: string): Promise<IUserToken> {
         return this.baseRepo.findOne({ token: token }).then(
             model => {
-                if (!model) return null;
+                if (!model) throw new ApplicationDomainError(`No UserToken for JWT Token. token=${token}`);
                 return {
                     token: model.token,
                     type: model.type,

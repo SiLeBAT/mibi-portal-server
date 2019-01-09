@@ -26,7 +26,7 @@ class FileCatalogRepository implements ICatalogRepository {
     }
 
     initialise() {
-        logger.verbose('FileCatalogRepository.initialize, Loading Catalog data from Filesystem', { dataDir: this.dataDir });
+        logger.verbose(`FileCatalogRepository.initialize, Loading Catalog data from Filesystem. dataDir=${this.dataDir}`);
 
         const catalogsConfig: CatalogConfig[] = [
             {
@@ -106,7 +106,7 @@ class FileCatalogRepository implements ICatalogRepository {
                 );
             } else {
                 return new Promise((resolve, reject) => {
-                    logger.warn('Catalog missing on Filesystem', { catalog: catalogConfig.filename });
+                    logger.warn(`Catalog missing on Filesystem. catalog=${catalogConfig.filename}`);
                     this.catalogs[catalogConfig.id] = new Catalog<CatalogData>([], catalogConfig.uId);
                     resolve();
                 });
@@ -114,7 +114,7 @@ class FileCatalogRepository implements ICatalogRepository {
         });
 
         return Promise.all(promiseArray).then(
-            data => logger.info('Finished initialising Catalog Repository from Filesystem', { dataDir: this.dataDir })
+            () => logger.info(`Finished initialising Catalog Repository from Filesystem. dataDir=${this.dataDir}`)
         );
     }
 

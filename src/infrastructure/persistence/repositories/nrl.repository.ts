@@ -2,7 +2,6 @@ import { createRepository, NRLSchema, INRLModel } from '../data-store';
 import { INRLRepository, IRead } from '../../../app/ports';
 import { INRL } from '../../../app/sampleManagement/application';
 import { mapModelToNRL } from './data-mappers';
-import { logger } from '../../../aspects';
 import { ApplicationSystemError } from '../../../app/sharedKernel/errors';
 
 class NRLRepository implements INRLRepository {
@@ -21,8 +20,7 @@ class NRLRepository implements INRLRepository {
             }
         ).catch(
             error => {
-                logger.error(error);
-                throw new ApplicationSystemError('Unable to load NRL Data');
+                throw new ApplicationSystemError(`Unable to load NRL Data. error=${error}`);
             }
         );
     }
