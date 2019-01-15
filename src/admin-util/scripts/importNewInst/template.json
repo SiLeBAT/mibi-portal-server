@@ -21,7 +21,7 @@
     // SN	Sachsen
     // TH	Thüringen
     // required
-    "short": "BE",
+    "state_short": "BE",
     // required
     "name1": "neues Landeslabor Berlin",
     "name2": "Dienstsitz Karlshorst",

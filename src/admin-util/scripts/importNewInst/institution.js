@@ -61,7 +61,7 @@ userSchema.plugin(mongooseUniqueValidator);
 
 
 const institutionSchema = new mongoose.Schema({
-    short: {
+    state_short: {
         type: String,
         required: true
     },
