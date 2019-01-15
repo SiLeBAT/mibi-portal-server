@@ -38,9 +38,9 @@ async function start() {
 			process.exit(0);
 		}
 
-		const state = await findState(data.newInstitution.short);
+		const state = await findState(data.newInstitution.state_short);
 		if (!state) {
-			console.log(`The state for ${data.newInstitution.short} does not exist in db, exiting...`);
+			console.log(`The state for ${data.newInstitution.state_short} does not exist in db, exiting...`);
 			process.exit(0);
 		}
 
@@ -120,8 +120,9 @@ async function findUser(email) {
 
 async function findInst(institution) {
 	const toFind = {
-		short: institution.short,
+		state_short: institution.state_short,
 		name1: institution.name1,
+		name2: institution.name2,
 		location: institution.location
 	}
 	const inst = await Institution.findOne(toFind);
