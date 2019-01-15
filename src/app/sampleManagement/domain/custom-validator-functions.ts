@@ -292,7 +292,7 @@ export interface IReferenceDateOptions extends IValidatiorFunctionOptions {
         unit: string;
     };
 }
-// TODO: Clean this up.
+
 // tslint:disable-next-line
 function referenceDate(value: string, options: IReferenceDateOptions, key: keyof SampleData, attributes: any) {
     if (moment.utc(value, 'DD-MM-YYYY').isValid()) {

@@ -128,6 +128,13 @@ export const zoMoConstraints: ValidationConstraints = {
             }],
             year: ['sampling_date', 'isolation_date']
         }
+    },
+    process_state_adv: {
+        dependentFieldEntry: {
+            error: 39,
+            field: 'operations_mode_adv',
+            regex: '^4'
+        }
     }
 };
 
@@ -355,11 +362,6 @@ export const baseConstraints: ValidationConstraints = {
         }
     },
     process_state_adv: {
-        dependentFieldEntry: {
-            error: 39,
-            field: 'operations_mode_adv',
-            regex: '^4'
-        },
         length: {
             error: 80,
             is: 3,
