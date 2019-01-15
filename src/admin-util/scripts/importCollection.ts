@@ -108,7 +108,7 @@ function writeToDB(collection: string, entries: any[]) {
     const repo = mapCollectionToRepository(collection);
     const promises: Promise<Document>[] = [];
     entries.forEach(e => {
-        logger.info(`Adding entry to collection. collection=${collection} entry=${e}`);
+        logger.info(`Adding entry to collection. collection=${collection} entry=${e.toString()}`);
         promises.push(repo.create(
             e
         ));
