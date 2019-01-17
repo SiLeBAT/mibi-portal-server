@@ -103,7 +103,7 @@ class DefaultFormValidatorService implements FormValidatorService {
     }
 
     private getConstraints(set: ConstraintSet, options: ValidationOptions) {
-        let newConstraints: ValidationConstraints = { ...baseConstraints };
+        let newConstraints: ValidationConstraints = _.cloneDeep(baseConstraints);
 
         switch (set) {
             case ConstraintSet.ZOMO:
@@ -138,7 +138,7 @@ class DefaultFormValidatorService implements FormValidatorService {
             // Necessary because of Ticket #49
             newConstraints['sample_id_avv']['matchesIdToSpecificYear'].regex = this.avvFormatProvider.getFormat(options.state);
         }
-        return newConstraints;
+        return { ...newConstraints };
     }
 
     private setNRLConstraints(newConstraints: ValidationConstraints, options: ValidationOptions): ValidationConstraints {
@@ -161,7 +161,7 @@ class DefaultFormValidatorService implements FormValidatorService {
                 break;
             default:
         }
-        return newConstraints;
+        return { ...newConstraints };
     }
 }
 
