@@ -103,7 +103,7 @@ class DefaultFormValidatorService implements FormValidatorService {
     }
 
     private getConstraints(set: ConstraintSet, options: ValidationOptions) {
-        let newConstraints: ValidationConstraints = _.cloneDeep(baseConstraints);
+        let newConstraints: ValidationConstraints = _.cloneDeep(baseConstraints) || {};
 
         switch (set) {
             case ConstraintSet.ZOMO:

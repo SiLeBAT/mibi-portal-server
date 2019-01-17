@@ -208,12 +208,12 @@ describe('Validate Sample Use Case', () => {
             samples: [genericTestSample, identicalSample]
         };
 
-        expect.assertions(2);
         const result = await service.validateSamples(specificTestSampleCollection, {});
         const errors = result.samples[0].getErrors();
 
         expect(errors['sample_id'][0]).toEqual(validationError);
         expect(errors['sample_id_avv'][0]).toEqual(validationError);
+        expect.assertions(2);
     });
 
 });
