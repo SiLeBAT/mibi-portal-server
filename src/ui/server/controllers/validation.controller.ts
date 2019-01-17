@@ -128,12 +128,13 @@ class DefaultValidationController implements ValidationController {
         let nrl: string = '';
 
         // TODO: Should this mapping be elsewhere?
-        switch (meta.nrl) {
+        switch (meta.nrl.trim()) {
             case 'NRL Überwachung von Bakterien in zweischaligen Weichtieren':
                 nrl = 'NRL-Vibrio';
                 break;
 
             case 'NRL Escherichia coli einschließlich verotoxinbildende E. coli':
+            case 'NRL Verotoxinbildende Escherichia coli':
                 nrl = 'NRL-VTEC';
                 break;
 
