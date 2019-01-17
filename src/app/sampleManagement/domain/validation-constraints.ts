@@ -185,6 +185,7 @@ export const baseConstraints: ValidationConstraints = {
             alternateKeys: ['Text1']
         },
         matchesRegexPattern: {
+            caseInsensitive: true,
             error: 73,
             regex: [],
             ignoreNumbers: true
