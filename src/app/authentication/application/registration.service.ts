@@ -5,11 +5,9 @@ import { IUser, createUser, TokenType, generateToken, generateAdminToken, verify
 import { IRecoveryData, INotificationService, NotificationType } from '../../sharedKernel/';
 import { ApplicationDomainError } from '../../sharedKernel/errors';
 
-// TODO: Should these be here?  Should they not be added later?
 const APP_NAME = config.get('appName');
 const API_URL = config.get('server.apiUrl');
 const SUPPORT_CONTACT = config.get('supportContact');
-const JOB_RECIPIENT = config.get('jobRecipient');
 
 export interface RegistrationPort {
     activateUser(token: string): Promise<void>;
@@ -22,7 +20,6 @@ export interface RegistrationService extends RegistrationPort {
     handleUserIfNotAdminActivated(user: IUser): Promise<void>;
 }
 
-// TODO: Fix or remove this interface
 export interface UserRegistration {
     firstName: string;
     lastName: string;
@@ -216,7 +213,7 @@ class DefaultRegistrationService implements RegistrationService {
                 'appName': APP_NAME
             },
             meta: {
-                email: JOB_RECIPIENT
+                email: SUPPORT_CONTACT
             }
         };
     }
@@ -235,7 +232,7 @@ class DefaultRegistrationService implements RegistrationService {
                 'appName': APP_NAME
             },
             meta: {
-                email: JOB_RECIPIENT
+                email: SUPPORT_CONTACT
             }
         };
     }
@@ -286,7 +283,7 @@ class DefaultRegistrationService implements RegistrationService {
                 'appName': APP_NAME
             },
             meta: {
-                email: JOB_RECIPIENT
+                email: SUPPORT_CONTACT
             }
         };
     }

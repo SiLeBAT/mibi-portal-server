@@ -24,6 +24,7 @@ export interface IMatchIdToYearOptions extends IValidatiorFunctionOptions {
 
 export interface IMatchRegexPatternOptions extends IMatchIdToYearOptions {
     ignoreNumbers: boolean;
+    caseInsensitive?: boolean;
 }
 
 export interface IDependentFieldEntryOptions extends IValidatiorFunctionOptions {
@@ -52,7 +53,7 @@ function matchesRegexPattern(value: string, options: IMatchRegexPatternOptions, 
     let success = false;
     const regexpAry = options.regex.map(
         str => {
-            return new RegExp(str);
+            return new RegExp(str, options.caseInsensitive ? 'i' : undefined);
         }
     );
     regexpAry.forEach(
@@ -292,7 +293,7 @@ export interface IReferenceDateOptions extends IValidatiorFunctionOptions {
         unit: string;
     };
 }
-// TODO: Clean this up.
+
 // tslint:disable-next-line
 function referenceDate(value: string, options: IReferenceDateOptions, key: keyof SampleData, attributes: any) {
     if (moment.utc(value, 'DD-MM-YYYY').isValid()) {

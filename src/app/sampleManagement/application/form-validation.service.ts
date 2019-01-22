@@ -103,15 +103,7 @@ class DefaultFormValidatorService implements FormValidatorService {
     }
 
     private getConstraints(set: ConstraintSet, options: ValidationOptions) {
-        const newConstraints: ValidationConstraints = { ...baseConstraints };
-        if (newConstraints['sample_id_avv'] && newConstraints['sample_id_avv']['matchesIdToSpecificYear']) {
-            // Necessary because of Ticket #49
-            newConstraints['sample_id_avv']['matchesIdToSpecificYear'].regex = this.avvFormatProvider.getFormat(options.state);
-        }
-        if (newConstraints['pathogen_adv'] && newConstraints['pathogen_adv']['matchesRegexPattern']) {
-            // Necessary because of Ticket #54
-            newConstraints['pathogen_adv']['matchesRegexPattern'].regex = this.nrlSelectorProvider.getSelectors(options.nrl);
-        }
+        let newConstraints: ValidationConstraints = _.cloneDeep(baseConstraints) || {};
 
         switch (set) {
             case ConstraintSet.ZOMO:
@@ -129,12 +121,47 @@ class DefaultFormValidatorService implements FormValidatorService {
                     }
                 });
         }
+
+        newConstraints = this.setStateSpecificConstraints(newConstraints, options);
+        newConstraints = this.setNRLConstraints(newConstraints, options);
+
         _.forEach(newConstraints, (v: ValidationRuleSet, k) => {
             _.forEach(v, (v2: ValidationRule, k2) => {
                 v2['message'] = this.validationErrorProvider.getError(v2['error']);
             });
         });
         return newConstraints;
+    }
+
+    private setStateSpecificConstraints(newConstraints: ValidationConstraints, options: ValidationOptions): ValidationConstraints {
+        if (newConstraints['sample_id_avv'] && newConstraints['sample_id_avv']['matchesIdToSpecificYear']) {
+            // Necessary because of Ticket #49
+            newConstraints['sample_id_avv']['matchesIdToSpecificYear'].regex = this.avvFormatProvider.getFormat(options.state);
+        }
+        return { ...newConstraints };
+    }
+
+    private setNRLConstraints(newConstraints: ValidationConstraints, options: ValidationOptions): ValidationConstraints {
+        if (newConstraints['pathogen_adv'] && newConstraints['pathogen_adv']['matchesRegexPattern']) {
+            // Necessary because of Ticket #54
+            newConstraints['pathogen_adv']['matchesRegexPattern'].regex = this.nrlSelectorProvider.getSelectors(options.nrl);
+        }
+        switch (options.nrl) {
+            case 'NRL-AR':
+                newConstraints['sampling_reason_adv'] = newConstraints['sampling_reason_adv'] || {};
+                newConstraints['sampling_reason_adv']['exclusion'] = {
+                    error: 95,
+                    within: [10, '10', 'Planprobe']
+                };
+                newConstraints['sampling_reason_text'] = newConstraints['sampling_reason_text'] || {};
+                newConstraints['sampling_reason_text']['exclusion'] = {
+                    error: 95,
+                    within: [10, 'Planprobe', '10']
+                };
+                break;
+            default:
+        }
+        return { ...newConstraints };
     }
 }
 

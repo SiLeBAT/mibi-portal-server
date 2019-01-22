@@ -71,7 +71,7 @@ class DefaultValidationController implements ValidationController {
         if (req.is('application/json')) {
             try {
                 const sampleCollection: SampleCollection = this.fromDTOToSamples(req.body);
-                const validationOptions: ValidationOptions = this.fromDTOToOptions(req.body.meta);
+                const validationOptions: ValidationOptions = req.body.meta;
                 // Auto-correction needs to happen before validation?
                 const autocorrectedSamples = await this.formAutoCorrectionService.applyAutoCorrection(sampleCollection);
                 const validationResult = await this.formValidationService.validateSamples(autocorrectedSamples, validationOptions);
@@ -122,51 +122,6 @@ class DefaultValidationController implements ValidationController {
         const samples = dto.data.map(s => createSample({ ...s }));
 
         return createSampleCollection(samples);
-    }
-
-    private fromDTOToOptions(meta: ValidationRequestMeta): ValidationOptions {
-        let nrl: string = '';
-
-        // TODO: Should this mapping be elsewhere?
-        switch (meta.nrl) {
-            case 'NRL Überwachung von Bakterien in zweischaligen Weichtieren':
-                nrl = 'NRL-Vibrio';
-                break;
-
-            case 'NRL Escherichia coli einschließlich verotoxinbildende E. coli':
-                nrl = 'NRL-VTEC';
-                break;
-
-            case 'Bacillus spp.':
-            case 'Clostridium spp. (C. difficile)':
-                nrl = 'Sporenbildner';
-                break;
-            case 'NRL koagulasepositive Staphylokokken einschließlich Staphylococcus aureus':
-                nrl = 'NRL-Staph';
-                break;
-
-            case 'NRL Salmonellen(Durchführung von Analysen und Tests auf Zoonosen)':
-                nrl = 'NRL-Salm';
-                break;
-            case 'NRL Listeria monocytogenes':
-                nrl = 'NRL-Listeria';
-                break;
-            case 'NRL Campylobacter':
-                nrl = 'NRL-Campy';
-                break;
-            case 'NRL Antibiotikaresistenz':
-                nrl = 'NRL-AR';
-                break;
-            case 'Yersinia':
-                nrl = 'KL-Yersinia';
-                break;
-            default:
-
-        }
-        return {
-            state: meta.state,
-            nrl
-        };
     }
 
 }

@@ -3,7 +3,7 @@
     "email": "x@y.z"
   },
   "newInstitution" : {
-    "short": "BE",
+    "state_short": "BE",
     "name1": "neues Landeslabor Berlin",
     "name2": "Dienstsitz Karlshorst",
     "location": "12345 Berlin",
