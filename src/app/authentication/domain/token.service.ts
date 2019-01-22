@@ -1,6 +1,7 @@
 
 import * as config from 'config';
 import { sign, verify } from 'jsonwebtoken';
+import { ApplicationDomainError } from '../../sharedKernel';
 
 const EXPIRATION_TIME = 60 * 60 * 24;
 const ADMIN_EXPIRATION_TIME = 60 * 60 * 24 * 7;
@@ -16,19 +17,26 @@ function generateToken(id: string) {
 
 function generateAdminToken(id: string) {
     return sign(
-        { sub: id,
-		  admin: true },
+        {
+            sub: id,
+            admin: true
+        },
         JWT_SECRET,
         { expiresIn: ADMIN_EXPIRATION_TIME }
     );
 }
 
 function verifyToken(token: string, id: string) {
-    return verify(token, JWT_SECRET, { subject: id });
+    try {
+        const payload = verify(token, JWT_SECRET, { subject: id });
+        return payload;
+    } catch (error) {
+        throw new ApplicationDomainError(`Unable to verify Token. error=${error}`);
+    }
 }
 
 export {
-	generateToken,
-	generateAdminToken,
+    generateToken,
+    generateAdminToken,
     verifyToken
 };

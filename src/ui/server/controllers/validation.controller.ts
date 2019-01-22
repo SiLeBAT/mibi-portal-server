@@ -117,7 +117,7 @@ class DefaultValidationController implements ValidationController {
 
     private fromDTOToSamples(dto: ValidationRequest): SampleCollection {
         if (!Array.isArray(dto.data)) {
-            throw new ApplicationSystemError(`Invalid input: Array expected, dto.data${dto.data}`);
+            throw new ApplicationSystemError(`Invalid input: Array expected, dto.data=${dto.data}`);
         }
         const samples = dto.data.map(s => createSample({ ...s }));
 

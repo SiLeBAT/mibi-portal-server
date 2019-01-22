@@ -119,7 +119,7 @@ function sendMail(templateData: any, templateFile: string, options: IMailOptions
 
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-            logger.error('Error sending mail', { error: error });
+            logger.error(`Error sending mail. . error=${error}`);
         } else {
             logger.info('Email sent', {
                 subject: mailOptions.subject

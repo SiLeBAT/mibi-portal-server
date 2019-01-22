@@ -1,6 +1,7 @@
 import { IRepositoryBase, IUserRepository, createUser, IUser } from '../../../app/ports';
 import { UserSchema, IUserModel, IUserModelUpdateResponse, createRepository } from '../data-store';
 import { mapModelToUser } from './data-mappers';
+import { ApplicationDomainError, ApplicationSystemError } from '../../../app/sharedKernel';
 
 class UserRepository implements IUserRepository {
     constructor(private baseRepo: IRepositoryBase<IUserModel>) {
@@ -8,27 +9,31 @@ class UserRepository implements IUserRepository {
 
     findById(id: string) {
         return this.baseRepo.findById(id)
-			.then((userModel: IUserModel) => {
-			    if (!userModel) return null;
-			    return mapModelToUser(userModel);
-}
-		);
+            .then((userModel: IUserModel) => {
+                if (!userModel) throw new ApplicationDomainError(`User not found. id=${id}`);
+                return mapModelToUser(userModel);
+            }
+            ).catch((error) => {
+                throw new ApplicationDomainError(`User not found. userId=${id}; error=${error}`);
+            });
     }
 
     findByUsername(username: string) {
         const nameRegex = new RegExp(username, 'i');
 
         return this.baseRepo.findOne({ 'email': { $regex: nameRegex } })
-            .then((userModel: IUserModel | null) => {
+            .then((userModel: IUserModel) => {
                 if (!userModel) return Promise.reject(null);
                 return populateWithAuxData(userModel);
             })
             .then(
                 (userModel: IUserModel) => {
-                    if (!userModel) return null;
+                    if (!userModel) throw new ApplicationDomainError(`User not found. username=${username}`);
                     return mapModelToUser(userModel);
                 }
-            );
+            ).catch(() => {
+                throw new ApplicationDomainError(`User not found. username=${username}`);
+            });
     }
 
     getPasswordForUser(username: string) {
@@ -36,10 +41,12 @@ class UserRepository implements IUserRepository {
 
         return this.baseRepo.findOne({ 'email': { $regex: nameRegex } })
             .then((userModel: IUserModel) => {
-                if (!userModel) return null;
+                if (!userModel) throw new ApplicationDomainError(`User not found. username=${username}`);
                 return userModel.password;
             }
-        );
+            ).catch(() => {
+                throw new ApplicationDomainError(`User not found. username=${username}`);
+            });
     }
 
     hasUser(username: string) {
@@ -47,7 +54,7 @@ class UserRepository implements IUserRepository {
 
         return this.baseRepo.findOne({ 'email': { $regex: nameRegex } })
             .then(docs => !!docs
-        );
+            );
     }
 
     createUser(user: IUser) {
@@ -60,7 +67,9 @@ class UserRepository implements IUserRepository {
         });
         return this.baseRepo.create(newUser).then(
             model => createUser(model._id.toHexString(), user.email, user.firstName, user.lastName, user.institution, user.password, model.enabled, model.adminEnabled)
-        );
+        ).catch(() => {
+            throw new ApplicationSystemError(`Unable to create user. user=${user}`);
+        });
     }
 
     // FIXME: Should also update institutions
@@ -76,10 +85,12 @@ class UserRepository implements IUserRepository {
             lastAttempt: user.getLastLoginAttempt()
         }).then(
             (response: IUserModelUpdateResponse) => {
-                if (!response.ok) return null;
+                if (!response.ok) throw new ApplicationSystemError(`Response not OK. Unable to update user. user=${user}`);
                 return this.findById(user.uniqueId);
             }
-        );
+        ).catch((error) => {
+            throw new ApplicationSystemError(`Unable to update user. user=${user}; error=${error}`);
+        });
     }
 
 }

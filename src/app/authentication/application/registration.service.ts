@@ -40,35 +40,28 @@ class DefaultRegistrationService implements RegistrationService {
 
     async activateUser(token: string): Promise<void> {
         const userToken = await this.tokenRepository.getUserTokenByJWT(token);
-        if (!userToken) throw new ApplicationDomainError(`No UserToken for JWT Token. token=${token}`);
         const userId = userToken.userId;
         verifyToken(token, String(userId));
         const user = await this.userRepository.findById(userId);
-        if (!user) throw new ApplicationDomainError(`Unknown user. id=${userId}`);
         user.isActivated(true);
         await this.userRepository.updateUser(user);
         await this.tokenRepository.deleteTokenForUser(user);
         await this.prepareUserForAdminActivation(user);
-        logger.verbose('RegistrationService.activateUser, User activation successful');
-        return;
+        logger.info(`RegistrationService.activateUser, User activation successful. token=${token}`);
     }
 
     async adminActivateUser(adminToken: string): Promise<string> {
         const userAdminToken = await this.tokenRepository.getUserTokenByJWT(adminToken);
-        if (!userAdminToken) throw new ApplicationDomainError(`No UserAdminToken for JWT Token. token=${adminToken}`);
         const userId = userAdminToken.userId;
         verifyToken(adminToken, String(userId));
         const user = await this.userRepository.findById(userId);
-        if (!user) throw new ApplicationDomainError(`Unknown user. id=${userId}`);
         user.isAdminActivated(true);
         await this.userRepository.updateUser(user);
         await this.tokenRepository.deleteAdminTokenForUser(user);
-        logger.verbose('RegistrationService.adminActivateUser, User admin activation successful');
-
         const adminActivationNotification = this.createAdminActivationNotification(user);
         this.notificationService.sendNotification(adminActivationNotification);
-
         const userName = user.firstName + ' ' + user.lastName;
+        logger.verbose('RegistrationService.adminActivateUser, User admin activation successful');
         return userName;
     }
 
@@ -84,7 +77,7 @@ class DefaultRegistrationService implements RegistrationService {
         try {
             inst = await this.institutionRepository.findById(credentials.institution);
         } catch (err) {
-            logger.error('RegistrationService.registerUser, Unable to find instituton: ', err);
+            logger.error(`RegistrationService.registerUser, Unable to find instituton: error=${err}`);
             logger.info('RegistrationService.registerUser, link registered user to dummy institution');
             instituteIsUnknown = true;
             inst = await this.getDummyInstitution();
@@ -163,8 +156,12 @@ class DefaultRegistrationService implements RegistrationService {
     }
 
     private async getDummyInstitution() {
-        let inst = await this.institutionRepository.findByInstitutionName('dummy');
-        if (!inst) {
+        let inst;
+
+        try {
+            inst = await this.institutionRepository.findByInstitutionName('dummy');
+        } catch (error) {
+            logger.warn(`Dummy institute doesn't exists: Creating! error=${error}`);
             const newInstitution = createInstitution('0000');
             newInstitution.stateShort = 'dummy';
             newInstitution.name1 = 'dummy';

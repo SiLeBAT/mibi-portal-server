@@ -16,7 +16,7 @@ class DatasetController implements IDatasetController {
     async saveDataset(req: Request, res: Response) {
         uploadToDisk(req, res, function (err: Error) {
             if (err) {
-                logger.error('Unable to save Dataset', { error: err });
+                logger.error(`Unable to save Dataset. error=${err}`);
                 return res
                     .status(500)
                     .end();
@@ -31,7 +31,7 @@ class DatasetController implements IDatasetController {
         uploadToMemory(req, res, function (err: Error) {
 
             if (err) {
-                logger.error('Unable to submit Dataset', { error: err });
+                logger.error(`Unable to submit Dataset. error=${err}`);
                 return res
                     .status(500)
                     .end();
@@ -61,7 +61,7 @@ class DatasetController implements IDatasetController {
             try {
                 service.sendDatasetFile(file, senderInfo);
             } catch (err) {
-                logger.error(`Unable to send dataset.`, { error: err });
+                logger.error(`Unable to send dataset. error=${err}`);
                 return res.status(500).json({
                     error: 'Unable to send dataset.'
                 }).end();

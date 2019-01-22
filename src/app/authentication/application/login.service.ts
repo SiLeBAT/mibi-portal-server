@@ -35,8 +35,6 @@ class DefaultLoginService implements LoginService {
 
         const user = await this.userRepository.findByUsername(credentials.email);
 
-        if (!user) throw new ApplicationDomainError(`User not known. email=${credentials.email}`);
-
         if (!user.isActivated()) {
             return this.rejectInactiveUser(user, {
                 userAgent: credentials.userAgent as string,

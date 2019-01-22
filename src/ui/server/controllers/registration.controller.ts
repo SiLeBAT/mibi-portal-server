@@ -23,7 +23,7 @@ class RegistrationController implements IRegistrationController {
             };
             res.status(200);
         } catch (err) {
-            logger.error('Unable to activate user', { error: err });
+            logger.error(`Unable to activate user. error=${err}; token=${req.params.token}`);
             dto = {
                 activation: false
             };
@@ -44,7 +44,7 @@ class RegistrationController implements IRegistrationController {
             };
             res.status(200);
         } catch (err) {
-            logger.error('Unable to admin activate user', { error: err });
+            logger.error(`Unable to admin activate user. error=${err}; token=${req.params.token}`);
             dto = {
                 activation: false
             };
