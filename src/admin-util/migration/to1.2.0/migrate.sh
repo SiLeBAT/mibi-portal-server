@@ -5,9 +5,9 @@
 # Make sure the $DATA_DIR points towards the directory containing the appropriate data (see master-data version above)
 
 CONFIG_DIR=../../../../config
-DATA_DIR=../../../../data
+DATA_DIR=../../../../db
 SCRIPT_DIR=../../scripts
 
 # Importing new Master Data
-NODE_CONFIG_DIR=$CONFIG_DIR node $SCRIPT_DIR/importCollection.js $DATA_DIR/validationerrors.json
-NODE_CONFIG_DIR=$CONFIG_DIR node $SCRIPT_DIR/importCollection.js $DATA_DIR/nrls.json
+NODE_CONFIG_DIR=$CONFIG_DIR node $SCRIPT_DIR/importCollection.js $DATA_DIR/validation-errors/validationerrors.json
+NODE_CONFIG_DIR=$CONFIG_DIR node $SCRIPT_DIR/importCollection.js $DATA_DIR/nrls/nrls.json
