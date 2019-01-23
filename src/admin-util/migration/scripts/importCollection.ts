@@ -3,8 +3,8 @@ import * as fs from 'fs';
 import * as readline from 'linebyline';
 import * as config from 'config';
 import { Document } from 'mongoose';
-import { logger } from '../../aspects';
-import { createDataStore, DataStoreType, IDataStore, mapCollectionToRepository } from '../../infrastructure';
+import { logger } from '../../../aspects';
+import { createDataStore, DataStoreType, IDataStore, mapCollectionToRepository } from '../../../infrastructure';
 
 start().catch(err => { throw err; });
 
