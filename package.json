@@ -23,9 +23,15 @@
     }
   },
   "lint-staged": {
-    "src/**/*.ts": [
-      "npm run lint",
-      "git add"
+    "linters": {
+      "src/**/*.ts": [
+        "npm run lint",
+        "git add"
+      ]
+    },
+    "ignore": [
+      "src/**/__mocks__/*.ts",
+      "src/**/__tests__/*.ts"
     ]
   },
   "private": true,

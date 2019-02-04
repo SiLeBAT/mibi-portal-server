@@ -1,19 +1,3 @@
-# EpiLab Server
+# MiBi-Portal Server
 
-The EpiLab Server
-
-## Installation
-
-```shell
-$ npm install 
-```
-
-## Quick start
-```shell
-$ npm start 
-```
-
-## Running the build
-```shell
-$ npm build 
-```
+The MiBi-Portal Server
