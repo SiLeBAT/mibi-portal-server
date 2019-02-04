@@ -1,25 +1,26 @@
 import { Institution } from './../domain';
-import { IInstitutionRepository } from '../../ports';
+import { InstitutionRepository } from '../../ports';
 
-export interface IInstitutionPort {
-    retrieveInstitutions(): Promise<Institution[]>;
+export interface InstitutionPort {
+	retrieveInstitutions(): Promise<Institution[]>;
 }
 
-export interface IInstitutionService extends IInstitutionPort {
+export interface InstitutionService extends InstitutionPort {}
+
+class DefaultInstitutionService implements InstitutionService {
+	constructor(private institutionRepository: InstitutionRepository) {}
+
+	async retrieveInstitutions(): Promise<Institution[]> {
+		let institutions = await this.institutionRepository.retrieve();
+
+		return institutions.filter(
+			(institution: Institution) => institution.name1 !== 'dummy'
+		);
+	}
 }
 
-class InstitutionService implements IInstitutionService {
-
-    constructor(
-        private institutionRepository: IInstitutionRepository) { }
-
-    async retrieveInstitutions(): Promise<Institution[]> {
-        let institutions = await this.institutionRepository.retrieve();
-
-        return institutions.filter((institution: Institution) => institution.name1 !== 'dummy');
-    }
-}
-
-export function createService(institutionRepository: IInstitutionRepository): IInstitutionService {
-    return new InstitutionService(institutionRepository);
+export function createService(
+	institutionRepository: InstitutionRepository
+): InstitutionService {
+	return new DefaultInstitutionService(institutionRepository);
 }

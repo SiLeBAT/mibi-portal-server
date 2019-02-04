@@ -1,19 +1,15 @@
 import { Sample } from './sample.entity';
 
 export interface SampleCollection {
-    samples: Sample[];
+	samples: Sample[];
 }
 
 class DefaultSampleCollection implements SampleCollection {
-
-    constructor(public samples: Sample[]) { }
-
+	constructor(public samples: Sample[]) {}
 }
 
 function createSampleCollection(data: Sample[]): SampleCollection {
-    return new DefaultSampleCollection(data);
+	return new DefaultSampleCollection(data);
 }
 
-export {
-    createSampleCollection
-};
+export { createSampleCollection };

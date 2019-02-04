@@ -1,6 +1,2 @@
-export {
-    uploadToDisk
-} from './fileUpload';
-export {
-    validateToken
-} from './tokenMW';
+export { uploadToMemory } from './fileUpload';
+export { validateToken } from './tokenMW';

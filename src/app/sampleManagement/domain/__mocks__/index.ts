@@ -1,14 +1,10 @@
-
 const createValidator = () => ({
-    validateSample: jest.fn()
+	validateSample: jest.fn()
 });
 
 const ConstraintSet = {
-    STANDARD: 'standard',
-    ZOMO: 'ZoMo'
+	STANDARD: 'standard',
+	ZOMO: 'ZoMo'
 };
 
-export {
-    createValidator,
-    ConstraintSet
-};
+export { createValidator, ConstraintSet };

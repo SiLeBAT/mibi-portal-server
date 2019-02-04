@@ -6,11 +6,6 @@
             true,
             "always"
         ],
-        "ter-indent": [
-            true,
-            4,
-            { "SwitchCase": 1 }
-        ],
         "adjacent-overload-signatures": true,
         "member-access": [
             true,
