@@ -168,12 +168,24 @@ function autoCorrectADV8(catalogService: ICatalogService) {
         // Check Number codes
         const replacements = [
             {
+                pattern: /x$/,
+                replacement: '0'
+            },
+            {
+                pattern: /xx$/,
+                replacement: '00'
+            },
+            {
                 pattern: /xxx$/,
                 replacement: '000'
             },
             {
                 pattern: /xxxx$/,
                 replacement: '0000'
+            },
+            {
+                pattern: /xxxxx$/,
+                replacement: '00000'
             },
             {
                 pattern: /xxxxxx$/,

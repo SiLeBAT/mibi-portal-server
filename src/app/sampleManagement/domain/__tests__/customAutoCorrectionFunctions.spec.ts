@@ -306,7 +306,7 @@ describe('Custom Auto-correction Functions', () => {
             expect(autoCorrection).toEqual(null);
         });
 
-        it('should not attempt to correct incorrect string 40xxxxx operations_mode_adv', () => {
+        it('should attempt to correct incorrect string 40xxxxx operations_mode_adv', () => {
             const specificSampleData = {
                 ...genericSampleData,
                 ...{
@@ -317,7 +317,7 @@ describe('Custom Auto-correction Functions', () => {
             const correctionFunction: CorrectionFunction = autoCorrectADV8(mockCatalogService);
 
             const autoCorrection = correctionFunction(specificSampleData);
-            expect(autoCorrection).toEqual(null);
+            expect(autoCorrection).toEqual({ 'code': 90, 'correctionOffer': ['4000000'], 'field': 'operations_mode_adv', 'original': '40xxxxx' });
         });
 
         it('should attempt to correct incorrect string 4010xxx operations_mode_adv', () => {
