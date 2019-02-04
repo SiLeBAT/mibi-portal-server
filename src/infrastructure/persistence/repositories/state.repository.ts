@@ -1,16 +1,16 @@
 import { createRepository, StateSchema, IStateModel } from '../data-store';
-import { IStateRepository, IState, IAVVFormatCollection, IRead } from '../../../app/ports';
+import { StateRepository, State, AVVFormatCollection, Read } from '../../../app/ports';
 import { mapModelToState } from './data-mappers';
 
-class StateRepository implements IStateRepository {
+class DefaultStateRepository implements StateRepository {
 
-    constructor(private baseRepo: IRead<IStateModel>) {
+    constructor(private baseRepo: Read<IStateModel>) {
     }
 
-    getAllFormats(): Promise<IAVVFormatCollection> {
+    getAllFormats(): Promise<AVVFormatCollection> {
         return this.retrieve().then(
             states => {
-                const collection: IAVVFormatCollection = {};
+                const collection: AVVFormatCollection = {};
                 states.forEach(
                     entry => collection[entry.short] = entry.AVV
                 );
@@ -19,7 +19,7 @@ class StateRepository implements IStateRepository {
         );
     }
 
-    private retrieve(): Promise<IState[]> {
+    private retrieve(): Promise<State[]> {
         return this.baseRepo.retrieve().then(
             modelArray => {
                 return modelArray.map(m => mapModelToState(m));
@@ -28,4 +28,4 @@ class StateRepository implements IStateRepository {
     }
 }
 
-export const repository: IStateRepository = new StateRepository(createRepository(StateSchema));
+export const repository: StateRepository = new DefaultStateRepository(createRepository(StateSchema));

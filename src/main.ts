@@ -2,20 +2,19 @@
 import * as config from 'config';
 
 // local
-import { createApplication, IServerConfig } from './ui/server';
-import { DataStoreType, createDataStore, registerListeners, initialiseCatalogRepository } from './infrastructure';
-import { ServiceFactory, ICatalogRepository, INotificationPort } from './app/ports';
-import { ControllerFactory } from './ui/server/sharedKernel';
+import { createApplication, IServerConfig, ControllerFactory } from './ui/server';
+import { DataStoreType, createDataStore, registerListeners, initialiseCatalogRepository, catalogRepository, nrlRepository, stateRepository, institutionRepository, userRepository, tokenRepository, validationErrorRepository } from './infrastructure';
+import { ServiceFactory, CatalogRepository, INotificationPort } from './app/ports';
 import { logger } from './aspects';
 
 initialiseCatalogRepository().then(
-    (repo: ICatalogRepository) => {
+    (repo: CatalogRepository) => {
         const serverConfig: IServerConfig = config.get('server');
 
         const primaryDataStore = createDataStore(DataStoreType.MONGO);
         primaryDataStore.initialize(config.get('dataStore.connectionString'));
 
-        const serviceFactory = new ServiceFactory();
+        const serviceFactory = new ServiceFactory({ catalogRepository, nrlRepository, stateRepository, institutionRepository, userRepository, tokenRepository, validationErrorRepository });
         serverConfig.controllerFactory = new ControllerFactory(serviceFactory);
 
         registerListeners((serviceFactory.getService('NOTIFICATION') as INotificationPort));

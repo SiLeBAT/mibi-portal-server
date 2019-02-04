@@ -1,29 +1,16 @@
 import { Response, Request } from 'express';
 import * as _ from 'lodash';
 import { IController, IDatasetFile, IDatasetPort, ISenderInfo } from '../../../app/ports';
-import { uploadToDisk } from './../middleware';
 import { logger } from '../../../aspects';
-import { uploadToMemory } from '../middleware/fileUpload';
+import { uploadToMemory } from '../middleware';
 
 export interface IDatasetController extends IController {
-    saveDataset(req: Request, res: Response): Promise<void>;
     submitDataset(req: Request, res: Response): Promise<void>;
 }
 
 class DatasetController implements IDatasetController {
 
     constructor(private datasetService: IDatasetPort) { }
-    async saveDataset(req: Request, res: Response) {
-        uploadToDisk(req, res, function (err: Error) {
-            if (err) {
-                logger.error(`Unable to save Dataset. error=${err}`);
-                return res
-                    .status(500)
-                    .end();
-            }
-            return res.status(200).end();
-        });
-    }
 
     async submitDataset(req: Request, res: Response) {
         const service = this.datasetService;
@@ -89,7 +76,8 @@ function mapRequestDTOToSenderInfo(req: Request): ISenderInfo {
  	    lastName: body['lastName'],
 	    email: body['email'],
         institution: body['institution'],
-        location: body['location']
+        location: body['location'],
+        comment: body['comment']
     };
 }
 

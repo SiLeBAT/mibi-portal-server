@@ -5,7 +5,7 @@ import * as csv from 'fast-csv';
 import * as rootDir from 'app-root-dir';
 
 import { logger } from '../../../aspects';
-import { ICatalogRepository, ICatalog, Catalog } from '../../../app/ports';
+import { CatalogRepository, ICatalog, Catalog } from '../../../app/ports';
 
 declare type CatalogData = Record<string, string>;
 
@@ -16,7 +16,7 @@ interface CatalogConfig {
     filterFunction?: Function;
 }
 
-class FileCatalogRepository implements ICatalogRepository {
+class FileCatalogRepository implements CatalogRepository {
     private catalogs: {
         [key: string]: ICatalog<CatalogData>;
     };

@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import { IStateRepository, IAVVFormatCollection } from '../../ports';
+import { StateRepository, AVVFormatCollection } from '../../ports';
 import { ApplicationSystemError } from '../../sharedKernel/errors';
 import { logger } from '../../../aspects';
 
@@ -14,9 +14,9 @@ export interface IAVVFormatProvider extends IAVVFormatPort {
 
 // TODO: should these be in the DB?
 class AVVFormatProvider implements IAVVFormatProvider {
-    private stateFormats: IAVVFormatCollection = {};
+    private stateFormats: AVVFormatCollection = {};
 
-    constructor(private stateRepository: IStateRepository) {
+    constructor(private stateRepository: StateRepository) {
         this.stateRepository.getAllFormats().then(
             data => this.stateFormats = data
         ).catch(
@@ -34,6 +34,6 @@ class AVVFormatProvider implements IAVVFormatProvider {
         return usedFormats;
     }
 }
-export function createService(repository: IStateRepository): IAVVFormatProvider {
+export function createService(repository: StateRepository): IAVVFormatProvider {
     return new AVVFormatProvider(repository);
 }

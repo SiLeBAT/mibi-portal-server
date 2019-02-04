@@ -51,7 +51,8 @@ class DatasetService implements IDatasetService {
                 'lastName': senderInfo.lastName,
                 'email': senderInfo.email,
                 'institution': senderInfo.institution,
-                'location': senderInfo.location
+                'location': senderInfo.location,
+                'comment': senderInfo.comment
             },
             meta: {
                 email: JOB_RECIPIENT,

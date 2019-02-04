@@ -15,3 +15,6 @@ export {
     createResetController,
     IResetController
 } from './controllers';
+export {
+    ControllerFactory
+} from './sharedKernel';

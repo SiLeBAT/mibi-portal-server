@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import { ApplicationDomainError, ApplicationSystemError } from '../../sharedKernel';
-import { IValidationErrorRepository } from '../../ports';
+import { ValidationErrorRepository } from '../../ports';
 import { logger } from '../../../aspects';
 
 export interface ValidationErrorProviderPort {
@@ -19,7 +19,7 @@ export interface ValidationError {
 class DefaultValidationErrorProvider implements ValidationErrorProvider {
     private errors: ValidationError[] = [];
 
-    constructor(private validationErrorRepository: IValidationErrorRepository) {
+    constructor(private validationErrorRepository: ValidationErrorRepository) {
         this.validationErrorRepository.getAllErrors().then(
             data => this.errors = data
         ).catch(
@@ -39,6 +39,6 @@ class DefaultValidationErrorProvider implements ValidationErrorProvider {
     }
 }
 
-export function createService(repository: IValidationErrorRepository): ValidationErrorProvider {
+export function createService(repository: ValidationErrorRepository): ValidationErrorProvider {
     return new DefaultValidationErrorProvider(repository);
 }

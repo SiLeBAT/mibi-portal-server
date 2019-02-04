@@ -1,10 +1,10 @@
-import { IRepositoryBase, IUserRepository, createUser, IUser } from '../../../app/ports';
+import { RepositoryBase, UserRepository, createUser, IUser } from '../../../app/ports';
 import { UserSchema, IUserModel, IUserModelUpdateResponse, createRepository } from '../data-store';
 import { mapModelToUser } from './data-mappers';
 import { ApplicationDomainError, ApplicationSystemError } from '../../../app/sharedKernel';
 
-class UserRepository implements IUserRepository {
-    constructor(private baseRepo: IRepositoryBase<IUserModel>) {
+class DefaultUserRepository implements UserRepository {
+    constructor(private baseRepo: RepositoryBase<IUserModel>) {
     }
 
     findById(id: string) {
@@ -106,4 +106,4 @@ function populateWithAuxData(model: IUserModel): Promise<IUserModel> {
 
 }
 
-export const repository: IUserRepository = new UserRepository(createRepository(UserSchema));
+export const repository: UserRepository = new DefaultUserRepository(createRepository(UserSchema));

@@ -1,5 +1,5 @@
 export {
-    uploadToDisk
+    uploadToMemory
 } from './fileUpload';
 export {
     validateToken

@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import { INRLRepository } from '../../ports';
+import { NRLRepository } from '../../ports';
 
 moment.locale('de');
 
@@ -17,7 +17,7 @@ export interface INRLSelectorProvider extends INRLSelectorProviderPort {
 
 class NRLSelectorProvider implements INRLSelectorProvider {
     private nrls: INRL[] = [];
-    constructor(private nrlRepository: INRLRepository) {
+    constructor(private nrlRepository: NRLRepository) {
         this.nrlRepository.getAllNRLs().then(
             data => this.nrls = data
         ).catch(
@@ -40,6 +40,6 @@ class NRLSelectorProvider implements INRLSelectorProvider {
         return result;
     }
 }
-export function createService(repository: INRLRepository): INRLSelectorProvider {
+export function createService(repository: NRLRepository): INRLSelectorProvider {
     return new NRLSelectorProvider(repository);
 }

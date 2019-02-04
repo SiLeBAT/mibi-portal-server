@@ -1,5 +1,5 @@
 import * as config from 'config';
-import { IUserRepository, ITokenRepository } from '../../ports';
+import { UserRepository, TokenRepository } from '../../ports';
 import { IUser, TokenType, generateToken, verifyToken, IUserToken } from './../domain';
 import { IRecoveryData, INotificationService, NotificationType } from './../../sharedKernel';
 import { logger } from '../../../aspects';
@@ -19,8 +19,8 @@ export interface PasswordService extends PasswordPort {
 class DefaultPasswordService implements PasswordService {
 
     constructor(
-        private userRepository: IUserRepository,
-        private tokenRepository: ITokenRepository,
+        private userRepository: UserRepository,
+        private tokenRepository: TokenRepository,
         private notificationService: INotificationService) { }
 
     async recoverPassword(recoveryData: IRecoveryData): Promise<void> {
@@ -100,6 +100,6 @@ class DefaultPasswordService implements PasswordService {
     }
 }
 
-export function createService(userRepository: IUserRepository, tokenRepository: ITokenRepository, notifcationService: INotificationService): PasswordService {
+export function createService(userRepository: UserRepository, tokenRepository: TokenRepository, notifcationService: INotificationService): PasswordService {
     return new DefaultPasswordService(userRepository, tokenRepository, notifcationService);
 }

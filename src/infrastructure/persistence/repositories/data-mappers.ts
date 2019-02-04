@@ -1,4 +1,4 @@
-import { Institution, createInstitution, createUser, IUser, IState, ValidationError, INRL } from '../../../app/ports';
+import { Institution, createInstitution, createUser, IUser, State, ValidationError, INRL } from '../../../app/ports';
 import { IValidationErrorModel, IInstitutionModel, IUserModel, IStateModel, INRLModel } from '../data-store';
 
 function mapModelToInstitution(i: IInstitutionModel): Institution {
@@ -33,7 +33,7 @@ function mapModelToUser(model: IUserModel): IUser {
         model.lastAttempt);
 }
 
-function mapModelToState(model: IStateModel): IState {
+function mapModelToState(model: IStateModel): State {
     return {
         name: model.name,
         short: model.short,

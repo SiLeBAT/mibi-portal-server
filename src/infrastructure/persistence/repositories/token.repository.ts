@@ -1,10 +1,10 @@
 import { createRepository, ResetTokenSchema, IResetTokenModel } from '../data-store';
-import { IRepositoryBase, ITokenRepository, IUserToken, IUser } from '../../../app/ports';
+import { RepositoryBase, TokenRepository, IUserToken, IUser } from '../../../app/ports';
 import { TokenType } from '../../../app/authentication/domain';
 import { ApplicationDomainError } from '../../../app/sharedKernel';
 
-class TokenRepository implements ITokenRepository {
-    constructor(private baseRepo: IRepositoryBase<IResetTokenModel>) {
+class DefaultTokenRepository implements TokenRepository {
+    constructor(private baseRepo: RepositoryBase<IResetTokenModel>) {
     }
     hasTokenForUser(user: IUser): Promise<boolean> {
         return this.baseRepo.find({ user: user.uniqueId, type: TokenType.ACTIVATE }, {}, {}).then(
@@ -66,4 +66,4 @@ class TokenRepository implements ITokenRepository {
     }
 }
 
-export const repository: ITokenRepository = new TokenRepository(createRepository(ResetTokenSchema));
+export const repository: TokenRepository = new DefaultTokenRepository(createRepository(ResetTokenSchema));

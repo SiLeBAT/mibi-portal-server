@@ -43,29 +43,29 @@ export {
     INRL
 } from './sampleManagement';
 
-export interface IModelAttributes {
+export interface ModelAttributes {
 }
 
-export interface IUpdateResponse {
+export interface UpdateResponse {
 }
 
-export interface IRead<T> {
+export interface Read<T> {
     retrieve: () => Promise<T[]>;
     findById: (id: string) => Promise<T | null>;
     findOne(cond?: Object): Promise<T | null>;
     find(cond: Object, fields: Object, options: Object): Promise<T[]>;
 }
 
-export interface IWrite<T> {
+export interface Write<T> {
     create: (item: T) => Promise<T>;
-    update: (_id: string, attributes: IModelAttributes) => Promise<IUpdateResponse>;
+    update: (_id: string, attributes: ModelAttributes) => Promise<UpdateResponse>;
     delete: (_id: string) => Promise<T>;
 }
 
-export interface IRepositoryBase<T> extends IRead<T>, IWrite<T> {
+export interface RepositoryBase<T> extends Read<T>, Write<T> {
 }
 
-export interface IUserModelAttributes extends IModelAttributes {
+export interface UserModelAttributes extends ModelAttributes {
     _id?: string;
     enabled?: boolean;
     adminEnabled?: boolean;
@@ -76,14 +76,14 @@ export interface IUserModelAttributes extends IModelAttributes {
     password?: string;
 }
 
-export interface IInstitutionRepository {
+export interface InstitutionRepository {
     retrieve(): Promise<Institution[]>;
     findById(id: string): Promise<Institution>;
     createInstitution(institution: Institution): Promise<Institution>;
     findByInstitutionName(name: string): Promise<Institution>;
 }
 
-export interface ITokenRepository {
+export interface TokenRepository {
     hasTokenForUser(user: IUser): Promise<boolean>;
     hasResetTokenForUser(user: IUser): Promise<boolean>;
     hasAdminTokenForUser(user: IUser): Promise<boolean>;
@@ -94,7 +94,7 @@ export interface ITokenRepository {
     getUserTokenByJWT(token: string): Promise<IUserToken>;
 }
 
-export interface IUserRepository {
+export interface UserRepository {
     findById(id: string): Promise<IUser>;
     getPasswordForUser(username: string): Promise<string>;
     findByUsername(username: string): Promise<IUser>;
@@ -103,26 +103,26 @@ export interface IUserRepository {
     updateUser(user: IUser): Promise<IUser>;
 }
 
-export interface IValidationErrorRepository {
+export interface ValidationErrorRepository {
     getAllErrors(): Promise<ValidationError[]>;
 }
-export interface IStateRepository {
-    getAllFormats(): Promise<IAVVFormatCollection>;
+export interface StateRepository {
+    getAllFormats(): Promise<AVVFormatCollection>;
 }
 
-export interface INRLRepository {
+export interface NRLRepository {
     getAllNRLs(): Promise<INRL[]> ;
 }
 
-export interface ICatalogRepository {
+export interface CatalogRepository {
     // tslint:disable-next-line
     getCatalog(catalogName: string): ICatalog<any>;
 }
 
-export interface IAVVFormatCollection {
+export interface AVVFormatCollection {
     [key: string]: string[];
 }
-export interface IState {
+export interface State {
     name: string;
     short: string;
     AVV: string[];

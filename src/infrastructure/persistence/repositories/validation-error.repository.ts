@@ -1,12 +1,12 @@
 import { createRepository, IValidationErrorModel, ValidationErrorSchema } from '../data-store';
-import { IValidationErrorRepository, IRead } from '../../../app/ports';
+import { ValidationErrorRepository, Read } from '../../../app/ports';
 import { mapModelToValidationError } from './data-mappers';
 import { ValidationError } from '../../../app/sampleManagement/application';
 import { ApplicationSystemError } from '../../../app/sharedKernel';
 import { logger } from '../../../aspects';
-class ValidationErrorRepository implements IValidationErrorRepository {
+class DefaultValidationErrorRepository implements ValidationErrorRepository {
 
-    constructor(private baseRepo: IRead<IValidationErrorModel>) {
+    constructor(private baseRepo: Read<IValidationErrorModel>) {
     }
 
     getAllErrors(): Promise<ValidationError[]> {
@@ -27,4 +27,4 @@ class ValidationErrorRepository implements IValidationErrorRepository {
     }
 }
 
-export const repository: IValidationErrorRepository = new ValidationErrorRepository(createRepository(ValidationErrorSchema));
+export const repository: ValidationErrorRepository = new DefaultValidationErrorRepository(createRepository(ValidationErrorSchema));

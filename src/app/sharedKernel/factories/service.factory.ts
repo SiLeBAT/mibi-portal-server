@@ -13,9 +13,17 @@ import {
 } from '../../sampleManagement/application';
 import { ApplicationSystemError } from '../errors';
 import { INotificationService, createNotificationService } from '../application';
-// TODO: IS this the right way to get the dependency?
-import { catalogRepository, nrlRepository, stateRepository, institutionRepository, userRepository, tokenRepository, validationErrorRepository } from '../../../infrastructure';
+import { CatalogRepository, NRLRepository, StateRepository, InstitutionRepository, UserRepository, TokenRepository, ValidationErrorRepository } from '../../ports';
 
+interface RepositoryOptions {
+    catalogRepository: CatalogRepository;
+    nrlRepository: NRLRepository;
+    stateRepository: StateRepository;
+    institutionRepository: InstitutionRepository;
+    userRepository: UserRepository;
+    tokenRepository: TokenRepository;
+    validationErrorRepository: ValidationErrorRepository;
+}
 export interface IServiceFactory {
     // tslint:disable-next-line
     getService(serviceName: string): any;
@@ -35,8 +43,9 @@ export class ServiceFactory implements IServiceFactory {
     private nrlSelectorProvider: INRLSelectorProvider;
     private validationErrorProvider: ValidationErrorProvider;
 
-    constructor() {
+    constructor(repositories: RepositoryOptions) {
 
+        const { catalogRepository, nrlRepository, stateRepository, institutionRepository, userRepository, tokenRepository, validationErrorRepository } = repositories;
         this.catalogService = createCatalogService(catalogRepository);
         this.nrlSelectorProvider = createNRLSelectorProvider(nrlRepository);
         this.avvFormatProvider = createAVVFormatProvider(stateRepository);

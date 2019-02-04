@@ -1,6 +1,8 @@
 import * as path from 'path';
 
 import * as express from 'express';
+import * as helmet from 'helmet';
+import * as compression from 'compression';
 import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
 import * as morgan from 'morgan';
@@ -40,6 +42,8 @@ class AppServer implements IAppServer {
 
     private initialise(serverConfig: IServerConfig) {
         this.server = express();
+        this.server.use(helmet());
+        this.server.use(compression());
         this.server.set('port', serverConfig.port);
         this.server.set('logger', logger);
         this.server.set('controllerFactory', serverConfig.controllerFactory);

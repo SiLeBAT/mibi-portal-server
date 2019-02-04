@@ -1,17 +1,17 @@
 import { Institution } from './../domain';
-import { IInstitutionRepository } from '../../ports';
+import { InstitutionRepository } from '../../ports';
 
-export interface IInstitutionPort {
+export interface InstitutionPort {
     retrieveInstitutions(): Promise<Institution[]>;
 }
 
-export interface IInstitutionService extends IInstitutionPort {
+export interface InstitutionService extends InstitutionPort {
 }
 
-class InstitutionService implements IInstitutionService {
+class DefaultInstitutionService implements InstitutionService {
 
     constructor(
-        private institutionRepository: IInstitutionRepository) { }
+        private institutionRepository: InstitutionRepository) { }
 
     async retrieveInstitutions(): Promise<Institution[]> {
         let institutions = await this.institutionRepository.retrieve();
@@ -20,6 +20,6 @@ class InstitutionService implements IInstitutionService {
     }
 }
 
-export function createService(institutionRepository: IInstitutionRepository): IInstitutionService {
-    return new InstitutionService(institutionRepository);
+export function createService(institutionRepository: InstitutionRepository): InstitutionService {
+    return new DefaultInstitutionService(institutionRepository);
 }

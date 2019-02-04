@@ -1,11 +1,11 @@
 import { createRepository, InstitutionSchema, IInstitutionModel } from '../data-store';
-import { IRepositoryBase, IInstitutionRepository, Institution, createInstitution } from '../../../app/ports';
+import { RepositoryBase, InstitutionRepository, Institution, createInstitution } from '../../../app/ports';
 import { mapModelToInstitution } from './data-mappers';
 import { ApplicationDomainError } from '../../../app/sharedKernel';
 
-class InstitutionRepository implements IInstitutionRepository {
+class DefaultInstitutionRepository implements InstitutionRepository {
 
-    constructor(private baseRepo: IRepositoryBase<IInstitutionModel>) {
+    constructor(private baseRepo: RepositoryBase<IInstitutionModel>) {
     }
 
     findById(id: string): Promise<Institution> {
@@ -49,4 +49,4 @@ class InstitutionRepository implements IInstitutionRepository {
 
 }
 
-export const repository: IInstitutionRepository = new InstitutionRepository(createRepository(InstitutionSchema));
+export const repository: InstitutionRepository = new DefaultInstitutionRepository(createRepository(InstitutionSchema));

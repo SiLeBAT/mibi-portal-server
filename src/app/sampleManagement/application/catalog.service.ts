@@ -2,7 +2,7 @@
 import * as config from 'config';
 import * as _ from 'lodash';
 import { ICatalog } from './../domain';
-import { ICatalogRepository } from '../../ports';
+import { CatalogRepository } from '../../ports';
 import { logger } from '../../../aspects';
 
 export interface ICatalogPort {
@@ -21,7 +21,7 @@ export interface ICatalogService extends ICatalogPort {
 
 class CatalogService implements ICatalogService {
 
-    constructor(private catalogRepository: ICatalogRepository) { }
+    constructor(private catalogRepository: CatalogRepository) { }
 
     getCatalog(catalogName: string) {
         return this.catalogRepository.getCatalog(catalogName);
@@ -42,6 +42,6 @@ class CatalogService implements ICatalogService {
 
 }
 
-export function createService(repository: ICatalogRepository): ICatalogService {
+export function createService(repository: CatalogRepository): ICatalogService {
     return new CatalogService(repository);
 }

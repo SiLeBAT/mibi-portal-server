@@ -7,7 +7,7 @@ import { IDataStore } from '../data-store.factory';
 import { logger } from './../../../../aspects';
 
 import { nrlSchema, institutionSchema, userSchema, resetTokenSchema, IResetTokenModel, IInstitutionModel, IUserModel, IStateModel, stateSchema, INRLModel, validationErrorSchema, IValidationErrorModel } from './schemas';
-import { IRepositoryBase } from '../../../../app/ports';
+import { RepositoryBase } from '../../../../app/ports';
 import { createRepository } from '.';
 
 // tslint:disable-next-line
@@ -53,7 +53,7 @@ export const NRLSchema = mongoose.model<INRLModel>('NRL', nrlSchema);
 export const ValidationErrorSchema = mongoose.model<IValidationErrorModel>('ValidationError', validationErrorSchema);
 
 // TODO: This should be handled elsewhere? In some other way?
-export function mapCollectionToRepository(collection: string): IRepositoryBase<mongoose.Document> {
+export function mapCollectionToRepository(collection: string): RepositoryBase<mongoose.Document> {
     switch (collection) {
         case 'states':
             return createRepository(StateSchema);

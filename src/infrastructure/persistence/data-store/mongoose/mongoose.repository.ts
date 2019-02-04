@@ -1,11 +1,11 @@
 import { Document, Model, Types } from 'mongoose';
-import { IRepositoryBase, IModelAttributes, IUpdateResponse } from '../../../../app/ports';
+import { RepositoryBase, ModelAttributes, UpdateResponse } from '../../../../app/ports';
 
-export interface IMongooseUpdateResponse extends IUpdateResponse {
+export interface IMongooseUpdateResponse extends UpdateResponse {
     ok: number;
 }
 
-export class MongooseRepositoryBase<T extends Document> implements IRepositoryBase<Document> {
+export class MongooseRepositoryBase<T extends Document> implements RepositoryBase<Document> {
 
     private _model: Model<T>;
 
@@ -21,7 +21,7 @@ export class MongooseRepositoryBase<T extends Document> implements IRepositoryBa
         return this._model.find({}).exec();
     }
 
-    update(_id: string, attr: IModelAttributes): Promise<IMongooseUpdateResponse> {
+    update(_id: string, attr: ModelAttributes): Promise<IMongooseUpdateResponse> {
         return this._model.update({ _id: this.toObjectId(_id) }, { ...attr, ...{ updated: Date.now() } }).exec();
     }
 
@@ -47,7 +47,7 @@ export class MongooseRepositoryBase<T extends Document> implements IRepositoryBa
 
 }
 
-function createRepository<T extends Document>(schema: Model<T>): IRepositoryBase<T> {
+function createRepository<T extends Document>(schema: Model<T>): RepositoryBase<T> {
     return new MongooseRepositoryBase(schema);
 }
 

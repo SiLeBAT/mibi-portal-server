@@ -1,5 +1,5 @@
 import * as config from 'config';
-import { IUserRepository, ITokenRepository, IInstitutionRepository } from '../../ports';
+import { UserRepository, TokenRepository, InstitutionRepository } from '../../ports';
 import { logger } from '../../../aspects';
 import { IUser, createUser, TokenType, generateToken, generateAdminToken, verifyToken, IUserToken, createInstitution } from './../domain';
 import { IRecoveryData, INotificationService, NotificationType } from '../../sharedKernel/';
@@ -33,9 +33,9 @@ export interface UserRegistration {
 class DefaultRegistrationService implements RegistrationService {
 
     constructor(
-        private userRepository: IUserRepository,
-        private tokenRepository: ITokenRepository,
-        private institutionRepository: IInstitutionRepository,
+        private userRepository: UserRepository,
+        private tokenRepository: TokenRepository,
+        private institutionRepository: InstitutionRepository,
         private notificationService: INotificationService) { }
 
     async activateUser(token: string): Promise<void> {
@@ -303,6 +303,6 @@ class DefaultRegistrationService implements RegistrationService {
     }
 }
 
-export function createService(userRepository: IUserRepository, tokenRepository: ITokenRepository, institutionRepository: IInstitutionRepository, notificationService: INotificationService): RegistrationService {
+export function createService(userRepository: UserRepository, tokenRepository: TokenRepository, institutionRepository: InstitutionRepository, notificationService: INotificationService): RegistrationService {
     return new DefaultRegistrationService(userRepository, tokenRepository, institutionRepository, notificationService);
 }

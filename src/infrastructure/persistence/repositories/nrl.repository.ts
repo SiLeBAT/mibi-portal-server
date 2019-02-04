@@ -1,12 +1,12 @@
 import { createRepository, NRLSchema, INRLModel } from '../data-store';
-import { INRLRepository, IRead } from '../../../app/ports';
+import { NRLRepository, Read } from '../../../app/ports';
 import { INRL } from '../../../app/sampleManagement/application';
 import { mapModelToNRL } from './data-mappers';
 import { ApplicationSystemError } from '../../../app/sharedKernel/errors';
 
-class NRLRepository implements INRLRepository {
+class DefaultNRLRepository implements NRLRepository {
 
-    constructor(private baseRepo: IRead<INRLModel>) {
+    constructor(private baseRepo: Read<INRLModel>) {
     }
 
     getAllNRLs(): Promise<INRL[]> {
@@ -26,4 +26,4 @@ class NRLRepository implements INRLRepository {
     }
 }
 
-export const repository: INRLRepository = new NRLRepository(createRepository(NRLSchema));
+export const repository: NRLRepository = new DefaultNRLRepository(createRepository(NRLSchema));

@@ -1,7 +1,7 @@
 import * as config from 'config';
 import * as moment from 'moment';
 import { IUser, IUserCredentials, generateToken } from './../domain';
-import { IUserRepository } from '../../ports';
+import { UserRepository } from '../../ports';
 import { logger } from './../../../aspects';
 import { RegistrationService } from '.';
 import { ApplicationDomainError } from '../../sharedKernel/errors';
@@ -29,7 +29,7 @@ export interface LoginService extends LoginPort { }
 
 class DefaultLoginService implements LoginService {
 
-    constructor(private userRepository: IUserRepository, private activationService: RegistrationService) { }
+    constructor(private userRepository: UserRepository, private activationService: RegistrationService) { }
 
     async loginUser(credentials: UserLoginInformation): Promise<LoginResponse> {
 
@@ -120,6 +120,6 @@ class DefaultLoginService implements LoginService {
 
 }
 
-export function createService(userRepository: IUserRepository, activationService: RegistrationService): LoginService {
+export function createService(userRepository: UserRepository, activationService: RegistrationService): LoginService {
     return new DefaultLoginService(userRepository, activationService);
 }
