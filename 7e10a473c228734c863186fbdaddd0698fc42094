@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa3c3926_3f9c86d3",
+        "filename": "README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1013694
+      },
+      "writtenOn": "2019-02-05T09:42:13Z",
+      "side": 0,
+      "message": "All this was unnecessary \u0026 out of date",
+      "range": {
+        "startLine": 3,
+        "startChar": 17,
+        "endLine": 4,
+        "endChar": 0
+      },
+      "revId": "7e10a473c228734c863186fbdaddd0698fc42094",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    }
+  ]
+}
