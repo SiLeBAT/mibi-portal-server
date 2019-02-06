@@ -1,6 +1,6 @@
 {
   "name": "mibi-portal-server",
-  "version": "1.2.0",
+  "version": "6.6.6",
   "license": "MIT",
   "scripts": {
     "start": "node ./lib/main.js",
