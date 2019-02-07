@@ -2,79 +2,114 @@ import * as config from 'config';
 import { IDatasetFile, ISenderInfo } from '..';
 import { INotificationService } from '../../sharedKernel/application';
 import { NotificationType } from '../../sharedKernel/domain/enums';
+import { User, InstitutionRepository, UserRepository } from '../../ports';
+import { Institution } from '../../authentication';
 
-// TODO: Should these be here?  Should they not be added later?
 const APP_NAME = config.get('appName');
 const JOB_RECIPIENT = config.get('jobRecipient');
 
 export interface IDatasetPort {
-	sendDatasetFile(dataset: IDatasetFile, senderInfo: ISenderInfo): void;
+    sendDatasetFile(dataset: IDatasetFile, senderInfo: ISenderInfo): void;
 }
 
 export interface IDatasetService extends IDatasetPort {}
 
+interface ResolvedSenderInfo {
+    user: User;
+    institute: Institution;
+    comment: string;
+    recipient: string;
+}
 class DatasetService implements IDatasetService {
-	constructor(private notificationService: INotificationService) {}
+    constructor(
+        private notificationService: INotificationService,
+        private instituteRepository: InstitutionRepository,
+        private userRepository: UserRepository
+    ) {}
 
-	sendDatasetFile(dataset: IDatasetFile, senderInfo: ISenderInfo): void {
-		const newDatasetCopyNotification = this.createNewDatasetCopyNotification(
-			dataset,
-			senderInfo
-		);
-		this.notificationService.sendNotification(newDatasetCopyNotification);
+    async sendDatasetFile(
+        dataset: IDatasetFile,
+        senderInfo: ISenderInfo
+    ): Promise<void> {
+        const sender: User = await this.resolveUser(senderInfo.email);
+        const institution: Institution = await this.resolveInstitute(
+            senderInfo.instituteId
+        );
+        const resolvedSenderInfo: ResolvedSenderInfo = {
+            user: sender,
+            institute: institution,
+            comment: senderInfo.comment,
+            recipient: senderInfo.recipient
+        };
+        const newDatasetCopyNotification = this.createNewDatasetCopyNotification(
+            dataset,
+            resolvedSenderInfo
+        );
+        this.notificationService.sendNotification(newDatasetCopyNotification);
 
-		const newDatasetNotification = this.createNewDatasetNotification(
-			dataset,
-			senderInfo
-		);
-		return this.notificationService.sendNotification(
-			newDatasetNotification
-		);
-	}
+        const newDatasetNotification = this.createNewDatasetNotification(
+            dataset,
+            resolvedSenderInfo
+        );
+        return this.notificationService.sendNotification(
+            newDatasetNotification
+        );
+    }
 
-	private createNewDatasetCopyNotification(
-		dataset: IDatasetFile,
-		senderInfo: ISenderInfo
-	) {
-		const fullName = senderInfo.firstName + ' ' + senderInfo.lastName;
-		return {
-			type: NotificationType.NOTIFICATION_SENT,
-			title: `Neuer Auftrag an das BfR`,
-			payload: {
-				appName: APP_NAME,
-				name: fullName
-			},
-			meta: {
-				email: senderInfo.email,
-				attachments: [dataset]
-			}
-		};
-	}
+    private resolveInstitute(id: string): Promise<Institution> {
+        return this.instituteRepository.findById(id);
+    }
 
-	private createNewDatasetNotification(
-		dataset: IDatasetFile,
-		senderInfo: ISenderInfo
-	) {
-		return {
-			type: NotificationType.REQUEST_JOB,
-			title: `Neuer Auftrag`,
-			payload: {
-				appName: APP_NAME,
-				firstName: senderInfo.firstName,
-				lastName: senderInfo.lastName,
-				email: senderInfo.email,
-				institution: senderInfo.institution,
-				location: senderInfo.location,
-				comment: senderInfo.comment
-			},
-			meta: {
-				email: JOB_RECIPIENT,
-				attachments: [dataset]
-			}
-		};
-	}
+    private resolveUser(email: string): Promise<User> {
+        return this.userRepository.findByUsername(email);
+    }
+
+    private createNewDatasetCopyNotification(
+        dataset: IDatasetFile,
+        senderInfo: ResolvedSenderInfo
+    ) {
+        const fullName = senderInfo.user.getFullName();
+        return {
+            type: NotificationType.NOTIFICATION_SENT,
+            title: `Neuer Auftrag an das BfR`,
+            payload: {
+                appName: APP_NAME,
+                name: fullName
+            },
+            meta: {
+                email: senderInfo.user.email,
+                attachments: [dataset]
+            }
+        };
+    }
+
+    private createNewDatasetNotification(
+        dataset: IDatasetFile,
+        senderInfo: ResolvedSenderInfo
+    ) {
+        return {
+            type: NotificationType.REQUEST_JOB,
+            title: `${senderInfo.institute.city} an ${senderInfo.recipient}`,
+            payload: {
+                appName: APP_NAME,
+                firstName: senderInfo.user.firstName,
+                lastName: senderInfo.user.lastName,
+                email: senderInfo.user.email,
+                institution: senderInfo.user.institution,
+                comment: senderInfo.comment
+            },
+            meta: {
+                email: JOB_RECIPIENT,
+                attachments: [dataset]
+            }
+        };
+    }
 }
 
-export function createService(service: INotificationService): IDatasetService {
-	return new DatasetService(service);
+export function createService(
+    service: INotificationService,
+    instituteRepository: InstitutionRepository,
+    userRepository: UserRepository
+): IDatasetService {
+    return new DatasetService(service, instituteRepository, userRepository);
 }
