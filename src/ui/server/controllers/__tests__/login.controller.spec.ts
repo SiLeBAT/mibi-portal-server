@@ -6,64 +6,68 @@ import { LoginResult, LoginPort } from '../../../../app/ports';
 jest.genMockFromModule('./../../../../aspects');
 jest.mock('./../../../../aspects');
 jest.mock('./../../../../app/ports', () => ({
-	loginUser: jest.fn(),
-	LoginResult: {
-		SUCCESS: 2,
-		FAIL: 0
-	}
+    loginUser: jest.fn(),
+    LoginResult: {
+        SUCCESS: 2,
+        FAIL: 0
+    }
 }));
 
 describe('Login controller', () => {
-	let controller: ILoginController;
-	let mockLoginService: LoginPort = {
-		loginUser: jest.fn()
-	};
-	beforeEach(() => {
-		controller = createController(mockLoginService);
-	});
-	it('should be return a promise', () => {
-		(mockLoginService.loginUser as any).mockReturnValueOnce({
-			result: LoginResult.SUCCESS
-		});
-		const req = new mockReq({
-			body: {
-				email: 'test'
-			}
-		});
-		const res = new mockRes();
-		const result = controller.login(req, res);
-		expect(result).toBeInstanceOf(Promise);
-	});
-	it('should be return a 401 response', () => {
-		(mockLoginService.loginUser as any).mockReturnValueOnce({
-			result: LoginResult.FAIL
-		});
-		const req = new mockReq({
-			body: {
-				email: 'test'
-			}
-		});
-		const res = new mockRes();
-		const result = controller.login(req, res);
-		expect.assertions(1);
-		return result.then(data => {
-			return expect(res.statusCode).toBe(401);
-		});
-	});
-	it('should be return a 200 response', () => {
-		(mockLoginService.loginUser as any).mockReturnValueOnce({
-			user: {}
-		});
-		const req = new mockReq({
-			body: {
-				email: 'test'
-			}
-		});
-		const res = new mockRes();
-		const result = controller.login(req, res);
-		expect.assertions(1);
-		return result.then(data => {
-			return expect(res.statusCode).toBe(200);
-		});
-	});
+    let controller: ILoginController;
+    let mockLoginService: LoginPort = {
+        loginUser: jest.fn()
+    };
+    beforeEach(() => {
+        controller = createController(mockLoginService);
+    });
+    it('should be return a promise', () => {
+        (mockLoginService.loginUser as any).mockReturnValueOnce({
+            result: LoginResult.SUCCESS
+        });
+        const req = new mockReq({
+            body: {
+                email: 'test'
+            }
+        });
+        const res = new mockRes();
+        const result = controller.login(req, res);
+        expect(result).toBeInstanceOf(Promise);
+    });
+    it('should be return a 401 response', () => {
+        (mockLoginService.loginUser as any).mockReturnValueOnce({
+            result: LoginResult.FAIL
+        });
+        const req = new mockReq({
+            body: {
+                email: 'test'
+            }
+        });
+        const res = new mockRes();
+        const result = controller.login(req, res);
+        expect.assertions(1);
+        return result.then(data => {
+            return expect(res.statusCode).toBe(401);
+        });
+    });
+    it('should be return a 200 response', () => {
+        (mockLoginService.loginUser as any).mockReturnValueOnce({
+            user: {
+                institution: {
+                    uniqueId: 1
+                }
+            }
+        });
+        const req = new mockReq({
+            body: {
+                email: 'test'
+            }
+        });
+        const res = new mockRes();
+        const result = controller.login(req, res);
+        expect.assertions(1);
+        return result.then(data => {
+            return expect(res.statusCode).toBe(200);
+        });
+    });
 });

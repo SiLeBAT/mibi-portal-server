@@ -1,4 +1,4 @@
 export enum ConstraintSet {
-	STANDARD = 'standard',
-	ZOMO = 'ZoMo'
+    STANDARD = 'standard',
+    ZOMO = 'ZoMo'
 }

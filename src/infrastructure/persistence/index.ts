@@ -1,17 +1,17 @@
 export {
-	createDataStore,
-	createRepository,
-	DataStoreType,
-	IDataStore,
-	mapCollectionToRepository
+    createDataStore,
+    createRepository,
+    DataStoreType,
+    IDataStore,
+    mapCollectionToRepository
 } from './data-store';
 export {
-	initialiseCatalogRepository,
-	userRepository,
-	tokenRepository,
-	institutionRepository,
-	catalogRepository,
-	stateRepository,
-	validationErrorRepository,
-	nrlRepository
+    initialiseCatalogRepository,
+    userRepository,
+    tokenRepository,
+    institutionRepository,
+    catalogRepository,
+    stateRepository,
+    validationErrorRepository,
+    nrlRepository
 } from './repositories';
