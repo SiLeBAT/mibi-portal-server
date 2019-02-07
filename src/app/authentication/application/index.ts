@@ -1,23 +1,23 @@
 export {
-	LoginService,
-	LoginPort,
-	LoginResponse,
-	UserLoginInformation,
-	createService as createLoginService
+    LoginService,
+    LoginPort,
+    LoginResponse,
+    UserLoginInformation,
+    createService as createLoginService
 } from './login.service';
 export {
-	PasswordService,
-	PasswordPort,
-	createService as createPasswordService
+    PasswordService,
+    PasswordPort,
+    createService as createPasswordService
 } from './password.service';
 export {
-	InstitutionService,
-	InstitutionPort,
-	createService as createInstitutionService
-} from './institution.service';
+    InstituteService as InstitutionService,
+    InstitutePort as InstitutionPort,
+    createService as createInstitutionService
+} from './institute.service';
 export {
-	RegistrationPort,
-	RegistrationService,
-	UserRegistration,
-	createService as createRegistrationService
+    RegistrationPort,
+    RegistrationService,
+    UserRegistration,
+    createService as createRegistrationService
 } from './registration.service';

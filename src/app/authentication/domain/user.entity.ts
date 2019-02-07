@@ -1,140 +1,145 @@
 import * as argon2 from 'argon2';
-import { Institution } from './institution.entity';
+import { Institute } from './institute.entity';
 
 const defaultHashOptions = {
-	hashLength: 128,
-	timeCost: 10,
-	memoryCost: 15,
-	parallelism: 100,
-	type: argon2.argon2id
+    hashLength: 128,
+    timeCost: 10,
+    memoryCost: 15,
+    parallelism: 100,
+    type: argon2.argon2id
 };
 
 export interface IUserCredentials {
-	email: string;
-	password: string;
+    email: string;
+    password: string;
 }
 
 export interface IUserBase {
-	firstName: string;
-	lastName: string;
-	email: string;
-	institution: Institution;
+    firstName: string;
+    lastName: string;
+    email: string;
+    institution: Institute;
 }
 
-export interface IUser extends IUserBase {
-	uniqueId: string;
-	readonly password: string;
-	isAuthorized(credentials: IUserCredentials): Promise<boolean>;
-	updatePassword(password: string): Promise<string>;
-	updateNumberOfFailedAttempts(increment: boolean): void;
-	updateLastLoginAttempt(): void;
-	isActivated(active?: boolean): boolean;
-	isAdminActivated(active?: boolean): boolean;
-	getNumberOfFailedAttempts(): number;
-	getLastLoginAttempt(): number;
+export interface User extends IUserBase {
+    uniqueId: string;
+    readonly password: string;
+    isAuthorized(credentials: IUserCredentials): Promise<boolean>;
+    updatePassword(password: string): Promise<string>;
+    updateNumberOfFailedAttempts(increment: boolean): void;
+    updateLastLoginAttempt(): void;
+    isActivated(active?: boolean): boolean;
+    isAdminActivated(active?: boolean): boolean;
+    getNumberOfFailedAttempts(): number;
+    getLastLoginAttempt(): number;
+    getFullName(): string;
 }
 
-class GenericUser implements IUser {
-	uniqueId: string;
-	firstName: string;
-	lastName: string;
-	email: string;
-	institution: Institution;
+class GenericUser implements User {
+    uniqueId: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    institution: Institute;
 
-	constructor(
-		id: string,
-		email: string,
-		fname: string,
-		lname: string,
-		inst: Institution,
-		private _password: string,
-		private enabled: boolean,
-		private adminEnabled: boolean,
-		private numAttempt: number,
-		private lastAttempt: number
-	) {
-		this.uniqueId = id;
-		this.email = email;
-		this.firstName = fname;
-		this.lastName = lname;
-		this.institution = inst;
-	}
+    constructor(
+        id: string,
+        email: string,
+        fname: string,
+        lname: string,
+        inst: Institute,
+        private _password: string,
+        private enabled: boolean,
+        private adminEnabled: boolean,
+        private numAttempt: number,
+        private lastAttempt: number
+    ) {
+        this.uniqueId = id;
+        this.email = email;
+        this.firstName = fname;
+        this.lastName = lname;
+        this.institution = inst;
+    }
 
-	get password(): string {
-		return this._password;
-	}
+    get password(): string {
+        return this._password;
+    }
 
-	isActivated(active?: boolean) {
-		if (!(active === undefined)) {
-			this.enabled = !!active;
-		}
-		return this.enabled;
-	}
+    getFullName() {
+        return this.firstName + ' ' + this.lastName;
+    }
 
-	isAdminActivated(active?: boolean) {
-		if (!(active === undefined)) {
-			this.adminEnabled = !!active;
-		}
-		return this.adminEnabled;
-	}
+    isActivated(active?: boolean) {
+        if (!(active === undefined)) {
+            this.enabled = !!active;
+        }
+        return this.enabled;
+    }
 
-	isAuthorized(credentials: IUserCredentials): Promise<boolean> {
-		return this.verifyPassword(this._password, credentials.password);
-	}
+    isAdminActivated(active?: boolean) {
+        if (!(active === undefined)) {
+            this.adminEnabled = !!active;
+        }
+        return this.adminEnabled;
+    }
 
-	updatePassword(password: string): Promise<string> {
-		return this.hashPassword(password).then(
-			hashed => (this._password = hashed)
-		);
-	}
+    isAuthorized(credentials: IUserCredentials): Promise<boolean> {
+        return this.verifyPassword(this._password, credentials.password);
+    }
 
-	updateNumberOfFailedAttempts(increment: boolean) {
-		increment ? this.numAttempt++ : (this.numAttempt = 0);
-	}
+    updatePassword(password: string): Promise<string> {
+        return this.hashPassword(password).then(
+            hashed => (this._password = hashed)
+        );
+    }
 
-	updateLastLoginAttempt() {
-		this.lastAttempt = Date.now();
-	}
+    updateNumberOfFailedAttempts(increment: boolean) {
+        increment ? this.numAttempt++ : (this.numAttempt = 0);
+    }
 
-	getNumberOfFailedAttempts(): number {
-		return this.numAttempt;
-	}
+    updateLastLoginAttempt() {
+        this.lastAttempt = Date.now();
+    }
 
-	getLastLoginAttempt(): number {
-		return this.lastAttempt;
-	}
+    getNumberOfFailedAttempts(): number {
+        return this.numAttempt;
+    }
 
-	private verifyPassword(hashedPassword: string, password: string) {
-		return argon2.verify(hashedPassword, password);
-	}
+    getLastLoginAttempt(): number {
+        return this.lastAttempt;
+    }
 
-	private hashPassword(password: string, options = defaultHashOptions) {
-		return argon2.hash(password, options);
-	}
+    private verifyPassword(hashedPassword: string, password: string) {
+        return argon2.verify(hashedPassword, password);
+    }
+
+    private hashPassword(password: string, options = defaultHashOptions) {
+        return argon2.hash(password, options);
+    }
 }
 
 export function createUser(
-	id: string,
-	email: string,
-	fname: string,
-	lname: string,
-	inst: Institution,
-	password: string,
-	enabled: boolean = false,
-	adminEnabled: boolean = false,
-	numAttempt: number = 0,
-	lastAttempt: number = Date.now()
-): IUser {
-	return new GenericUser(
-		id,
-		email,
-		fname,
-		lname,
-		inst,
-		password,
-		enabled,
-		adminEnabled,
-		numAttempt,
-		lastAttempt
-	);
+    id: string,
+    email: string,
+    fname: string,
+    lname: string,
+    inst: Institute,
+    password: string,
+    enabled: boolean = false,
+    adminEnabled: boolean = false,
+    numAttempt: number = 0,
+    lastAttempt: number = Date.now()
+): User {
+    return new GenericUser(
+        id,
+        email,
+        fname,
+        lname,
+        inst,
+        password,
+        enabled,
+        adminEnabled,
+        numAttempt,
+        lastAttempt
+    );
 }
