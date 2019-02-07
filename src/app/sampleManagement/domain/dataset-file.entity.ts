@@ -12,4 +12,5 @@ export interface ISenderInfo {
     email: string;
     institution: string;
     location: string;
+    recipient: string;
 }

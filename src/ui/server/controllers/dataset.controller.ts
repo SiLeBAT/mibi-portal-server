@@ -89,7 +89,8 @@ function mapRequestDTOToSenderInfo(req: Request): ISenderInfo {
  	    lastName: body['lastName'],
 	    email: body['email'],
         institution: body['institution'],
-        location: body['location']
+        location: body['location'],
+        recipient: body['recipient']
     };
 }
 

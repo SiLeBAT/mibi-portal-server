@@ -3,7 +3,6 @@ import { IDatasetFile, ISenderInfo } from '..';
 import { INotificationService } from '../../sharedKernel/application';
 import { NotificationType } from '../../sharedKernel/domain/enums';
 
-// TODO: Should these be here?  Should they not be added later?
 const APP_NAME = config.get('appName');
 const JOB_RECIPIENT = config.get('jobRecipient');
 
@@ -44,7 +43,7 @@ class DatasetService implements IDatasetService {
     private createNewDatasetNotification(dataset: IDatasetFile, senderInfo: ISenderInfo) {
         return {
             type: NotificationType.REQUEST_JOB,
-            title: `Neuer Auftrag`,
+            title: `${senderInfo.location} an ${senderInfo.recipient}`,
             payload: {
                 'appName': APP_NAME,
                 'firstName': senderInfo.firstName,
