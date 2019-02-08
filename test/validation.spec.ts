@@ -6,6 +6,7 @@ import * as moment from 'moment';
 import axios from 'axios';
 import { WorkBook, WorkSheet, readFile, utils } from 'xlsx';
 import { logger } from '../src/aspects';
+moment.locale('de');
 
 type SampleData = Record<string, string>;
 const ENDPOINT = '/api/v1/validation';
@@ -108,7 +109,8 @@ class ExcelToJsonService {
         data = utils.sheet_to_json(workSheet, {
             header: FORM_PROPERTIES,
             range: lineNumber,
-            defval: ''
+            defval: '',
+            raw: false
         });
         const cleanedData = this.fromDataToCleanedSamples(data);
         const formattedData = this.formatData(cleanedData);
@@ -223,7 +225,10 @@ describe('Test verification endpoint: ' + ENDPOINT, () => {
                             for (let key of Object.keys(element.errors)) {
                                 receivedCodes.push(...element.errors[key].map(e => e.code));
                             }
-                            const expectedCodes = element.data.comment.split(',').map(str => parseInt(str, 10));
+                            let expectedCodes = [];
+                            if (element.data.comment) {
+                                expectedCodes = element.data.comment.split(',').map(str => parseInt(str.trim(), 10));
+                            }
                             expect(receivedCodes.length).toBe(expectedCodes.length);
                             expect(receivedCodes).toEqual(expect.arrayContaining(expectedCodes));
                         });
