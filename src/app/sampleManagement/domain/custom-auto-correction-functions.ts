@@ -13,6 +13,11 @@ export interface SearchAlias {
     alias: string[];
 }
 
+interface CatalogEnhancement {
+    alias: string;
+    text: string;
+}
+
 interface ResultOptions {
     alias?: string;
     original: string;
@@ -256,7 +261,7 @@ function autoCorrectADV16(catalogService: ICatalogService) {
     logger.debug('Initializing auto-correction: Pathogen (ADV-16) & creating closure');
     const options = getFuseOptions();
 
-    const catalogEnhancements = createCatalogEnhancements(catalogService, catalogName);
+    const catalogEnhancements = createCatalogEnhancements(catalogService, catalogName) as CatalogEnhancement[];
 
     const fuse = catalogService.getCatalog(catalogName).getFuzzyIndex(options);
 
@@ -373,15 +378,22 @@ function doFuzzySearch(value: string, fuse: Fuse, options: ResultOptions) {
     };
 }
 
-// tslint:disable-next-line:no-any
-function searchCatalogEnhancements(value: string, catalogEnhancements: any[]): string {
+function searchCatalogEnhancements(value: string, catalogEnhancements: CatalogEnhancement[]): string {
     let alias: string = '';
     catalogEnhancements.forEach((enhancement) => {
-        if (enhancement.alias === value) {
+        const cleanedAlias = cleanText(enhancement.alias);
+        const cleanedValue = cleanText(value);
+        if (cleanedAlias === cleanedValue) {
             alias = enhancement.text;
         }
     });
     return alias;
+}
+
+function cleanText(str: string) {
+    let cleaned = str.replace(',', '');
+    cleaned = cleaned.replace(/\s*/g, '');
+    return cleaned.toLowerCase();
 }
 
 function getFuseOptions() {
