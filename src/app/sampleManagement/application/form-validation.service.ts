@@ -33,7 +33,6 @@ class DefaultFormValidatorService implements FormValidatorService {
         });
     }
 
-    // TODO: Needs to be refactored & tested
     async validateSamples(sampleCollection: SampleCollection, validationOptions: ValidationOptions): Promise<SampleCollection> {
 
         logger.verbose('FormValidatorService.validateSamples, Starting Sample validation');
