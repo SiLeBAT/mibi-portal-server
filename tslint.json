@@ -1,5 +1,5 @@
 {
-    "extends": "tslint-config-standard",
+    "extends": ["tslint-config-standard", "tslint-config-prettier"],
     "rules": {
         "no-any": true,
         "semicolon": [
@@ -10,14 +10,6 @@
             true,
             4,
             { "SwitchCase": 1 }
-        ],
-        "space-before-function-paren": [
-            true,
-            {
-                "anonymous": "always",
-                "named": "never",
-                "asyncArrow": "always"
-            }
         ],
         "adjacent-overload-signatures": true,
         "member-access": [
