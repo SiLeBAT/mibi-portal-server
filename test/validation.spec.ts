@@ -229,6 +229,8 @@ describe('Test verification endpoint: ' + ENDPOINT, () => {
                             if (element.data.comment) {
                                 expectedCodes = element.data.comment.split(',').map(str => parseInt(str.trim(), 10));
                             }
+                            logger.info('Expected Codes: ' + expectedCodes);
+                            logger.info('Received Codes: ' + receivedCodes);
                             expect(receivedCodes.length).toBe(expectedCodes.length);
                             expect(receivedCodes).toEqual(expect.arrayContaining(expectedCodes));
                         });
