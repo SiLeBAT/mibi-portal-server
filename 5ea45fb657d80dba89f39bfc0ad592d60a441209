@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9faf5389_5f5dc6ee",
+        "filename": "src/app/authentication/application/index.ts",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1015828
+      },
+      "writtenOn": "2019-02-13T14:13:55Z",
+      "side": 1,
+      "message": "looks like the interface renaming stops here",
+      "range": {
+        "startLine": 3,
+        "startChar": 9,
+        "endLine": 3,
+        "endChar": 87
+      },
+      "revId": "5ea45fb657d80dba89f39bfc0ad592d60a441209",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    }
+  ]
+}
