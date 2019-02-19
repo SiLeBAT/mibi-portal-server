@@ -59,21 +59,15 @@ describe('Prepare User for Activation Use Case', () => {
             institution: {
                 uniqueId: 'test',
                 stateShort: 'test',
-                name1: 'test',
-                name2: 'test',
-                location: 'test',
-                address1: {
-                    city: 'test',
-                    street: 'test'
-                },
-                address2: {
-                    city: 'test',
-                    street: 'test'
-                },
+                name: 'test',
+                addendum: 'test',
+                city: 'test',
+                zip: 'test',
                 phone: 'test',
                 fax: 'test',
                 email: []
             },
+            getFullName: jest.fn(),
             isAuthorized: jest.fn(),
             isActivated: jest.fn(),
             isAdminActivated: jest.fn(),

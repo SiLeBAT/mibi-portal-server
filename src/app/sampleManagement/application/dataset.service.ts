@@ -89,7 +89,8 @@ class DatasetService implements IDatasetService {
     ) {
         return {
             type: NotificationType.REQUEST_JOB,
-            title: `${senderInfo.institute.city} an ${senderInfo.recipient}`,
+            title: `Neuer Auftrag von ${senderInfo.institute.city ||
+                '<unbekannt>'} an ${senderInfo.recipient || '<unbekannt>'}`,
             payload: {
                 appName: APP_NAME,
                 firstName: senderInfo.user.firstName,
