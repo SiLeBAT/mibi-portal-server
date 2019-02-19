@@ -34,10 +34,14 @@ const FORM_PROPERTIES: string[] = [
     'comment'
 ];
 
+// tslint:disable-next-line
+type TestData = any;
+// tslint:disable-next-line
+type ServerResponse = any;
 class ExcelToJsonService {
 
     // tslint:disable-next-line:no-any
-    async convertExcelToJSJson(file: string): Promise<any> {
+    async convertExcelToJSJson(file: string): Promise<TestData> {
         let data: SampleData[];
         let nrl: string = '';
         try {
@@ -52,7 +56,7 @@ class ExcelToJsonService {
                 meta: {
                     nrl
                 }
-            };
+            } as TestData;
 
         } catch (err) {
             throw new Error('Ein Fehler ist aufgetreten beim einlesen der Datei.');
@@ -193,7 +197,7 @@ const testUrl = API_URL + ENDPOINT;
 const parser = new ExcelToJsonService();
 
 describe('Test verification endpoint: ' + ENDPOINT, () => {
-    let queryArray;
+    let queryArray: TestData[];
     beforeAll(async () => {
         queryArray = await getDataFromFiles();
     });
@@ -203,7 +207,7 @@ describe('Test verification endpoint: ' + ENDPOINT, () => {
             return acc + current.data.length * 2;
         }, 0));
 
-        const responseArray = [];
+        const responseArray: ServerResponse[] = [];
         queryArray.forEach(
             q => {
                 responseArray.push(axios.post(testUrl, q)
@@ -220,14 +224,16 @@ describe('Test verification endpoint: ' + ENDPOINT, () => {
             dataArray => {
                 dataArray.forEach(
                     d => {
-                        d.forEach(element => {
+                        // tslint:disable-next-line
+                        d.forEach((element: any) => {
                             const receivedCodes = [];
                             for (let key of Object.keys(element.errors)) {
-                                receivedCodes.push(...element.errors[key].map(e => e.code));
+                                // tslint:disable-next-line
+                                receivedCodes.push(...element.errors[key].map((e: any) => e.code));
                             }
                             let expectedCodes = [];
                             if (element.data.comment) {
-                                expectedCodes = element.data.comment.split(',').map(str => parseInt(str.trim(), 10));
+                                expectedCodes = element.data.comment.split(',').map((str: string) => parseInt(str.trim(), 10));
                             }
                             logger.info('Expected Codes: ' + expectedCodes);
                             logger.info('Received Codes: ' + receivedCodes);
@@ -244,7 +250,7 @@ describe('Test verification endpoint: ' + ENDPOINT, () => {
 // tslint:disable-next-line:no-any
 type AOO = any[];
 
-async function getDataFromFiles() {
+async function getDataFromFiles(): Promise<TestData> {
     const filenames: string[] = [];
     fs.readdirSync(path.join('.', DATA_DIR)).forEach(function (file) {
 
