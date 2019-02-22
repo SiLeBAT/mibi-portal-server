@@ -10,17 +10,10 @@ describe('User class', () => {
             {
                 uniqueId: 'test',
                 stateShort: 'test',
-                name1: 'test',
-                name2: 'test',
-                location: 'test',
-                address1: {
-                    street: 'test',
-                    city: 'test'
-                },
-                address2: {
-                    street: 'test',
-                    city: 'test'
-                },
+                name: 'test',
+                addendum: 'test',
+                    zip: 'test',
+                    city: 'test',
                 phone: 'test',
                 fax: 'test',
                 email: []
