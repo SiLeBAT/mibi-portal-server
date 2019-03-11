@@ -4,6 +4,7 @@ import { INotificationService } from '../../sharedKernel/application';
 import { NotificationType } from '../../sharedKernel/domain/enums';
 import { User, InstituteRepository, UserRepository } from '../../ports';
 import { Institute } from '../../authentication';
+import { logger } from '../../../aspects';
 
 const APP_NAME = config.get('appName');
 const JOB_RECIPIENT = config.get('jobRecipient');
@@ -35,6 +36,11 @@ class DatasetService implements IDatasetService {
         const institution: Institute = await this.resolveInstitute(
             senderInfo.instituteId
         );
+        if (institution.name === 'dummy') {
+            logger.warn(
+                `User assigned to dummy institute. User=${sender.uniqueId}`
+            );
+        }
         const resolvedSenderInfo: ResolvedSenderInfo = {
             user: sender,
             institute: institution,
@@ -74,7 +80,8 @@ class DatasetService implements IDatasetService {
             title: `Neuer Auftrag an das BfR`,
             payload: {
                 appName: APP_NAME,
-                name: fullName
+                name: fullName,
+                comment: senderInfo.comment
             },
             meta: {
                 email: senderInfo.user.email,
