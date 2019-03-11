@@ -49,13 +49,13 @@ describe('Custom Auto-correction Functions', () => {
                         getFuzzyIndex: (options: Fuse.FuseOptions) =>
                             new Fuse(mockADVEntries, options),
                         containsEntryWithKeyValue: (k: string, v: string) =>
-                        // @ts-ignore
+                            // @ts-ignore
                             !!_.filter(mockADVEntries, e => e[k] === v)[0],
                         containsUniqueEntryWithId: (v: string) =>
-                        // @ts-ignore
+                            // @ts-ignore
                             !!_.filter(mockADVEntries, e => e['Kode'] === v)[0],
                         getUniqueEntryWithId: (v: string) =>
-                        // @ts-ignore
+                            // @ts-ignore
                             _.filter(mockADVEntries, e => e['Kode'] === v)[0]
                     };
                 }),
@@ -268,13 +268,13 @@ describe('Custom Auto-correction Functions', () => {
                         getFuzzyIndex: (options: Fuse.FuseOptions) =>
                             new Fuse(mockADVEntries, options),
                         containsEntryWithKeyValue: (k: string, v: string) =>
-                        // @ts-ignore
+                            // @ts-ignore
                             !!_.filter(mockADVEntries, e => e[k] === v)[0],
                         containsUniqueEntryWithId: (v: string) =>
-                        // @ts-ignore
+                            // @ts-ignore
                             !!_.filter(mockADVEntries, e => e['Kode'] === v)[0],
                         getUniqueEntryWithId: (v: string) =>
-                        // @ts-ignore
+                            // @ts-ignore
                             _.filter(mockADVEntries, e => e['Kode'] === v)[0]
                     };
                 }),
@@ -457,13 +457,13 @@ describe('Custom Auto-correction Functions', () => {
                         getFuzzyIndex: (options: Fuse.FuseOptions) =>
                             new Fuse(mockADVEntries, options),
                         containsEntryWithKeyValue: (k: string, v: string) =>
-                        // @ts-ignore
+                            // @ts-ignore
                             !!_.filter(mockADVEntries, e => e[k] === v)[0],
                         containsUniqueEntryWithId: (v: string) =>
-                        // @ts-ignore
+                            // @ts-ignore
                             !!_.filter(mockADVEntries, e => e['Kode'] === v)[0],
                         getUniqueEntryWithId: (v: string) =>
-                        // @ts-ignore
+                            // @ts-ignore
                             _.filter(mockADVEntries, e => e['Kode'] === v)[0]
                     };
                 }),
@@ -614,13 +614,13 @@ describe('Custom Auto-correction Functions', () => {
                         getFuzzyIndex: (options: Fuse.FuseOptions) =>
                             new Fuse(mockADVEntries, options),
                         containsEntryWithKeyValue: (k: string, v: string) =>
-                        // @ts-ignore
+                            // @ts-ignore
                             !!_.filter(mockADVEntries, e => e[k] === v)[0],
                         containsUniqueEntryWithId: (v: string) =>
-                        // @ts-ignore
+                            // @ts-ignore
                             !!_.filter(mockADVEntries, e => e['Kode'] === v)[0],
                         getUniqueEntryWithId: (v: string) =>
-                        // @ts-ignore
+                            // @ts-ignore
                             _.filter(mockADVEntries, e => e['Kode'] === v)[0]
                     };
                 }),
@@ -735,16 +735,16 @@ describe('Custom Auto-correction Functions', () => {
                         getFuzzyIndex: (options: Fuse.FuseOptions) =>
                             new Fuse(mockADVEntries, options),
                         containsEntryWithKeyValue: (k: string, v: string) =>
-                        // @ts-ignore
+                            // @ts-ignore
                             !!_.filter(mockADVEntries, e => e[k] === v)[0],
                         containsUniqueEntryWithId: (v: string) =>
-                        // @ts-ignore
+                            // @ts-ignore
                             !!_.filter(mockADVEntries, e => e['Kode'] === v)[0],
                         getUniqueEntryWithId: (v: string) =>
-                        // @ts-ignore
+                            // @ts-ignore
                             _.filter(mockADVEntries, e => e['Kode'] === v)[0],
                         getEntriesWithKeyValue: (k: string, v: string) =>
-                        // @ts-ignore
+                            // @ts-ignore
                             _.filter(mockADVEntries, e => e[k] === v)
                     };
                 }),
@@ -888,10 +888,10 @@ describe('Custom Auto-correction Functions', () => {
                         getFuzzyIndex: (options: Fuse.FuseOptions) =>
                             new Fuse(mockADVEntries, options),
                         containsEntryWithKeyValue: (k: string, v: string) =>
-                        // @ts-ignore
+                            // @ts-ignore
                             !!_.filter(mockADVEntries, e => e[k] === v)[0],
                         getEntriesWithKeyValue: (k: string, v: string) =>
-                        // @ts-ignore
+                            // @ts-ignore
                             _.filter(mockADVEntries, e => e[k] === v)
                     };
                 }),

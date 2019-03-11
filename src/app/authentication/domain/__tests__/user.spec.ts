@@ -12,8 +12,8 @@ describe('User class', () => {
                 stateShort: 'test',
                 name: 'test',
                 addendum: 'test',
-                    zip: 'test',
-                    city: 'test',
+                zip: 'test',
+                city: 'test',
                 phone: 'test',
                 fax: 'test',
                 email: []

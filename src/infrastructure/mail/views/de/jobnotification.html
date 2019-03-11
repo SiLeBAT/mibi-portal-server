@@ -411,17 +411,15 @@
                   <tr>
                     <td class="content-cell">
                       <h1>Sehr geehrte Damen und Herren,</h1>
-					  <p>Bitte bearbeiten Sie den Auftrag im Anhang.</p>
-					  <p>Absender:</p>
+            <p>Bitte bearbeiten Sie den Auftrag im Anhang.</p>
+            <br>
+            <p>Mitteilung des Absenders an das BfR:</p>
+            <p>{{ comment }}</p>
+            <br>
 				      <p>{{ firstName }} {{ lastName }}<br>
-					     {{ email }}<br>
-					     {{ institution }}<br>
-					     {{ location }}</p>
-                      <br>
-              <p>Absender Kommentar:</p>
-              <p>{{ comment }}</p>
-                      <br>
-                      <p>Das {{ appName }} Team</p>
+               {{ institution.name }}<br>
+               {{ institution.zip }} {{ institution.city }}<br>
+               {{ email }}</p>
                       <!-- Sub copy -->
                     </td>
                   </tr>

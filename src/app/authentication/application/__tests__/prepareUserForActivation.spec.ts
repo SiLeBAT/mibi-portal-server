@@ -61,8 +61,8 @@ describe('Prepare User for Activation Use Case', () => {
                 stateShort: 'test',
                 name: 'test',
                 addendum: 'test',
-                    city: 'test',
-                    zip: 'test',
+                city: 'test',
+                zip: 'test',
                 phone: 'test',
                 fax: 'test',
                 email: []
