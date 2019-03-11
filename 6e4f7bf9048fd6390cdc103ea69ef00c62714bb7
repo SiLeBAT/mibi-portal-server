@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d0fd0b0c_e5379141",
+        "filename": "src/infrastructure/mail/views/de/sentnotification.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 435,
+      "author": {
+        "id": 1015828
+      },
+      "writtenOn": "2019-03-11T11:24:18Z",
+      "side": 1,
+      "message": "Should we remove this too?",
+      "range": {
+        "startLine": 435,
+        "startChar": 10,
+        "endLine": 435,
+        "endChar": 39
+      },
+      "revId": "6e4f7bf9048fd6390cdc103ea69ef00c62714bb7",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c3193a3b_004c8099",
+        "filename": "src/infrastructure/mail/views/en/jobnotification.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 420,
+      "author": {
+        "id": 1015828
+      },
+      "writtenOn": "2019-03-11T11:24:18Z",
+      "side": 1,
+      "message": "I would remove this like in the de local version",
+      "range": {
+        "startLine": 420,
+        "startChar": 7,
+        "endLine": 420,
+        "endChar": 21
+      },
+      "revId": "6e4f7bf9048fd6390cdc103ea69ef00c62714bb7",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    }
+  ]
+}
