@@ -131,6 +131,8 @@ function sendMail(
     templateFile: string,
     options: IMailOptions
 ) {
+    templateData.copyrightYear = new Date().getFullYear();
+
     let template = handlebars.compile(templateFile);
     let result = template(templateData);
 
@@ -153,7 +155,11 @@ function sendMail(
 
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-            logger.error(`Error sending mail. . error=${error}`);
+            logger.error(
+                `Error sending mail. error=${error} mailSubject="${
+                    mailOptions.subject
+                }"`
+            );
         } else {
             logger.info('Email sent', {
                 subject: mailOptions.subject
