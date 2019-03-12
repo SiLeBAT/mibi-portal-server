@@ -30,3 +30,7 @@ export {
     createController as createSystemInfoController,
     ISystemInfoController
 } from './system-info.controller';
+export {
+    createController as createAuthorizationController,
+    AuthorizationController
+} from './authorization.controller';

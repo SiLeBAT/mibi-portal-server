@@ -1,1 +1,4 @@
-export { IControllerFactory, ControllerFactory } from './controllerFactory';
+export {
+    ControllerFactory,
+    DefaultControllerFactory
+} from './controllerFactory';

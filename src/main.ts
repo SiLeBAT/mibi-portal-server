@@ -5,7 +5,7 @@ import * as config from 'config';
 import {
     createApplication,
     IServerConfig,
-    ControllerFactory
+    DefaultControllerFactory
 } from './ui/server';
 import {
     DataStoreType,
@@ -43,7 +43,9 @@ initialiseCatalogRepository()
             tokenRepository,
             validationErrorRepository
         });
-        serverConfig.controllerFactory = new ControllerFactory(serviceFactory);
+        serverConfig.controllerFactory = new DefaultControllerFactory(
+            serviceFactory
+        );
 
         registerListeners(serviceFactory.getService(
             'NOTIFICATION'

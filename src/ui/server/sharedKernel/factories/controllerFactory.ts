@@ -15,15 +15,17 @@ import {
     createResetController,
     IResetController,
     ISystemInfoController,
-    createSystemInfoController
+    createSystemInfoController,
+    AuthorizationController,
+    createAuthorizationController
 } from '../../controllers';
 
-export interface IControllerFactory {
+export interface ControllerFactory {
     // tslint:disable-next-line
     getController(controllerName: string): any;
 }
 
-export class ControllerFactory implements IControllerFactory {
+export class DefaultControllerFactory implements ControllerFactory {
     private loginController: ILoginController;
     private institutionsController: IInstitutionController;
     private datasetController: IDatasetController;
@@ -32,6 +34,7 @@ export class ControllerFactory implements IControllerFactory {
     private resetController: IResetController;
     private validationController: ValidationController;
     private systemInfoController: ISystemInfoController;
+    private authorizationController: AuthorizationController;
 
     constructor(private serviceFactory: IServiceFactory) {
         this.validationController = createValidationController(
@@ -57,6 +60,7 @@ export class ControllerFactory implements IControllerFactory {
             this.serviceFactory.getService('PASSWORD')
         );
         this.systemInfoController = createSystemInfoController();
+        this.authorizationController = createAuthorizationController();
     }
 
     getController(controller: string): IController {
@@ -77,6 +81,8 @@ export class ControllerFactory implements IControllerFactory {
                 return this.validationController;
             case 'SYSTEM_INFO':
                 return this.systemInfoController;
+            case 'AUTHORIZATION':
+                return this.authorizationController;
             default:
                 throw new Error(`Unknown controller, controller=${controller}`);
         }

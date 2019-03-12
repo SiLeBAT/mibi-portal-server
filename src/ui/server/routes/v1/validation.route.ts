@@ -1,7 +1,7 @@
 import * as express from 'express';
-import { IControllerFactory } from '../../sharedKernel';
+import { ControllerFactory } from '../../sharedKernel';
 
-function getRouter(controllerFactory: IControllerFactory) {
+function getRouter(controllerFactory: ControllerFactory) {
     const router = express.Router();
     const controller = controllerFactory.getController('VALIDATION');
 

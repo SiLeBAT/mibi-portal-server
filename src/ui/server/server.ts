@@ -12,14 +12,14 @@ import { routes } from './routes';
 import { logger } from './../../aspects';
 import { validateToken } from './middleware';
 import { Logger } from '../../aspects/logging';
-import { IControllerFactory } from './sharedKernel';
+import { ControllerFactory } from './sharedKernel';
 
 export interface IServerConfig {
     port: number;
     jwtSecret: string;
     apiUrl: string;
     logLevel: string;
-    controllerFactory: IControllerFactory;
+    controllerFactory: ControllerFactory;
 }
 
 export interface IAppServer {
