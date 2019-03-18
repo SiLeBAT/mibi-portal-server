@@ -69,7 +69,6 @@ class AppServer implements IAppServer {
             res.setHeader('X-Content-Type-Options', 'nosniff');
             return next();
         });
-        this.server.use(validateToken(serverConfig.jwtSecret));
 
         this.server.use(cors());
         this.server.use(
@@ -79,7 +78,7 @@ class AppServer implements IAppServer {
 
         this.server.use(this.errorResponses.bind(this));
 
-        routes.init(this.server);
+        routes.init(this.server, validateToken(serverConfig.jwtSecret));
 
         this.server.get('*', (req: express.Request, res: express.Response) => {
             logger.verbose('AppServer.initialise, Getting index.html');

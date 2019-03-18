@@ -2,8 +2,6 @@ import * as jwt from 'express-jwt';
 
 function validateToken(secret: string) {
     const whiteList = [
-        // Any route that's not /api (i.e. static files) should not be blocked.
-        /((?!\/api\/).)*$/,
         '/api/v1/util/system-info',
         '/api/v1/institutions',
         '/api/v1/users/login',
