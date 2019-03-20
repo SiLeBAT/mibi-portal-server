@@ -1,6 +1,5 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as config from 'config';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import axios from 'axios';

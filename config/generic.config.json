@@ -1,9 +1,16 @@
 {
+    "application": {
+        "appName": "MiBi-Portal",
+        "jobRecipient": "",
+        "login": {
+            "threshold": 0,
+            "secondsDelay": 0
+          }
+    },
     "server": {
         "port": 3000,
         "jwtSecret": "",
-        "apiUrl": "",
-        "logLevel": "info"
+        "apiUrl": ""
     },
     "dataStore": {
         "connectionString": "",
@@ -13,18 +20,8 @@
         "fromAddress": "",
         "replyToAddress": ""
     },
-    "login": {
-      "threshold": 0,
-      "secondsDelay": 0
-    },
-    "appName": "MiBi-Portal",
-    "supportContact": "",
-    "jobRecipient": "",
-    "searchAlias": [
-        {
-            "catalog": "",
-            "token": "",
-            "alias" : []
-        }
-    ]
+    "general":{
+        "supportContact": "",
+        "logLevel": "info"
+    }
 }

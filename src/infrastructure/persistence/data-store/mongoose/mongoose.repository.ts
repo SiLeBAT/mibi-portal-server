@@ -1,13 +1,28 @@
 import { Document, Model, Types } from 'mongoose';
-import {
-    RepositoryBase,
-    ModelAttributes,
-    UpdateResponse
-} from '../../../../app/ports';
 
-export interface IMongooseUpdateResponse extends UpdateResponse {
+interface UpdateResponse {}
+export interface MongooseUpdateResponse extends UpdateResponse {
     ok: number;
 }
+
+interface ModelAttributes {}
+export interface Read<T> {
+    retrieve: () => Promise<T[]>;
+    findById: (id: string) => Promise<T | null>;
+    findOne(cond?: Object): Promise<T | null>;
+    find(cond: Object, fields: Object, options: Object): Promise<T[]>;
+}
+
+interface Write<T> {
+    create: (item: T) => Promise<T>;
+    update: (
+        _id: string,
+        attributes: ModelAttributes
+    ) => Promise<UpdateResponse>;
+    delete: (_id: string) => Promise<T>;
+}
+
+export interface RepositoryBase<T> extends Read<T>, Write<T> {}
 
 export class MongooseRepositoryBase<T extends Document>
     implements RepositoryBase<Document> {
@@ -28,7 +43,7 @@ export class MongooseRepositoryBase<T extends Document>
     update(
         _id: string,
         attr: ModelAttributes
-    ): Promise<IMongooseUpdateResponse> {
+    ): Promise<MongooseUpdateResponse> {
         return this._model
             .update(
                 { _id: this.toObjectId(_id) },

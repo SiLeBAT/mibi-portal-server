@@ -1,35 +1,16 @@
 import * as _ from 'lodash';
-import { CorrectionSuggestions, SampleData } from './sample.entity';
-import { ICatalogService } from '../application';
 import { logger } from '../../../aspects';
+import { SampleData } from '../model/sample.model';
+import {
+    CorrectionSuggestions,
+    SearchAlias,
+    CatalogEnhancement,
+    ResultOptions,
+    FuzzySearchResultEntry
+} from '../model/autocorrection.model';
+import { CatalogService } from '../model/catalog.model';
 
-export interface CorrectionFunction {
-    (sampleData: SampleData): CorrectionSuggestions | null;
-}
-
-export interface SearchAlias {
-    catalog: string;
-    token: string;
-    alias: string[];
-}
-
-interface CatalogEnhancement {
-    alias: string;
-    text: string;
-}
-
-interface ResultOptions {
-    alias?: string;
-    original: string;
-    numberOfResults: number;
-    property: keyof SampleData;
-}
-interface FuzzySearchResultEntry {
-    item: string;
-    score: number;
-}
-
-function autoCorrectADV2(catalogService: ICatalogService) {
+function autoCorrectADV2(catalogService: CatalogService) {
     const catalogName = 'adv2';
     const dependencyCatalogName = 'adv3';
     const property: keyof SampleData = 'topic_adv';
@@ -89,7 +70,7 @@ function autoCorrectADV2(catalogService: ICatalogService) {
     };
 }
 
-function autoCorrectADV12(catalogService: ICatalogService) {
+function autoCorrectADV12(catalogService: CatalogService) {
     const catalogName = 'adv12';
     const property: keyof SampleData = 'process_state_adv';
     const catalog = catalogService.getCatalog(catalogName);
@@ -141,7 +122,7 @@ function autoCorrectADV12(catalogService: ICatalogService) {
     };
 }
 
-function autoCorrectADV3(catalogService: ICatalogService) {
+function autoCorrectADV3(catalogService: CatalogService) {
     const catalogName = 'adv3';
     const property: keyof SampleData = 'matrix_adv';
     const catalog = catalogService.getCatalog(catalogName);
@@ -195,7 +176,7 @@ function autoCorrectADV3(catalogService: ICatalogService) {
     };
 }
 
-function autoCorrectADV8(catalogService: ICatalogService) {
+function autoCorrectADV8(catalogService: CatalogService) {
     const catalogName = 'adv8';
     const property: keyof SampleData = 'operations_mode_adv';
     const catalog = catalogService.getCatalog(catalogName);
@@ -282,7 +263,7 @@ function autoCorrectADV8(catalogService: ICatalogService) {
     };
 }
 
-function autoCorrectADV9(catalogService: ICatalogService) {
+function autoCorrectADV9(catalogService: CatalogService) {
     const catalogName = 'adv9';
     const property: keyof SampleData = 'sampling_location_adv';
     const catalog = catalogService.getCatalog(catalogName);
@@ -344,7 +325,7 @@ function autoCorrectADV9(catalogService: ICatalogService) {
 }
 
 // ADV16: see #mps53
-function autoCorrectADV16(catalogService: ICatalogService) {
+function autoCorrectADV16(catalogService: CatalogService) {
     const catalogName = 'adv16';
     const property: keyof SampleData = 'pathogen_adv';
     const catalog = catalogService.getCatalog(catalogName);
@@ -534,7 +515,7 @@ function getFuseOptions() {
 }
 
 function createCatalogEnhancements(
-    catalogService: ICatalogService,
+    catalogService: CatalogService,
     catalogName: string
 ) {
     return _(catalogService.getCatalogSearchAliases(catalogName))

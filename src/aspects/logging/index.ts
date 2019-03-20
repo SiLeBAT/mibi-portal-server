@@ -1,7 +1,8 @@
 import * as winston from 'winston';
-import * as config from 'config';
 import { TransformableInfo } from 'logform';
+import { getConfigurationService } from '../../app/ports';
 
+const generalConfig = getConfigurationService().getGeneralConfiguration();
 /*
  *
  * Log levels are:
@@ -17,13 +18,13 @@ export class Logger {
     private _logger: winston.Logger;
 
     constructor() {
-        let logLevel: string = 'info';
+        let logLevel: string = 'error';
         try {
-            logLevel = config.get('server.logLevel');
+            logLevel = generalConfig.logLevel;
         } catch (err) {
             // tslint:disable-next-line:no-console
             console.warn(
-                'Log Level configuration not found. Using defauilt: ' + logLevel
+                'Log Level configuration not found. Using default: ' + logLevel
             );
         }
 

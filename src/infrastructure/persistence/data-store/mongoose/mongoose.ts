@@ -7,21 +7,24 @@ import { IDataStore } from '../data-store.factory';
 import { logger } from './../../../../aspects';
 
 import {
-    nrlSchema,
     institutionSchema,
-    userSchema,
-    resetTokenSchema,
-    IResetTokenModel,
-    IUserModel,
-    IStateModel,
-    stateSchema,
-    INRLModel,
-    validationErrorSchema,
-    IValidationErrorModel,
     InstitutionModel
-} from './schemas';
-import { RepositoryBase } from '../../../../app/ports';
-import { createRepository } from '.';
+} from './schemas/institution.schema';
+
+import { nrlSchema, NRLModel } from './schemas/nrl.schema';
+
+import { resetTokenSchema, ResetTokenModel } from './schemas/resetToken.schema';
+
+import { StateModel, stateSchema } from './schemas/state.schema';
+
+import { userSchema, UserModel } from './schemas/user.schema';
+
+import {
+    validationErrorSchema,
+    ValidationErrorModel
+} from './schemas/validationError.schema';
+
+import { createRepository, RepositoryBase } from './mongoose.repository';
 
 // tslint:disable-next-line
 (mongoose as any).Promise = Promise;
@@ -65,18 +68,18 @@ export class MongooseDataStore implements IDataStore {
     }
 }
 
-export const StateSchema = mongoose.model<IStateModel>('State', stateSchema);
+export const StateSchema = mongoose.model<StateModel>('State', stateSchema);
 export const InstitutionSchema = mongoose.model<InstitutionModel>(
     'Institution',
     institutionSchema
 );
-export const ResetTokenSchema = mongoose.model<IResetTokenModel>(
+export const ResetTokenSchema = mongoose.model<ResetTokenModel>(
     'ResetToken',
     resetTokenSchema
 );
-export const UserSchema = mongoose.model<IUserModel>('User', userSchema);
-export const NRLSchema = mongoose.model<INRLModel>('NRL', nrlSchema);
-export const ValidationErrorSchema = mongoose.model<IValidationErrorModel>(
+export const UserSchema = mongoose.model<UserModel>('User', userSchema);
+export const NRLSchema = mongoose.model<NRLModel>('NRL', nrlSchema);
+export const ValidationErrorSchema = mongoose.model<ValidationErrorModel>(
     'ValidationError',
     validationErrorSchema
 );

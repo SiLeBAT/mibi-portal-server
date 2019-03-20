@@ -1,35 +1,22 @@
-import * as config from 'config';
 import * as moment from 'moment';
-import { User, IUserCredentials, generateToken } from './../domain';
-import { UserRepository } from '../../ports';
 import { logger } from './../../../aspects';
-import { RegistrationService } from '.';
-import { ApplicationDomainError } from '../../sharedKernel/errors';
-import { IRecoveryData } from '../../sharedKernel';
+import {
+    LoginService,
+    UserLoginInformation,
+    LoginResponse,
+    RecoveryData
+} from '../model/login.model';
+import { RegistrationService } from '../model/registration.model';
+import { getConfigurationService } from '../../core/application/configuration.service';
+import { generateToken } from '../domain/token.service';
+import { ApplicationDomainError } from '../../core/domain/domain.error';
+import { User } from '../model/user.model';
+import { UserRepository } from '../../ports';
 
-const THRESHOLD: number = config.has('login.threshold')
-    ? config.get('login.threshold')
-    : 5;
-const SECONDS_DELAY: number = config.has('login.secondsDelay')
-    ? config.get('login.secondsDelay')
-    : 300;
+const appConfig = getConfigurationService().getApplicationConfiguration();
 
-export interface UserLoginInformation extends IUserCredentials {
-    userAgent: string | string[] | undefined;
-    host: string | undefined;
-}
-
-export interface LoginResponse {
-    user: User;
-    token: string;
-    timeToWait?: string;
-}
-
-export interface LoginPort {
-    loginUser(credentials: UserLoginInformation): Promise<LoginResponse>;
-}
-
-export interface LoginService extends LoginPort {}
+const THRESHOLD: number = appConfig.login.threshold;
+const SECONDS_DELAY: number = appConfig.login.secondsDelay;
 
 class DefaultLoginService implements LoginService {
     constructor(
@@ -87,7 +74,7 @@ class DefaultLoginService implements LoginService {
 
     private async rejectInactiveUser(
         user: User,
-        recoveryData: IRecoveryData
+        recoveryData: RecoveryData
     ): Promise<LoginResponse> {
         logger.verbose(
             'LoginService.rejectInactiveUser, Inactive account failed to log in.'

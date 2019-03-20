@@ -106,7 +106,7 @@
     "mock-express-response": "^0.2.2",
     "nodemon": "^1.14.12",
     "npm-audit-ci-wrapper": "^2.1.5",
-    "prettier": "^1.16.4",
+    "prettier": "^1.4.0",
     "rimraf": "^2.6.2",
     "ts-jest": "^24.0.0",
     "tslint": "^5.9.1",

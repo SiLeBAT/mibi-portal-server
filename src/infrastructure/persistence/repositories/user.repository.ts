@@ -1,28 +1,29 @@
 import {
-    RepositoryBase,
     UserRepository,
     createUser,
-    User
-} from '../../../app/ports';
-import {
-    UserSchema,
-    IUserModel,
-    IUserModelUpdateResponse,
-    createRepository
-} from '../data-store';
-import { mapModelToUser } from './data-mappers';
-import {
+    User,
     ApplicationDomainError,
     ApplicationSystemError
-} from '../../../app/sharedKernel';
+} from '../../../app/ports';
+
+import { mapModelToUser } from './data-mappers';
+import {
+    UserModel,
+    UserModelUpdateResponse
+} from '../data-store/mongoose/schemas/user.schema';
+import { UserSchema } from '../data-store/mongoose/mongoose';
+import {
+    createRepository,
+    RepositoryBase
+} from '../data-store/mongoose/mongoose.repository';
 
 class DefaultUserRepository implements UserRepository {
-    constructor(private baseRepo: RepositoryBase<IUserModel>) {}
+    constructor(private baseRepo: RepositoryBase<UserModel>) {}
 
     findById(id: string) {
         return this.baseRepo
             .findById(id)
-            .then((userModel: IUserModel) => {
+            .then((userModel: UserModel) => {
                 if (!userModel) {
                     throw new ApplicationDomainError(
                         `User not found. id=${id}`
@@ -42,11 +43,11 @@ class DefaultUserRepository implements UserRepository {
 
         return this.baseRepo
             .findOne({ email: { $regex: nameRegex } })
-            .then((userModel: IUserModel) => {
+            .then((userModel: UserModel) => {
                 if (!userModel) return Promise.reject(null);
                 return populateWithAuxData(userModel);
             })
-            .then((userModel: IUserModel) => {
+            .then((userModel: UserModel) => {
                 if (!userModel) {
                     throw new ApplicationDomainError(
                         `User not found. username=${username}`
@@ -66,7 +67,7 @@ class DefaultUserRepository implements UserRepository {
 
         return this.baseRepo
             .findOne({ email: { $regex: nameRegex } })
-            .then((userModel: IUserModel) => {
+            .then((userModel: UserModel) => {
                 if (!userModel) {
                     throw new ApplicationDomainError(
                         `User not found. username=${username}`
@@ -130,7 +131,7 @@ class DefaultUserRepository implements UserRepository {
                 numAttempt: user.getNumberOfFailedAttempts(),
                 lastAttempt: user.getLastLoginAttempt()
             })
-            .then((response: IUserModelUpdateResponse) => {
+            .then((response: UserModelUpdateResponse) => {
                 if (!response.ok) {
                     throw new ApplicationSystemError(
                         `Response not OK. Unable to update user. user=${user}`
@@ -146,7 +147,7 @@ class DefaultUserRepository implements UserRepository {
     }
 }
 
-function populateWithAuxData(model: IUserModel): Promise<IUserModel> {
+function populateWithAuxData(model: UserModel): Promise<UserModel> {
     // For some reason .populate does not return a promise and only works with callback: although the docs promise otherwise.
     return new Promise(function(resolve, reject) {
         model.populate({ path: 'institution' }, function(err, data) {

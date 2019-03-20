@@ -1,15 +1,18 @@
 import {
-    createRepository,
-    IValidationErrorModel,
-    ValidationErrorSchema
-} from '../data-store';
-import { ValidationErrorRepository, Read } from '../../../app/ports';
+    ValidationErrorRepository,
+    ApplicationSystemError,
+    ValidationError
+} from '../../../app/ports';
 import { mapModelToValidationError } from './data-mappers';
-import { ValidationError } from '../../../app/sampleManagement/application';
-import { ApplicationSystemError } from '../../../app/sharedKernel';
 import { logger } from '../../../aspects';
+import { ValidationErrorModel } from '../data-store/mongoose/schemas/validationError.schema';
+import { ValidationErrorSchema } from '../data-store/mongoose/mongoose';
+import {
+    createRepository,
+    Read
+} from '../data-store/mongoose/mongoose.repository';
 class DefaultValidationErrorRepository implements ValidationErrorRepository {
-    constructor(private baseRepo: Read<IValidationErrorModel>) {}
+    constructor(private baseRepo: Read<ValidationErrorModel>) {}
 
     getAllErrors(): Promise<ValidationError[]> {
         return this.retrieve();

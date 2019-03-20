@@ -1,45 +1,29 @@
 import * as moment from 'moment';
 import * as _ from 'lodash';
-import { ICatalog } from '..';
-import { SampleData } from './sample.entity';
-import { ICatalogService, ValidationError } from '../application';
-import { ApplicationDomainError } from '../../sharedKernel';
+import { SampleData } from '../model/sample.model';
+import {
+    ValidationError,
+    DependentFieldEntryOptions,
+    MatchRegexPatternOptions,
+    MatchIdToYearOptions,
+    ValidatorFunction,
+    NonUniqueEntryOptions,
+    InCatalogOptions,
+    MatchADVNumberOrStringOptions,
+    RegisteredZoMoOptions,
+    AtLeastOneOfOptions,
+    DependentFieldsOptions,
+    NumbersOnlyOptions,
+    ReferenceDateOptions
+} from '../model/validation.model';
+import { ApplicationDomainError } from '../../ports';
+import { CatalogService } from '../model/catalog.model';
 
 moment.locale('de');
 
-export interface ICatalogProvider {
-    // tslint:disable-next-line
-    (catalogName: string): ICatalog<any>;
-}
-export interface IValidatorFunction<T extends IValidatiorFunctionOptions> {
-    (
-        value: string,
-        options: T,
-        key: keyof SampleData,
-        attributes: SampleData
-    ): ValidationError | null;
-}
-export interface IValidatiorFunctionOptions {
-    message: ValidationError;
-}
-export interface IMatchIdToYearOptions extends IValidatiorFunctionOptions {
-    regex: string[];
-}
-
-export interface IMatchRegexPatternOptions extends IMatchIdToYearOptions {
-    ignoreNumbers: boolean;
-    caseInsensitive?: boolean;
-}
-
-export interface IDependentFieldEntryOptions
-    extends IValidatiorFunctionOptions {
-    regex: string;
-    field: keyof SampleData;
-}
-
 function dependentFieldEntry(
     value: string,
-    options: IDependentFieldEntryOptions,
+    options: DependentFieldEntryOptions,
     key: keyof SampleData,
     attributes: SampleData
 ) {
@@ -57,7 +41,7 @@ function numbersOnlyValue(value: string): boolean {
 }
 function matchesRegexPattern(
     value: string,
-    options: IMatchRegexPatternOptions,
+    options: MatchRegexPatternOptions,
     key: keyof SampleData,
     attributes: SampleData
 ) {
@@ -81,7 +65,7 @@ function matchesRegexPattern(
 
 function matchesIdToSpecificYear(
     value: string,
-    options: IMatchIdToYearOptions,
+    options: MatchIdToYearOptions,
     key: keyof SampleData,
     attributes: SampleData
 ) {
@@ -136,18 +120,12 @@ function matchesIdToSpecificYear(
     );
 }
 
-export interface INonUniqueEntryOptions extends IValidatiorFunctionOptions {
-    catalog: string;
-    key: string;
-    differentiator: [string, keyof SampleData];
-}
-
 function nonUniqueEntry(
-    catalogService: ICatalogService
-): IValidatorFunction<INonUniqueEntryOptions> {
+    catalogService: CatalogService
+): ValidatorFunction<NonUniqueEntryOptions> {
     return (
         value: string,
-        options: INonUniqueEntryOptions,
+        options: NonUniqueEntryOptions,
         key: keyof SampleData,
         attributes: SampleData
     ) => {
@@ -179,17 +157,12 @@ function nonUniqueEntry(
     };
 }
 
-export interface IInCatalogOptions extends IValidatiorFunctionOptions {
-    catalog: string;
-    key: string;
-}
-
 function inCatalog(
-    catalogService: ICatalogService
-): IValidatorFunction<IInCatalogOptions> {
+    catalogService: CatalogService
+): ValidatorFunction<InCatalogOptions> {
     return (
         value: string,
-        options: IInCatalogOptions,
+        options: InCatalogOptions,
         key: keyof SampleData,
         attributes: SampleData
     ) => {
@@ -210,16 +183,13 @@ function inCatalog(
     };
 }
 
-export interface IMatchADVNumberOrStringOptions extends IInCatalogOptions {
-    alternateKeys: string[];
-}
 // Matching for ADV16 accorind to #mps53
 function matchADVNumberOrString(
-    catalogService: ICatalogService
-): IValidatorFunction<IInCatalogOptions> {
+    catalogService: CatalogService
+): ValidatorFunction<InCatalogOptions> {
     return (
         value: string,
-        options: IMatchADVNumberOrStringOptions,
+        options: MatchADVNumberOrStringOptions,
         key: keyof SampleData,
         attributes: SampleData
     ) => {
@@ -257,21 +227,12 @@ function matchADVNumberOrString(
     };
 }
 
-interface IGroup {
-    code: string;
-    attr: keyof SampleData;
-}
-export interface IRegisteredZoMoOptions extends IValidatiorFunctionOptions {
-    year: string[];
-    group: IGroup[];
-}
-
 function registeredZoMo(
-    catalogService: ICatalogService
-): IValidatorFunction<IRegisteredZoMoOptions> {
+    catalogService: CatalogService
+): ValidatorFunction<RegisteredZoMoOptions> {
     return (
         value: string,
-        options: IRegisteredZoMoOptions,
+        options: RegisteredZoMoOptions,
         key: keyof SampleData,
         attributes: SampleData
     ) => {
@@ -286,9 +247,7 @@ function registeredZoMo(
             const yearToCheck = Math.min(...years);
             const cat = catalogService.getCatalog('zsp' + yearToCheck);
             if (cat) {
-                const groupValues = options.group.map(
-                    (g: IGroup) => attributes[g.attr]
-                );
+                const groupValues = options.group.map(g => attributes[g.attr]);
                 const entry = cat.getEntriesWithKeyValue(
                     options.group[0].code,
                     groupValues[0]
@@ -310,13 +269,9 @@ function registeredZoMo(
     };
 }
 
-export interface IAtLeastOneOfOptions extends IValidatiorFunctionOptions {
-    additionalMembers: (keyof SampleData)[];
-}
-
 function atLeastOneOf(
     value: string,
-    options: IAtLeastOneOfOptions,
+    options: AtLeastOneOfOptions,
     key: keyof SampleData,
     attributes: SampleData
 ) {
@@ -333,7 +288,7 @@ function atLeastOneOf(
 }
 function dateAllowEmpty(
     value: string,
-    options: IAtLeastOneOfOptions,
+    options: AtLeastOneOfOptions,
     key: keyof SampleData,
     attributes: SampleData
 ) {
@@ -355,13 +310,9 @@ function dateAllowEmpty(
     return null;
 }
 
-export interface IDependentFieldsOptions extends IValidatiorFunctionOptions {
-    dependents: (keyof SampleData)[];
-}
-
 function dependentFields(
     value: string,
-    options: IDependentFieldsOptions,
+    options: DependentFieldsOptions,
     key: keyof SampleData,
     attributes: SampleData
 ) {
@@ -376,11 +327,9 @@ function dependentFields(
     return null;
 }
 
-export interface INumbersOnlyOptions extends IValidatiorFunctionOptions {}
-
 function numbersOnly(
     value: string,
-    options: INumbersOnlyOptions,
+    options: NumbersOnlyOptions,
     key: keyof SampleData,
     attributes: SampleData
 ) {
@@ -392,18 +341,9 @@ function numbersOnly(
     return null;
 }
 
-export interface IReferenceDateOptions extends IValidatiorFunctionOptions {
-    earliest?: (keyof SampleData) | string;
-    latest?: (keyof SampleData) | string;
-    modifier?: {
-        value: number;
-        unit: string;
-    };
-}
-
 function referenceDate(
     value: string,
-    options: IReferenceDateOptions,
+    options: ReferenceDateOptions,
     key: keyof SampleData,
     // tslint:disable-next-line
     attributes: any

@@ -4,9 +4,9 @@ import {
     createDataStore,
     DataStoreType,
     mapCollectionToRepository
-} from '../../../infrastructure';
-import { RepositoryBase } from '../../../app/ports';
+} from '../../../infrastructure/ports';
 import { InstitutionModel } from '../../../infrastructure/persistence/data-store/mongoose/schemas/institution.schema';
+import { RepositoryBase } from '../../../infrastructure/persistence/data-store/mongoose/mongoose.repository';
 
 /**
  * Script used to split the location attribute in the institution entries into a zip and a city entry: For Ticket mps#92
