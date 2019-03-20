@@ -1,11 +1,5 @@
-import { Institute } from '../domain';
 import { InstituteRepository } from '../../ports';
-
-export interface InstitutePort {
-    retrieveInstitutes(): Promise<Institute[]>;
-}
-
-export interface InstituteService extends InstitutePort {}
+import { InstituteService, Institute } from '../model/institute.model';
 
 class DefaultInstituteService implements InstituteService {
     constructor(private institutionRepository: InstituteRepository) {}

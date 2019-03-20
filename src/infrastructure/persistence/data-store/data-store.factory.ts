@@ -1,4 +1,4 @@
-import { MongooseDataStore } from './mongoose';
+import { MongooseDataStore } from './mongoose/mongoose';
 import { logger } from '../../../aspects';
 
 export interface IDataStore {

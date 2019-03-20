@@ -3,24 +3,20 @@
 // npm
 import * as handlebars from 'handlebars';
 import * as nodemailer from 'nodemailer';
-import * as config from 'config';
 import * as readFilePromise from 'fs-readfile-promise';
 
 // local
 import { logger } from './../../aspects';
 import {
-    INotificationPort,
+    NotificationPort,
     NotificationType,
-    INotification,
-    IDatasetFile
+    Notification,
+    DatasetFile,
+    getConfigurationService,
+    MailConfiguration
 } from '../../app/ports';
 
-interface IMailConfig {
-    replyToAddress: string;
-    fromAddress: string;
-}
-
-interface IMailOptions {
+interface MailOptions {
     to: string;
     cc: string[];
     subject: string;
@@ -28,7 +24,7 @@ interface IMailOptions {
     attachments: any[];
 }
 
-const mailConfig: IMailConfig = config.get('mail');
+const mailConfig: MailConfiguration = getConfigurationService().getMailConfiguration();
 
 const fromAddress = mailConfig.fromAddress;
 const replyToAddress = mailConfig.replyToAddress;
@@ -37,8 +33,8 @@ const port = 25;
 
 const viewsDir = __dirname + '/views/de/';
 
-function registerListeners(notificationService: INotificationPort) {
-    notificationService.addHandler(async (data: INotification) => {
+function registerListeners(notificationService: NotificationPort) {
+    notificationService.addHandler(async (data: Notification) => {
         let templateFile;
         switch (data.type) {
             case NotificationType.RESET_SUCCESS:
@@ -117,7 +113,7 @@ function registerListeners(notificationService: INotificationPort) {
     });
 }
 
-function mapDataFile(dataset: IDatasetFile) {
+function mapDataFile(dataset: DatasetFile) {
     return {
         filename: dataset.originalname,
         content: dataset.buffer,
@@ -129,7 +125,7 @@ function sendMail(
     // tslint:disable-next-line
     templateData: any,
     templateFile: string,
-    options: IMailOptions
+    options: MailOptions
 ) {
     templateData.copyrightYear = new Date().getFullYear();
 

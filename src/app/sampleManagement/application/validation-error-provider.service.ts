@@ -1,22 +1,12 @@
 import * as _ from 'lodash';
-import {
-    ApplicationDomainError,
-    ApplicationSystemError
-} from '../../sharedKernel';
 import { ValidationErrorRepository } from '../../ports';
 import { logger } from '../../../aspects';
-
-export interface ValidationErrorProviderPort {}
-
-export interface ValidationErrorProvider extends ValidationErrorProviderPort {
-    getError(id: number): ValidationError;
-}
-
-export interface ValidationError {
-    code: number;
-    level: number;
-    message: string;
-}
+import { ApplicationDomainError } from './../../core/domain/domain.error';
+import { ApplicationSystemError } from './../../core/domain/technical.error';
+import {
+    ValidationError,
+    ValidationErrorProvider
+} from './../model/validation.model';
 
 class DefaultValidationErrorProvider implements ValidationErrorProvider {
     private errors: ValidationError[] = [];

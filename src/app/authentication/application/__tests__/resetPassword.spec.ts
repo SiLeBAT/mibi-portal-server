@@ -1,16 +1,8 @@
-import { createService, PasswordService } from './../password.service';
-import { verifyToken } from '../../domain';
-// tslint:disable
-jest.mock('./../../domain', () => ({
-    generateToken: jest.fn(),
-    verifyToken: jest.fn(),
-    NotificationType: {
-        REQUEST_ACTIVATION: 0,
-        REQUEST_ALTERNATIVE_CONTACT: 1,
-        REQUEST_RESET: 2,
-        NOTIFICATION_RESET: 3
-    }
-}));
+import { createService } from './../password.service';
+import { PasswordService } from '../../model/login.model';
+import { verifyToken } from '../../domain/token.service';
+jest.mock('./../../domain/token.service');
+jest.mock('../../../core/application/configuration.service');
 
 describe('Reset Password Use Case', () => {
     let mockUserRepository: any;

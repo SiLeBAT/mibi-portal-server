@@ -5,7 +5,7 @@ import {
     UpdateResponse
 } from '../../../../app/ports';
 
-export interface IMongooseUpdateResponse extends UpdateResponse {
+export interface MongooseUpdateResponse extends UpdateResponse {
     ok: number;
 }
 
@@ -28,7 +28,7 @@ export class MongooseRepositoryBase<T extends Document>
     update(
         _id: string,
         attr: ModelAttributes
-    ): Promise<IMongooseUpdateResponse> {
+    ): Promise<MongooseUpdateResponse> {
         return this._model
             .update(
                 { _id: this.toObjectId(_id) },

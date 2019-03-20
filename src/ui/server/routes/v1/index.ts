@@ -4,7 +4,7 @@ import { getRouter as getJobRouter } from './job.route';
 import { getRouter as getInstitutionsRouter } from './institution.route';
 import { getRouter as getUserRouter } from './users';
 import { getRouter as getUtilRouter } from './util';
-import { ControllerFactory } from '../../sharedKernel';
+import { ControllerFactory } from '../../core/factories/controllerFactory';
 import { logger } from '../../../../aspects';
 
 function getRouter(controllerFactory: ControllerFactory) {

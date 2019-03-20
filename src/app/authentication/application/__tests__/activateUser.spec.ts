@@ -1,23 +1,11 @@
-import { createService, RegistrationService } from './../registration.service';
-import { verifyToken, generateToken, User } from '../../domain';
-// tslint:disable
-jest.mock('./../../../sharedKernel', () => ({
-    RepositoryType: {
-        USER: 0
-    },
-    NotificationType: {
-        REQUEST_ADMIN_ACTIVATION: 1
-    }
-}));
+import { createService } from './../registration.service';
+import { User } from '../../model/user.model';
+import { RegistrationService } from '../../model/registration.model';
+import { verifyToken, generateToken } from '../../domain/token.service';
 
-jest.mock('./../../domain', () => ({
-    generateToken: jest.fn(),
-    generateAdminToken: jest.fn(),
-    verifyToken: jest.fn(),
-    TokenType: {
-        ADMIN: 0
-    }
-}));
+jest.mock('./../../domain/token.service');
+
+jest.mock('../../../core/application/configuration.service');
 
 describe('Activate User Use Case', () => {
     let mockUserRepository: any;

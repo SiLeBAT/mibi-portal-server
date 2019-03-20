@@ -1,23 +1,19 @@
-import { createService, RegistrationService } from './../registration.service';
-import { generateToken, createUser, User } from '../../domain';
-import { IRecoveryData } from '../../../sharedKernel';
+import { createService } from './../registration.service';
+import { RegistrationService } from '../../model/registration.model';
+import { User } from '../../model/user.model';
+import { RecoveryData } from '../../model/login.model';
+import { createUser } from '../../domain/user.entity';
+import { generateToken } from '../../domain/token.service';
 // tslint:disable
-jest.mock('./../../domain', () => ({
-    generateToken: jest.fn(),
-    verifyToken: jest.fn(),
+jest.mock('./../../domain/token.service');
+
+jest.mock('./../../domain/user.entity', () => ({
     createUser: jest.fn(() => ({
         updatePassword: jest.fn()
-    })),
-    TokenType: {
-        ACTIVATE: 0
-    },
-    NotificationType: {
-        REQUEST_ACTIVATION: 0,
-        REQUEST_ALTERNATIVE_CONTACT: 1,
-        REQUEST_RESET: 2,
-        NOTIFICATION_RESET: 3
-    }
+    }))
 }));
+
+jest.mock('../../../core/application/configuration.service');
 
 describe('Prepare User for Activation Use Case', () => {
     let mockUserRepository: any;
@@ -29,7 +25,7 @@ describe('Prepare User for Activation Use Case', () => {
     let mockInstitutionRepository: any;
     let service: RegistrationService;
     let user: User;
-    let recoveryData: IRecoveryData;
+    let recoveryData: RecoveryData;
     beforeEach(() => {
         mockUserRepository = {
             hasUser: jest.fn(() => false),

@@ -1,6 +1,5 @@
 import * as moment from 'moment';
 import * as _ from 'lodash';
-import { SampleData } from './../sample.entity';
 import {
     referenceDate,
     atLeastOneOf,
@@ -11,12 +10,21 @@ import {
     nonUniqueEntry,
     inCatalog,
     matchADVNumberOrString,
-    IMatchADVNumberOrStringOptions,
     matchesRegexPattern,
     matchesIdToSpecificYear
 } from '../custom-validator-functions';
-import { ICatalog } from '../..';
-import { ICatalogService, ValidationError } from '../../application';
+import {
+    ValidationError,
+    IMatchADVNumberOrStringOptions
+} from './../../model/validation.model';
+import { SampleData } from '../../model/sample.model';
+import { ICatalogService, ICatalog } from '../../model/catalog.model';
+jest.mock('../../../ports');
+/* jest.mock('../../../core/application/configuration.service', () => ({
+    getConfigurationService: () => ({
+        getServerConfiguration: jest.fn()
+    })
+})); */
 
 moment.locale('de');
 

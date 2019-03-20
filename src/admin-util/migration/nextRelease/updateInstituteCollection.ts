@@ -4,7 +4,7 @@ import {
     createDataStore,
     DataStoreType,
     mapCollectionToRepository
-} from '../../../infrastructure';
+} from '../../../infrastructure/ports';
 import { RepositoryBase } from '../../../app/ports';
 import { InstitutionModel } from '../../../infrastructure/persistence/data-store/mongoose/schemas/institution.schema';
 

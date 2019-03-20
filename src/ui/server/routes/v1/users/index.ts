@@ -6,7 +6,7 @@ import { getRouter as getActivateRouter } from './activation.route';
 import { getRouter as getAdminActivateRouter } from './adminactivation.route';
 import { getRouter as getRecoveryRouter } from './recovery.route';
 import { getRouter as getIsAuthorizedRouter } from './isauthorized.route';
-import { ControllerFactory } from '../../../sharedKernel';
+import { ControllerFactory } from '../../../core/factories/controllerFactory';
 import { logger } from '../../../../../aspects';
 
 function getRouter(controllerFactory: ControllerFactory) {

@@ -1,16 +1,18 @@
 import { Request, Response } from 'express';
-import * as config from 'config';
 import { logger } from '../../../aspects';
-import { IController, RegistrationPort } from '../../../app/ports';
+import { RegistrationPort, getConfigurationService } from '../../../app/ports';
+import { Controller } from '../model/controler.model';
 
-export interface IRegistrationController extends IController {
+export interface RegistrationController extends Controller {
     register(req: Request, res: Response): void;
     activate(req: Request, res: Response): Promise<void>;
 }
 
-const SUPPORT_CONTACT = config.get('supportContact');
+const generalConfig = getConfigurationService().getGeneralConfiguration();
 
-class RegistrationController implements IRegistrationController {
+const SUPPORT_CONTACT = generalConfig.supportContact;
+
+class DefaultRegistrationController implements RegistrationController {
     constructor(private registrationService: RegistrationPort) {}
 
     async activate(req: Request, res: Response) {
@@ -102,6 +104,6 @@ class RegistrationController implements IRegistrationController {
     }
 }
 
-export function createRegistrationController(service: RegistrationPort) {
-    return new RegistrationController(service);
+export function createController(service: RegistrationPort) {
+    return new DefaultRegistrationController(service);
 }

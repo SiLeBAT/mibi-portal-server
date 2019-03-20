@@ -1,19 +1,17 @@
 import {
-    createRepository,
-    ResetTokenSchema,
-    IResetTokenModel
-} from '../data-store';
-import {
     RepositoryBase,
     TokenRepository,
-    IUserToken,
-    User
+    UserToken,
+    User,
+    ApplicationDomainError,
+    TokenType
 } from '../../../app/ports';
-import { TokenType } from '../../../app/authentication/domain';
-import { ApplicationDomainError } from '../../../app/sharedKernel';
+import { ResetTokenModel } from '../data-store/mongoose/schemas/resetToken.schema';
+import { ResetTokenSchema } from '../data-store/mongoose/mongoose';
+import { createRepository } from '../data-store/mongoose/mongoose.repository';
 
 class DefaultTokenRepository implements TokenRepository {
-    constructor(private baseRepo: RepositoryBase<IResetTokenModel>) {}
+    constructor(private baseRepo: RepositoryBase<ResetTokenModel>) {}
     hasTokenForUser(user: User): Promise<boolean> {
         return this.baseRepo
             .find({ user: user.uniqueId, type: TokenType.ACTIVATE }, {}, {})
@@ -39,24 +37,24 @@ class DefaultTokenRepository implements TokenRepository {
         return this.baseRepo
             .findOne({ user: user.uniqueId, type: TokenType.ACTIVATE })
             .then(
-                (token: IResetTokenModel) => !!this.baseRepo.delete(token._id)
+                (token: ResetTokenModel) => !!this.baseRepo.delete(token._id)
             );
     }
     deleteResetTokenForUser(user: User): Promise<boolean> {
         return this.baseRepo
             .findOne({ user: user.uniqueId, type: TokenType.RESET })
             .then(
-                (token: IResetTokenModel) => !!this.baseRepo.delete(token._id)
+                (token: ResetTokenModel) => !!this.baseRepo.delete(token._id)
             );
     }
     deleteAdminTokenForUser(user: User): Promise<boolean> {
         return this.baseRepo
             .findOne({ user: user.uniqueId, type: TokenType.ADMIN })
             .then(
-                (token: IResetTokenModel) => !!this.baseRepo.delete(token._id)
+                (token: ResetTokenModel) => !!this.baseRepo.delete(token._id)
             );
     }
-    saveToken(token: IUserToken): Promise<IUserToken> {
+    saveToken(token: UserToken): Promise<UserToken> {
         const newToken = new ResetTokenSchema({
             token: token.token,
             type: token.type,
@@ -64,7 +62,7 @@ class DefaultTokenRepository implements TokenRepository {
         });
         return this.baseRepo.create(newToken).then(res => newToken);
     }
-    getUserTokenByJWT(token: string): Promise<IUserToken> {
+    getUserTokenByJWT(token: string): Promise<UserToken> {
         return this.baseRepo.findOne({ token: token }).then(model => {
             if (!model) {
                 throw new ApplicationDomainError(

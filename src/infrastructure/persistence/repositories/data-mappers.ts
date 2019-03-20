@@ -5,15 +5,13 @@ import {
     User,
     State,
     ValidationError,
-    INRL
+    NRLConfig
 } from '../../../app/ports';
-import {
-    IValidationErrorModel,
-    InstitutionModel,
-    IUserModel,
-    IStateModel,
-    INRLModel
-} from '../data-store';
+import { InstitutionModel } from '../data-store/mongoose/schemas/institution.schema';
+import { UserModel } from '../data-store/mongoose/schemas/user.schema';
+import { StateModel } from '../data-store/mongoose/schemas/state.schema';
+import { ValidationErrorModel } from '../data-store/mongoose/schemas/validationError.schema';
+import { NRLModel } from '../data-store/mongoose/schemas/nrl.schema';
 
 function mapModelToInstitution(i: InstitutionModel): Institute {
     const inst = createInstitution(i._id);
@@ -32,7 +30,7 @@ function mapModelToInstitution(i: InstitutionModel): Institute {
     };
 }
 
-function mapModelToUser(model: IUserModel): User {
+function mapModelToUser(model: UserModel): User {
     const institution = mapModelToInstitution(model.institution);
     return createUser(
         model._id.toHexString(),
@@ -48,7 +46,7 @@ function mapModelToUser(model: IUserModel): User {
     );
 }
 
-function mapModelToState(model: IStateModel): State {
+function mapModelToState(model: StateModel): State {
     return {
         name: model.name,
         short: model.short,
@@ -57,7 +55,7 @@ function mapModelToState(model: IStateModel): State {
 }
 
 function mapModelToValidationError(
-    model: IValidationErrorModel
+    model: ValidationErrorModel
 ): ValidationError {
     return {
         code: model.code,
@@ -66,7 +64,7 @@ function mapModelToValidationError(
     };
 }
 
-function mapModelToNRL(model: INRLModel): INRL {
+function mapModelToNRL(model: NRLModel): NRLConfig {
     return {
         name: model.name,
         selectors: model.selector

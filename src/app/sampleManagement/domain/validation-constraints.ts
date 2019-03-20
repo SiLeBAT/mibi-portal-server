@@ -1,18 +1,5 @@
 import * as _ from 'lodash';
-
-export interface ValidationRule {
-    error: number;
-    // tslint:disable-next-line
-    [key: string]: any;
-}
-
-export interface ValidationRuleSet {
-    [key: string]: ValidationRule;
-}
-
-export interface ValidationConstraints {
-    [key: string]: ValidationRuleSet;
-}
+import { ValidationConstraints } from '../model/validation.model';
 
 export const zoMoConstraints: ValidationConstraints = {
     sample_id_avv: {

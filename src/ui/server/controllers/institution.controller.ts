@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
-import { InstitutionPort, IController, Institute } from '../../../app/ports';
+import { Institute, InstitutePort } from '../../../app/ports';
 import { logger } from '../../../aspects';
+import { Controller } from '../model/controler.model';
 
-interface IInstitutionDTO {
+interface InstitutionDTO {
     _id: string;
     short: string;
     name: string;
@@ -14,12 +15,12 @@ interface IInstitutionDTO {
     email: string[];
 }
 
-export interface IInstitutionController extends IController {
+export interface InstitutionController extends Controller {
     listInstitutions(req: Request, res: Response): void;
 }
 
-class InstitutionController implements IInstitutionController {
-    constructor(private instiutionService: InstitutionPort) {}
+class DefaultInstitutionController implements InstitutionController {
+    constructor(private instiutionService: InstitutePort) {}
 
     async listInstitutions(req: Request, res: Response) {
         let dto;
@@ -42,7 +43,7 @@ class InstitutionController implements IInstitutionController {
         return res.end();
     }
 
-    private fromInstitutionEntityToDTO(inst: Institute): IInstitutionDTO {
+    private fromInstitutionEntityToDTO(inst: Institute): InstitutionDTO {
         return {
             _id: inst.uniqueId,
             short: inst.stateShort,
@@ -57,6 +58,6 @@ class InstitutionController implements IInstitutionController {
     }
 }
 
-export function createController(service: InstitutionPort) {
-    return new InstitutionController(service);
+export function createController(service: InstitutePort) {
+    return new DefaultInstitutionController(service);
 }

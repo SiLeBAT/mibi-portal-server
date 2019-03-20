@@ -1,38 +1,29 @@
-import * as config from 'config';
-import { UserRepository, TokenRepository } from '../../ports';
-import {
-    User,
-    TokenType,
-    generateToken,
-    verifyToken,
-    IUserToken
-} from './../domain';
-import {
-    IRecoveryData,
-    INotificationService,
-    NotificationType
-} from './../../sharedKernel';
 import { logger } from '../../../aspects';
+import { UserRepository, TokenRepository } from '../../ports';
+import { getConfigurationService } from '../../core/application/configuration.service';
+import { PasswordService, RecoveryData } from '../model/login.model';
+import { generateToken, verifyToken } from '../domain/token.service';
+import { TokenType } from './../domain/enums';
+import { User, UserToken } from './../model/user.model';
+import { NotificationType } from '../../core/domain/enums';
+import { NotificationService } from '../../core/model/notification.model';
 
-const APP_NAME = config.get('appName');
-const API_URL = config.get('server.apiUrl');
-const SUPPORT_CONTACT = config.get('supportContact');
+const appConfig = getConfigurationService().getApplicationConfiguration();
+const serverConfig = getConfigurationService().getServerConfiguration();
+const generalConfig = getConfigurationService().getGeneralConfiguration();
 
-export interface PasswordPort {
-    recoverPassword(recoveryData: IRecoveryData): Promise<void>;
-    resetPassword(token: string, password: string): Promise<void>;
-}
-
-export interface PasswordService extends PasswordPort {}
+const APP_NAME = appConfig.appName;
+const API_URL = serverConfig.apiUrl;
+const SUPPORT_CONTACT = generalConfig.supportContact;
 
 class DefaultPasswordService implements PasswordService {
     constructor(
         private userRepository: UserRepository,
         private tokenRepository: TokenRepository,
-        private notificationService: INotificationService
+        private notificationService: NotificationService
     ) {}
 
-    async recoverPassword(recoveryData: IRecoveryData): Promise<void> {
+    async recoverPassword(recoveryData: RecoveryData): Promise<void> {
         let user;
         try {
             user = await this.userRepository.findByUsername(recoveryData.email);
@@ -87,8 +78,8 @@ class DefaultPasswordService implements PasswordService {
 
     private createResetRequestNotification(
         user: User,
-        recoveryData: IRecoveryData,
-        resetToken: IUserToken
+        recoveryData: RecoveryData,
+        resetToken: UserToken
     ) {
         return {
             type: NotificationType.REQUEST_RESET,
@@ -129,7 +120,7 @@ class DefaultPasswordService implements PasswordService {
 export function createService(
     userRepository: UserRepository,
     tokenRepository: TokenRepository,
-    notifcationService: INotificationService
+    notifcationService: NotificationService
 ): PasswordService {
     return new DefaultPasswordService(
         userRepository,
