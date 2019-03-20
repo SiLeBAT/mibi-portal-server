@@ -1,36 +1,38 @@
-import * as config from 'config';
-import { IDatasetFile, ISenderInfo } from '..';
-import { INotificationService } from '../../sharedKernel/application';
-import { NotificationType } from '../../sharedKernel/domain/enums';
-import { User, InstituteRepository, UserRepository } from '../../ports';
-import { Institute } from '../../authentication';
 import { logger } from '../../../aspects';
+import {
+    DatasetService,
+    ResolvedSenderInfo,
+    DatasetFile,
+    SenderInfo,
+    NewDatasetNotificationPayload,
+    NewDatasetCopyNotificationPayload
+} from '../model/sample.model';
+import {
+    NotificationService,
+    Notification,
+    EmailNotificationMeta
+} from '../../core/model/notification.model';
+import { getConfigurationService } from '../../core/application/configuration.service';
+import { User } from '../../authentication/model/user.model';
+import { Institute } from '../../authentication/model/institute.model';
+import { NotificationType } from '../../core/domain/enums';
+import { InstituteRepository, UserRepository } from '../../ports';
 
-const APP_NAME = config.get('appName');
-const JOB_RECIPIENT = config.get('jobRecipient');
+const appConfig = getConfigurationService().getApplicationConfiguration();
 
-export interface IDatasetPort {
-    sendDatasetFile(dataset: IDatasetFile, senderInfo: ISenderInfo): void;
-}
+const APP_NAME = appConfig.appName;
+const JOB_RECIPIENT = appConfig.jobRecipient;
 
-export interface IDatasetService extends IDatasetPort {}
-
-interface ResolvedSenderInfo {
-    user: User;
-    institute: Institute;
-    comment: string;
-    recipient: string;
-}
-class DatasetService implements IDatasetService {
+class DefaultDatasetService implements DatasetService {
     constructor(
-        private notificationService: INotificationService,
+        private notificationService: NotificationService,
         private instituteRepository: InstituteRepository,
         private userRepository: UserRepository
     ) {}
 
     async sendDatasetFile(
-        dataset: IDatasetFile,
-        senderInfo: ISenderInfo
+        dataset: DatasetFile,
+        senderInfo: SenderInfo
     ): Promise<void> {
         const sender: User = await this.resolveUser(senderInfo.email);
         const institution: Institute = await this.resolveInstitute(
@@ -71,33 +73,33 @@ class DatasetService implements IDatasetService {
     }
 
     private createNewDatasetCopyNotification(
-        dataset: IDatasetFile,
+        dataset: DatasetFile,
         senderInfo: ResolvedSenderInfo
-    ) {
+    ): Notification<NewDatasetCopyNotificationPayload, EmailNotificationMeta> {
         const fullName = senderInfo.user.getFullName();
         return {
             type: NotificationType.NOTIFICATION_SENT,
-            title: `Neuer Auftrag an das BfR`,
             payload: {
                 appName: APP_NAME,
                 name: fullName,
                 comment: senderInfo.comment
             },
-            meta: {
-                email: senderInfo.user.email,
-                attachments: [dataset]
-            }
+            meta: this.notificationService.createEmailNotificationMetaData(
+                senderInfo.user.email,
+                `Neuer Auftrag an das BfR`,
+                [],
+                [dataset]
+            )
         };
     }
 
     private createNewDatasetNotification(
-        dataset: IDatasetFile,
+        dataset: DatasetFile,
         senderInfo: ResolvedSenderInfo
-    ) {
+    ): Notification<NewDatasetNotificationPayload, EmailNotificationMeta> {
         return {
             type: NotificationType.REQUEST_JOB,
-            title: `Neuer Auftrag von ${senderInfo.institute.city ||
-                '<unbekannt>'} an ${senderInfo.recipient || '<unbekannt>'}`,
+
             payload: {
                 appName: APP_NAME,
                 firstName: senderInfo.user.firstName,
@@ -106,18 +108,25 @@ class DatasetService implements IDatasetService {
                 institution: senderInfo.user.institution,
                 comment: senderInfo.comment
             },
-            meta: {
-                email: JOB_RECIPIENT,
-                attachments: [dataset]
-            }
+            meta: this.notificationService.createEmailNotificationMetaData(
+                JOB_RECIPIENT,
+                `Neuer Auftrag von ${senderInfo.institute.city ||
+                    '<unbekannt>'} an ${senderInfo.recipient || '<unbekannt>'}`,
+                [],
+                [dataset]
+            )
         };
     }
 }
 
 export function createService(
-    service: INotificationService,
+    service: NotificationService,
     instituteRepository: InstituteRepository,
     userRepository: UserRepository
-): IDatasetService {
-    return new DatasetService(service, instituteRepository, userRepository);
+): DatasetService {
+    return new DefaultDatasetService(
+        service,
+        instituteRepository,
+        userRepository
+    );
 }

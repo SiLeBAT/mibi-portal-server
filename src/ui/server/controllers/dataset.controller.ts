@@ -1,20 +1,16 @@
 import { Response, Request } from 'express';
 import * as _ from 'lodash';
-import {
-    IController,
-    IDatasetFile,
-    IDatasetPort,
-    ISenderInfo
-} from '../../../app/ports';
+import { DatasetFile, DatasetPort, SenderInfo } from '../../../app/ports';
 import { logger } from '../../../aspects';
-import { uploadToMemory } from '../middleware';
+import { Controller } from '../model/controler.model';
+import { uploadToMemory } from '../middleware/fileUpload';
 
-export interface IDatasetController extends IController {
+export interface DatasetController extends Controller {
     submitDataset(req: Request, res: Response): Promise<void>;
 }
 
-class DatasetController implements IDatasetController {
-    constructor(private datasetService: IDatasetPort) {}
+class DefaultDatasetController implements DatasetController {
+    constructor(private datasetService: DatasetPort) {}
 
     async submitDataset(req: Request, res: Response) {
         const service = this.datasetService;
@@ -63,17 +59,17 @@ class DatasetController implements IDatasetController {
     }
 }
 
-function mapResponseFileToDatasetFile(file: Express.Multer.File): IDatasetFile {
+function mapResponseFileToDatasetFile(file: Express.Multer.File): DatasetFile {
     return {
-        buffer: file.buffer,
+        content: file.buffer,
         encoding: file.encoding,
-        mimetype: file.mimetype,
-        originalname: file.originalname,
+        contentType: file.mimetype,
+        filename: file.originalname,
         size: file.size
     };
 }
 
-function mapRequestDTOToSenderInfo(req: Request): ISenderInfo {
+function mapRequestDTOToSenderInfo(req: Request): SenderInfo {
     const body = req.body;
     return {
         email: body['email'],
@@ -83,6 +79,6 @@ function mapRequestDTOToSenderInfo(req: Request): ISenderInfo {
     };
 }
 
-export function createController(service: IDatasetPort) {
-    return new DatasetController(service);
+export function createController(service: DatasetPort) {
+    return new DefaultDatasetController(service);
 }

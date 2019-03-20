@@ -1,17 +1,24 @@
-import { createRepository, NRLSchema, INRLModel } from '../data-store';
-import { NRLRepository, Read } from '../../../app/ports';
-import { INRL } from '../../../app/sampleManagement/application';
+import {
+    NRLRepository,
+    ApplicationSystemError,
+    NRLConfig
+} from '../../../app/ports';
 import { mapModelToNRL } from './data-mappers';
-import { ApplicationSystemError } from '../../../app/sharedKernel/errors';
+import { NRLModel } from '../data-store/mongoose/schemas/nrl.schema';
+import {
+    createRepository,
+    Read
+} from '../data-store/mongoose/mongoose.repository';
+import { NRLSchema } from '../data-store/mongoose/mongoose';
 
 class DefaultNRLRepository implements NRLRepository {
-    constructor(private baseRepo: Read<INRLModel>) {}
+    constructor(private baseRepo: Read<NRLModel>) {}
 
-    getAllNRLs(): Promise<INRL[]> {
+    getAllNRLs(): Promise<NRLConfig[]> {
         return this.retrieve();
     }
 
-    private retrieve(): Promise<INRL[]> {
+    private retrieve(): Promise<NRLConfig[]> {
         return this.baseRepo
             .retrieve()
             .then(modelArray => {

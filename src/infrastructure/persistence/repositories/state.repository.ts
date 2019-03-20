@@ -1,14 +1,18 @@
-import { createRepository, StateSchema, IStateModel } from '../data-store';
+import {
+    createRepository,
+    Read
+} from '../data-store/mongoose/mongoose.repository';
+import { StateSchema } from '../data-store/mongoose/mongoose';
 import {
     StateRepository,
     State,
-    AVVFormatCollection,
-    Read
+    AVVFormatCollection
 } from '../../../app/ports';
 import { mapModelToState } from './data-mappers';
+import { StateModel } from '../data-store/mongoose/schemas/state.schema';
 
 class DefaultStateRepository implements StateRepository {
-    constructor(private baseRepo: Read<IStateModel>) {}
+    constructor(private baseRepo: Read<StateModel>) {}
 
     getAllFormats(): Promise<AVVFormatCollection> {
         return this.retrieve().then(states => {

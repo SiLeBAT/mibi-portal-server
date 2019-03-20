@@ -1,38 +1,38 @@
-import * as config from 'config';
-import { UserRepository, TokenRepository } from '../../ports';
-import {
-    User,
-    TokenType,
-    generateToken,
-    verifyToken,
-    IUserToken
-} from './../domain';
-import {
-    IRecoveryData,
-    INotificationService,
-    NotificationType
-} from './../../sharedKernel';
 import { logger } from '../../../aspects';
+import { UserRepository, TokenRepository } from '../../ports';
+import { getConfigurationService } from '../../core/application/configuration.service';
+import {
+    PasswordService,
+    RecoveryData,
+    ResetSuccessNotificationPayload,
+    ResetRequestNotificationPayload
+} from '../model/login.model';
+import { generateToken, verifyToken } from '../domain/token.service';
+import { TokenType } from './../domain/enums';
+import { User, UserToken } from './../model/user.model';
+import { NotificationType } from '../../core/domain/enums';
+import {
+    NotificationService,
+    EmailNotificationMeta,
+    Notification
+} from '../../core/model/notification.model';
 
-const APP_NAME = config.get('appName');
-const API_URL = config.get('server.apiUrl');
-const SUPPORT_CONTACT = config.get('supportContact');
+const appConfig = getConfigurationService().getApplicationConfiguration();
+const serverConfig = getConfigurationService().getServerConfiguration();
+const generalConfig = getConfigurationService().getGeneralConfiguration();
 
-export interface PasswordPort {
-    recoverPassword(recoveryData: IRecoveryData): Promise<void>;
-    resetPassword(token: string, password: string): Promise<void>;
-}
-
-export interface PasswordService extends PasswordPort {}
+const APP_NAME = appConfig.appName;
+const API_URL = serverConfig.apiUrl;
+const SUPPORT_CONTACT = generalConfig.supportContact;
 
 class DefaultPasswordService implements PasswordService {
     constructor(
         private userRepository: UserRepository,
         private tokenRepository: TokenRepository,
-        private notificationService: INotificationService
+        private notificationService: NotificationService
     ) {}
 
-    async recoverPassword(recoveryData: IRecoveryData): Promise<void> {
+    async recoverPassword(recoveryData: RecoveryData): Promise<void> {
         let user;
         try {
             user = await this.userRepository.findByUsername(recoveryData.email);
@@ -87,12 +87,11 @@ class DefaultPasswordService implements PasswordService {
 
     private createResetRequestNotification(
         user: User,
-        recoveryData: IRecoveryData,
-        resetToken: IUserToken
-    ) {
+        recoveryData: RecoveryData,
+        resetToken: UserToken
+    ): Notification<ResetRequestNotificationPayload, EmailNotificationMeta> {
         return {
             type: NotificationType.REQUEST_RESET,
-            title: `Setzen Sie Ihr ${APP_NAME}-Konto Passwort zurück.`, // `Reset Password for ${APP_NAME}`;
             payload: {
                 name: user.firstName + ' ' + user.lastName,
                 action_url: API_URL + '/users/reset/' + resetToken.token,
@@ -102,16 +101,18 @@ class DefaultPasswordService implements PasswordService {
                 support_contact: SUPPORT_CONTACT,
                 appName: APP_NAME
             },
-            meta: {
-                email: user.email
-            }
+            meta: this.notificationService.createEmailNotificationMetaData(
+                user.email,
+                `Setzen Sie Ihr ${APP_NAME}-Konto Passwort zurück.`
+            )
         };
     }
 
-    private createResetSuccessNotification(user: User) {
+    private createResetSuccessNotification(
+        user: User
+    ): Notification<ResetSuccessNotificationPayload, EmailNotificationMeta> {
         return {
             type: NotificationType.RESET_SUCCESS,
-            title: `Passwort für ${APP_NAME}-Konto erfolgreich zurückgesetzt.`, // `Reset Password for ${APP_NAME} successful`;
             payload: {
                 name: user.firstName + ' ' + user.lastName,
                 api_url: API_URL,
@@ -119,9 +120,10 @@ class DefaultPasswordService implements PasswordService {
                 action_url: API_URL + '/users/login',
                 appName: APP_NAME
             },
-            meta: {
-                email: user.email
-            }
+            meta: this.notificationService.createEmailNotificationMetaData(
+                user.email,
+                `Passwort für ${APP_NAME}-Konto erfolgreich zurückgesetzt.`
+            )
         };
     }
 }
@@ -129,7 +131,7 @@ class DefaultPasswordService implements PasswordService {
 export function createService(
     userRepository: UserRepository,
     tokenRepository: TokenRepository,
-    notifcationService: INotificationService
+    notifcationService: NotificationService
 ): PasswordService {
     return new DefaultPasswordService(
         userRepository,

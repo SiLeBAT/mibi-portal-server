@@ -1,56 +1,18 @@
 import * as _ from 'lodash';
-import { ValidationError } from '../application';
-import { ValidationErrorCollection } from './validator.entity';
+import { Sample, SampleData } from '../model/sample.model';
+import {
+    CorrectionSuggestions,
+    EditValue
+} from '../model/autocorrection.model';
+import {
+    ValidationError,
+    ValidationErrorCollection
+} from '../model/validation.model';
 
 const ZOMO_CODE: number = 81;
 const ZOMO_STRING: string = 'Zoonosen-Monitoring - Planprobe';
 
-export type EditValue = string;
-export interface Sample {
-    readonly pathogenIdAVV?: string;
-    readonly pathogenId?: string;
-    correctionSuggestions: CorrectionSuggestions[];
-    edits: Record<string, EditValue>;
-    clone(): Sample;
-    getData(): SampleData;
-    correctField(key: keyof SampleData, value: string): void;
-    setErrors(errors: ValidationErrorCollection): void;
-    addErrorTo(id: string, errors: ValidationError): void;
-    getErrors(): ValidationErrorCollection;
-    addErrors(errors: ValidationErrorCollection): void;
-    isZoMo(): boolean;
-}
-
-export interface CorrectionSuggestions {
-    field: keyof SampleData;
-    original: string;
-    correctionOffer: string[];
-    code: number;
-}
-
-export interface SampleData {
-    sample_id: string;
-    sample_id_avv: string;
-    pathogen_adv: string;
-    pathogen_text: string;
-    sampling_date: string;
-    isolation_date: string;
-    sampling_location_adv: string;
-    sampling_location_zip: string;
-    sampling_location_text: string;
-    topic_adv: string;
-    matrix_adv: string;
-    matrix_text: string;
-    process_state_adv: string;
-    sampling_reason_adv: string;
-    sampling_reason_text: string;
-    operations_mode_adv: string;
-    operations_mode_text: string;
-    vvvo: string;
-    comment: string;
-}
-
-class SampleImpl implements Sample {
+class DefaultSample implements Sample {
     correctionSuggestions: CorrectionSuggestions[];
     edits: Record<string, EditValue>;
     private errors: ValidationErrorCollection;
@@ -121,7 +83,7 @@ class SampleImpl implements Sample {
 
     clone() {
         const d = { ...this.data };
-        const s = new SampleImpl(d);
+        const s = new DefaultSample(d);
         s.correctionSuggestions = [...this.correctionSuggestions];
         s.errors = { ...this.errors };
         return s;
@@ -133,7 +95,7 @@ function createSample(data: SampleData): Sample {
     _.forEach(cleanedData, (v: string, k: keyof SampleData) => {
         cleanedData[k] = ('' + v).trim();
     });
-    return new SampleImpl(cleanedData);
+    return new DefaultSample(cleanedData);
 }
 
 export { createSample };

@@ -6,7 +6,7 @@ import {
     createDataStore,
     DataStoreType,
     mapCollectionToRepository
-} from '../../../infrastructure';
+} from '../../../infrastructure/ports';
 
 /**
  * Script used to insert AVV entries into existing DB: For Ticket mps#49

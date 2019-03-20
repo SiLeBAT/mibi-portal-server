@@ -1,6 +1,6 @@
 import { Schema, Document } from 'mongoose';
 
-export interface IStateModel extends Document {
+export interface StateModel extends Document {
     name: string;
     short: string;
     AVV: string[];
@@ -34,7 +34,7 @@ export const stateSchema = new Schema({
     }
 }).pre('save', function(next) {
     if (this) {
-        let doc = this as IStateModel;
+        let doc = this as StateModel;
         let now = new Date();
         if (!doc.created) {
             doc.created = now;

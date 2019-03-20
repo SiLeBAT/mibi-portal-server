@@ -1,4 +1,11 @@
-import { Catalog, ICatalog } from './../catalog.entity';
+import { createCatalog } from './../catalog.entity';
+import { ICatalog } from '../../model/catalog.model';
+jest.mock('./../../../../app/ports');
+jest.mock('../../../core/application/configuration.service', () => ({
+    getConfigurationService: () => ({
+        getServerConfiguration: jest.fn()
+    })
+}));
 
 interface IMockCatalogData {
     id: string;
@@ -44,7 +51,7 @@ describe('Pathogen Index', () => {
             }
         ];
 
-        catalog = new Catalog(testData, 'id');
+        catalog = createCatalog(testData, 'id');
     });
 
     it('should dump test data', () => {

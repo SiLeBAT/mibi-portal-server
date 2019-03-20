@@ -2,7 +2,6 @@ import * as validate from 'validate.js';
 import * as moment from 'moment';
 import * as _ from 'lodash';
 
-import { Sample } from '../';
 import {
     referenceDate,
     atLeastOneOf,
@@ -17,30 +16,19 @@ import {
     matchesRegexPattern,
     matchesIdToSpecificYear
 } from './custom-validator-functions';
-import { ICatalogService, ValidationError } from '../application';
-import { ValidationConstraints } from './validation-constraints';
+import { Sample } from '../model/sample.model';
+import {
+    Validator,
+    ValidatorConfig,
+    ValidationErrorCollection,
+    ValidationConstraints
+} from '../model/validation.model';
+import { CatalogService } from '../model/catalog.model';
 
 moment.locale('de');
 
-export interface Validator {
-    validateSample(
-        sample: Sample,
-        constraintSet: ValidationConstraints
-    ): ValidationErrorCollection;
-}
-
-export interface ValidationErrorCollection {
-    [key: string]: ValidationError[];
-}
-
-export interface ValidatorConfig {
-    dateFormat: string;
-    dateTimeFormat: string;
-    catalogService: ICatalogService;
-}
-
 class SampleValidator implements Validator {
-    private catalogService: ICatalogService;
+    private catalogService: CatalogService;
 
     constructor(config: ValidatorConfig) {
         // Before using it we must add the parse and format functions

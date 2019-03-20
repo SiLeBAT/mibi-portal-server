@@ -4,19 +4,17 @@ import { Request, Response } from 'express';
 import { logger } from '../../../aspects';
 import {
     FormValidatorPort,
-    IFormAutoCorrectionPort,
-    IController,
+    FormAutoCorrectionPort,
     SampleCollection,
     Sample,
     createSample,
-    createSampleCollection
-} from '../../../app/ports';
-import { ApplicationSystemError } from '../../../app/sharedKernel/errors';
-import { ValidationOptions } from '../../../app/sampleManagement/application';
-import {
+    createSampleCollection,
+    ApplicationSystemError,
+    ValidationOptions,
     CorrectionSuggestions,
     EditValue
-} from '../../../app/sampleManagement/domain';
+} from '../../../app/ports';
+import { Controller } from '../model/controler.model';
 
 moment.locale('de');
 
@@ -69,14 +67,14 @@ interface ErrorResponseDTO {
     [key: string]: ErrorDTO[];
 }
 
-export interface ValidationController extends IController {
+export interface ValidationController extends Controller {
     validateSamples(req: Request, res: Response): Promise<void>;
 }
 
 class DefaultValidationController implements ValidationController {
     constructor(
         private formValidationService: FormValidatorPort,
-        private formAutoCorrectionService: IFormAutoCorrectionPort
+        private formAutoCorrectionService: FormAutoCorrectionPort
     ) {}
 
     async validateSamples(req: Request, res: Response) {
@@ -149,7 +147,7 @@ class DefaultValidationController implements ValidationController {
 
 export function createController(
     validationService: FormValidatorPort,
-    autocorrectionService: IFormAutoCorrectionPort
+    autocorrectionService: FormAutoCorrectionPort
 ) {
     return new DefaultValidationController(
         validationService,

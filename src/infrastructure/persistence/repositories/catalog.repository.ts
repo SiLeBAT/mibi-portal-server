@@ -1,13 +1,11 @@
-import * as path from 'path';
-import * as fs from 'fs';
-import * as config from 'config';
-import * as csv from 'fast-csv';
-import * as rootDir from 'app-root-dir';
-
 import { logger } from '../../../aspects';
-import { CatalogRepository, ICatalog, Catalog } from '../../../app/ports';
-
-declare type CatalogData = Record<string, string>;
+import {
+    CatalogRepository,
+    Catalog,
+    createCatalog,
+    CatalogData
+} from '../../../app/ports';
+import { loadCSVFile } from '../data-store/file/file-loader';
 
 interface CatalogConfig {
     filename: string;
@@ -18,18 +16,15 @@ interface CatalogConfig {
 
 class FileCatalogRepository implements CatalogRepository {
     private catalogs: {
-        [key: string]: ICatalog<CatalogData>;
+        [key: string]: Catalog<CatalogData>;
     };
-    constructor(private dataDir: string) {
-        this.dataDir = this.dataDir || path.join(rootDir.get(), 'data');
+    constructor() {
         this.catalogs = {};
     }
 
     initialise() {
         logger.verbose(
-            `FileCatalogRepository.initialize, Loading Catalog data from Filesystem. dataDir=${
-                this.dataDir
-            }`
+            `FileCatalogRepository.initialize, Loading Catalog data from Filesystem.`
         );
 
         const catalogsConfig: CatalogConfig[] = [
@@ -105,43 +100,38 @@ class FileCatalogRepository implements CatalogRepository {
         this.addZoMoDates(catalogsConfig);
 
         const promiseArray = catalogsConfig.map(catalogConfig => {
-            const filePath = path.join(this.dataDir, catalogConfig.filename);
-            if (fs.existsSync(filePath)) {
-                return this.importCSVFile(
-                    filePath,
-                    catalogConfig.filterFunction
-                ).then(
-                    (data: CatalogData[]) =>
-                        (this.catalogs[catalogConfig.id] = new Catalog<
+            return loadCSVFile<CatalogData>(
+                catalogConfig.filename,
+                catalogConfig.filterFunction
+            ).then(
+                (data: CatalogData[]) =>
+                    (this.catalogs[catalogConfig.id] = createCatalog<
+                        CatalogData
+                    >(data, catalogConfig.uId)),
+                (error: Error) => {
+                    return new Promise((resolve, reject) => {
+                        logger.warn(
+                            `Catalog missing on Filesystem. catalog=${
+                                catalogConfig.filename
+                            }; error=${error}`
+                        );
+                        this.catalogs[catalogConfig.id] = createCatalog<
                             CatalogData
-                        >(data, catalogConfig.uId))
-                );
-            } else {
-                return new Promise((resolve, reject) => {
-                    logger.warn(
-                        `Catalog missing on Filesystem. catalog=${
-                            catalogConfig.filename
-                        }`
-                    );
-                    this.catalogs[catalogConfig.id] = new Catalog<CatalogData>(
-                        [],
-                        catalogConfig.uId
-                    );
-                    resolve();
-                });
-            }
+                        >([], catalogConfig.uId);
+                        resolve();
+                    });
+                }
+            );
         });
 
         return Promise.all(promiseArray).then(() =>
             logger.info(
-                `Finished initialising Catalog Repository from Filesystem. dataDir=${
-                    this.dataDir
-                }`
+                `Finished initialising Catalog Repository from Filesystem.`
             )
         );
     }
 
-    getCatalog(catalogName: string): ICatalog<CatalogData> {
+    getCatalog(catalogName: string): Catalog<CatalogData> {
         return this.catalogs[catalogName];
     }
 
@@ -169,30 +159,10 @@ class FileCatalogRepository implements CatalogRepository {
 
         return catalogsConfig;
     }
-
-    private importCSVFile(
-        filePath: string,
-        entryFilter: Function = () => true
-    ): Promise<CatalogData[]> {
-        let data: CatalogData[] = [];
-
-        return new Promise(function(resolve, reject) {
-            csv.fromPath(filePath, { headers: true })
-                .on('data', function(entry) {
-                    if (entryFilter(entry)) {
-                        data.push(entry);
-                    }
-                })
-                .on('end', function() {
-                    resolve(data);
-                });
-        });
-    }
 }
-export const repository = new FileCatalogRepository(
-    config.get('dataStore.dataDir')
-);
 
-export function initialiseRepository() {
+const repository = new FileCatalogRepository();
+
+export async function initialiseRepository() {
     return repository.initialise().then(() => repository);
 }

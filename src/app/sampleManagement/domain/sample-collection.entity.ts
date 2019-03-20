@@ -1,8 +1,4 @@
-import { Sample } from './sample.entity';
-
-export interface SampleCollection {
-    samples: Sample[];
-}
+import { Sample, SampleCollection } from '../model/sample.model';
 
 class DefaultSampleCollection implements SampleCollection {
     constructor(public samples: Sample[]) {}
