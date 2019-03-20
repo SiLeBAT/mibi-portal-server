@@ -1,13 +1,13 @@
 import { Request, Response } from 'express';
 import {
-    IController,
     LoginPort,
     LoginResponse,
     UserLoginInformation
 } from '../../../app/ports';
 import { logger } from '../../../aspects';
+import { Controller } from '../model/controler.model';
 
-export interface ILoginController extends IController {
+export interface LoginController extends Controller {
     login(req: Request, res: Response): Promise<void>;
 }
 
@@ -25,7 +25,7 @@ interface UserDTO {
     instituteId: string;
 }
 
-class LoginController implements ILoginController {
+class DefaultLoginController implements LoginController {
     constructor(private loginService: LoginPort) {}
     async login(req: Request, res: Response) {
         let response: LoginResponse;
@@ -82,5 +82,5 @@ class LoginController implements ILoginController {
 }
 
 export function createController(service: LoginPort) {
-    return new LoginController(service);
+    return new DefaultLoginController(service);
 }

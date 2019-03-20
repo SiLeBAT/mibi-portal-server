@@ -5,13 +5,7 @@ import { LoginResult, LoginPort } from '../../../../app/ports';
 // tslint:disable
 jest.genMockFromModule('./../../../../aspects');
 jest.mock('./../../../../aspects');
-jest.mock('./../../../../app/ports', () => ({
-    loginUser: jest.fn(),
-    LoginResult: {
-        SUCCESS: 2,
-        FAIL: 0
-    }
-}));
+jest.mock('./../../../../app/ports');
 
 describe('Login controller', () => {
     let controller: ILoginController;

@@ -1,10 +1,13 @@
-import * as config from 'config';
 import { sign, verify } from 'jsonwebtoken';
-import { ApplicationDomainError } from '../../sharedKernel';
+import { getConfigurationService } from './../../core/application/configuration.service';
+import { ApplicationDomainError } from '../../core/domain/domain.error';
 
 const EXPIRATION_TIME = 60 * 60 * 24;
 const ADMIN_EXPIRATION_TIME = 60 * 60 * 24 * 7;
-const JWT_SECRET: string = config.get('server.jwtSecret');
+
+const serverConfig = getConfigurationService().getServerConfiguration();
+
+const JWT_SECRET: string = serverConfig.jwtSecret;
 
 function generateToken(id: string) {
     return sign({ sub: id }, JWT_SECRET, { expiresIn: EXPIRATION_TIME });

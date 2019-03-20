@@ -1,23 +1,18 @@
+import { createService } from './../registration.service';
 import {
-    createService,
     RegistrationService,
     UserRegistration
-} from './../registration.service';
-import { createUser } from '../../domain';
-// tslint:disable
-jest.mock('./../../../sharedKernel', () => ({
-    RepositoryType: {
-        USER: 0
-    }
-}));
+} from '../../model/registration.model';
+import { createUser } from '../../domain/user.entity';
 
-jest.mock('./../../domain', () => ({
-    generateToken: jest.fn(),
-    verifyToken: jest.fn(),
+jest.mock('../../../core/application/configuration.service');
+
+jest.mock('./../../domain/user.entity', () => ({
     createUser: jest.fn(() => ({
         updatePassword: jest.fn()
     }))
 }));
+jest.mock('./../../domain/token.service');
 
 describe('Register User Use Case', () => {
     let mockUserRepository: any;

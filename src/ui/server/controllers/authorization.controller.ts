@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
-import { IController } from '../../../app/ports';
 import { logger } from '../../../aspects';
-import { generateToken } from '../../../app/authentication/domain';
+import { Controller } from '../model/controler.model';
+import { generateToken } from '../../../app/ports';
 
-export interface AuthorizationController extends IController {
+export interface AuthorizationController extends Controller {
     isAuthorized(req: Request, res: Response): Promise<void>;
 }
 

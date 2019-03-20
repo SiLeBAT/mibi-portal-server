@@ -1,5 +1,6 @@
 import * as argon2 from 'argon2';
-import { Institute } from './institute.entity';
+import { User, UserCredentials } from '../model/user.model';
+import { Institute } from '../model/institute.model';
 
 const defaultHashOptions = {
     hashLength: 128,
@@ -8,32 +9,6 @@ const defaultHashOptions = {
     parallelism: 100,
     type: argon2.argon2id
 };
-
-export interface IUserCredentials {
-    email: string;
-    password: string;
-}
-
-export interface IUserBase {
-    firstName: string;
-    lastName: string;
-    email: string;
-    institution: Institute;
-}
-
-export interface User extends IUserBase {
-    uniqueId: string;
-    readonly password: string;
-    isAuthorized(credentials: IUserCredentials): Promise<boolean>;
-    updatePassword(password: string): Promise<string>;
-    updateNumberOfFailedAttempts(increment: boolean): void;
-    updateLastLoginAttempt(): void;
-    isActivated(active?: boolean): boolean;
-    isAdminActivated(active?: boolean): boolean;
-    getNumberOfFailedAttempts(): number;
-    getLastLoginAttempt(): number;
-    getFullName(): string;
-}
 
 class GenericUser implements User {
     uniqueId: string;
@@ -83,7 +58,7 @@ class GenericUser implements User {
         return this.adminEnabled;
     }
 
-    isAuthorized(credentials: IUserCredentials): Promise<boolean> {
+    isAuthorized(credentials: UserCredentials): Promise<boolean> {
         return this.verifyPassword(this._password, credentials.password);
     }
 

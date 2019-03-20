@@ -1,10 +1,8 @@
-import {
-    createService,
-    IFormAutoCorrectionService
-} from '../form-auto-correction.service';
-import { SampleCollection } from '../..';
-import { SampleData, Sample } from '../../domain/sample.entity';
-import { ValidationErrorProvider } from '../validation-error-provider.service';
+import { createService } from '../form-auto-correction.service';
+import { IFormAutoCorrectionService } from '../../model/autocorrection.model';
+import { SampleData, SampleCollection, Sample } from '../../model/sample.model';
+import { ValidationErrorProvider } from '../../model/validation.model';
+jest.mock('../../../core/application/configuration.service');
 
 describe('Auto-correct Sample Use Case', () => {
     // tslint:disable-next-line

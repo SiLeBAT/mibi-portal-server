@@ -1,18 +1,14 @@
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import { StateRepository, AVVFormatCollection } from '../../ports';
-import { ApplicationSystemError } from '../../sharedKernel/errors';
 import { logger } from '../../../aspects';
+import { AVVFormatProvider } from '../model/validation.model';
+import { ApplicationSystemError } from '../../core/domain/technical.error';
+import { AVVFormatCollection, StateRepository } from '../../ports';
 
 moment.locale('de');
-export interface IAVVFormatPort {}
-
-export interface IAVVFormatProvider extends IAVVFormatPort {
-    getFormat(state?: string): string[];
-}
 
 // TODO: should these be in the DB?
-class AVVFormatProvider implements IAVVFormatProvider {
+class DefaultAVVFormatProvider implements AVVFormatProvider {
     private stateFormats: AVVFormatCollection = {};
 
     constructor(private stateRepository: StateRepository) {
@@ -34,6 +30,6 @@ class AVVFormatProvider implements IAVVFormatProvider {
         return usedFormats;
     }
 }
-export function createService(repository: StateRepository): IAVVFormatProvider {
-    return new AVVFormatProvider(repository);
+export function createService(repository: StateRepository): AVVFormatProvider {
+    return new DefaultAVVFormatProvider(repository);
 }

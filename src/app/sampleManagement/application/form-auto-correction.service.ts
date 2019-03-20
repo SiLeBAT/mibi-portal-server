@@ -1,9 +1,6 @@
 import * as _ from 'lodash';
-import { ICatalogService, ValidationErrorProvider } from '.';
 import { logger } from '../../../aspects';
-import { SampleCollection, Sample } from '../domain';
 import {
-    CorrectionFunction,
     autoCorrectADV16,
     autoCorrectADV9,
     autoCorrectADV8,
@@ -11,20 +8,19 @@ import {
     autoCorrectADV3,
     autoCorrectADV2
 } from '../domain/custom-auto-correction-functions';
+import {
+    CorrectionFunction,
+    FormAutoCorrectionService
+} from '../model/autocorrection.model';
+import { CatalogService } from '../model/catalog.model';
+import { ValidationErrorProvider } from '../model/validation.model';
+import { SampleCollection, Sample } from '../model/sample.model';
 
-export interface IFormAutoCorrectionPort {
-    applyAutoCorrection(
-        sampleCollection: SampleCollection
-    ): Promise<SampleCollection>;
-}
-
-export interface IFormAutoCorrectionService extends IFormAutoCorrectionPort {}
-
-class FormAutoCorrectionService implements IFormAutoCorrectionService {
+class DefaultFormAutoCorrectionService implements FormAutoCorrectionService {
     private correctionFunctions: CorrectionFunction[] = [];
 
     constructor(
-        private catalogService: ICatalogService,
+        private catalogService: CatalogService,
         private validationErrorProvider: ValidationErrorProvider
     ) {
         this.registerCorrectionFunctions();
@@ -78,10 +74,10 @@ class FormAutoCorrectionService implements IFormAutoCorrectionService {
 }
 
 export function createService(
-    catalogService: ICatalogService,
+    catalogService: CatalogService,
     validationErrorProvider: ValidationErrorProvider
-): IFormAutoCorrectionService {
-    return new FormAutoCorrectionService(
+): FormAutoCorrectionService {
+    return new DefaultFormAutoCorrectionService(
         catalogService,
         validationErrorProvider
     );

@@ -1,16 +1,16 @@
 import {
-    createRepository,
-    InstitutionSchema,
-    InstitutionModel
-} from '../data-store';
-import {
-    RepositoryBase,
     InstituteRepository,
     Institute,
-    createInstitution
+    createInstitution,
+    ApplicationDomainError
 } from '../../../app/ports';
 import { mapModelToInstitution } from './data-mappers';
-import { ApplicationDomainError } from '../../../app/sharedKernel';
+import { InstitutionModel } from '../data-store/mongoose/schemas/institution.schema';
+import { InstitutionSchema } from '../data-store/mongoose/mongoose';
+import {
+    createRepository,
+    RepositoryBase
+} from '../data-store/mongoose/mongoose.repository';
 
 class DefaultInstituteRepository implements InstituteRepository {
     constructor(private baseRepo: RepositoryBase<InstitutionModel>) {}

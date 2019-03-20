@@ -1,6 +1,6 @@
 import { Schema, Document } from 'mongoose';
 
-export interface INRLModel extends Document {
+export interface NRLModel extends Document {
     name: string;
     selector: string[];
     created: Date;
@@ -29,7 +29,7 @@ export const nrlSchema = new Schema({
     }
 }).pre('save', function(next) {
     if (this) {
-        let doc = this as INRLModel;
+        let doc = this as NRLModel;
         let now = new Date();
         if (!doc.created) {
             doc.created = now;

@@ -1,64 +1,80 @@
-// npm
-import * as config from 'config';
-
 // local
 import {
     createApplication,
-    IServerConfig,
-    DefaultControllerFactory
-} from './ui/server';
+    createFactory as createControllerFactory
+} from './ui/server/ports';
 import {
     DataStoreType,
     createDataStore,
     registerListeners,
     initialiseCatalogRepository,
-    catalogRepository,
+    initialiseSearchAliasRepository,
+    institutionRepository,
     nrlRepository,
     stateRepository,
-    institutionRepository,
     userRepository,
     tokenRepository,
     validationErrorRepository
-} from './infrastructure';
+} from './infrastructure/ports';
 import {
-    ServiceFactory,
-    CatalogRepository,
-    INotificationPort
+    createFactory as createServiceFactory,
+    ServerConfiguration,
+    getNotificationService,
+    getConfigurationService,
+    GeneralConfiguration,
+    ApplicationSystemError,
+    DataStoreConfiguration
 } from './app/ports';
 import { logger } from './aspects';
 
-initialiseCatalogRepository()
-    .then((repo: CatalogRepository) => {
-        const serverConfig: IServerConfig = config.get('server');
+async function init() {
+    const catalogRepository = await initialiseCatalogRepository().catch(
+        (err: Error) => {
+            throw new Error(`Unable to start server error=${err}`);
+        }
+    );
 
-        const primaryDataStore = createDataStore(DataStoreType.MONGO);
-        primaryDataStore.initialize(config.get('dataStore.connectionString'));
+    const searchAliasRepository = await initialiseSearchAliasRepository().catch(
+        (err: Error) => {
+            throw new Error(`Unable to start server error=${err}`);
+        }
+    );
+    const configurationService = getConfigurationService();
+    const serverConfig: ServerConfiguration = configurationService.getServerConfiguration();
+    const generalConfig: GeneralConfiguration = configurationService.getGeneralConfiguration();
+    const dataStoreConfig: DataStoreConfiguration = configurationService.getDataStoreConfiguration();
 
-        const serviceFactory = new ServiceFactory({
-            catalogRepository,
-            nrlRepository,
-            stateRepository,
-            institutionRepository,
-            userRepository,
-            tokenRepository,
-            validationErrorRepository
-        });
-        serverConfig.controllerFactory = new DefaultControllerFactory(
-            serviceFactory
-        );
+    const primaryDataStore = createDataStore(DataStoreType.MONGO);
+    primaryDataStore.initialize(dataStoreConfig.connectionString);
 
-        registerListeners(serviceFactory.getService(
-            'NOTIFICATION'
-        ) as INotificationPort);
-
-        const application = createApplication(serverConfig);
-        application.startServer();
-
-        process.on('uncaughtException', err => {
-            logger.error(`Uncaught Exception. error=${err}`);
-            process.exit(1);
-        });
-    })
-    .catch((err: Error) => {
-        throw new Error(`Unable to start server error=${err}`);
+    const serviceFactory = createServiceFactory({
+        catalogRepository,
+        nrlRepository,
+        stateRepository,
+        institutionRepository,
+        userRepository,
+        tokenRepository,
+        validationErrorRepository,
+        searchAliasRepository
     });
+
+    registerListeners(getNotificationService());
+
+    const application = createApplication(
+        serverConfig,
+        generalConfig,
+        createControllerFactory(serviceFactory)
+    );
+    application.startServer();
+
+    process.on('uncaughtException', err => {
+        logger.error(`Uncaught Exception. error=${err}`);
+        process.exit(1);
+    });
+}
+
+init().catch(error => {
+    throw new ApplicationSystemError(
+        `Unable to initialise application. error=${error}`
+    );
+});

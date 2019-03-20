@@ -2,6 +2,8 @@ import { createController, IDatasetController } from './../dataset.controller';
 import * as mockReq from 'mock-express-request';
 import * as mockRes from 'mock-express-response';
 import { IDatasetPort } from '../../../../app/ports';
+jest.mock('./../../../../app/ports');
+
 // tslint:disable
 describe('Dataset controller', () => {
     let controller: IDatasetController;
