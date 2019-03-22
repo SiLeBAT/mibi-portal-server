@@ -15,16 +15,11 @@ import {
 } from '../custom-validator-functions';
 import {
     ValidationError,
-    IMatchADVNumberOrStringOptions
+    MatchADVNumberOrStringOptions
 } from './../../model/validation.model';
 import { SampleData } from '../../model/sample.model';
-import { ICatalogService, ICatalog } from '../../model/catalog.model';
+import { CatalogService, Catalog } from '../../model/catalog.model';
 jest.mock('../../../ports');
-/* jest.mock('../../../core/application/configuration.service', () => ({
-    getConfigurationService: () => ({
-        getServerConfiguration: jest.fn()
-    })
-})); */
 
 moment.locale('de');
 
@@ -455,7 +450,7 @@ describe('Custom Validator Functions', () => {
             };
 
             // tslint:disable-next-line
-            const mockCatalog: ICatalog<any> = {
+            const mockCatalog: Catalog<any> = {
                 getEntriesWithKeyValue: (key: string, value: string) => [
                     fakeEntry
                 ],
@@ -468,7 +463,7 @@ describe('Custom Validator Functions', () => {
                 dump: () => []
             };
 
-            const mockCatalogService: ICatalogService = {
+            const mockCatalogService: CatalogService = {
                 getCatalog: () => mockCatalog,
                 getCatalogSearchAliases: jest.fn()
             };
@@ -502,7 +497,7 @@ describe('Custom Validator Functions', () => {
     describe('nonUniqueEntry', () => {
         it('should validate without errors', () => {
             // tslint:disable-next-line
-            const mockCatalog: ICatalog<any> = {
+            const mockCatalog: Catalog<any> = {
                 getEntriesWithKeyValue: (key: string, value: string) => [],
                 getUniqueEntryWithId: (id: string) => ({}),
                 containsUniqueEntryWithId: (id: string) => true,
@@ -512,7 +507,7 @@ describe('Custom Validator Functions', () => {
                 getFuzzyIndex: jest.fn(),
                 dump: () => []
             };
-            const mockCatalogService: ICatalogService = {
+            const mockCatalogService: CatalogService = {
                 getCatalog: () => mockCatalog,
                 getCatalogSearchAliases: jest.fn()
             };
@@ -532,7 +527,7 @@ describe('Custom Validator Functions', () => {
 
         it('should validate without errors because topic makes entry unique', () => {
             // tslint:disable-next-line
-            const mockCatalog: ICatalog<any> = {
+            const mockCatalog: Catalog<any> = {
                 getEntriesWithKeyValue: (key: string, value: string) => [
                     {
                         Kodiersystem: '01',
@@ -553,7 +548,7 @@ describe('Custom Validator Functions', () => {
                 getFuzzyIndex: jest.fn(),
                 dump: () => []
             };
-            const mockCatalogService: ICatalogService = {
+            const mockCatalogService: CatalogService = {
                 getCatalog: () => mockCatalog,
                 getCatalogSearchAliases: jest.fn()
             };
@@ -575,7 +570,7 @@ describe('Custom Validator Functions', () => {
             testSample.topic_adv = '12';
 
             // tslint:disable-next-line
-            const mockCatalog: ICatalog<any> = {
+            const mockCatalog: Catalog<any> = {
                 getEntriesWithKeyValue: (key: string, value: string) => [
                     {
                         Kodiersystem: '01',
@@ -596,7 +591,7 @@ describe('Custom Validator Functions', () => {
                 getFuzzyIndex: jest.fn(),
                 dump: () => []
             };
-            const mockCatalogService: ICatalogService = {
+            const mockCatalogService: CatalogService = {
                 getCatalog: () => mockCatalog,
                 getCatalogSearchAliases: jest.fn()
             };
@@ -622,7 +617,7 @@ describe('Custom Validator Functions', () => {
             testSample.topic_adv = '';
 
             // tslint:disable-next-line
-            const mockCatalog: ICatalog<any> = {
+            const mockCatalog: Catalog<any> = {
                 getEntriesWithKeyValue: (key: string, value: string) => [
                     {
                         Kodiersystem: '01',
@@ -643,7 +638,7 @@ describe('Custom Validator Functions', () => {
                 getFuzzyIndex: jest.fn(),
                 dump: () => []
             };
-            const mockCatalogService: ICatalogService = {
+            const mockCatalogService: CatalogService = {
                 getCatalog: () => mockCatalog,
                 getCatalogSearchAliases: jest.fn()
             };
@@ -668,8 +663,8 @@ describe('Custom Validator Functions', () => {
 
     describe('inCatalog', () => {
         // tslint:disable-next-line
-        let mockCatalog: ICatalog<any>;
-        let mockCatalogService: ICatalogService;
+        let mockCatalog: Catalog<any>;
+        let mockCatalogService: CatalogService;
 
         beforeEach(() => {
             mockCatalog = {
@@ -724,8 +719,8 @@ describe('Custom Validator Functions', () => {
 
     describe('matchADVNumberOrString', () => {
         // tslint:disable-next-line
-        let mockCatalog: ICatalog<any>;
-        let mockCatalogService: ICatalogService;
+        let mockCatalog: Catalog<any>;
+        let mockCatalogService: CatalogService;
 
         beforeEach(() => {
             // tslint:disable-next-line
@@ -764,7 +759,7 @@ describe('Custom Validator Functions', () => {
                     catalog: 'adv16',
                     key: 'Kode',
                     alternateKeys: ['Text1']
-                } as IMatchADVNumberOrStringOptions,
+                } as MatchADVNumberOrStringOptions,
                 'pathogen_adv',
                 testSample
             );
@@ -781,7 +776,7 @@ describe('Custom Validator Functions', () => {
                     catalog: 'adv16',
                     key: 'Kode',
                     alternateKeys: ['Text1']
-                } as IMatchADVNumberOrStringOptions,
+                } as MatchADVNumberOrStringOptions,
                 'pathogen_adv',
                 testSample
             );
@@ -798,7 +793,7 @@ describe('Custom Validator Functions', () => {
                     catalog: 'adv16',
                     key: 'Kode',
                     alternateKeys: ['Text1']
-                } as IMatchADVNumberOrStringOptions,
+                } as MatchADVNumberOrStringOptions,
                 'pathogen_adv',
                 testSample
             );
@@ -815,7 +810,7 @@ describe('Custom Validator Functions', () => {
                     catalog: 'adv16',
                     key: 'Kode',
                     alternateKeys: ['Text1']
-                } as IMatchADVNumberOrStringOptions,
+                } as MatchADVNumberOrStringOptions,
                 'pathogen_adv',
                 testSample
             );
@@ -832,7 +827,7 @@ describe('Custom Validator Functions', () => {
                     catalog: 'adv16',
                     key: 'Kode',
                     alternateKeys: ['Text1']
-                } as IMatchADVNumberOrStringOptions,
+                } as MatchADVNumberOrStringOptions,
                 'pathogen_adv',
                 testSample
             );
@@ -849,7 +844,7 @@ describe('Custom Validator Functions', () => {
                     catalog: 'adv16',
                     key: 'Kode',
                     alternateKeys: ['Text1']
-                } as IMatchADVNumberOrStringOptions,
+                } as MatchADVNumberOrStringOptions,
                 'pathogen_adv',
                 testSample
             );

@@ -1,13 +1,13 @@
-import { createController, IDatasetController } from './../dataset.controller';
+import { createController, DatasetController } from './../dataset.controller';
 import * as mockReq from 'mock-express-request';
 import * as mockRes from 'mock-express-response';
-import { IDatasetPort } from '../../../../app/ports';
+import { DatasetPort } from '../../../../app/ports';
 jest.mock('./../../../../app/ports');
 
 // tslint:disable
 describe('Dataset controller', () => {
-    let controller: IDatasetController;
-    let mockDatasetService: IDatasetPort;
+    let controller: DatasetController;
+    let mockDatasetService: DatasetPort;
     beforeEach(() => {
         mockDatasetService = {
             sendDatasetFile: jest.fn()

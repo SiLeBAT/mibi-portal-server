@@ -1,5 +1,5 @@
 import { createService } from '../form-auto-correction.service';
-import { IFormAutoCorrectionService } from '../../model/autocorrection.model';
+import { FormAutoCorrectionService } from '../../model/autocorrection.model';
 import { SampleData, SampleCollection, Sample } from '../../model/sample.model';
 import { ValidationErrorProvider } from '../../model/validation.model';
 jest.mock('../../../core/application/configuration.service');
@@ -7,7 +7,7 @@ jest.mock('../../../core/application/configuration.service');
 describe('Auto-correct Sample Use Case', () => {
     // tslint:disable-next-line
     let mockCatalogService: any;
-    let service: IFormAutoCorrectionService;
+    let service: FormAutoCorrectionService;
 
     let genericTestSampleCollection: SampleCollection;
     let testSampleData: SampleData;

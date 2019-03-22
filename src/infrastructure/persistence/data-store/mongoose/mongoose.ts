@@ -3,7 +3,7 @@
 import * as mongoose from 'mongoose';
 import * as Promise from 'bluebird';
 // local
-import { IDataStore } from '../data-store.factory';
+import { DataStore } from '../data-store.factory';
 import { logger } from './../../../../aspects';
 
 import {
@@ -29,7 +29,7 @@ import { createRepository, RepositoryBase } from './mongoose.repository';
 // tslint:disable-next-line
 (mongoose as any).Promise = Promise;
 
-export class MongooseDataStore implements IDataStore {
+export class MongooseDataStore implements DataStore {
     initialize(connecionString: string) {
         mongoose.connect(connecionString).then(
             db => {

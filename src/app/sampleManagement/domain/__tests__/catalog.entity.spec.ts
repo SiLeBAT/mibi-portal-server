@@ -1,5 +1,5 @@
 import { createCatalog } from './../catalog.entity';
-import { ICatalog } from '../../model/catalog.model';
+import { Catalog } from '../../model/catalog.model';
 jest.mock('./../../../../app/ports');
 jest.mock('../../../core/application/configuration.service', () => ({
     getConfigurationService: () => ({
@@ -18,7 +18,7 @@ interface IMockCatalogData {
 }
 describe('Pathogen Index', () => {
     let testData: IMockCatalogData[];
-    let catalog: ICatalog<IMockCatalogData>;
+    let catalog: Catalog<IMockCatalogData>;
 
     beforeEach(() => {
         testData = [

@@ -7,7 +7,7 @@ export {
 export {
     createDataStore,
     DataStoreType,
-    IDataStore
+    DataStore
 } from './persistence/data-store/data-store.factory';
 
 export {

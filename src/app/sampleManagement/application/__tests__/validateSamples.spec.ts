@@ -1,15 +1,15 @@
 import { createService } from '../form-validation.service';
 import { createSample } from '../../domain/sample.entity';
-import { ICatalogService } from '../../model/catalog.model';
 import {
-    IAVVFormatProvider,
     ValidationErrorProvider,
-    INRLSelectorProvider,
     FormValidatorService,
-    ValidationError
+    ValidationError,
+    NRLSelectorProvider,
+    AVVFormatProvider
 } from '../../model/validation.model';
 import { SampleCollection, Sample } from '../../../ports';
 import { SampleData } from '../../model/sample.model';
+import { CatalogService } from '../../model/catalog.model';
 jest.mock('./../../domain/validator.entity', () => ({
     createValidator: () => ({
         validateSample: jest.fn()
@@ -19,10 +19,10 @@ jest.mock('../../../core/application/configuration.service');
 
 describe('Validate Sample Use Case', () => {
     // tslint:disable-next-line
-    let mockCatalogService: ICatalogService;
-    let mockAVVFormatProvider: IAVVFormatProvider;
+    let mockCatalogService: CatalogService;
+    let mockAVVFormatProvider: AVVFormatProvider;
     let mockValidationErrorProvider: ValidationErrorProvider;
-    let mockNRLSelectorProvider: INRLSelectorProvider;
+    let mockNRLSelectorProvider: NRLSelectorProvider;
     let service: FormValidatorService;
 
     let genericTestSampleCollection: SampleCollection;

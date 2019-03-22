@@ -1,8 +1,8 @@
 import { MongooseDataStore } from './mongoose/mongoose';
 import { logger } from '../../../aspects';
 
-export interface IDataStore {
-    initialize(connectionString: string): IDataStore;
+export interface DataStore {
+    initialize(connectionString: string): DataStore;
     close(): void;
     drop(collection: string): void;
 }
@@ -11,7 +11,7 @@ export enum DataStoreType {
     MONGO = 'MongoDB'
 }
 
-function createDataStore(type: DataStoreType): IDataStore {
+function createDataStore(type: DataStoreType): DataStore {
     logger.info('Creating datastore', { type: type });
     switch (type) {
         case DataStoreType.MONGO:

@@ -7,7 +7,7 @@ import { logger } from '../../../aspects';
 import {
     createDataStore,
     DataStoreType,
-    IDataStore,
+    DataStore,
     mapCollectionToRepository
 } from '../../../infrastructure/ports';
 
@@ -79,7 +79,7 @@ function parseTabDelimitedFile(filename: string) {
     let fields: string[] = [];
     // tslint:disable-next-line:no-any
     let entries: any[] = [];
-    let db: IDataStore;
+    let db: DataStore;
     lineReader
         .on('line', (line: string, lineCount: number) => {
             switch (lineCount) {
