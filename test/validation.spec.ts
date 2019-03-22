@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as _ from 'lodash';
+import * as config from 'config';
 import * as moment from 'moment';
 import axios from 'axios';
 import { WorkBook, WorkSheet, readFile, utils } from 'xlsx';
