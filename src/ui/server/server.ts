@@ -10,29 +10,26 @@ import * as morgan from 'morgan';
 // local
 import { routes } from './routes';
 import { logger } from './../../aspects';
-import { validateToken } from './middleware';
+import { validateToken } from './middleware/tokenMW';
 import { Logger } from '../../aspects/logging';
-import { ControllerFactory } from './sharedKernel';
+import { ServerConfiguration, GeneralConfiguration } from '../../app/ports';
+import { ControllerFactory } from './core/factories/controllerFactory';
 
-export interface IServerConfig {
-    port: number;
-    jwtSecret: string;
-    apiUrl: string;
-    logLevel: string;
-    controllerFactory: ControllerFactory;
-}
-
-export interface IAppServer {
+export interface AppServer {
     startServer(): void;
 }
 
-class AppServer implements IAppServer {
+class DefaultAppServer implements AppServer {
     private server: express.Express;
 
     private publicDir = 'public';
 
-    constructor(config: IServerConfig) {
-        this.initialise(config);
+    constructor(
+        serverConfig: ServerConfiguration,
+        generalConfig: GeneralConfiguration,
+        controllerFactory: ControllerFactory
+    ) {
+        this.initialise(serverConfig, generalConfig, controllerFactory);
     }
 
     startServer() {
@@ -43,13 +40,17 @@ class AppServer implements IAppServer {
         );
     }
 
-    private initialise(serverConfig: IServerConfig) {
+    private initialise(
+        serverConfig: ServerConfiguration,
+        generalConfig: GeneralConfiguration,
+        controllerFactory: ControllerFactory
+    ) {
         this.server = express();
         this.server.use(helmet());
         this.server.use(compression());
         this.server.set('port', serverConfig.port);
         this.server.set('logger', logger);
-        this.server.set('controllerFactory', serverConfig.controllerFactory);
+        this.server.set('controllerFactory', controllerFactory);
 
         this.server.use(bodyParser.json({ limit: '50mb' }));
         this.server.use(
@@ -72,7 +73,7 @@ class AppServer implements IAppServer {
 
         this.server.use(cors());
         this.server.use(
-            morgan(Logger.mapLevelToMorganFormat(serverConfig.logLevel))
+            morgan(Logger.mapLevelToMorganFormat(generalConfig.logLevel))
         );
         this.server.use(express.static(path.join(__dirname, this.publicDir)));
 
@@ -102,8 +103,12 @@ class AppServer implements IAppServer {
     }
 }
 
-function createApplication(config: IServerConfig): IAppServer {
-    return new AppServer(config);
+function createApplication(
+    serverConfig: ServerConfiguration,
+    generalConfig: GeneralConfiguration,
+    controllerFactory: ControllerFactory
+): AppServer {
+    return new DefaultAppServer(serverConfig, generalConfig, controllerFactory);
 }
 
 export { createApplication };

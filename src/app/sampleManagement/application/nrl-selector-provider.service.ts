@@ -1,21 +1,12 @@
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import { NRLRepository } from '../../ports';
+import { NRLConfig, NRLSelectorProvider } from '../model/validation.model';
 
 moment.locale('de');
 
-export interface INRL {
-    selectors: string[];
-    name: string;
-}
-export interface INRLSelectorProviderPort {}
-
-export interface INRLSelectorProvider extends INRLSelectorProviderPort {
-    getSelectors(nrl?: string): RegExp[];
-}
-
-class NRLSelectorProvider implements INRLSelectorProvider {
-    private nrls: INRL[] = [];
+class DefaultNRLSelectorProvider implements NRLSelectorProvider {
+    private nrls: NRLConfig[] = [];
     constructor(private nrlRepository: NRLRepository) {
         this.nrlRepository
             .getAllNRLs()
@@ -36,6 +27,6 @@ class NRLSelectorProvider implements INRLSelectorProvider {
         return result;
     }
 }
-export function createService(repository: NRLRepository): INRLSelectorProvider {
-    return new NRLSelectorProvider(repository);
+export function createService(repository: NRLRepository): NRLSelectorProvider {
+    return new DefaultNRLSelectorProvider(repository);
 }

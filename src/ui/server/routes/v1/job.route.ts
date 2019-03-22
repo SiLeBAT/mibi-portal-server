@@ -1,10 +1,10 @@
 import * as express from 'express';
-import { ControllerFactory } from '../../sharedKernel';
-import { IDatasetController } from '../..';
+import { ControllerFactory } from '../../core/factories/controllerFactory';
+import { DatasetController } from '../../controllers/dataset.controller';
 
 function getRouter(controllerFactory: ControllerFactory) {
     const router = express.Router();
-    const controller: IDatasetController = controllerFactory.getController(
+    const controller: DatasetController = controllerFactory.getController(
         'DATASET'
     );
 

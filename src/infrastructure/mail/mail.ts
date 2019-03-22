@@ -3,32 +3,36 @@
 // npm
 import * as handlebars from 'handlebars';
 import * as nodemailer from 'nodemailer';
-import * as config from 'config';
 import * as readFilePromise from 'fs-readfile-promise';
 
 // local
 import { logger } from './../../aspects';
 import {
-    INotificationPort,
+    NotificationPort,
     NotificationType,
-    INotification,
-    IDatasetFile
+    getConfigurationService,
+    MailConfiguration
 } from '../../app/ports';
 
-interface IMailConfig {
-    replyToAddress: string;
-    fromAddress: string;
+interface Attachment {
+    filename: string;
+    content: Buffer;
+    contentType: string;
 }
 
-interface IMailOptions {
+interface EmailData {
+    type: NotificationType;
+    meta: MailOptions;
+    payload: Record<string, string>;
+}
+interface MailOptions {
     to: string;
     cc: string[];
     subject: string;
-    // tslint:disable-next-line
-    attachments: any[];
+    attachments: Attachment[];
 }
 
-const mailConfig: IMailConfig = config.get('mail');
+const mailConfig: MailConfiguration = getConfigurationService().getMailConfiguration();
 
 const fromAddress = mailConfig.fromAddress;
 const replyToAddress = mailConfig.replyToAddress;
@@ -37,8 +41,8 @@ const port = 25;
 
 const viewsDir = __dirname + '/views/de/';
 
-function registerListeners(notificationService: INotificationPort) {
-    notificationService.addHandler(async (data: INotification) => {
+function registerListeners(notificationService: NotificationPort) {
+    notificationService.addHandler(async (data: EmailData) => {
         let templateFile;
         switch (data.type) {
             case NotificationType.RESET_SUCCESS:
@@ -105,31 +109,16 @@ function registerListeners(notificationService: INotificationPort) {
                 });
         }
         if (templateFile) {
-            sendMail(data.payload, templateFile.toString('utf-8'), {
-                to: data.meta.email,
-                cc: data.meta.cc ? data.meta.cc : [],
-                subject: data.title,
-                attachments: data.meta.attachments
-                    ? data.meta.attachments.map(mapDataFile)
-                    : []
-            });
+            sendMail(data.payload, templateFile.toString('utf-8'), data.meta);
         }
     });
-}
-
-function mapDataFile(dataset: IDatasetFile) {
-    return {
-        filename: dataset.originalname,
-        content: dataset.buffer,
-        contentType: dataset.mimetype
-    };
 }
 
 function sendMail(
     // tslint:disable-next-line
     templateData: any,
     templateFile: string,
-    options: IMailOptions
+    options: MailOptions
 ) {
     templateData.copyrightYear = new Date().getFullYear();
 

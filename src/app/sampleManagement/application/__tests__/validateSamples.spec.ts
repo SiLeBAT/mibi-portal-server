@@ -1,18 +1,21 @@
+import { createService } from '../form-validation.service';
+import { createSample } from '../../domain/sample.entity';
+import { ICatalogService } from '../../model/catalog.model';
 import {
-    createService,
-    FormValidatorService
-} from '../form-validation.service';
-import { SampleCollection } from '../..';
-import { SampleData, Sample, createSample } from '../../domain/sample.entity';
-import { ICatalogService } from '../catalog.service';
-import { IAVVFormatProvider } from '../avv-format-provider.service';
-import {
+    IAVVFormatProvider,
     ValidationErrorProvider,
+    INRLSelectorProvider,
+    FormValidatorService,
     ValidationError
-} from '../validation-error-provider.service';
-import { INRLSelectorProvider } from '../nrl-selector-provider.service';
-
-jest.mock('./../../domain');
+} from '../../model/validation.model';
+import { SampleCollection, Sample } from '../../../ports';
+import { SampleData } from '../../model/sample.model';
+jest.mock('./../../domain/validator.entity', () => ({
+    createValidator: () => ({
+        validateSample: jest.fn()
+    })
+}));
+jest.mock('../../../core/application/configuration.service');
 
 describe('Validate Sample Use Case', () => {
     // tslint:disable-next-line

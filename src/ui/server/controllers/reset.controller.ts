@@ -1,12 +1,13 @@
 import { Request, Response } from 'express';
 import { logger } from '../../../aspects';
-import { PasswordPort, IController } from '../../../app/ports';
+import { PasswordPort } from '../../../app/ports';
+import { Controller } from '../model/controler.model';
 
-export interface IResetController extends IController {
+export interface ResetController extends Controller {
     reset(req: Request, res: Response): void;
 }
 
-class ResetController implements IResetController {
+class DefaultResetController implements ResetController {
     constructor(private passwordService: PasswordPort) {}
 
     async reset(req: Request, res: Response) {
@@ -35,5 +36,5 @@ class ResetController implements IResetController {
 }
 
 export function createController(service: PasswordPort) {
-    return new ResetController(service);
+    return new DefaultResetController(service);
 }

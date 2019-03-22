@@ -1,11 +1,8 @@
-import { createService, LoginService } from './../login.service';
-import { LoginResult } from '../../domain';
-// tslint:disable
-jest.mock('./../../../sharedKernel', () => ({
-    RepositoryType: {
-        USER: 0
-    }
-}));
+import { createService } from './../login.service';
+import { LoginService } from '../../model/login.model';
+import { LoginResult } from '../../../ports';
+
+jest.mock('../../../core/application/configuration.service');
 
 describe('Login User Use Case', () => {
     let mockUserRepository: any;

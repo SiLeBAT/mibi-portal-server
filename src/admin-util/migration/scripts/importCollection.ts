@@ -9,7 +9,7 @@ import {
     DataStoreType,
     IDataStore,
     mapCollectionToRepository
-} from '../../../infrastructure';
+} from '../../../infrastructure/ports';
 
 start().catch(err => {
     throw err;

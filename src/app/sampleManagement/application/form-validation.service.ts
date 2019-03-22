@@ -1,48 +1,39 @@
 import * as _ from 'lodash';
 import { logger } from '../../../aspects';
 import {
-    ICatalogService,
-    IAVVFormatProvider,
-    ValidationErrorProvider,
-    INRLSelectorProvider
-} from '.';
-import { ApplicationDomainError } from '../../sharedKernel';
-import {
-    Sample,
-    SampleCollection,
-    createValidator,
+    FormValidatorService,
     Validator,
-    ConstraintSet,
+    AVVFormatProvider,
+    ValidationErrorProvider,
+    NRLSelectorProvider,
+    ValidationOptions,
     ValidationConstraints,
     ValidationRuleSet,
+    ValidationRule
+} from '../model/validation.model';
+import { CatalogService } from '../model/catalog.model';
+import { createValidator } from '../domain/validator.entity';
+import { SampleCollection, Sample } from '../model/sample.model';
+import {
     baseConstraints,
     zoMoConstraints,
-    standardConstraints,
-    ValidationRule
-} from '../domain';
+    standardConstraints
+} from '../domain/validation-constraints';
+import { ApplicationDomainError } from '../../core/domain/domain.error';
 
-export interface ValidationOptions {
-    state?: string;
-    nrl?: string;
-    year?: string;
+enum ConstraintSet {
+    STANDARD = 'standard',
+    ZOMO = 'ZoMo'
 }
-export interface FormValidatorPort {
-    validateSamples(
-        sampleCollection: SampleCollection,
-        validationOptions: ValidationOptions
-    ): Promise<SampleCollection>;
-}
-
-export interface FormValidatorService extends FormValidatorPort {}
 
 class DefaultFormValidatorService implements FormValidatorService {
     private validator: Validator;
 
     constructor(
-        private catalogService: ICatalogService,
-        private avvFormatProvider: IAVVFormatProvider,
+        private catalogService: CatalogService,
+        private avvFormatProvider: AVVFormatProvider,
         private validationErrorProvider: ValidationErrorProvider,
-        private nrlSelectorProvider: INRLSelectorProvider
+        private nrlSelectorProvider: NRLSelectorProvider
     ) {
         this.validator = createValidator({
             dateFormat: 'DD-MM-YYYY',
@@ -248,10 +239,10 @@ class DefaultFormValidatorService implements FormValidatorService {
 }
 
 export function createService(
-    catalogService: ICatalogService,
-    avvFormatProvider: IAVVFormatProvider,
+    catalogService: CatalogService,
+    avvFormatProvider: AVVFormatProvider,
     validationErrorProvider: ValidationErrorProvider,
-    nrlSelectorProvider: INRLSelectorProvider
+    nrlSelectorProvider: NRLSelectorProvider
 ): FormValidatorService {
     return new DefaultFormValidatorService(
         catalogService,

@@ -1,5 +1,5 @@
 import * as express from 'express';
-import { ControllerFactory } from '../../../sharedKernel';
+import { ControllerFactory } from '../../../core/factories/controllerFactory';
 import { logger } from '../../../../../aspects';
 import { getRouter as getSystemInfoRouter } from './system-info.route';
 

@@ -2,14 +2,15 @@ import * as _ from 'lodash';
 import * as Fuse from 'fuse.js';
 import {
     autoCorrectADV16,
-    CorrectionFunction,
     autoCorrectADV8,
     autoCorrectADV9,
     autoCorrectADV3,
     autoCorrectADV12,
     autoCorrectADV2
 } from '../custom-auto-correction-functions';
-import { SampleData, Sample } from '../sample.entity';
+import { SampleData, Sample } from '../../model/sample.model';
+import { CorrectionFunction } from '../../model/autocorrection.model';
+jest.mock('../../../core/application/configuration.service');
 
 describe('Custom Auto-correction Functions', () => {
     describe('autoCorrectADV16', () => {

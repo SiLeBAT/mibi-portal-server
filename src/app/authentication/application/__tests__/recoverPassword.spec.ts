@@ -1,20 +1,8 @@
-import { createService, PasswordService } from './../password.service';
-import { generateToken } from '../../domain';
-import { IRecoveryData } from '../../../sharedKernel';
-// tslint:disable
-jest.mock('./../../domain', () => ({
-    generateToken: jest.fn(),
-    verifyToken: jest.fn(),
-    TokenType: {
-        RESET: 0
-    },
-    NotificationType: {
-        REQUEST_ACTIVATION: 0,
-        REQUEST_ALTERNATIVE_CONTACT: 1,
-        REQUEST_RESET: 2,
-        NOTIFICATION_RESET: 3
-    }
-}));
+import { createService } from './../password.service';
+import { PasswordService, RecoveryData } from '../../model/login.model';
+import { generateToken } from './../../domain/token.service';
+jest.mock('./../../domain/token.service');
+jest.mock('../../../core/application/configuration.service');
 
 describe('Recover Password Use Case', () => {
     let mockUserRepository: any;
@@ -23,7 +11,7 @@ describe('Recover Password Use Case', () => {
 
     let mockNotificationService: any;
     let service: PasswordService;
-    let credentials: IRecoveryData;
+    let credentials: RecoveryData;
     beforeEach(() => {
         mockUserRepository = {
             findByUsername: jest.fn(() => true)
@@ -36,7 +24,8 @@ describe('Recover Password Use Case', () => {
         };
 
         mockNotificationService = {
-            sendNotification: jest.fn(() => true)
+            sendNotification: jest.fn(() => true),
+            createEmailNotificationMetaData: jest.fn(() => {})
         };
 
         (generateToken as any).mockReset();

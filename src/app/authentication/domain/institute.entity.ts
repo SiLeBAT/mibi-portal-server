@@ -1,14 +1,4 @@
-export interface Institute {
-    uniqueId: string;
-    stateShort: string;
-    name: string;
-    addendum: string;
-    city: string;
-    zip: string;
-    phone: string;
-    fax: string;
-    email: string[];
-}
+import { Institute } from '../model/institute.model';
 
 class DefaultInstitute implements Institute {
     uniqueId: string;
