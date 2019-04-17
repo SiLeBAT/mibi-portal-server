@@ -1,19 +1,28 @@
-import { createService, FormValidatorService } from '../form-validation.service';
-import { SampleCollection } from '../..';
-import { SampleData, Sample, createSample } from '../../domain/sample.entity';
-import { ICatalogService } from '../catalog.service';
-import { IAVVFormatProvider } from '../avv-format-provider.service';
-import { ValidationErrorProvider, ValidationError } from '../validation-error-provider.service';
-import { INRLSelectorProvider } from '../nrl-selector-provider.service';
-
-jest.mock('./../../domain');
+import { createService } from '../form-validation.service';
+import { createSample } from '../../domain/sample.entity';
+import {
+    ValidationErrorProvider,
+    FormValidatorService,
+    ValidationError,
+    NRLSelectorProvider,
+    AVVFormatProvider
+} from '../../model/validation.model';
+import { SampleCollection, Sample } from '../../../ports';
+import { SampleData } from '../../model/sample.model';
+import { CatalogService } from '../../model/catalog.model';
+jest.mock('./../../domain/validator.entity', () => ({
+    createValidator: () => ({
+        validateSample: jest.fn()
+    })
+}));
+jest.mock('../../../core/application/configuration.service');
 
 describe('Validate Sample Use Case', () => {
     // tslint:disable-next-line
-    let mockCatalogService: ICatalogService;
-    let mockAVVFormatProvider: IAVVFormatProvider;
+    let mockCatalogService: CatalogService;
+    let mockAVVFormatProvider: AVVFormatProvider;
     let mockValidationErrorProvider: ValidationErrorProvider;
-    let mockNRLSelectorProvider: INRLSelectorProvider;
+    let mockNRLSelectorProvider: NRLSelectorProvider;
     let service: FormValidatorService;
 
     let genericTestSampleCollection: SampleCollection;
@@ -39,7 +48,12 @@ describe('Validate Sample Use Case', () => {
         mockNRLSelectorProvider = {
             getSelectors: jest.fn()
         };
-        service = createService(mockCatalogService, mockAVVFormatProvider, mockValidationErrorProvider, mockNRLSelectorProvider);
+        service = createService(
+            mockCatalogService,
+            mockAVVFormatProvider,
+            mockValidationErrorProvider,
+            mockNRLSelectorProvider
+        );
         testSampleData = {
             sample_id: '1',
             sample_id_avv: '1-ABC',
@@ -68,7 +82,10 @@ describe('Validate Sample Use Case', () => {
     });
     it('should successfully complete Happy Path with empty sampleCollection', async () => {
         expect.assertions(1);
-        const result = await service.validateSamples(genericTestSampleCollection, {});
+        const result = await service.validateSamples(
+            genericTestSampleCollection,
+            {}
+        );
         expect(result).toEqual({
             samples: []
         });
@@ -79,7 +96,10 @@ describe('Validate Sample Use Case', () => {
             samples: [genericTestSample]
         };
         expect.assertions(2);
-        const result = await service.validateSamples(specificTestSampleCollection, {});
+        const result = await service.validateSamples(
+            specificTestSampleCollection,
+            {}
+        );
         const errors = result.samples[0].getErrors();
 
         expect(errors['sample_id']).toBe(undefined);
@@ -95,7 +115,10 @@ describe('Validate Sample Use Case', () => {
         };
 
         expect.assertions(2);
-        const result = await service.validateSamples(specificTestSampleCollection, {});
+        const result = await service.validateSamples(
+            specificTestSampleCollection,
+            {}
+        );
         const errors = result.samples[0].getErrors();
 
         expect(errors['sample_id']).toBe(undefined);
@@ -111,7 +134,10 @@ describe('Validate Sample Use Case', () => {
         };
 
         expect.assertions(2);
-        const result = await service.validateSamples(specificTestSampleCollection, {});
+        const result = await service.validateSamples(
+            specificTestSampleCollection,
+            {}
+        );
         const errors = result.samples[0].getErrors();
 
         expect(errors['sample_id']).toBe(undefined);
@@ -132,7 +158,10 @@ describe('Validate Sample Use Case', () => {
         };
 
         expect.assertions(2);
-        const result = await service.validateSamples(specificTestSampleCollection, {});
+        const result = await service.validateSamples(
+            specificTestSampleCollection,
+            {}
+        );
         const errors = result.samples[0].getErrors();
 
         expect(errors['sample_id_avv'][0]).toEqual(validationError);
@@ -153,7 +182,10 @@ describe('Validate Sample Use Case', () => {
         };
 
         expect.assertions(2);
-        const result = await service.validateSamples(specificTestSampleCollection, {});
+        const result = await service.validateSamples(
+            specificTestSampleCollection,
+            {}
+        );
         const errors = result.samples[0].getErrors();
 
         expect(errors['sample_id_avv'][0]).toEqual(validationError);
@@ -174,7 +206,10 @@ describe('Validate Sample Use Case', () => {
         };
 
         expect.assertions(2);
-        const result = await service.validateSamples(specificTestSampleCollection, {});
+        const result = await service.validateSamples(
+            specificTestSampleCollection,
+            {}
+        );
         const errors = result.samples[0].getErrors();
 
         expect(errors['sample_id_avv']).toBe(undefined);
@@ -195,7 +230,10 @@ describe('Validate Sample Use Case', () => {
         };
 
         expect.assertions(2);
-        const result = await service.validateSamples(specificTestSampleCollection, {});
+        const result = await service.validateSamples(
+            specificTestSampleCollection,
+            {}
+        );
         const errors = result.samples[0].getErrors();
 
         expect(errors['sample_id'][0]).toEqual(validationError);
@@ -208,12 +246,14 @@ describe('Validate Sample Use Case', () => {
             samples: [genericTestSample, identicalSample]
         };
 
-        const result = await service.validateSamples(specificTestSampleCollection, {});
+        const result = await service.validateSamples(
+            specificTestSampleCollection,
+            {}
+        );
         const errors = result.samples[0].getErrors();
 
         expect(errors['sample_id'][0]).toEqual(validationError);
         expect(errors['sample_id_avv'][0]).toEqual(validationError);
         expect.assertions(2);
     });
-
 });

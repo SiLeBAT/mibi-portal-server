@@ -1,36 +1,31 @@
-import { createService, RegistrationService } from './../registration.service';
-import { generateToken, createUser, IUser } from '../../domain';
-import { IRecoveryData } from '../../../sharedKernel';
- // tslint:disable
-jest.mock('./../../domain', () => ({
-    generateToken: jest.fn(),
-    verifyToken: jest.fn(),
+import { createService } from './../registration.service';
+import { RegistrationService } from '../../model/registration.model';
+import { User } from '../../model/user.model';
+import { RecoveryData } from '../../model/login.model';
+import { createUser } from '../../domain/user.entity';
+import { generateToken } from '../../domain/token.service';
+// tslint:disable
+jest.mock('./../../domain/token.service');
+
+jest.mock('./../../domain/user.entity', () => ({
     createUser: jest.fn(() => ({
         updatePassword: jest.fn()
-    })),
-    TokenType: {
-        ACTIVATE: 0
-    },
-    NotificationType: {
-        REQUEST_ACTIVATION: 0,
-        REQUEST_ALTERNATIVE_CONTACT: 1,
-        REQUEST_RESET: 2,
-        NOTIFICATION_RESET: 3
-    }
+    }))
 }));
 
+jest.mock('../../../core/application/configuration.service');
+
 describe('Prepare User for Activation Use Case', () => {
-   
     let mockUserRepository: any;
-    
+
     let mockTokenRepository: any;
-  
+
     let mockNotificationService: any;
 
     let mockInstitutionRepository: any;
     let service: RegistrationService;
-    let user: IUser;
-    let recoveryData: IRecoveryData;
+    let user: User;
+    let recoveryData: RecoveryData;
     beforeEach(() => {
         mockUserRepository = {
             hasUser: jest.fn(() => false),
@@ -48,7 +43,8 @@ describe('Prepare User for Activation Use Case', () => {
         };
 
         mockNotificationService = {
-            sendNotification: jest.fn(() => true)
+            sendNotification: jest.fn(() => true),
+            createEmailNotificationMetaData: jest.fn(() => {})
         };
 
         user = {
@@ -60,21 +56,15 @@ describe('Prepare User for Activation Use Case', () => {
             institution: {
                 uniqueId: 'test',
                 stateShort: 'test',
-                name1: 'test',
-                name2: 'test',
-                location: 'test',
-                address1: {
-                    city: 'test',
-                    street: 'test'
-                },
-                address2: {
-                    city: 'test',
-                    street: 'test'
-                },
+                name: 'test',
+                addendum: 'test',
+                city: 'test',
+                zip: 'test',
                 phone: 'test',
                 fax: 'test',
                 email: []
             },
+            getFullName: jest.fn(),
             isAuthorized: jest.fn(),
             isActivated: jest.fn(),
             isAdminActivated: jest.fn(),
@@ -83,20 +73,23 @@ describe('Prepare User for Activation Use Case', () => {
             getLastLoginAttempt: jest.fn(),
             updateNumberOfFailedAttempts: jest.fn(),
             updateLastLoginAttempt: jest.fn()
-
         };
         recoveryData = {
             email: 'test',
             userAgent: 'test',
             host: 'test'
         };
-    
+
         (createUser as any).mockClear();
-       
+
         (generateToken as any).mockClear();
 
-        service = createService(mockUserRepository, mockTokenRepository, mockInstitutionRepository, mockNotificationService);
-
+        service = createService(
+            mockUserRepository,
+            mockTokenRepository,
+            mockInstitutionRepository,
+            mockNotificationService
+        );
     });
 
     it('should return a promise', () => {
@@ -105,41 +98,60 @@ describe('Prepare User for Activation Use Case', () => {
     });
     it('should ask the token repository if the user has tokens', () => {
         expect.assertions(1);
-        return service.prepareUserForActivation(user, recoveryData).then(
-            result => expect(mockTokenRepository.hasTokenForUser.mock.calls.length).toBe(1)
-        );
+        return service
+            .prepareUserForActivation(user, recoveryData)
+            .then(result =>
+                expect(
+                    mockTokenRepository.hasTokenForUser.mock.calls.length
+                ).toBe(1)
+            );
     });
 
     it('should trigger deletion of old user tokens', () => {
         expect.assertions(1);
-        return service.prepareUserForActivation(user, recoveryData).then(
-            result => expect(mockTokenRepository.deleteTokenForUser.mock.calls.length).toBe(1)
-        );
+        return service
+            .prepareUserForActivation(user, recoveryData)
+            .then(result =>
+                expect(
+                    mockTokenRepository.deleteTokenForUser.mock.calls.length
+                ).toBe(1)
+            );
     });
     it('should not trigger deletion of old user tokens if user does not have any', () => {
         mockTokenRepository.hasTokenForUser = jest.fn(() => false);
         expect.assertions(1);
-        return service.prepareUserForActivation(user, recoveryData).then(
-            result => expect(mockTokenRepository.deleteTokenForUser.mock.calls.length).toBe(0)
-        );
+        return service
+            .prepareUserForActivation(user, recoveryData)
+            .then(result =>
+                expect(
+                    mockTokenRepository.deleteTokenForUser.mock.calls.length
+                ).toBe(0)
+            );
     });
     it('should generate a new token', () => {
         expect.assertions(1);
-        return service.prepareUserForActivation(user, recoveryData).then(
-    
-            result => expect((generateToken as any).mock.calls.length).toBe(1)
-        );
+        return service
+            .prepareUserForActivation(user, recoveryData)
+            .then(result =>
+                expect((generateToken as any).mock.calls.length).toBe(1)
+            );
     });
     it('should save the new token', () => {
         expect.assertions(1);
-        return service.prepareUserForActivation(user, recoveryData).then(
-            result => expect(mockTokenRepository.saveToken.mock.calls.length).toBe(1)
-        );
+        return service
+            .prepareUserForActivation(user, recoveryData)
+            .then(result =>
+                expect(mockTokenRepository.saveToken.mock.calls.length).toBe(1)
+            );
     });
     it('should trigger notification: sendNotification', () => {
         expect.assertions(1);
-        return service.prepareUserForActivation(user, recoveryData).then(
-            result => expect(mockNotificationService.sendNotification.mock.calls.length).toBe(1)
-        );
+        return service
+            .prepareUserForActivation(user, recoveryData)
+            .then(result =>
+                expect(
+                    mockNotificationService.sendNotification.mock.calls.length
+                ).toBe(1)
+            );
     });
 });

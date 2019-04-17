@@ -1,26 +1,24 @@
-import { createService, RegistrationService, UserRegistration } from './../registration.service';
-import { createUser } from '../../domain';
- // tslint:disable
-jest.mock('./../../../sharedKernel', () => ({
-    RepositoryType: {
-        USER: 0
-    }
-}));
+import { createService } from './../registration.service';
+import {
+    RegistrationService,
+    UserRegistration
+} from '../../model/registration.model';
+import { createUser } from '../../domain/user.entity';
 
-jest.mock('./../../domain', () => ({
-    generateToken: jest.fn(),
-    verifyToken: jest.fn(),
+jest.mock('../../../core/application/configuration.service');
+
+jest.mock('./../../domain/user.entity', () => ({
     createUser: jest.fn(() => ({
         updatePassword: jest.fn()
     }))
 }));
+jest.mock('./../../domain/token.service');
 
 describe('Register User Use Case', () => {
-  
     let mockUserRepository: any;
 
     let mockTokenRepository: any;
-   
+
     let mockNotificationService: any;
 
     let mockInstitutionRepository: any;
@@ -50,12 +48,15 @@ describe('Register User Use Case', () => {
             host: 'test'
         };
 
-     
         (createUser as any).mockClear();
 
-        service = createService(mockUserRepository, mockTokenRepository, mockInstitutionRepository, mockNotificationService);
+        service = createService(
+            mockUserRepository,
+            mockTokenRepository,
+            mockInstitutionRepository,
+            mockNotificationService
+        );
         service.prepareUserForActivation = jest.fn(() => Promise.resolve(true));
-
     });
 
     it('should return a promise', () => {
@@ -65,30 +66,44 @@ describe('Register User Use Case', () => {
 
     it('should ask the user repository if the user exists', () => {
         expect.assertions(1);
-        return service.registerUser(credentials).then(
-            result => expect(mockUserRepository.hasUser.mock.calls.length).toBe(1)
-        );
+        return service
+            .registerUser(credentials)
+            .then(result =>
+                expect(mockUserRepository.hasUser.mock.calls.length).toBe(1)
+            );
     });
     it('should throw an error because user does not exist', () => {
         mockUserRepository.hasUser = jest.fn(() => false);
         expect.assertions(1);
-        return service.registerUser(credentials).then(
-            result => expect(mockTokenRepository.deleteTokenForUser.mock.calls.length).toBe(0),
-            err => expect(err).toBeTruthy()
-        );
+        return service
+            .registerUser(credentials)
+            .then(
+                result =>
+                    expect(
+                        mockTokenRepository.deleteTokenForUser.mock.calls.length
+                    ).toBe(0),
+                err => expect(err).toBeTruthy()
+            );
     });
 
     it('should ask the institute repository if the institute exists', () => {
         expect.assertions(1);
-        return service.registerUser(credentials).then(
-            result => expect(mockInstitutionRepository.findById.mock.calls.length).toBe(1)
-        );
+        return service
+            .registerUser(credentials)
+            .then(result =>
+                expect(
+                    mockInstitutionRepository.findById.mock.calls.length
+                ).toBe(1)
+            );
     });
     it('should throw an error because institute does not exist', () => {
         mockInstitutionRepository.findById = jest.fn(() => false);
         expect.assertions(1);
         return service.registerUser(credentials).then(
-            result => expect(mockInstitutionRepository.findById.mock.calls.length).toBe(0),
+            result =>
+                expect(
+                    mockInstitutionRepository.findById.mock.calls.length
+                ).toBe(0),
             err => {
                 return expect(err).toBeTruthy();
             }
@@ -96,9 +111,11 @@ describe('Register User Use Case', () => {
     });
     it('should create a new User', () => {
         expect.assertions(1);
-        return service.registerUser(credentials).then(
-            result => expect((createUser as any).mock.calls.length).toBe(1)
-        );
+        return service
+            .registerUser(credentials)
+            .then(result =>
+                expect((createUser as any).mock.calls.length).toBe(1)
+            );
     });
     it('should update password for new user', () => {
         const updatePassword = jest.fn();
@@ -106,20 +123,28 @@ describe('Register User Use Case', () => {
             updatePassword
         });
         expect.assertions(1);
-        return service.registerUser(credentials).then(
-            result => expect((updatePassword as any).mock.calls.length).toBe(1)
-        );
+        return service
+            .registerUser(credentials)
+            .then(result =>
+                expect((updatePassword as any).mock.calls.length).toBe(1)
+            );
     });
     it('should store new user in user repository', () => {
         expect.assertions(1);
-        return service.registerUser(credentials).then(
-            result => expect(mockUserRepository.createUser.mock.calls.length).toBe(1)
-        );
+        return service
+            .registerUser(credentials)
+            .then(result =>
+                expect(mockUserRepository.createUser.mock.calls.length).toBe(1)
+            );
     });
     it('should prepare user for activation', () => {
         expect.assertions(1);
-        return service.registerUser(credentials).then(
-            result => expect((service.prepareUserForActivation as any).mock.calls.length).toBe(1)
-        );
+        return service
+            .registerUser(credentials)
+            .then(result =>
+                expect(
+                    (service.prepareUserForActivation as any).mock.calls.length
+                ).toBe(1)
+            );
     });
 });

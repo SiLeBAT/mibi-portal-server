@@ -1,15 +1,13 @@
-
 import { Request, Response } from 'express';
 import { logger } from '../../../aspects';
-import { IController } from '../../../app/ports';
+import { Controller } from '../model/controler.model';
 const pjson = require('../../../../package.json');
 
-export interface ISystemInfoController extends IController {
+export interface SystemInfoController extends Controller {
     getSystemInfo(req: Request, res: Response): Promise<void>;
 }
 
-class SystemInfoController implements ISystemInfoController {
-
+class DefaultSystemInfoController implements SystemInfoController {
     async getSystemInfo(req: Request, res: Response) {
         logger.info('SystemInfoController.getSystemInfo, Request received');
         let dto;
@@ -30,9 +28,8 @@ class SystemInfoController implements ISystemInfoController {
         logger.info('SystemInfoController.getSystemInfo, Response sent');
         return res.json(dto).end();
     }
-
 }
 
-export function createController() {
-    return new SystemInfoController();
+export function createController(): SystemInfoController {
+    return new DefaultSystemInfoController();
 }

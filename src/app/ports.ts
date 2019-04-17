@@ -1,129 +1,113 @@
-import { ICatalog, INRL, ValidationError } from './sampleManagement';
-import { IUserToken, IUser, Institution } from './authentication';
+/**
+ * core exports
+ */
+export {
+    ServerConfiguration,
+    DataStoreConfiguration,
+    MailConfiguration,
+    GeneralConfiguration,
+    ConfigurationPort
+} from './core/model/configuration.model';
 
 export {
-    IServiceFactory,
+    Notification,
+    NotificationPort
+} from './core/model/notification.model';
+
+export {
     ServiceFactory,
-    IController,
-    INotification,
-    NotificationType,
-    INotificationPort
-} from './sharedKernel';
+    createFactory
+} from './core/factories/service.factory';
 
 export {
-    RegistrationPort,
-    PasswordPort,
-    LoginPort,
-    IInstitutionPort,
-    LoginResult,
-    Institution,
-    Address,
-    createInstitution,
-    createUser,
-    IUser,
-    IUserToken,
+    getConfigurationService
+} from './core/application/configuration.service';
+
+export {
+    getNotificationService
+} from './core/application/notification.service';
+
+export { NotificationType } from './core/domain/enums';
+
+export { ApplicationDomainError } from './core/domain/domain.error';
+
+export { ApplicationSystemError } from './core/domain/technical.error';
+
+/**
+ * authentication exports
+ */
+export { LoginResult, TokenType } from './authentication/domain/enums';
+
+export {
+    Institute,
+    InstitutePort
+} from './authentication/model/institute.model';
+
+export {
     UserLoginInformation,
     LoginResponse,
-    IUserBase
-} from './authentication';
+    LoginPort,
+    PasswordPort
+} from './authentication/model/login.model';
 
+export { RegistrationPort } from './authentication/model/registration.model';
+
+export { User, UserToken } from './authentication/model/user.model';
+
+export { createInstitution } from './authentication/domain/institute.entity';
+
+export { createUser } from './authentication/domain/user.entity';
+
+export { generateToken } from './authentication/domain/token.service';
+
+/**
+ * sampleManagement exports
+ */
 export {
-    IFormAutoCorrectionPort,
-    FormValidatorPort,
     SampleCollection,
     Sample,
-    createSample,
-    createSampleCollection,
-    ICatalog,
-    Catalog,
-	IDatasetFile,
-	ISenderInfo,
-    IDatasetPort,
+    DatasetFile,
+    SenderInfo,
+    DatasetPort
+} from './sampleManagement/model/sample.model';
+
+export {
+    EditValue,
+    CorrectionSuggestions,
+    FormAutoCorrectionPort
+} from './sampleManagement/model/autocorrection.model';
+
+export { Catalog, CatalogData } from './sampleManagement/model/catalog.model';
+
+export {
     ValidationError,
-    INRL
-} from './sampleManagement';
+    NRLConfig,
+    FormValidatorPort,
+    ValidationOptions,
+    SearchAlias,
+    State,
+    AVVFormatCollection
+} from './sampleManagement/model/validation.model';
 
-export interface IModelAttributes {
-}
+export { createCatalog } from './sampleManagement/domain/catalog.entity';
 
-export interface IUpdateResponse {
-}
+export {
+    createSampleCollection
+} from './sampleManagement/domain/sample-collection.entity';
 
-export interface IRead<T> {
-    retrieve: () => Promise<T[]>;
-    findById: (id: string) => Promise<T | null>;
-    findOne(cond?: Object): Promise<T | null>;
-    find(cond: Object, fields: Object, options: Object): Promise<T[]>;
-}
+export { createSample } from './sampleManagement/domain/sample.entity';
 
-export interface IWrite<T> {
-    create: (item: T) => Promise<T>;
-    update: (_id: string, attributes: IModelAttributes) => Promise<IUpdateResponse>;
-    delete: (_id: string) => Promise<T>;
-}
+/**
+ * Respository interface exports
+ */
 
-export interface IRepositoryBase<T> extends IRead<T>, IWrite<T> {
-}
-
-export interface IUserModelAttributes extends IModelAttributes {
-    _id?: string;
-    enabled?: boolean;
-    adminEnabled?: boolean;
-    firstName?: string;
-    lastName?: string;
-    email?: string;
-    institution?: string;
-    password?: string;
-}
-
-export interface IInstitutionRepository {
-    retrieve(): Promise<Institution[]>;
-    findById(id: string): Promise<Institution | null>;
-    createInstitution(institution: Institution): Promise<Institution>;
-    findByInstitutionName(name: string): Promise<Institution | null>;
-}
-
-export interface ITokenRepository {
-    hasTokenForUser(user: IUser): Promise<boolean>;
-    hasResetTokenForUser(user: IUser): Promise<boolean>;
-    hasAdminTokenForUser(user: IUser): Promise<boolean>;
-    deleteTokenForUser(user: IUser): Promise<boolean>;
-    deleteResetTokenForUser(user: IUser): Promise<boolean>;
-    deleteAdminTokenForUser(user: IUser): Promise<boolean>;
-    saveToken(token: IUserToken): Promise<IUserToken>;
-    getUserTokenByJWT(token: string): Promise<IUserToken | null>;
-}
-
-export interface IUserRepository {
-    findById(id: string): Promise<IUser | null>;
-    getPasswordForUser(username: string): Promise<string | null>;
-    findByUsername(username: string): Promise<IUser | null>;
-    hasUser(username: string): Promise<boolean>;
-    createUser(user: IUser): Promise<IUser>;
-    updateUser(user: IUser): Promise<IUser | null>;
-}
-
-export interface IValidationErrorRepository {
-    getAllErrors(): Promise<ValidationError[]>;
-}
-export interface IStateRepository {
-    getAllFormats(): Promise<IAVVFormatCollection>;
-}
-
-export interface INRLRepository {
-    getAllNRLs(): Promise<INRL[]> ;
-}
-
-export interface ICatalogRepository {
-    // tslint:disable-next-line
-    getCatalog(catalogName: string): ICatalog<any>;
-}
-
-export interface IAVVFormatCollection {
-    [key: string]: string[];
-}
-export interface IState {
-    name: string;
-    short: string;
-    AVV: string[];
-}
+export {
+    ValidationErrorRepository,
+    InstituteRepository,
+    SearchAliasRepository,
+    StateRepository,
+    UserRepository,
+    TokenRepository,
+    NRLRepository,
+    CatalogRepository
+} from './core/model/repository.model';

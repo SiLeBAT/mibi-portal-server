@@ -1,4 +1,11 @@
-import { Catalog, ICatalog } from './../catalog.entity';
+import { createCatalog } from './../catalog.entity';
+import { Catalog } from '../../model/catalog.model';
+jest.mock('./../../../../app/ports');
+jest.mock('../../../core/application/configuration.service', () => ({
+    getConfigurationService: () => ({
+        getServerConfiguration: jest.fn()
+    })
+}));
 
 interface IMockCatalogData {
     id: string;
@@ -10,40 +17,41 @@ interface IMockCatalogData {
     Text1: string;
 }
 describe('Pathogen Index', () => {
-
     let testData: IMockCatalogData[];
-    let catalog: ICatalog<IMockCatalogData>;
+    let catalog: Catalog<IMockCatalogData>;
 
     beforeEach(() => {
-        testData = [{
-            id: '801001',
-            DatumGueltigkeit: '19990330',
-            Katalog: '016',
-            Kode: '0801001',
-            Kodiersystem: '000',
-            'P-Code3': 'Escherichia coli',
-            Text1: 'Escherichia coli'
-        },
-        {
-            id: '801004',
-            DatumGueltigkeit: '20110609',
-            Katalog: '016',
-            Kode: '0801001',
-            Kodiersystem: '000',
-            'P-Code3': '',
-            Text1: 'Escherichia coli O157:H7'
-        },
-        {
-            id: '803101',
-            DatumGueltigkeit: '19990330',
-            Katalog: '016',
-            Kode: '0803101',
-            Kodiersystem: '000',
-            'P-Code3': 'S.Typhi',
-            Text1: 'Salmonella Typhi'
-        }];
+        testData = [
+            {
+                id: '801001',
+                DatumGueltigkeit: '19990330',
+                Katalog: '016',
+                Kode: '0801001',
+                Kodiersystem: '000',
+                'P-Code3': 'Escherichia coli',
+                Text1: 'Escherichia coli'
+            },
+            {
+                id: '801004',
+                DatumGueltigkeit: '20110609',
+                Katalog: '016',
+                Kode: '0801001',
+                Kodiersystem: '000',
+                'P-Code3': '',
+                Text1: 'Escherichia coli O157:H7'
+            },
+            {
+                id: '803101',
+                DatumGueltigkeit: '19990330',
+                Katalog: '016',
+                Kode: '0803101',
+                Kodiersystem: '000',
+                'P-Code3': 'S.Typhi',
+                Text1: 'Salmonella Typhi'
+            }
+        ];
 
-        catalog = new Catalog(testData, 'id');
+        catalog = createCatalog(testData, 'id');
     });
 
     it('should dump test data', () => {
@@ -73,5 +81,4 @@ describe('Pathogen Index', () => {
     it('should not return entry with id 803102', () => {
         expect(catalog.getUniqueEntryWithId('803102')).toBeUndefined();
     });
-
 });

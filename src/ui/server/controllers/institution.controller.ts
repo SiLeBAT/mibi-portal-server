@@ -1,74 +1,63 @@
 import { Request, Response } from 'express';
-import { IInstitutionPort, IController, Institution, Address } from '../../../app/ports';
+import { Institute, InstitutePort } from '../../../app/ports';
 import { logger } from '../../../aspects';
+import { Controller } from '../model/controler.model';
 
-interface IInstitutionDTO {
+interface InstitutionDTO {
     _id: string;
     short: string;
-    name1: string;
-    name2: string;
-    location: string;
-    address1: IAddressDTO;
-    address2: IAddressDTO;
+    name: string;
+    addendum: string;
+    city: string;
+    zip: string;
     phone: string;
     fax: string;
     email: string[];
 }
 
-interface IAddressDTO {
-    street: string;
-    city: string;
-}
-
-export interface IInstitutionController extends IController {
+export interface InstitutionController extends Controller {
     listInstitutions(req: Request, res: Response): void;
 }
 
-class InstitutionController implements IInstitutionController {
-
-    constructor(private instiutionService: IInstitutionPort) { }
+class DefaultInstitutionController implements InstitutionController {
+    constructor(private instiutionService: InstitutePort) {}
 
     async listInstitutions(req: Request, res: Response) {
         let dto;
-        await this.instiutionService.retrieveInstitutions().then((institutions) => {
-            dto = institutions.map(
-                i => this.fromInstitutionEntityToDTO(i)
-            );
-            res.status(200)
-                .json(dto);
-        }).catch((err) => {
-            logger.error('Unable to retrieve institutions.', { error: err });
-            dto = {
-                title: 'Error getting all institutions',
-                obj: err
-            };
-            res.status(500).json(dto);
-        });
+        await this.instiutionService
+            .retrieveInstitutes()
+            .then((institutions: Institute[]) => {
+                dto = institutions.map(i => this.fromInstitutionEntityToDTO(i));
+                res.status(200).json(dto);
+            })
+            .catch((err: Error) => {
+                logger.error(`Unable to retrieve institutions. error=${err}`);
+                dto = {
+                    title: 'Error getting all institutions',
+                    obj: err
+                };
+                res.status(500).json(dto);
+            });
 
         logger.info('InstitutionController.listInstitutions, Response sent');
         return res.end();
     }
 
-    private fromInstitutionEntityToDTO(inst: Institution): IInstitutionDTO {
+    private fromInstitutionEntityToDTO(inst: Institute): InstitutionDTO {
         return {
             _id: inst.uniqueId,
             short: inst.stateShort,
-            name1: inst.name1,
-            name2: inst.name2,
-            location: inst.location,
-            address1: this.fromAddressEntityToDTO(inst.address1),
-            address2: this.fromAddressEntityToDTO(inst.address2),
+            name: inst.name,
+            addendum: inst.addendum,
+            city: inst.city,
+            zip: inst.zip,
             phone: inst.phone,
             fax: inst.fax,
             email: inst.email
         };
     }
-
-    private fromAddressEntityToDTO(addr: Address): IAddressDTO {
-        return addr;
-    }
 }
 
-export function createController(service: IInstitutionPort) {
-    return new InstitutionController(service);
+export function createController(service: InstitutePort) {
+    return new DefaultInstitutionController(service);
 }

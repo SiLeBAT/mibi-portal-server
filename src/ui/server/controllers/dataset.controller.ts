@@ -1,40 +1,24 @@
 import { Response, Request } from 'express';
 import * as _ from 'lodash';
-import { IController, IDatasetFile, IDatasetPort, ISenderInfo } from '../../../app/ports';
-import { uploadToDisk } from './../middleware';
+import { DatasetFile, DatasetPort, SenderInfo } from '../../../app/ports';
 import { logger } from '../../../aspects';
+import { Controller } from '../model/controler.model';
 import { uploadToMemory } from '../middleware/fileUpload';
 
-export interface IDatasetController extends IController {
-    saveDataset(req: Request, res: Response): Promise<void>;
+export interface DatasetController extends Controller {
     submitDataset(req: Request, res: Response): Promise<void>;
 }
 
-class DatasetController implements IDatasetController {
-
-    constructor(private datasetService: IDatasetPort) { }
-    async saveDataset(req: Request, res: Response) {
-        uploadToDisk(req, res, function (err: Error) {
-            if (err) {
-                logger.error('Unable to save Dataset', { error: err });
-                return res
-                    .status(500)
-                    .end();
-            }
-            return res.status(200).end();
-        });
-    }
+class DefaultDatasetController implements DatasetController {
+    constructor(private datasetService: DatasetPort) {}
 
     async submitDataset(req: Request, res: Response) {
         const service = this.datasetService;
 
-        uploadToMemory(req, res, function (err: Error) {
-
+        uploadToMemory(req, res, function(err: Error) {
             if (err) {
-                logger.error('Unable to submit Dataset', { error: err });
-                return res
-                    .status(500)
-                    .end();
+                logger.error(`Unable to submit Dataset. error=${err}`);
+                return res.status(500).end();
             }
             if (!req.file) {
                 logger.warn(`No file uploaded.`);
@@ -45,7 +29,7 @@ class DatasetController implements IDatasetController {
                     })
                     .end();
             }
-            if (!_.has(req.body, 'firstName')) {
+            if (!_.has(req.body, 'email')) {
                 logger.warn(`No sender data uploaded.`);
                 return res
                     .status(400)
@@ -61,10 +45,13 @@ class DatasetController implements IDatasetController {
             try {
                 service.sendDatasetFile(file, senderInfo);
             } catch (err) {
-                logger.error(`Unable to send dataset.`, { error: err });
-                return res.status(500).json({
-                    error: 'Unable to send dataset.'
-                }).end();
+                logger.error(`Unable to send dataset. error=${err}`);
+                return res
+                    .status(500)
+                    .json({
+                        error: 'Unable to send dataset.'
+                    })
+                    .end();
             }
 
             return res.status(200).end();
@@ -72,27 +59,26 @@ class DatasetController implements IDatasetController {
     }
 }
 
-function mapResponseFileToDatasetFile(file: Express.Multer.File): IDatasetFile {
+function mapResponseFileToDatasetFile(file: Express.Multer.File): DatasetFile {
     return {
-        buffer: file.buffer,
+        content: file.buffer,
         encoding: file.encoding,
-        mimetype: file.mimetype,
-        originalname: file.originalname,
+        contentType: file.mimetype,
+        filename: file.originalname,
         size: file.size
     };
 }
 
-function mapRequestDTOToSenderInfo(req: Request): ISenderInfo {
+function mapRequestDTOToSenderInfo(req: Request): SenderInfo {
     const body = req.body;
     return {
- 		firstName: body['firstName'],
- 	    lastName: body['lastName'],
-	    email: body['email'],
-        institution: body['institution'],
-        location: body['location']
+        email: body['email'],
+        instituteId: body['institution'],
+        comment: body['comment'] || '',
+        recipient: body['recipient'] || ''
     };
 }
 
-export function createController(service: IDatasetPort) {
-    return new DatasetController(service);
+export function createController(service: DatasetPort) {
+    return new DefaultDatasetController(service);
 }

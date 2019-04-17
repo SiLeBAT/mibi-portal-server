@@ -1,15 +1,14 @@
 import { Schema, Document } from 'mongoose';
-import { Address } from '../../../../../app/ports';
 
-export interface IInstitutionModel extends Document {
+export interface InstitutionModel extends Document {
     created: Date;
     updated: Date;
     state_short: string;
     name1: string;
     name2: string;
     location: string;
-    address1: Address;
-    address2: Address;
+    zip: string;
+    city: string;
     phone: string;
     fax: string;
     email: string[];
@@ -31,22 +30,6 @@ export const institutionSchema = new Schema({
         type: String,
         required: true
     },
-    address1: {
-        street: {
-            type: String
-        },
-        city: {
-            type: String
-        }
-    },
-    address2: {
-        street: {
-            type: String
-        },
-        city: {
-            type: String
-        }
-    },
     phone: {
         type: String,
         required: true
@@ -54,10 +37,17 @@ export const institutionSchema = new Schema({
     fax: {
         type: String
     },
-
-    email: [{
+    zip: {
         type: String
-    }],
+    },
+    city: {
+        type: String
+    },
+    email: [
+        {
+            type: String
+        }
+    ],
     created: {
         type: Date,
         default: Date.now,
@@ -68,9 +58,9 @@ export const institutionSchema = new Schema({
         default: Date.now,
         required: true
     }
-}).pre('save', function (next) {
+}).pre('save', function(next) {
     if (this) {
-        let doc = this as IInstitutionModel;
+        let doc = this as InstitutionModel;
         let now = new Date();
         if (!doc.created) {
             doc.created = now;

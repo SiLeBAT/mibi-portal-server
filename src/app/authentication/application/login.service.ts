@@ -1,41 +1,33 @@
-import * as config from 'config';
 import * as moment from 'moment';
-import { IUser, IUserCredentials, generateToken } from './../domain';
-import { IUserRepository } from '../../ports';
 import { logger } from './../../../aspects';
-import { RegistrationService } from '.';
-import { ApplicationDomainError } from '../../sharedKernel/errors';
-import { IRecoveryData } from '../../sharedKernel';
+import {
+    LoginService,
+    UserLoginInformation,
+    LoginResponse,
+    RecoveryData
+} from '../model/login.model';
+import { RegistrationService } from '../model/registration.model';
+import { getConfigurationService } from '../../core/application/configuration.service';
+import { generateToken } from '../domain/token.service';
+import { ApplicationDomainError } from '../../core/domain/domain.error';
+import { User } from '../model/user.model';
+import { UserRepository } from '../../ports';
 
-const THRESHOLD: number = config.has('login.threshold') ? config.get('login.threshold') : 5;
-const SECONDS_DELAY: number = config.has('login.secondsDelay') ? config.get('login.secondsDelay') : 300;
+const appConfig = getConfigurationService().getApplicationConfiguration();
 
-export interface UserLoginInformation extends IUserCredentials {
-    userAgent: string | string[] | undefined;
-    host: string | undefined;
-}
-
-export interface LoginResponse {
-    user: IUser;
-    token: string;
-    timeToWait?: string;
-}
-
-export interface LoginPort {
-    loginUser(credentials: UserLoginInformation): Promise<LoginResponse>;
-}
-
-export interface LoginService extends LoginPort { }
+const THRESHOLD: number = appConfig.login.threshold;
+const SECONDS_DELAY: number = appConfig.login.secondsDelay;
 
 class DefaultLoginService implements LoginService {
-
-    constructor(private userRepository: IUserRepository, private activationService: RegistrationService) { }
+    constructor(
+        private userRepository: UserRepository,
+        private activationService: RegistrationService
+    ) {}
 
     async loginUser(credentials: UserLoginInformation): Promise<LoginResponse> {
-
-        const user = await this.userRepository.findByUsername(credentials.email);
-
-        if (!user) throw new ApplicationDomainError(`User not known. email=${credentials.email}`);
+        const user = await this.userRepository.findByUsername(
+            credentials.email
+        );
 
         if (!user.isActivated()) {
             return this.rejectInactiveUser(user, {
@@ -75,32 +67,45 @@ class DefaultLoginService implements LoginService {
         user.updateLastLoginAttempt();
         await this.userRepository.updateUser(user);
 
-        throw new ApplicationDomainError(`User not authorized. user=${user.email}`);
-    }
-
-    private async rejectInactiveUser(user: IUser, recoveryData: IRecoveryData): Promise<LoginResponse> {
-        logger.verbose('LoginService.rejectInactiveUser, Inactive account failed to log in.');
-        return this.activationService.prepareUserForActivation(user, recoveryData).then(
-            () => {
-                throw new ApplicationDomainError(`User inactive. user=${user.email}`);
-            }
+        throw new ApplicationDomainError(
+            `User not authorized. user=${user.email}`
         );
     }
 
-    private async rejectAdminInactiveUser(user: IUser): Promise<LoginResponse> {
-        logger.verbose('LoginService.rejectAdminInactiveUser, Admin inactive account failed to log in.');
-        return this.activationService.handleUserIfNotAdminActivated(user).then(
-            () => {
-                throw new ApplicationDomainError(`User admin inactive. user=${user.email}`);
-            }
+    private async rejectInactiveUser(
+        user: User,
+        recoveryData: RecoveryData
+    ): Promise<LoginResponse> {
+        logger.verbose(
+            'LoginService.rejectInactiveUser, Inactive account failed to log in.'
         );
+        return this.activationService
+            .prepareUserForActivation(user, recoveryData)
+            .then(() => {
+                throw new ApplicationDomainError(
+                    `User inactive. user=${user.email}`
+                );
+            });
     }
 
-    private hasToManyFailedAttempts(user: IUser): boolean {
+    private async rejectAdminInactiveUser(user: User): Promise<LoginResponse> {
+        logger.verbose(
+            'LoginService.rejectAdminInactiveUser, Admin inactive account failed to log in.'
+        );
+        return this.activationService
+            .handleUserIfNotAdminActivated(user)
+            .then(() => {
+                throw new ApplicationDomainError(
+                    `User admin inactive. user=${user.email}`
+                );
+            });
+    }
+
+    private hasToManyFailedAttempts(user: User): boolean {
         return user.getNumberOfFailedAttempts() >= THRESHOLD ? true : false;
     }
 
-    private diffTimeSinceLastFailedLogin(user: IUser): number {
+    private diffTimeSinceLastFailedLogin(user: User): number {
         moment.locale('de');
         const currentMoment = moment();
         const lastMoment = moment(user.getLastLoginAttempt());
@@ -119,9 +124,11 @@ class DefaultLoginService implements LoginService {
 
         return `${minutes}:${seconds} Min`;
     }
-
 }
 
-export function createService(userRepository: IUserRepository, activationService: RegistrationService): LoginService {
+export function createService(
+    userRepository: UserRepository,
+    activationService: RegistrationService
+): LoginService {
     return new DefaultLoginService(userRepository, activationService);
 }

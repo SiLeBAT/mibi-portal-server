@@ -1,26 +1,37 @@
 import * as _ from 'lodash';
-import { ICatalogService, ValidationErrorProvider } from '.';
 import { logger } from '../../../aspects';
-import { SampleCollection, Sample } from '../domain';
-import { CorrectionFunction, autoCorrectADV16, autoCorrectADV9, autoCorrectADV8, autoCorrectADV12, autoCorrectADV3, autoCorrectADV2 } from '../domain/custom-auto-correction-functions';
+import {
+    autoCorrectADV16,
+    autoCorrectADV9,
+    autoCorrectADV8,
+    autoCorrectADV12,
+    autoCorrectADV3,
+    autoCorrectADV2
+} from '../domain/custom-auto-correction-functions';
+import {
+    CorrectionFunction,
+    FormAutoCorrectionService
+} from '../model/autocorrection.model';
+import { CatalogService } from '../model/catalog.model';
+import { ValidationErrorProvider } from '../model/validation.model';
+import { SampleCollection, Sample } from '../model/sample.model';
 
-export interface IFormAutoCorrectionPort {
-    applyAutoCorrection(sampleCollection: SampleCollection): Promise<SampleCollection>;
-}
-
-export interface IFormAutoCorrectionService extends IFormAutoCorrectionPort { }
-
-class FormAutoCorrectionService implements IFormAutoCorrectionService {
-
+class DefaultFormAutoCorrectionService implements FormAutoCorrectionService {
     private correctionFunctions: CorrectionFunction[] = [];
 
-    constructor(private catalogService: ICatalogService, private validationErrorProvider: ValidationErrorProvider) {
+    constructor(
+        private catalogService: CatalogService,
+        private validationErrorProvider: ValidationErrorProvider
+    ) {
         this.registerCorrectionFunctions();
     }
 
-    async applyAutoCorrection(sampleCollection: SampleCollection): Promise<SampleCollection> {
-
-        logger.verbose('FormAutoCorrectionService.applyAutoCorrection, Starting Sample autoCorrection');
+    async applyAutoCorrection(
+        sampleCollection: SampleCollection
+    ): Promise<SampleCollection> {
+        logger.verbose(
+            'FormAutoCorrectionService.applyAutoCorrection, Starting Sample autoCorrection'
+        );
 
         let results = sampleCollection.samples.map(sample => {
             const newSample: Sample = sample.clone();
@@ -29,11 +40,16 @@ class FormAutoCorrectionService implements IFormAutoCorrectionService {
                 if (correction) {
                     newSample.correctionSuggestions.push(correction);
                     if (correction.code) {
-                        const err = this.validationErrorProvider.getError(correction.code);
+                        const err = this.validationErrorProvider.getError(
+                            correction.code
+                        );
                         newSample.addErrorTo(correction.field, err);
                     }
                     // Resolve single suggestion corrections
-                    const singleCorrections = _.remove(newSample.correctionSuggestions, c => c.correctionOffer.length === 1);
+                    const singleCorrections = _.remove(
+                        newSample.correctionSuggestions,
+                        c => c.correctionOffer.length === 1
+                    );
                     for (let ac of singleCorrections) {
                         const data = newSample.getData();
                         newSample.edits[ac.field] = data[ac.field];
@@ -57,6 +73,12 @@ class FormAutoCorrectionService implements IFormAutoCorrectionService {
     }
 }
 
-export function createService(catalogService: ICatalogService, validationErrorProvider: ValidationErrorProvider): IFormAutoCorrectionService {
-    return new FormAutoCorrectionService(catalogService, validationErrorProvider);
+export function createService(
+    catalogService: CatalogService,
+    validationErrorProvider: ValidationErrorProvider
+): FormAutoCorrectionService {
+    return new DefaultFormAutoCorrectionService(
+        catalogService,
+        validationErrorProvider
+    );
 }

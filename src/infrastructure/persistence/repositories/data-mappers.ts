@@ -1,16 +1,28 @@
-import { Institution, createInstitution, createUser, IUser, IState, ValidationError, INRL } from '../../../app/ports';
-import { IValidationErrorModel, IInstitutionModel, IUserModel, IStateModel, INRLModel } from '../data-store';
+import {
+    Institute,
+    createInstitution,
+    createUser,
+    User,
+    State,
+    ValidationError,
+    NRLConfig
+} from '../../../app/ports';
+import { InstitutionModel } from '../data-store/mongoose/schemas/institution.schema';
+import { UserModel } from '../data-store/mongoose/schemas/user.schema';
+import { StateModel } from '../data-store/mongoose/schemas/state.schema';
+import { ValidationErrorModel } from '../data-store/mongoose/schemas/validationError.schema';
+import { NRLModel } from '../data-store/mongoose/schemas/nrl.schema';
 
-function mapModelToInstitution(i: IInstitutionModel): Institution {
+function mapModelToInstitution(i: InstitutionModel): Institute {
     const inst = createInstitution(i._id);
     return {
-        ...inst, ...{
+        ...inst,
+        ...{
             stateShort: i.state_short,
-            name1: i.name1,
-            name2: i.name2,
-            location: i.location,
-            address1: i.address1,
-            address2: i.address2,
+            name: i.name1,
+            addendum: i.name2,
+            city: i.city,
+            zip: i.zip,
             phone: i.phone,
             fax: i.fax,
             email: i.email
@@ -18,10 +30,10 @@ function mapModelToInstitution(i: IInstitutionModel): Institution {
     };
 }
 
-function mapModelToUser(model: IUserModel): IUser {
-    // tslint:disable-next-line:no-any
+function mapModelToUser(model: UserModel): User {
     const institution = mapModelToInstitution(model.institution);
-    return createUser(model._id.toHexString(),
+    return createUser(
+        model._id.toHexString(),
         model.email,
         model.firstName,
         model.lastName,
@@ -30,10 +42,11 @@ function mapModelToUser(model: IUserModel): IUser {
         model.enabled,
         model.adminEnabled,
         model.numAttempt,
-        model.lastAttempt);
+        model.lastAttempt
+    );
 }
 
-function mapModelToState(model: IStateModel): IState {
+function mapModelToState(model: StateModel): State {
     return {
         name: model.name,
         short: model.short,
@@ -41,7 +54,9 @@ function mapModelToState(model: IStateModel): IState {
     };
 }
 
-function mapModelToValidationError(model: IValidationErrorModel): ValidationError {
+function mapModelToValidationError(
+    model: ValidationErrorModel
+): ValidationError {
     return {
         code: model.code,
         level: model.level,
@@ -49,7 +64,7 @@ function mapModelToValidationError(model: IValidationErrorModel): ValidationErro
     };
 }
 
-function mapModelToNRL(model: INRLModel): INRL {
+function mapModelToNRL(model: NRLModel): NRLConfig {
     return {
         name: model.name,
         selectors: model.selector

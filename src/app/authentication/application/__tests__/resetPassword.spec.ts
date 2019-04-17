@@ -1,23 +1,14 @@
-import { createService, PasswordService } from './../password.service';
-import { verifyToken } from '../../domain';
- // tslint:disable
-jest.mock('./../../domain', () => ({
-    generateToken: jest.fn(),
-    verifyToken: jest.fn(),
-    NotificationType: {
-        REQUEST_ACTIVATION: 0,
-        REQUEST_ALTERNATIVE_CONTACT: 1,
-        REQUEST_RESET: 2,
-        NOTIFICATION_RESET: 3
-    }
-}));
+import { createService } from './../password.service';
+import { PasswordService } from '../../model/login.model';
+import { verifyToken } from '../../domain/token.service';
+jest.mock('./../../domain/token.service');
+jest.mock('../../../core/application/configuration.service');
 
 describe('Reset Password Use Case', () => {
- 
     let mockUserRepository: any;
- 
+
     let mockTokenRepository: any;
- 
+
     let mockNotificationService: any;
     let service: PasswordService;
     let token: string;
@@ -36,15 +27,19 @@ describe('Reset Password Use Case', () => {
         };
 
         mockNotificationService = {
-            sendNotification: jest.fn(() => true)
+            sendNotification: jest.fn(() => true),
+            createEmailNotificationMetaData: jest.fn(() => {})
         };
 
-   
         (verifyToken as any).mockReset();
         token = 'test';
         password = 'test';
 
-        service = createService(mockUserRepository, mockTokenRepository, mockNotificationService);
+        service = createService(
+            mockUserRepository,
+            mockTokenRepository,
+            mockNotificationService
+        );
     });
 
     it('should return a promise', () => {
@@ -54,22 +49,29 @@ describe('Reset Password Use Case', () => {
 
     it('should call token repository to retrieve userId', () => {
         expect.assertions(1);
-        return service.resetPassword(token, password).then(
-            result => expect(mockTokenRepository.getUserTokenByJWT.mock.calls.length).toBe(1)
-        );
+        return service
+            .resetPassword(token, password)
+            .then(result =>
+                expect(
+                    mockTokenRepository.getUserTokenByJWT.mock.calls.length
+                ).toBe(1)
+            );
     });
     it('should verify the token against the retrieved userId', () => {
         expect.assertions(1);
-        return service.resetPassword(token, password).then(
-       
-            result => expect((verifyToken as any).mock.calls.length).toBe(1)
-        );
+        return service
+            .resetPassword(token, password)
+            .then(result =>
+                expect((verifyToken as any).mock.calls.length).toBe(1)
+            );
     });
     it('should call user repository to retrieve user', () => {
         expect.assertions(1);
-        return service.resetPassword(token, password).then(
-            result => expect(mockUserRepository.findById.mock.calls.length).toBe(1)
-        );
+        return service
+            .resetPassword(token, password)
+            .then(result =>
+                expect(mockUserRepository.findById.mock.calls.length).toBe(1)
+            );
     });
     it('should update the user password', () => {
         expect.assertions(1);
@@ -77,34 +79,53 @@ describe('Reset Password Use Case', () => {
         mockUserRepository.findById.mockReturnValueOnce({
             updatePassword
         });
-        return service.resetPassword(token, password).then(
-            result => expect(updatePassword.mock.calls.length).toBe(1)
-        );
+        return service
+            .resetPassword(token, password)
+            .then(result => expect(updatePassword.mock.calls.length).toBe(1));
     });
     it('should call the user Repository to update the user', () => {
         expect.assertions(1);
-        return service.resetPassword(token, password).then(
-            result => expect(mockUserRepository.updateUser.mock.calls.length).toBe(1)
-        );
+        return service
+            .resetPassword(token, password)
+            .then(result =>
+                expect(mockUserRepository.updateUser.mock.calls.length).toBe(1)
+            );
     });
     it('should call the token Repository to delete the token', () => {
         expect.assertions(1);
-        return service.resetPassword(token, password).then(
-            result => expect(mockTokenRepository.deleteResetTokenForUser.mock.calls.length).toBe(1)
-        );
+        return service
+            .resetPassword(token, password)
+            .then(result =>
+                expect(
+                    mockTokenRepository.deleteResetTokenForUser.mock.calls
+                        .length
+                ).toBe(1)
+            );
     });
     it('should call the notification Service with a new notification', () => {
         expect.assertions(1);
-        return service.resetPassword(token, password).then(
-            result => expect(mockNotificationService.sendNotification.mock.calls.length).toBe(1)
-        );
+        return service
+            .resetPassword(token, password)
+            .then(result =>
+                expect(
+                    mockNotificationService.sendNotification.mock.calls.length
+                ).toBe(1)
+            );
     });
     it('should be throw an error because user is faulty', () => {
-        mockUserRepository.findById = jest.fn(() => { throw new Error(); });
+        mockUserRepository.findById = jest.fn(() => {
+            throw new Error();
+        });
         expect.assertions(1);
-        return service.resetPassword(token, password).then(
-            result => expect(mockNotificationService.sendNotification.mock.calls.length).toBe(0),
-            err => expect(err).toBeTruthy()
-        );
+        return service
+            .resetPassword(token, password)
+            .then(
+                result =>
+                    expect(
+                        mockNotificationService.sendNotification.mock.calls
+                            .length
+                    ).toBe(0),
+                err => expect(err).toBeTruthy()
+            );
     });
 });

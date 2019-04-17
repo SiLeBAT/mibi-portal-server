@@ -1,32 +1,18 @@
-import { createService, PasswordService } from './../password.service';
-import { generateToken } from '../../domain';
-import { IRecoveryData } from '../../../sharedKernel';
- // tslint:disable
-jest.mock('./../../domain', () => ({
-    generateToken: jest.fn(),
-    verifyToken: jest.fn(),
-    TokenType: {
-        RESET: 0
-    },
-    NotificationType: {
-        REQUEST_ACTIVATION: 0,
-        REQUEST_ALTERNATIVE_CONTACT: 1,
-        REQUEST_RESET: 2,
-        NOTIFICATION_RESET: 3
-    }
-}));
+import { createService } from './../password.service';
+import { PasswordService, RecoveryData } from '../../model/login.model';
+import { generateToken } from './../../domain/token.service';
+jest.mock('./../../domain/token.service');
+jest.mock('../../../core/application/configuration.service');
 
 describe('Recover Password Use Case', () => {
- 
     let mockUserRepository: any;
- 
+
     let mockTokenRepository: any;
- 
+
     let mockNotificationService: any;
     let service: PasswordService;
-    let credentials: IRecoveryData;
+    let credentials: RecoveryData;
     beforeEach(() => {
-
         mockUserRepository = {
             findByUsername: jest.fn(() => true)
         };
@@ -38,7 +24,8 @@ describe('Recover Password Use Case', () => {
         };
 
         mockNotificationService = {
-            sendNotification:  jest.fn(() => true)
+            sendNotification: jest.fn(() => true),
+            createEmailNotificationMetaData: jest.fn(() => {})
         };
 
         (generateToken as any).mockReset();
@@ -47,7 +34,11 @@ describe('Recover Password Use Case', () => {
             userAgent: 'test',
             host: 'test'
         };
-        service = createService(mockUserRepository, mockTokenRepository, mockNotificationService);
+        service = createService(
+            mockUserRepository,
+            mockTokenRepository,
+            mockNotificationService
+        );
     });
 
     it('should return a promise', () => {
@@ -58,59 +49,97 @@ describe('Recover Password Use Case', () => {
     it('should trigger notification: sendNotification because user does not exist', () => {
         mockUserRepository.hasUser = jest.fn(() => false);
         expect.assertions(1);
-        return service.recoverPassword(credentials).then(
-            result => expect(mockNotificationService.sendNotification.mock.calls.length).toBe(1)
-        );
+        return service
+            .recoverPassword(credentials)
+            .then(result =>
+                expect(
+                    mockNotificationService.sendNotification.mock.calls.length
+                ).toBe(1)
+            );
     });
     it('should retrieve the user from the user repository', () => {
         expect.assertions(1);
-        return service.recoverPassword(credentials).then(
-            result => expect(mockUserRepository.findByUsername.mock.calls.length).toBe(1)
-        );
+        return service
+            .recoverPassword(credentials)
+            .then(result =>
+                expect(
+                    mockUserRepository.findByUsername.mock.calls.length
+                ).toBe(1)
+            );
     });
     it('should ask the token repository if the user has tokens', () => {
         expect.assertions(1);
-        return service.recoverPassword(credentials).then(
-            result => expect(mockTokenRepository.hasResetTokenForUser.mock.calls.length).toBe(1)
-        );
+        return service
+            .recoverPassword(credentials)
+            .then(result =>
+                expect(
+                    mockTokenRepository.hasResetTokenForUser.mock.calls.length
+                ).toBe(1)
+            );
     });
     it('should trigger deletion of old user tokens', () => {
         expect.assertions(1);
-        return service.recoverPassword(credentials).then(
-            result => expect(mockTokenRepository.deleteResetTokenForUser.mock.calls.length).toBe(1)
-        );
+        return service
+            .recoverPassword(credentials)
+            .then(result =>
+                expect(
+                    mockTokenRepository.deleteResetTokenForUser.mock.calls
+                        .length
+                ).toBe(1)
+            );
     });
     it('should not trigger deletion of old user tokens if user does not have any', () => {
         mockTokenRepository.hasResetTokenForUser = jest.fn(() => false);
         expect.assertions(1);
-        return service.recoverPassword(credentials).then(
-            result => expect(mockTokenRepository.deleteResetTokenForUser.mock.calls.length).toBe(0)
-        );
+        return service
+            .recoverPassword(credentials)
+            .then(result =>
+                expect(
+                    mockTokenRepository.deleteResetTokenForUser.mock.calls
+                        .length
+                ).toBe(0)
+            );
     });
     it('should generate a new token', () => {
         expect.assertions(1);
-        return service.recoverPassword(credentials).then(
-            result => expect((generateToken as any).mock.calls.length).toBe(1)
-        );
+        return service
+            .recoverPassword(credentials)
+            .then(result =>
+                expect((generateToken as any).mock.calls.length).toBe(1)
+            );
     });
     it('should save the new token', () => {
         expect.assertions(1);
-        return service.recoverPassword(credentials).then(
-            result => expect(mockTokenRepository.saveToken.mock.calls.length).toBe(1)
-        );
+        return service
+            .recoverPassword(credentials)
+            .then(result =>
+                expect(mockTokenRepository.saveToken.mock.calls.length).toBe(1)
+            );
     });
     it('should trigger notification: sendNotification', () => {
         expect.assertions(1);
-        return service.recoverPassword(credentials).then(
-            result => expect(mockNotificationService.sendNotification.mock.calls.length).toBe(1)
-        );
+        return service
+            .recoverPassword(credentials)
+            .then(result =>
+                expect(
+                    mockNotificationService.sendNotification.mock.calls.length
+                ).toBe(1)
+            );
     });
     it('should be throw an error because user is faulty', () => {
-        mockUserRepository.findByUsername = jest.fn(() => { throw new Error(); });
+        mockUserRepository.findByUsername = jest.fn(() => {
+            throw new Error();
+        });
         expect.assertions(1);
-        return service.recoverPassword(credentials).then(
-            result => expect(mockNotificationService.sendNotification.mock.calls.length).toBe(0),
-            err => expect(err).toBeTruthy()
-        );
+        return service
+            .recoverPassword(credentials)
+            .then(
+                result =>
+                    expect(
+                        mockNotificationService.sendNotification.mock.calls
+                            .length
+                    ).toBe(0),
+                err => expect(err).toBeTruthy()
+            );
     });
 });

@@ -1,31 +1,34 @@
-import { createRepository, StateSchema, IStateModel } from '../data-store';
-import { IStateRepository, IState, IAVVFormatCollection, IRead } from '../../../app/ports';
+import {
+    createRepository,
+    Read
+} from '../data-store/mongoose/mongoose.repository';
+import { StateSchema } from '../data-store/mongoose/mongoose';
+import {
+    StateRepository,
+    State,
+    AVVFormatCollection
+} from '../../../app/ports';
 import { mapModelToState } from './data-mappers';
+import { StateModel } from '../data-store/mongoose/schemas/state.schema';
 
-class StateRepository implements IStateRepository {
+class DefaultStateRepository implements StateRepository {
+    constructor(private baseRepo: Read<StateModel>) {}
 
-    constructor(private baseRepo: IRead<IStateModel>) {
+    getAllFormats(): Promise<AVVFormatCollection> {
+        return this.retrieve().then(states => {
+            const collection: AVVFormatCollection = {};
+            states.forEach(entry => (collection[entry.short] = entry.AVV));
+            return collection;
+        });
     }
 
-    getAllFormats(): Promise<IAVVFormatCollection> {
-        return this.retrieve().then(
-            states => {
-                const collection: IAVVFormatCollection = {};
-                states.forEach(
-                    entry => collection[entry.short] = entry.AVV
-                );
-                return collection;
-            }
-        );
-    }
-
-    private retrieve(): Promise<IState[]> {
-        return this.baseRepo.retrieve().then(
-            modelArray => {
-                return modelArray.map(m => mapModelToState(m));
-            }
-        );
+    private retrieve(): Promise<State[]> {
+        return this.baseRepo.retrieve().then(modelArray => {
+            return modelArray.map(m => mapModelToState(m));
+        });
     }
 }
 
-export const repository: IStateRepository = new StateRepository(createRepository(StateSchema));
+export const repository: StateRepository = new DefaultStateRepository(
+    createRepository(StateSchema)
+);

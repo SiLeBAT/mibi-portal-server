@@ -2,18 +2,23 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as config from 'config';
 import { logger } from '../../../aspects';
-import { createDataStore, DataStoreType, mapCollectionToRepository } from '../../../infrastructure';
+import {
+    createDataStore,
+    DataStoreType,
+    mapCollectionToRepository
+} from '../../../infrastructure/ports';
 
 /**
  * Script used to insert AVV entries into existing DB: For Ticket mps#49
  * Run: >NODE_CONFIG_DIR=../../../config node writeAVVEntries.js ../../../data/states.json
  */
-start().catch(err => { throw err; });
+start().catch(err => {
+    throw err;
+});
 
 async function start() {
     let filename = parseCommandLine();
     parseJSONFile(filename);
-
 }
 
 function connectToDB() {
@@ -59,22 +64,34 @@ function writeToDB(collection: string, entries: any[]) {
     const promises: Promise<any>[] = [];
     const repo = mapCollectionToRepository(collection);
     entries.forEach(e => {
-        logger.info(`Adding entry to collection. collection=${collection} entry=${e.short}`);
-        promises.push(repo.findOne({ short: e['short'] }).then(
-            // tslint:disable-next-line:no-any
-            (d: any) => {
-                return repo.update(d._id.toString(), { AVV: e['AVV'] }).catch(e => { throw e; });
-            }
-        ).catch(
-            e => { throw e; }
-        ));
-
+        logger.info(
+            `Adding entry to collection. collection=${collection} entry=${
+                e.short
+            }`
+        );
+        promises.push(
+            repo
+                .findOne({ short: e['short'] })
+                .then(
+                    // tslint:disable-next-line:no-any
+                    (d: any) => {
+                        return repo
+                            .update(d._id.toString(), { AVV: e['AVV'] })
+                            .catch(e => {
+                                throw e;
+                            });
+                    }
+                )
+                .catch(e => {
+                    throw e;
+                })
+        );
     });
-    Promise.all(promises).then(
-        () => db.close()
-    ).catch((err: Error) => {
-        logger.error(`Error during state insert. err= ${err}`);
-        return process.exit(1);
-    });
+    Promise.all(promises)
+        .then(() => db.close())
+        .catch((err: Error) => {
+            logger.error(`Error during state insert. err= ${err}`);
+            return process.exit(1);
+        });
     return db;
 }

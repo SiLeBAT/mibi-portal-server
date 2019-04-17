@@ -1,6 +1,6 @@
 import { Schema, Document } from 'mongoose';
 
-export interface IValidationErrorModel extends Document {
+export interface ValidationErrorModel extends Document {
     code: number;
     level: number;
     message: string;
@@ -29,9 +29,9 @@ export const validationErrorSchema = new Schema({
         default: Date.now,
         required: true
     }
-}).pre('save', function (next) {
+}).pre('save', function(next) {
     if (this) {
-        let doc = this as IValidationErrorModel;
+        let doc = this as ValidationErrorModel;
         let now = new Date();
         if (!doc.created) {
             doc.created = now;

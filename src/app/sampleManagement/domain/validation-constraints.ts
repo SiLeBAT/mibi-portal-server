@@ -1,18 +1,5 @@
 import * as _ from 'lodash';
-
-export interface ValidationRule {
-    error: number;
-    // tslint:disable-next-line
-    [key: string]: any;
-}
-
-export interface ValidationRuleSet {
-    [key: string]: ValidationRule;
-}
-
-export interface ValidationConstraints {
-    [key: string]: ValidationRuleSet;
-}
+import { ValidationConstraints } from '../model/validation.model';
 
 export const zoMoConstraints: ValidationConstraints = {
     sample_id_avv: {
@@ -40,16 +27,20 @@ export const zoMoConstraints: ValidationConstraints = {
         },
         registeredZoMo: {
             error: 49,
-            group: [{
-                attr: 'operations_mode_adv',
-                code: 'ADV8-Kode'
-            }, {
-                attr: 'matrix_adv',
-                code: 'ADV3-Kode'
-            }, {
-                attr: 'topic_adv',
-                code: 'Kodiersystem'
-            }],
+            group: [
+                {
+                    attr: 'operations_mode_adv',
+                    code: 'ADV8-Kode'
+                },
+                {
+                    attr: 'matrix_adv',
+                    code: 'ADV3-Kode'
+                },
+                {
+                    attr: 'topic_adv',
+                    code: 'Kodiersystem'
+                }
+            ],
             year: ['sampling_date', 'isolation_date']
         }
     },
@@ -60,16 +51,20 @@ export const zoMoConstraints: ValidationConstraints = {
         },
         registeredZoMo: {
             error: 49,
-            group: [{
-                attr: 'operations_mode_adv',
-                code: 'ADV8-Kode'
-            }, {
-                attr: 'matrix_adv',
-                code: 'ADV3-Kode'
-            }, {
-                attr: 'topic_adv',
-                code: 'Kodiersystem'
-            }],
+            group: [
+                {
+                    attr: 'operations_mode_adv',
+                    code: 'ADV8-Kode'
+                },
+                {
+                    attr: 'matrix_adv',
+                    code: 'ADV3-Kode'
+                },
+                {
+                    attr: 'topic_adv',
+                    code: 'Kodiersystem'
+                }
+            ],
             year: ['sampling_date', 'isolation_date']
         }
     },
@@ -82,50 +77,67 @@ export const zoMoConstraints: ValidationConstraints = {
     sampling_location_adv: {
         atLeastOneOf: {
             error: 86,
-            additionalMembers: ['sampling_location_zip', 'sampling_location_text']
+            additionalMembers: [
+                'sampling_location_zip',
+                'sampling_location_text'
+            ]
         }
     },
     sampling_location_zip: {
         atLeastOneOf: {
             error: 86,
-            additionalMembers: ['sampling_location_adv', 'sampling_location_text']
+            additionalMembers: [
+                'sampling_location_adv',
+                'sampling_location_text'
+            ]
         }
     },
     sampling_location_text: {
         atLeastOneOf: {
             error: 86,
-            additionalMembers: ['sampling_location_adv', 'sampling_location_zip']
+            additionalMembers: [
+                'sampling_location_adv',
+                'sampling_location_zip'
+            ]
         }
     },
     sampling_reason_adv: {
         registeredZoMo: {
             error: 49,
-            group: [{
-                attr: 'operations_mode_adv',
-                code: 'ADV8-Kode'
-            }, {
-                attr: 'matrix_adv',
-                code: 'ADV3-Kode'
-            }, {
-                attr: 'topic_adv',
-                code: 'Kodiersystem'
-            }],
+            group: [
+                {
+                    attr: 'operations_mode_adv',
+                    code: 'ADV8-Kode'
+                },
+                {
+                    attr: 'matrix_adv',
+                    code: 'ADV3-Kode'
+                },
+                {
+                    attr: 'topic_adv',
+                    code: 'Kodiersystem'
+                }
+            ],
             year: ['sampling_date', 'isolation_date']
         }
     },
     sampling_reason_text: {
         registeredZoMo: {
             error: 49,
-            group: [{
-                attr: 'operations_mode_adv',
-                code: 'ADV8-Kode'
-            }, {
-                attr: 'matrix_adv',
-                code: 'ADV3-Kode'
-            }, {
-                attr: 'topic_adv',
-                code: 'Kodiersystem'
-            }],
+            group: [
+                {
+                    attr: 'operations_mode_adv',
+                    code: 'ADV8-Kode'
+                },
+                {
+                    attr: 'matrix_adv',
+                    code: 'ADV3-Kode'
+                },
+                {
+                    attr: 'topic_adv',
+                    code: 'Kodiersystem'
+                }
+            ],
             year: ['sampling_date', 'isolation_date']
         }
     },
@@ -260,7 +272,10 @@ export const baseConstraints: ValidationConstraints = {
     sampling_location_adv: {
         atLeastOneOf: {
             error: 64,
-            additionalMembers: ['sampling_location_zip', 'sampling_location_text']
+            additionalMembers: [
+                'sampling_location_zip',
+                'sampling_location_text'
+            ]
         },
         length: {
             error: 74,
@@ -274,7 +289,10 @@ export const baseConstraints: ValidationConstraints = {
     sampling_location_zip: {
         atLeastOneOf: {
             error: 64,
-            additionalMembers: ['sampling_location_adv', 'sampling_location_text']
+            additionalMembers: [
+                'sampling_location_adv',
+                'sampling_location_text'
+            ]
         },
         dependentFields: {
             error: 28,
@@ -283,7 +301,7 @@ export const baseConstraints: ValidationConstraints = {
         length: {
             error: 27,
             is: 5,
-            tokenizer: function (value: string) {
+            tokenizer: function(value: string) {
                 // Necessary to deal with empty strings
                 return value ? value : 'XXXXX';
             }
@@ -296,7 +314,10 @@ export const baseConstraints: ValidationConstraints = {
     sampling_location_text: {
         atLeastOneOf: {
             error: 64,
-            additionalMembers: ['sampling_location_adv', 'sampling_location_zip']
+            additionalMembers: [
+                'sampling_location_adv',
+                'sampling_location_zip'
+            ]
         },
         dependentFields: {
             error: 25,
@@ -311,7 +332,7 @@ export const baseConstraints: ValidationConstraints = {
         length: {
             error: 76,
             is: 2,
-            tokenizer: function (value: string) {
+            tokenizer: function(value: string) {
                 // Necessary to deal with empty strings
                 return value ? value : 'XX';
             }
@@ -336,7 +357,7 @@ export const baseConstraints: ValidationConstraints = {
         length: {
             error: 78,
             is: 6,
-            tokenizer: function (value: string) {
+            tokenizer: function(value: string) {
                 // Necessary to deal with empty strings
                 return value ? value : 'XXXXXX';
             }
@@ -366,7 +387,7 @@ export const baseConstraints: ValidationConstraints = {
         length: {
             error: 80,
             is: 3,
-            tokenizer: function (value: string) {
+            tokenizer: function(value: string) {
                 // Necessary to deal with empty strings
                 return value ? value : 'XXX';
             }
@@ -387,7 +408,7 @@ export const baseConstraints: ValidationConstraints = {
         length: {
             error: 82,
             is: 2,
-            tokenizer: function (value: string) {
+            tokenizer: function(value: string) {
                 // Necessary to deal with empty strings
                 return value ? value : 'XX';
             }
@@ -414,7 +435,7 @@ export const baseConstraints: ValidationConstraints = {
         length: {
             error: 84,
             is: 7,
-            tokenizer: function (value: string) {
+            tokenizer: function(value: string) {
                 // Necessary to deal with empty strings
                 return value ? value : 'XXXXXXX';
             }

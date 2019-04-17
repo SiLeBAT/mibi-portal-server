@@ -1,18 +1,16 @@
-
 import { Request, Response } from 'express';
 import { logger } from '../../../aspects';
-import { IController, PasswordPort } from '../../../app/ports';
+import { PasswordPort } from '../../../app/ports';
+import { Controller } from '../model/controler.model';
 
-export interface IRecoveryController extends IController {
+export interface RecoveryController extends Controller {
     recovery(req: Request, res: Response): void;
 }
 
-class RecoveryController implements IRecoveryController {
-
-    constructor(private passwordService: PasswordPort) { }
+class DedfaultRecoveryController implements RecoveryController {
+    constructor(private passwordService: PasswordPort) {}
 
     async recovery(req: Request, res: Response) {
-
         const body = req.body;
         logger.info('RecoveryController.recovery, Request received');
         let dto;
@@ -23,7 +21,9 @@ class RecoveryController implements IRecoveryController {
                 userAgent: req.headers['user-agent'] as string
             });
             dto = {
-                title: `Eine Email mit weiteren Anweisungen wurde an ${body.email} gesendet.
+                title: `Eine Email mit weiteren Anweisungen wurde an ${
+                    body.email
+                } gesendet.
 						Wenn Sie keine Email erhalten, könnte das bedeuten, daß Sie sich mit
 						einer anderen Email-Adresse angemeldet haben.` // `An email has been sent to ${body.email} with further instructions`
             };
@@ -39,5 +39,5 @@ class RecoveryController implements IRecoveryController {
 }
 
 export function createController(service: PasswordPort) {
-    return new RecoveryController(service);
+    return new DedfaultRecoveryController(service);
 }

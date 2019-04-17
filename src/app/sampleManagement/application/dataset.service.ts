@@ -1,67 +1,132 @@
-import * as config from 'config';
-import { IDatasetFile, ISenderInfo } from '..';
-import { INotificationService } from '../../sharedKernel/application';
-import { NotificationType } from '../../sharedKernel/domain/enums';
+import { logger } from '../../../aspects';
+import {
+    DatasetService,
+    ResolvedSenderInfo,
+    DatasetFile,
+    SenderInfo,
+    NewDatasetNotificationPayload,
+    NewDatasetCopyNotificationPayload
+} from '../model/sample.model';
+import {
+    NotificationService,
+    Notification,
+    EmailNotificationMeta
+} from '../../core/model/notification.model';
+import { getConfigurationService } from '../../core/application/configuration.service';
+import { User } from '../../authentication/model/user.model';
+import { Institute } from '../../authentication/model/institute.model';
+import { NotificationType } from '../../core/domain/enums';
+import { InstituteRepository, UserRepository } from '../../ports';
 
-// TODO: Should these be here?  Should they not be added later?
-const APP_NAME = config.get('appName');
-const JOB_RECIPIENT = config.get('jobRecipient');
+const appConfig = getConfigurationService().getApplicationConfiguration();
 
-export interface IDatasetPort {
-    sendDatasetFile(dataset: IDatasetFile, senderInfo: ISenderInfo): void;
-}
+const APP_NAME = appConfig.appName;
+const JOB_RECIPIENT = appConfig.jobRecipient;
 
-export interface IDatasetService extends IDatasetPort { }
+class DefaultDatasetService implements DatasetService {
+    constructor(
+        private notificationService: NotificationService,
+        private instituteRepository: InstituteRepository,
+        private userRepository: UserRepository
+    ) {}
 
-class DatasetService implements IDatasetService {
-
-    constructor(private notificationService: INotificationService) { }
-
-    sendDatasetFile(dataset: IDatasetFile, senderInfo: ISenderInfo): void {
-        const newDatasetCopyNotification = this.createNewDatasetCopyNotification(dataset, senderInfo);
+    async sendDatasetFile(
+        dataset: DatasetFile,
+        senderInfo: SenderInfo
+    ): Promise<void> {
+        const sender: User = await this.resolveUser(senderInfo.email);
+        const institution: Institute = await this.resolveInstitute(
+            senderInfo.instituteId
+        );
+        if (institution.name === 'dummy') {
+            logger.warn(
+                `User assigned to dummy institute. User=${sender.uniqueId}`
+            );
+        }
+        const resolvedSenderInfo: ResolvedSenderInfo = {
+            user: sender,
+            institute: institution,
+            comment: senderInfo.comment,
+            recipient: senderInfo.recipient
+        };
+        const newDatasetCopyNotification = this.createNewDatasetCopyNotification(
+            dataset,
+            resolvedSenderInfo
+        );
         this.notificationService.sendNotification(newDatasetCopyNotification);
 
-        const newDatasetNotification = this.createNewDatasetNotification(dataset, senderInfo);
-        return this.notificationService.sendNotification(newDatasetNotification);
+        const newDatasetNotification = this.createNewDatasetNotification(
+            dataset,
+            resolvedSenderInfo
+        );
+        return this.notificationService.sendNotification(
+            newDatasetNotification
+        );
     }
 
-    private createNewDatasetCopyNotification(dataset: IDatasetFile, senderInfo: ISenderInfo) {
-        const fullName = senderInfo.firstName + ' ' + senderInfo.lastName;
+    private resolveInstitute(id: string): Promise<Institute> {
+        return this.instituteRepository.findById(id);
+    }
+
+    private resolveUser(email: string): Promise<User> {
+        return this.userRepository.findByUsername(email);
+    }
+
+    private createNewDatasetCopyNotification(
+        dataset: DatasetFile,
+        senderInfo: ResolvedSenderInfo
+    ): Notification<NewDatasetCopyNotificationPayload, EmailNotificationMeta> {
+        const fullName = senderInfo.user.getFullName();
         return {
             type: NotificationType.NOTIFICATION_SENT,
-            title: `Neuer Auftrag an das BfR`,
             payload: {
-                'appName': APP_NAME,
-                'name': fullName
+                appName: APP_NAME,
+                name: fullName,
+                comment: senderInfo.comment
             },
-            meta: {
-                email: senderInfo.email,
-                attachments: [dataset]
-            }
+            meta: this.notificationService.createEmailNotificationMetaData(
+                senderInfo.user.email,
+                `Neuer Auftrag an das BfR`,
+                [],
+                [dataset]
+            )
         };
     }
 
-    private createNewDatasetNotification(dataset: IDatasetFile, senderInfo: ISenderInfo) {
+    private createNewDatasetNotification(
+        dataset: DatasetFile,
+        senderInfo: ResolvedSenderInfo
+    ): Notification<NewDatasetNotificationPayload, EmailNotificationMeta> {
         return {
             type: NotificationType.REQUEST_JOB,
-            title: `Neuer Auftrag`,
+
             payload: {
-                'appName': APP_NAME,
-                'firstName': senderInfo.firstName,
-                'lastName': senderInfo.lastName,
-                'email': senderInfo.email,
-                'institution': senderInfo.institution,
-                'location': senderInfo.location
+                appName: APP_NAME,
+                firstName: senderInfo.user.firstName,
+                lastName: senderInfo.user.lastName,
+                email: senderInfo.user.email,
+                institution: senderInfo.user.institution,
+                comment: senderInfo.comment
             },
-            meta: {
-                email: JOB_RECIPIENT,
-                attachments: [dataset]
-            }
+            meta: this.notificationService.createEmailNotificationMetaData(
+                JOB_RECIPIENT,
+                `Neuer Auftrag von ${senderInfo.institute.city ||
+                    '<unbekannt>'} an ${senderInfo.recipient || '<unbekannt>'}`,
+                [],
+                [dataset]
+            )
         };
     }
-
 }
 
-export function createService(service: INotificationService): IDatasetService {
-    return new DatasetService(service);
+export function createService(
+    service: NotificationService,
+    instituteRepository: InstituteRepository,
+    userRepository: UserRepository
+): DatasetService {
+    return new DefaultDatasetService(
+        service,
+        instituteRepository,
+        userRepository
+    );
 }

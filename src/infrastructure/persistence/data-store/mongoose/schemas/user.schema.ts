@@ -1,19 +1,18 @@
 import { Schema, Document } from 'mongoose';
 import { ObjectId } from 'bson';
 import * as mongooseUniqueValidator from 'mongoose-unique-validator';
-import { IMongooseUpdateResponse } from '../mongoose.repository';
-import { IInstitutionModel } from './institution.schema';
+import { MongooseUpdateResponse } from '../mongoose.repository';
+import { InstitutionModel } from './institution.schema';
 
-export interface IUserModelUpdateResponse extends IMongooseUpdateResponse {
-}
+export interface UserModelUpdateResponse extends MongooseUpdateResponse {}
 
-export interface IUserModel extends Document {
+export interface UserModel extends Document {
     _id: ObjectId;
     password: string;
     email: string;
     firstName: string;
     lastName: string;
-    institution: IInstitutionModel;
+    institution: InstitutionModel;
     enabled: boolean;
     adminEnabled: boolean;
     numAttempt: number;
@@ -75,9 +74,9 @@ export const userSchema = new Schema({
         default: Date.now,
         required: true
     }
-}).pre('save', function (next) {
+}).pre('save', function(next) {
     if (this) {
-        let doc = this as IUserModel;
+        let doc = this as UserModel;
         let now = new Date();
         if (!doc.created) {
             doc.created = now;

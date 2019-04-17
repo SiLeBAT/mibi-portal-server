@@ -1,10 +1,18 @@
 import * as _ from 'lodash';
 import * as Fuse from 'fuse.js';
-import { autoCorrectADV16, CorrectionFunction, autoCorrectADV8, autoCorrectADV9, autoCorrectADV3, autoCorrectADV12, autoCorrectADV2 } from '../custom-auto-correction-functions';
-import { SampleData, Sample } from '../sample.entity';
+import {
+    autoCorrectADV16,
+    autoCorrectADV8,
+    autoCorrectADV9,
+    autoCorrectADV3,
+    autoCorrectADV12,
+    autoCorrectADV2
+} from '../custom-auto-correction-functions';
+import { SampleData, Sample } from '../../model/sample.model';
+import { CorrectionFunction } from '../../model/autocorrection.model';
+jest.mock('../../../core/application/configuration.service');
 
 describe('Custom Auto-correction Functions', () => {
-
     describe('autoCorrectADV16', () => {
         // tslint:disable-next-line
         let mockCatalogService: any;
@@ -39,13 +47,17 @@ describe('Custom Auto-correction Functions', () => {
                 getCatalog: jest.fn(() => {
                     return {
                         dump: () => mockADVEntries,
-                        getFuzzyIndex: (options: Fuse.FuseOptions) => new Fuse(mockADVEntries, options),
-                        // @ts-ignore
-                        containsEntryWithKeyValue: (k: string, v: string) => !!_.filter(mockADVEntries, e => e[k] === v)[0],
-                        // @ts-ignore
-                        containsUniqueEntryWithId: (v: string) => !!_.filter(mockADVEntries, e => e['Kode'] === v)[0],
-                        // @ts-ignore
-                        getUniqueEntryWithId: (v: string) => _.filter(mockADVEntries, e => e['Kode'] === v)[0]
+                        getFuzzyIndex: (options: Fuse.FuseOptions) =>
+                            new Fuse(mockADVEntries, options),
+                        containsEntryWithKeyValue: (k: string, v: string) =>
+                            // @ts-ignore
+                            !!_.filter(mockADVEntries, e => e[k] === v)[0],
+                        containsUniqueEntryWithId: (v: string) =>
+                            // @ts-ignore
+                            !!_.filter(mockADVEntries, e => e['Kode'] === v)[0],
+                        getUniqueEntryWithId: (v: string) =>
+                            // @ts-ignore
+                            _.filter(mockADVEntries, e => e['Kode'] === v)[0]
                     };
                 }),
                 getCatalogSearchAliases: () => []
@@ -92,7 +104,9 @@ describe('Custom Auto-correction Functions', () => {
                 ...genericSampleData
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV16(mockCatalogService);
+            const correctionFunction: CorrectionFunction = autoCorrectADV16(
+                mockCatalogService
+            );
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual(null);
@@ -106,13 +120,18 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV16(mockCatalogService);
+            const correctionFunction: CorrectionFunction = autoCorrectADV16(
+                mockCatalogService
+            );
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual({
                 field: 'pathogen_adv',
                 original: 'Escherigia coli',
-                correctionOffer: ['Escherichia coli', 'Escherichia coli Carbapenemase-bildend'],
+                correctionOffer: [
+                    'Escherichia coli',
+                    'Escherichia coli Carbapenemase-bildend'
+                ],
                 code: 0
             });
         });
@@ -125,7 +144,9 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV16(mockCatalogService);
+            const correctionFunction: CorrectionFunction = autoCorrectADV16(
+                mockCatalogService
+            );
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual({
@@ -144,7 +165,9 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV16(mockCatalogService);
+            const correctionFunction: CorrectionFunction = autoCorrectADV16(
+                mockCatalogService
+            );
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual({
@@ -163,13 +186,20 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV16(mockCatalogService);
+            const correctionFunction: CorrectionFunction = autoCorrectADV16(
+                mockCatalogService
+            );
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual({
                 field: 'pathogen_adv',
                 original: 'E. coli',
-                correctionOffer: ['Escherichia coli', 'Salmonella Colindale', 'Escherichia coli Carbapenemase-bildend', 'Salmonella Dublin'],
+                correctionOffer: [
+                    'Escherichia coli',
+                    'Salmonella Colindale',
+                    'Escherichia coli Carbapenemase-bildend',
+                    'Salmonella Dublin'
+                ],
                 code: 0
             });
         });
@@ -182,7 +212,9 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV16(mockCatalogService);
+            const correctionFunction: CorrectionFunction = autoCorrectADV16(
+                mockCatalogService
+            );
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual(null);
@@ -196,12 +228,13 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV16(mockCatalogService);
+            const correctionFunction: CorrectionFunction = autoCorrectADV16(
+                mockCatalogService
+            );
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual(null);
         });
-
     });
 
     describe('autoCorrectADV8', () => {
@@ -233,13 +266,17 @@ describe('Custom Auto-correction Functions', () => {
                 getCatalog: jest.fn(() => {
                     return {
                         dump: () => mockADVEntries,
-                        getFuzzyIndex: (options: Fuse.FuseOptions) => new Fuse(mockADVEntries, options),
-                        // @ts-ignore
-                        containsEntryWithKeyValue: (k: string, v: string) => !!_.filter(mockADVEntries, e => e[k] === v)[0],
-                        // @ts-ignore
-                        containsUniqueEntryWithId: (v: string) => !!_.filter(mockADVEntries, e => e['Kode'] === v)[0],
-                        // @ts-ignore
-                        getUniqueEntryWithId: (v: string) => _.filter(mockADVEntries, e => e['Kode'] === v)[0]
+                        getFuzzyIndex: (options: Fuse.FuseOptions) =>
+                            new Fuse(mockADVEntries, options),
+                        containsEntryWithKeyValue: (k: string, v: string) =>
+                            // @ts-ignore
+                            !!_.filter(mockADVEntries, e => e[k] === v)[0],
+                        containsUniqueEntryWithId: (v: string) =>
+                            // @ts-ignore
+                            !!_.filter(mockADVEntries, e => e['Kode'] === v)[0],
+                        getUniqueEntryWithId: (v: string) =>
+                            // @ts-ignore
+                            _.filter(mockADVEntries, e => e['Kode'] === v)[0]
                     };
                 }),
                 getCatalogSearchAliases: () => []
@@ -286,7 +323,9 @@ describe('Custom Auto-correction Functions', () => {
                 ...genericSampleData
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV8(mockCatalogService);
+            const correctionFunction: CorrectionFunction = autoCorrectADV8(
+                mockCatalogService
+            );
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual(null);
@@ -300,13 +339,15 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV8(mockCatalogService);
+            const correctionFunction: CorrectionFunction = autoCorrectADV8(
+                mockCatalogService
+            );
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual(null);
         });
 
-        it('should not attempt to correct incorrect string 40xxxxx operations_mode_adv', () => {
+        it('should attempt to correct incorrect string 40xxxxx operations_mode_adv', () => {
             const specificSampleData = {
                 ...genericSampleData,
                 ...{
@@ -314,10 +355,17 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV8(mockCatalogService);
+            const correctionFunction: CorrectionFunction = autoCorrectADV8(
+                mockCatalogService
+            );
 
             const autoCorrection = correctionFunction(specificSampleData);
-            expect(autoCorrection).toEqual(null);
+            expect(autoCorrection).toEqual({
+                code: 90,
+                correctionOffer: ['4000000'],
+                field: 'operations_mode_adv',
+                original: '40xxxxx'
+            });
         });
 
         it('should attempt to correct incorrect string 4010xxx operations_mode_adv', () => {
@@ -328,10 +376,17 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV8(mockCatalogService);
+            const correctionFunction: CorrectionFunction = autoCorrectADV8(
+                mockCatalogService
+            );
 
             const autoCorrection = correctionFunction(specificSampleData);
-            expect(autoCorrection).toEqual({ 'code': 90, 'correctionOffer': ['4010000'], 'field': 'operations_mode_adv', 'original': '4010xxx' });
+            expect(autoCorrection).toEqual({
+                code: 90,
+                correctionOffer: ['4010000'],
+                field: 'operations_mode_adv',
+                original: '4010xxx'
+            });
         });
 
         it('should attempt to correct incorrect string 401xxxx operations_mode_adv', () => {
@@ -342,10 +397,17 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV8(mockCatalogService);
+            const correctionFunction: CorrectionFunction = autoCorrectADV8(
+                mockCatalogService
+            );
 
             const autoCorrection = correctionFunction(specificSampleData);
-            expect(autoCorrection).toEqual({ 'code': 90, 'correctionOffer': ['4010000'], 'field': 'operations_mode_adv', 'original': '401xxxx' });
+            expect(autoCorrection).toEqual({
+                code: 90,
+                correctionOffer: ['4010000'],
+                field: 'operations_mode_adv',
+                original: '401xxxx'
+            });
         });
 
         it('should attempt to correct incorrect string 4xxxxxx operations_mode_adv', () => {
@@ -356,12 +418,18 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV8(mockCatalogService);
+            const correctionFunction: CorrectionFunction = autoCorrectADV8(
+                mockCatalogService
+            );
 
             const autoCorrection = correctionFunction(specificSampleData);
-            expect(autoCorrection).toEqual({ 'code': 90, 'correctionOffer': ['4000000'], 'field': 'operations_mode_adv', 'original': '4xxxxxx' });
+            expect(autoCorrection).toEqual({
+                code: 90,
+                correctionOffer: ['4000000'],
+                field: 'operations_mode_adv',
+                original: '4xxxxxx'
+            });
         });
-
     });
 
     describe('autoCorrectADV9', () => {
@@ -387,13 +455,17 @@ describe('Custom Auto-correction Functions', () => {
                 getCatalog: jest.fn(() => {
                     return {
                         dump: () => mockADVEntries,
-                        getFuzzyIndex: (options: Fuse.FuseOptions) => new Fuse(mockADVEntries, options),
-                        // @ts-ignore
-                        containsEntryWithKeyValue: (k: string, v: string) => !!_.filter(mockADVEntries, e => e[k] === v)[0],
-                        // @ts-ignore
-                        containsUniqueEntryWithId: (v: string) => !!_.filter(mockADVEntries, e => e['Kode'] === v)[0],
-                        // @ts-ignore
-                        getUniqueEntryWithId: (v: string) => _.filter(mockADVEntries, e => e['Kode'] === v)[0]
+                        getFuzzyIndex: (options: Fuse.FuseOptions) =>
+                            new Fuse(mockADVEntries, options),
+                        containsEntryWithKeyValue: (k: string, v: string) =>
+                            // @ts-ignore
+                            !!_.filter(mockADVEntries, e => e[k] === v)[0],
+                        containsUniqueEntryWithId: (v: string) =>
+                            // @ts-ignore
+                            !!_.filter(mockADVEntries, e => e['Kode'] === v)[0],
+                        getUniqueEntryWithId: (v: string) =>
+                            // @ts-ignore
+                            _.filter(mockADVEntries, e => e['Kode'] === v)[0]
                     };
                 }),
                 getCatalogSearchAliases: () => []
@@ -440,7 +512,9 @@ describe('Custom Auto-correction Functions', () => {
                 ...genericSampleData
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV9(mockCatalogService);
+            const correctionFunction: CorrectionFunction = autoCorrectADV9(
+                mockCatalogService
+            );
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual(null);
@@ -454,7 +528,9 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV9(mockCatalogService);
+            const correctionFunction: CorrectionFunction = autoCorrectADV9(
+                mockCatalogService
+            );
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual(null);
@@ -468,7 +544,9 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV9(mockCatalogService);
+            const correctionFunction: CorrectionFunction = autoCorrectADV9(
+                mockCatalogService
+            );
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual(null);
@@ -482,10 +560,17 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV9(mockCatalogService);
+            const correctionFunction: CorrectionFunction = autoCorrectADV9(
+                mockCatalogService
+            );
 
             const autoCorrection = correctionFunction(specificSampleData);
-            expect(autoCorrection).toEqual({ 'code': 89, 'correctionOffer': ['01051032'], 'field': 'sampling_location_adv', 'original': '1051032' });
+            expect(autoCorrection).toEqual({
+                code: 89,
+                correctionOffer: ['01051032'],
+                field: 'sampling_location_adv',
+                original: '1051032'
+            });
         });
 
         it('should attempt to correct incorrect string 11000xxx sampling_location_adv', () => {
@@ -496,12 +581,18 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV9(mockCatalogService);
+            const correctionFunction: CorrectionFunction = autoCorrectADV9(
+                mockCatalogService
+            );
 
             const autoCorrection = correctionFunction(specificSampleData);
-            expect(autoCorrection).toEqual({ 'code': 89, 'correctionOffer': ['11000'], 'field': 'sampling_location_adv', 'original': '11000xxx' });
+            expect(autoCorrection).toEqual({
+                code: 89,
+                correctionOffer: ['11000'],
+                field: 'sampling_location_adv',
+                original: '11000xxx'
+            });
         });
-
     });
 
     describe('autoCorrectADV3', () => {
@@ -521,13 +612,17 @@ describe('Custom Auto-correction Functions', () => {
                 getCatalog: jest.fn(() => {
                     return {
                         dump: () => mockADVEntries,
-                        getFuzzyIndex: (options: Fuse.FuseOptions) => new Fuse(mockADVEntries, options),
-                        // @ts-ignore
-                        containsEntryWithKeyValue: (k: string, v: string) => !!_.filter(mockADVEntries, e => e[k] === v)[0],
-                        // @ts-ignore
-                        containsUniqueEntryWithId: (v: string) => !!_.filter(mockADVEntries, e => e['Kode'] === v)[0],
-                        // @ts-ignore
-                        getUniqueEntryWithId: (v: string) => _.filter(mockADVEntries, e => e['Kode'] === v)[0]
+                        getFuzzyIndex: (options: Fuse.FuseOptions) =>
+                            new Fuse(mockADVEntries, options),
+                        containsEntryWithKeyValue: (k: string, v: string) =>
+                            // @ts-ignore
+                            !!_.filter(mockADVEntries, e => e[k] === v)[0],
+                        containsUniqueEntryWithId: (v: string) =>
+                            // @ts-ignore
+                            !!_.filter(mockADVEntries, e => e['Kode'] === v)[0],
+                        getUniqueEntryWithId: (v: string) =>
+                            // @ts-ignore
+                            _.filter(mockADVEntries, e => e['Kode'] === v)[0]
                     };
                 }),
                 getCatalogSearchAliases: () => []
@@ -574,7 +669,9 @@ describe('Custom Auto-correction Functions', () => {
                 ...genericSampleData
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV3(mockCatalogService);
+            const correctionFunction: CorrectionFunction = autoCorrectADV3(
+                mockCatalogService
+            );
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual(null);
@@ -588,7 +685,9 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV3(mockCatalogService);
+            const correctionFunction: CorrectionFunction = autoCorrectADV3(
+                mockCatalogService
+            );
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual(null);
@@ -602,12 +701,18 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV3(mockCatalogService);
+            const correctionFunction: CorrectionFunction = autoCorrectADV3(
+                mockCatalogService
+            );
 
             const autoCorrection = correctionFunction(specificSampleData);
-            expect(autoCorrection).toEqual({ 'code': 91, 'correctionOffer': ['063502'], 'field': 'matrix_adv', 'original': '63502' });
+            expect(autoCorrection).toEqual({
+                code: 91,
+                correctionOffer: ['063502'],
+                field: 'matrix_adv',
+                original: '63502'
+            });
         });
-
     });
 
     describe('autoCorrectADV12', () => {
@@ -628,15 +733,20 @@ describe('Custom Auto-correction Functions', () => {
                 getCatalog: jest.fn(() => {
                     return {
                         dump: () => mockADVEntries,
-                        getFuzzyIndex: (options: Fuse.FuseOptions) => new Fuse(mockADVEntries, options),
-                        // @ts-ignore
-                        containsEntryWithKeyValue: (k: string, v: string) => !!_.filter(mockADVEntries, e => e[k] === v)[0],
-                        // @ts-ignore
-                        containsUniqueEntryWithId: (v: string) => !!_.filter(mockADVEntries, e => e['Kode'] === v)[0],
-                        // @ts-ignore
-                        getUniqueEntryWithId: (v: string) => _.filter(mockADVEntries, e => e['Kode'] === v)[0],
-                        // @ts-ignore
-                        getEntriesWithKeyValue: (k: string, v: string) => _.filter(mockADVEntries, e => e[k] === v)
+                        getFuzzyIndex: (options: Fuse.FuseOptions) =>
+                            new Fuse(mockADVEntries, options),
+                        containsEntryWithKeyValue: (k: string, v: string) =>
+                            // @ts-ignore
+                            !!_.filter(mockADVEntries, e => e[k] === v)[0],
+                        containsUniqueEntryWithId: (v: string) =>
+                            // @ts-ignore
+                            !!_.filter(mockADVEntries, e => e['Kode'] === v)[0],
+                        getUniqueEntryWithId: (v: string) =>
+                            // @ts-ignore
+                            _.filter(mockADVEntries, e => e['Kode'] === v)[0],
+                        getEntriesWithKeyValue: (k: string, v: string) =>
+                            // @ts-ignore
+                            _.filter(mockADVEntries, e => e[k] === v)
                     };
                 }),
                 getCatalogSearchAliases: () => []
@@ -683,7 +793,9 @@ describe('Custom Auto-correction Functions', () => {
                 ...genericSampleData
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV12(mockCatalogService);
+            const correctionFunction: CorrectionFunction = autoCorrectADV12(
+                mockCatalogService
+            );
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual(null);
@@ -697,7 +809,9 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV12(mockCatalogService);
+            const correctionFunction: CorrectionFunction = autoCorrectADV12(
+                mockCatalogService
+            );
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual(null);
@@ -711,10 +825,17 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV12(mockCatalogService);
+            const correctionFunction: CorrectionFunction = autoCorrectADV12(
+                mockCatalogService
+            );
 
             const autoCorrection = correctionFunction(specificSampleData);
-            expect(autoCorrection).toEqual({ 'code': 92, 'correctionOffer': ['046'], 'field': 'process_state_adv', 'original': '46' });
+            expect(autoCorrection).toEqual({
+                code: 92,
+                correctionOffer: ['046'],
+                field: 'process_state_adv',
+                original: '46'
+            });
         });
 
         it('should attempt to correct incorrect string Kaltgeräuchert process_state_adv', () => {
@@ -725,10 +846,17 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV12(mockCatalogService);
+            const correctionFunction: CorrectionFunction = autoCorrectADV12(
+                mockCatalogService
+            );
 
             const autoCorrection = correctionFunction(specificSampleData);
-            expect(autoCorrection).toEqual({ 'code': 92, 'correctionOffer': ['046'], 'field': 'process_state_adv', 'original': 'Kaltgeräuchert' });
+            expect(autoCorrection).toEqual({
+                code: 92,
+                correctionOffer: ['046'],
+                field: 'process_state_adv',
+                original: 'Kaltgeräuchert'
+            });
         });
     });
 
@@ -758,11 +886,14 @@ describe('Custom Auto-correction Functions', () => {
                 getCatalog: jest.fn(() => {
                     return {
                         dump: () => mockADVEntries,
-                        getFuzzyIndex: (options: Fuse.FuseOptions) => new Fuse(mockADVEntries, options),
-                        // @ts-ignore
-                        containsEntryWithKeyValue: (k: string, v: string) => !!_.filter(mockADVEntries, e => e[k] === v)[0],
-                        // @ts-ignore
-                        getEntriesWithKeyValue: (k: string, v: string) => _.filter(mockADVEntries, e => e[k] === v)
+                        getFuzzyIndex: (options: Fuse.FuseOptions) =>
+                            new Fuse(mockADVEntries, options),
+                        containsEntryWithKeyValue: (k: string, v: string) =>
+                            // @ts-ignore
+                            !!_.filter(mockADVEntries, e => e[k] === v)[0],
+                        getEntriesWithKeyValue: (k: string, v: string) =>
+                            // @ts-ignore
+                            _.filter(mockADVEntries, e => e[k] === v)
                     };
                 }),
                 getCatalogSearchAliases: () => []
@@ -809,7 +940,9 @@ describe('Custom Auto-correction Functions', () => {
                 ...genericSampleData
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV2(mockCatalogService);
+            const correctionFunction: CorrectionFunction = autoCorrectADV2(
+                mockCatalogService
+            );
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual(null);
@@ -823,10 +956,17 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV2(mockCatalogService);
+            const correctionFunction: CorrectionFunction = autoCorrectADV2(
+                mockCatalogService
+            );
 
             const autoCorrection = correctionFunction(specificSampleData);
-            expect(autoCorrection).toEqual({ 'code': 93, 'correctionOffer': ['15'], 'field': 'topic_adv', 'original': '' });
+            expect(autoCorrection).toEqual({
+                code: 93,
+                correctionOffer: ['15'],
+                field: 'topic_adv',
+                original: ''
+            });
         });
 
         it('should correct topic 01 topic_adv to 15', () => {
@@ -838,10 +978,17 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV2(mockCatalogService);
+            const correctionFunction: CorrectionFunction = autoCorrectADV2(
+                mockCatalogService
+            );
 
             const autoCorrection = correctionFunction(specificSampleData);
-            expect(autoCorrection).toEqual({ 'code': 93, 'correctionOffer': ['15'], 'field': 'topic_adv', 'original': '01' });
+            expect(autoCorrection).toEqual({
+                code: 93,
+                correctionOffer: ['15'],
+                field: 'topic_adv',
+                original: '01'
+            });
         });
 
         it('should not correct topic 01 topic_adv', () => {
@@ -853,7 +1000,9 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV2(mockCatalogService);
+            const correctionFunction: CorrectionFunction = autoCorrectADV2(
+                mockCatalogService
+            );
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual(null);

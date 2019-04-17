@@ -1,31 +1,37 @@
-import { createRepository, NRLSchema, INRLModel } from '../data-store';
-import { INRLRepository, IRead } from '../../../app/ports';
-import { INRL } from '../../../app/sampleManagement/application';
+import {
+    NRLRepository,
+    ApplicationSystemError,
+    NRLConfig
+} from '../../../app/ports';
 import { mapModelToNRL } from './data-mappers';
-import { logger } from '../../../aspects';
-import { ApplicationSystemError } from '../../../app/sharedKernel/errors';
+import { NRLModel } from '../data-store/mongoose/schemas/nrl.schema';
+import {
+    createRepository,
+    Read
+} from '../data-store/mongoose/mongoose.repository';
+import { NRLSchema } from '../data-store/mongoose/mongoose';
 
-class NRLRepository implements INRLRepository {
+class DefaultNRLRepository implements NRLRepository {
+    constructor(private baseRepo: Read<NRLModel>) {}
 
-    constructor(private baseRepo: IRead<INRLModel>) {
-    }
-
-    getAllNRLs(): Promise<INRL[]> {
+    getAllNRLs(): Promise<NRLConfig[]> {
         return this.retrieve();
     }
 
-    private retrieve(): Promise<INRL[]> {
-        return this.baseRepo.retrieve().then(
-            modelArray => {
+    private retrieve(): Promise<NRLConfig[]> {
+        return this.baseRepo
+            .retrieve()
+            .then(modelArray => {
                 return modelArray.map(m => mapModelToNRL(m));
-            }
-        ).catch(
-            error => {
-                logger.error(error);
-                throw new ApplicationSystemError('Unable to load NRL Data');
-            }
-        );
+            })
+            .catch(error => {
+                throw new ApplicationSystemError(
+                    `Unable to load NRL Data. error=${error}`
+                );
+            });
     }
 }
 
-export const repository: INRLRepository = new NRLRepository(createRepository(NRLSchema));
+export const repository: NRLRepository = new DefaultNRLRepository(
+    createRepository(NRLSchema)
+);

@@ -1,9 +1,9 @@
 import * as mongoose from 'mongoose';
-import { IUserToken } from '../../../../../app/ports';
+import { UserToken } from '../../../../../app/ports';
 
 const Schema = mongoose.Schema;
 
-export interface IResetTokenModel extends mongoose.Document, IUserToken {
+export interface ResetTokenModel extends mongoose.Document, UserToken {
     user: string;
     created: Date;
     updated: Date;
@@ -32,9 +32,9 @@ export const resetTokenSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'User'
     }
-}).pre('save', function (next) {
+}).pre('save', function(next) {
     if (this) {
-        let doc = this as IResetTokenModel;
+        let doc = this as ResetTokenModel;
         let now = new Date();
         if (!doc.created) {
             doc.created = now;

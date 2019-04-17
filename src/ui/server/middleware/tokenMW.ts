@@ -2,9 +2,7 @@ import * as jwt from 'express-jwt';
 
 function validateToken(secret: string) {
     const whiteList = [
-        /((?!\/api\/).)*$/,
-        '/api/v1/catalog-search',
-        '/api/v1/system-info',
+        '/api/v1/util/system-info',
         '/api/v1/institutions',
         '/api/v1/users/login',
         '/api/v1/users/register',
@@ -12,16 +10,17 @@ function validateToken(secret: string) {
         /\/api\/v1\/users\/reset\/*/,
         /\/api\/v1\/users\/activate\/*/,
         /\/api\/v1\/users\/adminactivate\/*/,
-        '/api/v1/upload',
-        '/api/v1/validation',
-        '/api/v1/job'
+        '/api/v1/validation'
     ];
 
     return jwt({
         secret,
-        getToken: function (req) {
-            if (req.headers.authorization && (req.headers.authorization).split(' ')[0] === 'Bearer') {
-                return (req.headers.authorization).split(' ')[1];
+        getToken: function(req) {
+            if (
+                req.headers.authorization &&
+                req.headers.authorization.split(' ')[0] === 'Bearer'
+            ) {
+                return req.headers.authorization.split(' ')[1];
             }
             return null;
         }
@@ -30,6 +29,4 @@ function validateToken(secret: string) {
     });
 }
 
-export {
-    validateToken
-};
+export { validateToken };

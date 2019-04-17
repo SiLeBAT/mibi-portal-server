@@ -1,21 +1,14 @@
-import { createController, ILoginController } from './../login.controller';
+import { createController, LoginController } from './../login.controller';
 import * as mockReq from 'mock-express-request';
 import * as mockRes from 'mock-express-response';
 import { LoginResult, LoginPort } from '../../../../app/ports';
- // tslint:disable
+// tslint:disable
 jest.genMockFromModule('./../../../../aspects');
 jest.mock('./../../../../aspects');
-jest.mock('./../../../../app/ports', () => ({
-    loginUser: jest.fn(),
-    LoginResult: {
-        SUCCESS: 2,
-        FAIL: 0
-    }
-}));
+jest.mock('./../../../../app/ports');
 
 describe('Login controller', () => {
-
-    let controller: ILoginController;
+    let controller: LoginController;
     let mockLoginService: LoginPort = {
         loginUser: jest.fn()
     };
@@ -23,7 +16,6 @@ describe('Login controller', () => {
         controller = createController(mockLoginService);
     });
     it('should be return a promise', () => {
-
         (mockLoginService.loginUser as any).mockReturnValueOnce({
             result: LoginResult.SUCCESS
         });
@@ -37,7 +29,6 @@ describe('Login controller', () => {
         expect(result).toBeInstanceOf(Promise);
     });
     it('should be return a 401 response', () => {
-    
         (mockLoginService.loginUser as any).mockReturnValueOnce({
             result: LoginResult.FAIL
         });
@@ -54,9 +45,12 @@ describe('Login controller', () => {
         });
     });
     it('should be return a 200 response', () => {
-
         (mockLoginService.loginUser as any).mockReturnValueOnce({
-            user: {}
+            user: {
+                institution: {
+                    uniqueId: 1
+                }
+            }
         });
         const req = new mockReq({
             body: {

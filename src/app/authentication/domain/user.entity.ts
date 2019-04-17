@@ -1,5 +1,6 @@
 import * as argon2 from 'argon2';
-import { Institution } from './institution.entity';
+import { User, UserCredentials } from '../model/user.model';
+import { Institute } from '../model/institute.model';
 
 const defaultHashOptions = {
     hashLength: 128,
@@ -9,48 +10,25 @@ const defaultHashOptions = {
     type: argon2.argon2id
 };
 
-export interface IUserCredentials {
-    email: string;
-    password: string;
-}
-
-export interface IUserBase {
-    firstName: string;
-    lastName: string;
-    email: string;
-    institution: Institution;
-}
-
-export interface IUser extends IUserBase {
-    uniqueId: string;
-    readonly password: string;
-    isAuthorized(credentials: IUserCredentials): Promise<boolean>;
-    updatePassword(password: string): Promise<string>;
-    updateNumberOfFailedAttempts(increment: boolean): void;
-    updateLastLoginAttempt(): void;
-    isActivated(active?: boolean): boolean;
-    isAdminActivated(active?: boolean): boolean;
-    getNumberOfFailedAttempts(): number;
-    getLastLoginAttempt(): number;
-}
-
-class GenericUser implements IUser {
+class GenericUser implements User {
     uniqueId: string;
     firstName: string;
     lastName: string;
     email: string;
-    institution: Institution;
+    institution: Institute;
 
-    constructor(id: string,
-				email: string,
-				fname: string,
-				lname: string,
-				inst: Institution,
-				private _password: string,
-				private enabled: boolean,
-				private adminEnabled: boolean,
-				private numAttempt: number,
-				private lastAttempt: number) {
+    constructor(
+        id: string,
+        email: string,
+        fname: string,
+        lname: string,
+        inst: Institute,
+        private _password: string,
+        private enabled: boolean,
+        private adminEnabled: boolean,
+        private numAttempt: number,
+        private lastAttempt: number
+    ) {
         this.uniqueId = id;
         this.email = email;
         this.firstName = fname;
@@ -60,6 +38,10 @@ class GenericUser implements IUser {
 
     get password(): string {
         return this._password;
+    }
+
+    getFullName() {
+        return this.firstName + ' ' + this.lastName;
     }
 
     isActivated(active?: boolean) {
@@ -76,18 +58,18 @@ class GenericUser implements IUser {
         return this.adminEnabled;
     }
 
-    isAuthorized(credentials: IUserCredentials): Promise<boolean> {
+    isAuthorized(credentials: UserCredentials): Promise<boolean> {
         return this.verifyPassword(this._password, credentials.password);
     }
 
     updatePassword(password: string): Promise<string> {
         return this.hashPassword(password).then(
-            hashed => this._password = hashed
+            hashed => (this._password = hashed)
         );
     }
 
     updateNumberOfFailedAttempts(increment: boolean) {
-        increment ? this.numAttempt++ : this.numAttempt = 0;
+        increment ? this.numAttempt++ : (this.numAttempt = 0);
     }
 
     updateLastLoginAttempt() {
@@ -109,18 +91,30 @@ class GenericUser implements IUser {
     private hashPassword(password: string, options = defaultHashOptions) {
         return argon2.hash(password, options);
     }
-
 }
 
-export function createUser(id: string,
-						   email: string,
-						   fname: string,
-						   lname: string,
-						   inst: Institution,
-						   password: string,
-						   enabled: boolean = false,
-						   adminEnabled: boolean = false,
-						   numAttempt: number = 0,
-						   lastAttempt: number = Date.now()): IUser {
-    return new GenericUser(id, email, fname, lname, inst, password, enabled, adminEnabled, numAttempt, lastAttempt);
+export function createUser(
+    id: string,
+    email: string,
+    fname: string,
+    lname: string,
+    inst: Institute,
+    password: string,
+    enabled: boolean = false,
+    adminEnabled: boolean = false,
+    numAttempt: number = 0,
+    lastAttempt: number = Date.now()
+): User {
+    return new GenericUser(
+        id,
+        email,
+        fname,
+        lname,
+        inst,
+        password,
+        enabled,
+        adminEnabled,
+        numAttempt,
+        lastAttempt
+    );
 }

@@ -1,19 +1,19 @@
-import { createService, IFormAutoCorrectionService } from '../form-auto-correction.service';
-import { SampleCollection } from '../..';
-import { SampleData, Sample } from '../../domain/sample.entity';
-import { ValidationErrorProvider } from '../validation-error-provider.service';
+import { createService } from '../form-auto-correction.service';
+import { FormAutoCorrectionService } from '../../model/autocorrection.model';
+import { SampleData, SampleCollection, Sample } from '../../model/sample.model';
+import { ValidationErrorProvider } from '../../model/validation.model';
+jest.mock('../../../core/application/configuration.service');
 
 describe('Auto-correct Sample Use Case', () => {
     // tslint:disable-next-line
     let mockCatalogService: any;
-    let service: IFormAutoCorrectionService;
+    let service: FormAutoCorrectionService;
 
     let genericTestSampleCollection: SampleCollection;
     let testSampleData: SampleData;
     let genericTestSample: Sample;
     let mockValidationErrorProvider: ValidationErrorProvider;
     beforeEach(() => {
-
         mockCatalogService = {
             getCatalog: jest.fn(() => {
                 return {
@@ -27,7 +27,10 @@ describe('Auto-correct Sample Use Case', () => {
             getError: jest.fn()
         };
 
-        service = createService(mockCatalogService, mockValidationErrorProvider);
+        service = createService(
+            mockCatalogService,
+            mockValidationErrorProvider
+        );
         testSampleData = {
             sample_id: '1',
             sample_id_avv: '1-ABC',
@@ -70,11 +73,12 @@ describe('Auto-correct Sample Use Case', () => {
     it('should successfully complete Happy Path', () => {
         const result = service.applyAutoCorrection(genericTestSampleCollection);
 
-        expect(result).resolves.toEqual({
-            samples: []
-        }).catch(
-            e => { throw e; }
-        );
+        expect(result)
+            .resolves.toEqual({
+                samples: []
+            })
+            .catch(e => {
+                throw e;
+            });
     });
-
 });

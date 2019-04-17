@@ -1,47 +1,39 @@
-
-import * as config from 'config';
 import * as _ from 'lodash';
-import { ICatalog } from './../domain';
-import { ICatalogRepository } from '../../ports';
+import { CatalogRepository, SearchAliasRepository } from '../../ports';
 import { logger } from '../../../aspects';
+import { CatalogService, Catalog, CatalogData } from '../model/catalog.model';
+import { SearchAlias } from '../model/validation.model';
 
-export interface ICatalogPort {
-    getCatalog(catalogName: string): ICatalog<Record<string, string>>;
-    getCatalogSearchAliases(catalogName: string): ISearchAlias[];
-}
+class DefaultCatalogService implements CatalogService {
+    constructor(
+        private catalogRepository: CatalogRepository,
+        private searchAliasRepository: SearchAliasRepository
+    ) {}
 
-export interface ISearchAlias {
-    catalog: string;
-    token: string;
-    alias: string[];
-}
-
-export interface ICatalogService extends ICatalogPort {
-}
-
-class CatalogService implements ICatalogService {
-
-    constructor(private catalogRepository: ICatalogRepository) { }
-
-    getCatalog(catalogName: string) {
+    getCatalog(catalogName: string): Catalog<CatalogData> {
         return this.catalogRepository.getCatalog(catalogName);
     }
 
     getCatalogSearchAliases(catalogName: string) {
-        let searchAlias: ISearchAlias[] = [];
+        let searchAlias: SearchAlias[] = [];
 
         try {
-            searchAlias = _(config.get('searchAlias'))
-                            .filter((e: ISearchAlias) => e.catalog.toLowerCase().localeCompare(catalogName) === 0)
-                            .value();
+            searchAlias = _(this.searchAliasRepository.getAliases())
+                .filter(
+                    (e: SearchAlias) =>
+                        e.catalog.toLowerCase().localeCompare(catalogName) === 0
+                )
+                .value();
         } catch (err) {
             logger.warn('No SearchAlias configuration found in configuration.');
         }
         return searchAlias;
     }
-
 }
 
-export function createService(repository: ICatalogRepository): ICatalogService {
-    return new CatalogService(repository);
+export function createService(
+    catalogRepository: CatalogRepository,
+    searchAliasRepository: SearchAliasRepository
+): CatalogService {
+    return new DefaultCatalogService(catalogRepository, searchAliasRepository);
 }

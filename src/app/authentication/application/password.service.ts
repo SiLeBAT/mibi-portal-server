@@ -1,43 +1,54 @@
-import * as config from 'config';
-import { IUserRepository, ITokenRepository } from '../../ports';
-import { IUser, TokenType, generateToken, verifyToken, IUserToken } from './../domain';
-import { IRecoveryData, INotificationService, NotificationType } from './../../sharedKernel';
-import { ApplicationDomainError } from '../../sharedKernel/errors';
 import { logger } from '../../../aspects';
+import { UserRepository, TokenRepository } from '../../ports';
+import { getConfigurationService } from '../../core/application/configuration.service';
+import {
+    PasswordService,
+    RecoveryData,
+    ResetSuccessNotificationPayload,
+    ResetRequestNotificationPayload
+} from '../model/login.model';
+import { generateToken, verifyToken } from '../domain/token.service';
+import { TokenType } from './../domain/enums';
+import { User, UserToken } from './../model/user.model';
+import { NotificationType } from '../../core/domain/enums';
+import {
+    NotificationService,
+    EmailNotificationMeta,
+    Notification
+} from '../../core/model/notification.model';
 
-// TODO: Should these be here?  Should they not be added later?
-const APP_NAME = config.get('appName');
-const API_URL = config.get('server.apiUrl');
-const SUPPORT_CONTACT = config.get('supportContact');
+const appConfig = getConfigurationService().getApplicationConfiguration();
+const serverConfig = getConfigurationService().getServerConfiguration();
+const generalConfig = getConfigurationService().getGeneralConfiguration();
 
-export interface PasswordPort {
-    recoverPassword(recoveryData: IRecoveryData): Promise<void>;
-    resetPassword(token: string, password: string): Promise<void>;
-}
-
-export interface PasswordService extends PasswordPort {
-}
+const APP_NAME = appConfig.appName;
+const API_URL = serverConfig.apiUrl;
+const SUPPORT_CONTACT = generalConfig.supportContact;
 
 class DefaultPasswordService implements PasswordService {
-
     constructor(
-        private userRepository: IUserRepository,
-        private tokenRepository: ITokenRepository,
-        private notificationService: INotificationService) { }
+        private userRepository: UserRepository,
+        private tokenRepository: TokenRepository,
+        private notificationService: NotificationService
+    ) {}
 
-    async recoverPassword(recoveryData: IRecoveryData): Promise<void> {
+    async recoverPassword(recoveryData: RecoveryData): Promise<void> {
         let user;
         try {
             user = await this.userRepository.findByUsername(recoveryData.email);
         } catch (err) {
-            logger.error('recoverPassword: no user for provided email found, error=', err);
+            logger.error(
+                `recoverPassword: no user for provided email found, error=${err}`
+            );
         }
 
         if (!user) {
             return;
         }
 
-        const hasOldToken = await this.tokenRepository.hasResetTokenForUser(user);
+        const hasOldToken = await this.tokenRepository.hasResetTokenForUser(
+            user
+        );
         if (hasOldToken) {
             await this.tokenRepository.deleteResetTokenForUser(user);
         }
@@ -48,62 +59,83 @@ class DefaultPasswordService implements PasswordService {
             userId: user.uniqueId
         });
 
-        const requestResetNotification = this.createResetRequestNotification(user, recoveryData, resetToken);
-        return this.notificationService.sendNotification(requestResetNotification);
+        const requestResetNotification = this.createResetRequestNotification(
+            user,
+            recoveryData,
+            resetToken
+        );
+        return this.notificationService.sendNotification(
+            requestResetNotification
+        );
     }
 
     async resetPassword(token: string, password: string): Promise<void> {
-
         const userToken = await this.tokenRepository.getUserTokenByJWT(token);
-        if (!userToken) throw new ApplicationDomainError('No UserToken for JWT Token.');
         const userId = userToken.userId;
         verifyToken(token, String(userId));
         const user = await this.userRepository.findById(userId);
-        if (!user) throw new ApplicationDomainError(`Unknown user. id=${userId}`);
         await user.updatePassword(password);
         await this.userRepository.updateUser(user);
         await this.tokenRepository.deleteResetTokenForUser(user);
-        const resetSuccessNotification = this.createResetSuccessNotification(user);
-        return this.notificationService.sendNotification(resetSuccessNotification);
+        const resetSuccessNotification = this.createResetSuccessNotification(
+            user
+        );
+        return this.notificationService.sendNotification(
+            resetSuccessNotification
+        );
     }
 
-    private createResetRequestNotification(user: IUser, recoveryData: IRecoveryData, resetToken: IUserToken) {
+    private createResetRequestNotification(
+        user: User,
+        recoveryData: RecoveryData,
+        resetToken: UserToken
+    ): Notification<ResetRequestNotificationPayload, EmailNotificationMeta> {
         return {
             type: NotificationType.REQUEST_RESET,
-            title: `Setzen Sie Ihr ${APP_NAME}-Konto Passwort zurück.`,// `Reset Password for ${APP_NAME}`;
             payload: {
-                'name': user.firstName + ' ' + user.lastName,
-                'action_url': API_URL + '/users/reset/' + resetToken.token,
-                'api_url': API_URL,
-                'operating_system': recoveryData.host,
-                'user_agent': recoveryData.userAgent,
-                'support_contact': SUPPORT_CONTACT,
-                'appName': APP_NAME
+                name: user.firstName + ' ' + user.lastName,
+                action_url: API_URL + '/users/reset/' + resetToken.token,
+                api_url: API_URL,
+                operating_system: recoveryData.host,
+                user_agent: recoveryData.userAgent,
+                support_contact: SUPPORT_CONTACT,
+                appName: APP_NAME
             },
-            meta: {
-                email: user.email
-            }
+            meta: this.notificationService.createEmailNotificationMetaData(
+                user.email,
+                `Setzen Sie Ihr ${APP_NAME}-Konto Passwort zurück.`
+            )
         };
     }
 
-    private createResetSuccessNotification(user: IUser) {
+    private createResetSuccessNotification(
+        user: User
+    ): Notification<ResetSuccessNotificationPayload, EmailNotificationMeta> {
         return {
             type: NotificationType.RESET_SUCCESS,
-            title: `Passwort für ${APP_NAME}-Konto erfolgreich zurückgesetzt.`,// `Reset Password for ${APP_NAME} successful`;
             payload: {
-                'name': user.firstName + ' ' + user.lastName,
-                'api_url': API_URL,
-                'email': user.email,
-                'action_url': API_URL + '/users/login',
-                'appName': APP_NAME
+                name: user.firstName + ' ' + user.lastName,
+                api_url: API_URL,
+                email: user.email,
+                action_url: API_URL + '/users/login',
+                appName: APP_NAME
             },
-            meta: {
-                email: user.email
-            }
+            meta: this.notificationService.createEmailNotificationMetaData(
+                user.email,
+                `Passwort für ${APP_NAME}-Konto erfolgreich zurückgesetzt.`
+            )
         };
     }
 }
 
-export function createService(userRepository: IUserRepository, tokenRepository: ITokenRepository, notifcationService: INotificationService): PasswordService {
-    return new DefaultPasswordService(userRepository, tokenRepository, notifcationService);
+export function createService(
+    userRepository: UserRepository,
+    tokenRepository: TokenRepository,
+    notifcationService: NotificationService
+): PasswordService {
+    return new DefaultPasswordService(
+        userRepository,
+        tokenRepository,
+        notifcationService
+    );
 }

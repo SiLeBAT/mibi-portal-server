@@ -1,13 +1,11 @@
-import * as path from 'path';
-import * as fs from 'fs';
-import * as config from 'config';
-import * as csv from 'fast-csv';
-import * as rootDir from 'app-root-dir';
-
 import { logger } from '../../../aspects';
-import { ICatalogRepository, ICatalog, Catalog } from '../../../app/ports';
-
-declare type CatalogData = Record<string, string>;
+import {
+    CatalogRepository,
+    Catalog,
+    createCatalog,
+    CatalogData
+} from '../../../app/ports';
+import { loadCSVFile } from '../data-store/file/file-loader';
 
 interface CatalogConfig {
     filename: string;
@@ -16,17 +14,18 @@ interface CatalogConfig {
     filterFunction?: Function;
 }
 
-class FileCatalogRepository implements ICatalogRepository {
+class FileCatalogRepository implements CatalogRepository {
     private catalogs: {
-        [key: string]: ICatalog<CatalogData>;
+        [key: string]: Catalog<CatalogData>;
     };
-    constructor(private dataDir: string) {
-        this.dataDir = this.dataDir || path.join(rootDir.get(), 'data');
+    constructor() {
         this.catalogs = {};
     }
 
     initialise() {
-        logger.verbose('FileCatalogRepository.initialize, Loading Catalog data from Filesystem', { dataDir: this.dataDir });
+        logger.verbose(
+            `FileCatalogRepository.initialize, Loading Catalog data from Filesystem.`
+        );
 
         const catalogsConfig: CatalogConfig[] = [
             {
@@ -64,10 +63,12 @@ class FileCatalogRepository implements ICatalogRepository {
                 uId: 'Kode',
                 filterFunction: (entry: { Kode: string }) => {
                     const code = parseInt(entry.Kode, 10);
-                    return (code >= 302000 && code < 306000)
-                        || (code >= 500000 && code < 1700000)
-                        || (code >= 3402000 && code < 3402080)
-                        || (code >= 5500000 && code < 6000000);
+                    return (
+                        (code >= 302000 && code < 306000) ||
+                        (code >= 500000 && code < 1700000) ||
+                        (code >= 3402000 && code < 3402080) ||
+                        (code >= 5500000 && code < 6000000)
+                    );
                 }
             },
             {
@@ -99,26 +100,38 @@ class FileCatalogRepository implements ICatalogRepository {
         this.addZoMoDates(catalogsConfig);
 
         const promiseArray = catalogsConfig.map(catalogConfig => {
-            const filePath = path.join(this.dataDir, catalogConfig.filename);
-            if (fs.existsSync(filePath)) {
-                return this.importCSVFile(filePath, catalogConfig.filterFunction).then(
-                    (data: CatalogData[]) => this.catalogs[catalogConfig.id] = new Catalog<CatalogData>(data, catalogConfig.uId)
-                );
-            } else {
-                return new Promise((resolve, reject) => {
-                    logger.warn('Catalog missing on Filesystem', { catalog: catalogConfig.filename });
-                    this.catalogs[catalogConfig.id] = new Catalog<CatalogData>([], catalogConfig.uId);
-                    resolve();
-                });
-            }
+            return loadCSVFile<CatalogData>(
+                catalogConfig.filename,
+                catalogConfig.filterFunction
+            ).then(
+                (data: CatalogData[]) =>
+                    (this.catalogs[catalogConfig.id] = createCatalog<
+                        CatalogData
+                    >(data, catalogConfig.uId)),
+                (error: Error) => {
+                    return new Promise((resolve, reject) => {
+                        logger.warn(
+                            `Catalog missing on Filesystem. catalog=${
+                                catalogConfig.filename
+                            }; error=${error}`
+                        );
+                        this.catalogs[catalogConfig.id] = createCatalog<
+                            CatalogData
+                        >([], catalogConfig.uId);
+                        resolve();
+                    });
+                }
+            );
         });
 
-        return Promise.all(promiseArray).then(
-            data => logger.info('Finished initialising Catalog Repository from Filesystem', { dataDir: this.dataDir })
+        return Promise.all(promiseArray).then(() =>
+            logger.info(
+                `Finished initialising Catalog Repository from Filesystem.`
+            )
         );
     }
 
-    getCatalog(catalogName: string): ICatalog<CatalogData> {
+    getCatalog(catalogName: string): Catalog<CatalogData> {
         return this.catalogs[catalogName];
     }
 
@@ -146,29 +159,10 @@ class FileCatalogRepository implements ICatalogRepository {
 
         return catalogsConfig;
     }
-
-    private importCSVFile(filePath: string, entryFilter: Function = () => true): Promise<CatalogData[]> {
-        let data: CatalogData[] = [];
-
-        return new Promise(function (resolve, reject) {
-            csv
-                .fromPath(filePath, { headers: true })
-                .on('data', function (entry) {
-                    if (entryFilter(entry)) {
-                        data.push(entry);
-                    }
-
-                })
-                .on('end', function () {
-                    resolve(data);
-                });
-        });
-    }
 }
-export const repository = new FileCatalogRepository(config.get('dataStore.dataDir'));
 
-export function initialiseRepository() {
-    return repository.initialise().then(
-        () => repository
-    );
+const repository = new FileCatalogRepository();
+
+export async function initialiseRepository() {
+    return repository.initialise().then(() => repository);
 }

@@ -1,12 +1,13 @@
-import { createController, IDatasetController } from './../dataset.controller';
+import { createController, DatasetController } from './../dataset.controller';
 import * as mockReq from 'mock-express-request';
 import * as mockRes from 'mock-express-response';
-import { IDatasetPort } from '../../../../app/ports';
- // tslint:disable
-describe('Dataset controller', () => {
+import { DatasetPort } from '../../../../app/ports';
+jest.mock('./../../../../app/ports');
 
-    let controller: IDatasetController;
-    let mockDatasetService: IDatasetPort;
+// tslint:disable
+describe('Dataset controller', () => {
+    let controller: DatasetController;
+    let mockDatasetService: DatasetPort;
     beforeEach(() => {
         mockDatasetService = {
             sendDatasetFile: jest.fn()
@@ -24,38 +25,40 @@ describe('Dataset controller', () => {
         expect(result).toBeInstanceOf(Promise);
     });
     it('should be return a 500 response', () => {
-        mockDatasetService.sendDatasetFile = jest.fn(() => { throw new Error(); });
+        mockDatasetService.sendDatasetFile = jest.fn(() => {
+            throw new Error();
+        });
         const req = new mockReq({
             body: {
-                firstName: 'test'
+                email: 'test'
             }
         });
         req.file = true;
         const res = new mockRes();
         expect.assertions(1);
-        return controller.submitDataset(req, res).then(
-            success => expect(res.statusCode).toBe(500)
-        );
+        return controller
+            .submitDataset(req, res)
+            .then(success => expect(res.statusCode).toBe(500));
     });
     it('should be return a 200 response', () => {
         const req = new mockReq({
             body: {
-                firstName: 'test'
+                email: 'test'
             }
         });
         req.file = true;
         const res = new mockRes();
         expect.assertions(1);
-        return controller.submitDataset(req, res).then(
-            success => expect(res.statusCode).toBe(200)
-        );
+        return controller
+            .submitDataset(req, res)
+            .then(success => expect(res.statusCode).toBe(200));
     });
     it('should be return a 400 response', () => {
         const req = new mockReq();
         const res = new mockRes();
         expect.assertions(1);
-        return controller.submitDataset(req, res).then(
-            success => expect(res.statusCode).toBe(400)
-        );
+        return controller
+            .submitDataset(req, res)
+            .then(success => expect(res.statusCode).toBe(400));
     });
 });

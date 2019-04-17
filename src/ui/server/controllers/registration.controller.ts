@@ -1,18 +1,19 @@
 import { Request, Response } from 'express';
-import * as config from 'config';
 import { logger } from '../../../aspects';
-import { IController, RegistrationPort } from '../../../app/ports';
+import { RegistrationPort, getConfigurationService } from '../../../app/ports';
+import { Controller } from '../model/controler.model';
 
-export interface IRegistrationController extends IController {
+export interface RegistrationController extends Controller {
     register(req: Request, res: Response): void;
     activate(req: Request, res: Response): Promise<void>;
 }
 
-const SUPPORT_CONTACT = config.get('supportContact');
+const generalConfig = getConfigurationService().getGeneralConfiguration();
 
-class RegistrationController implements IRegistrationController {
+const SUPPORT_CONTACT = generalConfig.supportContact;
 
-    constructor(private registrationService: RegistrationPort) { }
+class DefaultRegistrationController implements RegistrationController {
+    constructor(private registrationService: RegistrationPort) {}
 
     async activate(req: Request, res: Response) {
         let dto;
@@ -23,7 +24,11 @@ class RegistrationController implements IRegistrationController {
             };
             res.status(200);
         } catch (err) {
-            logger.error('Unable to activate user', { error: err });
+            logger.error(
+                `Unable to activate user. error=${err}; token=${
+                    req.params.token
+                }`
+            );
             dto = {
                 activation: false
             };
@@ -36,7 +41,9 @@ class RegistrationController implements IRegistrationController {
     async adminactivate(req: Request, res: Response) {
         let dto;
         try {
-            const userName = await this.registrationService.adminActivateUser(req.params.token);
+            const userName = await this.registrationService.adminActivateUser(
+                req.params.token
+            );
             dto = {
                 title: `Admin Kontoaktivierung erfolgreich! Bestätigung gesendet an ${userName}`, // 'Account Activation successful!'
                 obj: userName,
@@ -44,7 +51,11 @@ class RegistrationController implements IRegistrationController {
             };
             res.status(200);
         } catch (err) {
-            logger.error('Unable to admin activate user', { error: err });
+            logger.error(
+                `Unable to admin activate user. error=${err}; token=${
+                    req.params.token
+                }`
+            );
             dto = {
                 activation: false
             };
@@ -55,17 +66,17 @@ class RegistrationController implements IRegistrationController {
     }
 
     async register(req: Request, res: Response) {
-
         const credentials = this.fromRequestToCredentials(req);
         logger.info('RegistrationController.register, Request received');
         let dto;
         try {
             await this.registrationService.registerUser(credentials);
             dto = {
-                title: `Bitte aktivieren Sie Ihren Account: Eine Email mit weiteren Anweisungen wurde an ${credentials.email} gesendet` // `Please activate your account: An email has been sent to ${credentials.email} with further instructions`
+                title: `Bitte aktivieren Sie Ihren Account: Eine Email mit weiteren Anweisungen wurde an ${
+                    credentials.email
+                } gesendet` // `Please activate your account: An email has been sent to ${credentials.email} with further instructions`
             };
             res.status(200);
-
         } catch (err) {
             logger.error(`Unable to register user. error=${err}`);
             dto = {
@@ -93,6 +104,6 @@ class RegistrationController implements IRegistrationController {
     }
 }
 
-export function createRegistrationController(service: RegistrationPort) {
-    return new RegistrationController(service);
+export function createController(service: RegistrationPort) {
+    return new DefaultRegistrationController(service);
 }
