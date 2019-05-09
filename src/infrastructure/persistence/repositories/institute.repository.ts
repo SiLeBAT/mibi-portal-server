@@ -1,24 +1,31 @@
 import {
     InstituteRepository,
     Institute,
-    createInstitution,
-    ApplicationDomainError
+    createInstitution
 } from '../../../app/ports';
 import { mapModelToInstitution } from './data-mappers';
 import { InstitutionModel } from '../data-store/mongoose/schemas/institution.schema';
-import { InstitutionSchema } from '../data-store/mongoose/mongoose';
-import {
-    createRepository,
-    RepositoryBase
-} from '../data-store/mongoose/mongoose.repository';
+import { MongooseRepositoryBase } from '../data-store/mongoose/mongoose.repository';
+import { injectable, inject } from 'inversify';
+import { Model } from 'mongoose';
+import { PERSISTENCE_TYPES } from '../persistence.types';
+import { InstituteNotFoundError } from '../model/domain.error';
 
-class DefaultInstituteRepository implements InstituteRepository {
-    constructor(private baseRepo: RepositoryBase<InstitutionModel>) {}
+@injectable()
+export class MongooseInstituteRepository
+    extends MongooseRepositoryBase<InstitutionModel>
+    implements InstituteRepository {
+    constructor(
+        @inject(PERSISTENCE_TYPES.InstitutionModel)
+        private model: Model<InstitutionModel>
+    ) {
+        super(model);
+    }
 
-    findById(id: string): Promise<Institute> {
-        return this.baseRepo.findById(id).then(m => {
+    findByInstituteId(id: string): Promise<Institute> {
+        return super._findById(id).then(m => {
             if (!m) {
-                throw new ApplicationDomainError(
+                throw new InstituteNotFoundError(
                     `Institute not found. id=${id}`
                 );
             }
@@ -27,13 +34,13 @@ class DefaultInstituteRepository implements InstituteRepository {
     }
 
     retrieve(): Promise<Institute[]> {
-        return this.baseRepo.retrieve().then(modelArray => {
+        return super._retrieve().then(modelArray => {
             return modelArray.map(m => mapModelToInstitution(m));
         });
     }
 
-    createInstitution(institution: Institute): Promise<Institute> {
-        const newInstitution = new InstitutionSchema({
+    createInstitute(institution: Institute): Promise<Institute> {
+        const newInstitution = new this.model({
             state_short: institution.stateShort,
             name1: institution.name,
             city: institution.city,
@@ -41,17 +48,17 @@ class DefaultInstituteRepository implements InstituteRepository {
             phone: institution.phone,
             fax: institution.fax
         });
-        return this.baseRepo
-            .create(newInstitution)
+        return super
+            ._create(newInstitution)
             .then(model => createInstitution(model._id.toHexString()));
     }
 
-    findByInstitutionName(name: string): Promise<Institute> {
-        return this.baseRepo
-            .findOne({ name1: name })
+    findByInstituteName(name: string): Promise<Institute> {
+        return super
+            ._findOne({ name1: name })
             .then((model: InstitutionModel) => {
                 if (!model) {
-                    throw new ApplicationDomainError(
+                    throw new InstituteNotFoundError(
                         `Institute not found. name=${name}`
                     );
                 }
@@ -59,7 +66,3 @@ class DefaultInstituteRepository implements InstituteRepository {
             });
     }
 }
-
-export const repository: InstituteRepository = new DefaultInstituteRepository(
-    createRepository(InstitutionSchema)
-);

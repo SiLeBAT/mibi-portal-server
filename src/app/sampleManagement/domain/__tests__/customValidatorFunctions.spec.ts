@@ -17,14 +17,13 @@ import {
     ValidationError,
     MatchADVNumberOrStringOptions
 } from './../../model/validation.model';
-import { SampleData } from '../../model/sample.model';
 import { CatalogService, Catalog } from '../../model/catalog.model';
 jest.mock('../../../ports');
 
 moment.locale('de');
 
 describe('Custom Validator Functions', () => {
-    let testSample: SampleData;
+    let testSample: Record<string, string>;
     let validationError: ValidationError;
 
     beforeEach(() => {
@@ -425,7 +424,7 @@ describe('Custom Validator Functions', () => {
 
     describe('registeredZoMo', () => {
         it('should validate without errors', () => {
-            const zoMoSample = {
+            const zoMoSample: Record<string, string> = {
                 ...testSample,
                 ...{
                     sampling_reason_adv: '81',

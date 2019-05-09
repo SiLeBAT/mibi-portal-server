@@ -1,37 +1,25 @@
-import {
-    NRLRepository,
-    ApplicationSystemError,
-    NRLConfig
-} from '../../../app/ports';
+import { NRLRepository, NRLConfig } from '../../../app/ports';
 import { mapModelToNRL } from './data-mappers';
 import { NRLModel } from '../data-store/mongoose/schemas/nrl.schema';
-import {
-    createRepository,
-    Read
-} from '../data-store/mongoose/mongoose.repository';
-import { NRLSchema } from '../data-store/mongoose/mongoose';
+import { MongooseRepositoryBase } from '../data-store/mongoose/mongoose.repository';
+import { injectable, inject } from 'inversify';
+import { Model } from 'mongoose';
+import { PERSISTENCE_TYPES } from '../persistence.types';
 
-class DefaultNRLRepository implements NRLRepository {
-    constructor(private baseRepo: Read<NRLModel>) {}
-
-    getAllNRLs(): Promise<NRLConfig[]> {
-        return this.retrieve();
+@injectable()
+export class MongooseNRLRepository extends MongooseRepositoryBase<NRLModel>
+    implements NRLRepository {
+    constructor(@inject(PERSISTENCE_TYPES.NRLModel) model: Model<NRLModel>) {
+        super(model);
     }
 
-    private retrieve(): Promise<NRLConfig[]> {
-        return this.baseRepo
-            .retrieve()
+    getAllNRLs(): Promise<NRLConfig[]> {
+        return this._retrieve()
             .then(modelArray => {
                 return modelArray.map(m => mapModelToNRL(m));
             })
             .catch(error => {
-                throw new ApplicationSystemError(
-                    `Unable to load NRL Data. error=${error}`
-                );
+                throw error;
             });
     }
 }
-
-export const repository: NRLRepository = new DefaultNRLRepository(
-    createRepository(NRLSchema)
-);

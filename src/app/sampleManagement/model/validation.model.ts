@@ -1,10 +1,11 @@
-import { Sample, SampleData, SampleCollection } from './sample.model';
+import { Sample, SampleProperty, SamplePropertyValues } from './sample.model';
 import { CatalogService } from './catalog.model';
 
 export interface ValidationError {
     code: number;
     level: number;
     message: string;
+    correctionOffer?: string[];
 }
 
 export interface NRLConfig {
@@ -68,9 +69,9 @@ export interface ValidationOptions {
 }
 export interface FormValidatorPort {
     validateSamples(
-        sampleCollection: SampleCollection,
+        sampleCollection: Sample[],
         validationOptions: ValidationOptions
-    ): Promise<SampleCollection>;
+    ): Promise<Sample[]>;
 }
 
 export interface FormValidatorService extends FormValidatorPort {}
@@ -89,8 +90,8 @@ export interface ValidatorFunction<T extends ValidatiorFunctionOptions> {
     (
         value: string,
         options: T,
-        key: keyof SampleData,
-        attributes: SampleData
+        key: SampleProperty,
+        attributes: SamplePropertyValues
     ): ValidationError | null;
 }
 interface ValidatiorFunctionOptions {
@@ -107,13 +108,13 @@ export interface MatchRegexPatternOptions extends MatchIdToYearOptions {
 
 export interface DependentFieldEntryOptions extends ValidatiorFunctionOptions {
     regex: string;
-    field: keyof SampleData;
+    field: SampleProperty;
 }
 
 export interface NonUniqueEntryOptions extends ValidatiorFunctionOptions {
     catalog: string;
     key: string;
-    differentiator: [string, keyof SampleData];
+    differentiator: [string, SampleProperty];
 }
 
 export interface InCatalogOptions extends ValidatiorFunctionOptions {
@@ -127,7 +128,7 @@ export interface MatchADVNumberOrStringOptions extends InCatalogOptions {
 
 interface Group {
     code: string;
-    attr: keyof SampleData;
+    attr: SampleProperty;
 }
 export interface RegisteredZoMoOptions extends ValidatiorFunctionOptions {
     year: string[];
@@ -135,18 +136,18 @@ export interface RegisteredZoMoOptions extends ValidatiorFunctionOptions {
 }
 
 export interface AtLeastOneOfOptions extends ValidatiorFunctionOptions {
-    additionalMembers: (keyof SampleData)[];
+    additionalMembers: (SampleProperty)[];
 }
 
 export interface DependentFieldsOptions extends ValidatiorFunctionOptions {
-    dependents: (keyof SampleData)[];
+    dependents: (SampleProperty)[];
 }
 
 export interface NumbersOnlyOptions extends ValidatiorFunctionOptions {}
 
 export interface ReferenceDateOptions extends ValidatiorFunctionOptions {
-    earliest?: (keyof SampleData) | string;
-    latest?: (keyof SampleData) | string;
+    earliest?: (SampleProperty) | string;
+    latest?: (SampleProperty) | string;
     modifier?: {
         value: number;
         unit: string;

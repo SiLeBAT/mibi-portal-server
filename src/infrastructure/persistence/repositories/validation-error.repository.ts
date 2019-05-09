@@ -1,36 +1,29 @@
-import {
-    ValidationErrorRepository,
-    ApplicationSystemError,
-    ValidationError
-} from '../../../app/ports';
+import { ValidationErrorRepository, ValidationError } from '../../../app/ports';
 import { mapModelToValidationError } from './data-mappers';
-import { logger } from '../../../aspects';
 import { ValidationErrorModel } from '../data-store/mongoose/schemas/validationError.schema';
-import { ValidationErrorSchema } from '../data-store/mongoose/mongoose';
-import {
-    createRepository,
-    Read
-} from '../data-store/mongoose/mongoose.repository';
-class DefaultValidationErrorRepository implements ValidationErrorRepository {
-    constructor(private baseRepo: Read<ValidationErrorModel>) {}
-
-    getAllErrors(): Promise<ValidationError[]> {
-        return this.retrieve();
+import { MongooseRepositoryBase } from '../data-store/mongoose/mongoose.repository';
+import { injectable, inject } from 'inversify';
+import { Model } from 'mongoose';
+import { PERSISTENCE_TYPES } from '../persistence.types';
+@injectable()
+export class DefaultValidationErrorRepository
+    extends MongooseRepositoryBase<ValidationErrorModel>
+    implements ValidationErrorRepository {
+    constructor(
+        @inject(PERSISTENCE_TYPES.ValidationErrorModel)
+        model: Model<ValidationErrorModel>
+    ) {
+        super(model);
     }
 
-    private retrieve(): Promise<ValidationError[]> {
-        return this.baseRepo
-            .retrieve()
+    getAllErrors(): Promise<ValidationError[]> {
+        return super
+            ._retrieve()
             .then(modelArray => {
                 return modelArray.map(m => mapModelToValidationError(m));
             })
             .catch(error => {
-                logger.error(error);
-                throw new ApplicationSystemError('Unable to load NRL Data');
+                throw error;
             });
     }
 }
-
-export const repository: ValidationErrorRepository = new DefaultValidationErrorRepository(
-    createRepository(ValidationErrorSchema)
-);

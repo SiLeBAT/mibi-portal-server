@@ -1,105 +1,101 @@
-import {
-    UserRepository,
-    createUser,
-    User,
-    ApplicationDomainError,
-    ApplicationSystemError
-} from '../../../app/ports';
+import { UserRepository, createUser, User } from '../../../app/ports';
 
 import { mapModelToUser } from './data-mappers';
 import {
     UserModel,
     UserModelUpdateResponse
 } from '../data-store/mongoose/schemas/user.schema';
-import { UserSchema } from '../data-store/mongoose/mongoose';
-import {
-    createRepository,
-    RepositoryBase
-} from '../data-store/mongoose/mongoose.repository';
+import { MongooseRepositoryBase } from '../data-store/mongoose/mongoose.repository';
+import { UserNotFoundError, UserUpdateError } from '../model/domain.error';
+import { injectable, inject } from 'inversify';
+import { Model } from 'mongoose';
+import { PERSISTENCE_TYPES } from '../persistence.types';
 
-class DefaultUserRepository implements UserRepository {
-    constructor(private baseRepo: RepositoryBase<UserModel>) {}
-
-    findById(id: string) {
-        return this.baseRepo
-            .findById(id)
-            .then((userModel: UserModel) => {
-                if (!userModel) {
-                    throw new ApplicationDomainError(
-                        `User not found. id=${id}`
-                    );
-                }
-                return mapModelToUser(userModel);
-            })
-            .catch(error => {
-                throw new ApplicationDomainError(
-                    `User not found. userId=${id}; error=${error}`
-                );
-            });
+@injectable()
+export class DefaultUserRepository extends MongooseRepositoryBase<UserModel>
+    implements UserRepository {
+    constructor(
+        @inject(PERSISTENCE_TYPES.UserModel) private model: Model<UserModel>
+    ) {
+        super(model);
     }
 
-    findByUsername(username: string) {
-        const nameRegex = new RegExp(username, 'i');
-
-        return this.baseRepo
-            .findOne({ email: { $regex: nameRegex } })
+    findByUserId(id: string) {
+        return super
+            ._findById(id)
             .then((userModel: UserModel) => {
                 if (!userModel) return Promise.reject(null);
                 return populateWithAuxData(userModel);
             })
             .then((userModel: UserModel) => {
                 if (!userModel) {
-                    throw new ApplicationDomainError(
+                    throw new UserNotFoundError(`User not found. id=${id}`);
+                }
+                return mapModelToUser(userModel);
+            })
+            .catch(error => {
+                throw error;
+            });
+    }
+
+    findByUsername(username: string) {
+        const nameRegex = new RegExp(username, 'i');
+
+        return super
+            ._findOne({ email: { $regex: nameRegex } })
+            .then((userModel: UserModel) => {
+                if (!userModel) return Promise.reject(null);
+                return populateWithAuxData(userModel);
+            })
+            .then((userModel: UserModel) => {
+                if (!userModel) {
+                    throw new UserNotFoundError(
                         `User not found. username=${username}`
                     );
                 }
                 return mapModelToUser(userModel);
             })
-            .catch(() => {
-                throw new ApplicationDomainError(
-                    `User not found. username=${username}`
-                );
+            .catch(error => {
+                throw error;
             });
     }
 
     getPasswordForUser(username: string) {
         const nameRegex = new RegExp(username, 'i');
 
-        return this.baseRepo
-            .findOne({ email: { $regex: nameRegex } })
+        return super
+            ._findOne({ email: { $regex: nameRegex } })
             .then((userModel: UserModel) => {
                 if (!userModel) {
-                    throw new ApplicationDomainError(
+                    throw new UserNotFoundError(
                         `User not found. username=${username}`
                     );
                 }
                 return userModel.password;
             })
-            .catch(() => {
-                throw new ApplicationDomainError(
-                    `User not found. username=${username}`
-                );
+            .catch(error => {
+                throw error;
             });
     }
 
-    hasUser(username: string) {
+    hasUserWithEmail(username: string) {
         const nameRegex = new RegExp(username, 'i');
 
-        return this.baseRepo
-            .findOne({ email: { $regex: nameRegex } })
+        return super
+            ._findOne({ email: { $regex: nameRegex } })
             .then(docs => !!docs);
     }
 
     createUser(user: User) {
-        const newUser = new UserSchema({
+        const newUser = new this.model({
             institution: user.institution.uniqueId,
             firstName: user.firstName,
             lastName: user.lastName,
             email: user.email,
             password: user.password
         });
-        return this.baseRepo
-            .create(newUser)
+        return super
+            ._create(newUser)
             .then(model =>
                 createUser(
                     model._id.toHexString(),
@@ -112,37 +108,33 @@ class DefaultUserRepository implements UserRepository {
                     model.adminEnabled
                 )
             )
-            .catch(() => {
-                throw new ApplicationSystemError(
-                    `Unable to create user. user=${user}`
-                );
+            .catch(error => {
+                throw error;
             });
     }
 
     updateUser(user: User) {
-        return this.baseRepo
-            .update(user.uniqueId, {
+        return super
+            ._update(user.uniqueId, {
                 firstName: user.firstName,
                 lastName: user.lastName,
                 email: user.email,
                 password: user.password,
-                enabled: user.isActivated(),
-                adminEnabled: user.isAdminActivated(),
+                enabled: user.isVerified(),
+                adminEnabled: user.isActivated(),
                 numAttempt: user.getNumberOfFailedAttempts(),
                 lastAttempt: user.getLastLoginAttempt()
             })
             .then((response: UserModelUpdateResponse) => {
                 if (!response.ok) {
-                    throw new ApplicationSystemError(
+                    throw new UserUpdateError(
                         `Response not OK. Unable to update user. user=${user}`
                     );
                 }
-                return this.findById(user.uniqueId);
+                return this.findByUserId(user.uniqueId);
             })
             .catch(error => {
-                throw new ApplicationSystemError(
-                    `Unable to update user. user=${user}; error=${error}`
-                );
+                throw error;
             });
     }
 }
@@ -156,7 +148,3 @@ function populateWithAuxData(model: UserModel): Promise<UserModel> {
         });
     });
 }
-
-export const repository: UserRepository = new DefaultUserRepository(
-    createRepository(UserSchema)
-);

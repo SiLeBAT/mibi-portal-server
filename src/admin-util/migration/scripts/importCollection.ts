@@ -6,9 +6,8 @@ import { Document } from 'mongoose';
 import { logger } from '../../../aspects';
 import {
     createDataStore,
-    DataStoreType,
-    DataStore,
-    mapCollectionToRepository
+    mapCollectionToRepository,
+    DataStore
 } from '../../../infrastructure/ports';
 
 start().catch(err => {
@@ -32,10 +31,7 @@ async function start() {
 }
 
 function connectToDB() {
-    const primaryDataStore = createDataStore(DataStoreType.MONGO);
-    return primaryDataStore.initialize(
-        config.get('dataStore.connectionString')
-    );
+    return createDataStore(config.get('dataStore.connectionString'));
 }
 
 function insertNewEntry(fields: string[], values: string[]) {
@@ -113,7 +109,8 @@ function writeToDB(collection: string, entries: any[]) {
     const db = connectToDB();
 
     db.drop(collection);
-    const repo = mapCollectionToRepository(collection);
+    // tslint:disable-next-line: no-any
+    const repo: any = mapCollectionToRepository(collection);
     const promises: Promise<Document>[] = [];
     entries.forEach(e => {
         logger.info(
@@ -141,7 +138,6 @@ function printUsage(scriptName: string) {
     );
     logger.info('e.g.');
     logger.info('//myCollection');
-    logger.info('//filed1   field2  field3');
     logger.info('');
     logger.info(
         '.json files should have the basename of the file be the name of the collection'

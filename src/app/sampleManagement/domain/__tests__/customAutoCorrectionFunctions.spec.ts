@@ -8,16 +8,71 @@ import {
     autoCorrectADV12,
     autoCorrectADV2
 } from '../custom-auto-correction-functions';
-import { SampleData, Sample } from '../../model/sample.model';
 import { CorrectionFunction } from '../../model/autocorrection.model';
+import { SampleData } from '../../model/sample.model';
 jest.mock('../../../core/application/configuration.service');
 
 describe('Custom Auto-correction Functions', () => {
+    const genericSampleData: SampleData = {
+        sample_id: { value: '1', errors: [], correctionOffer: [] },
+        sample_id_avv: { value: '1-ABC', errors: [], correctionOffer: [] },
+        pathogen_adv: {
+            value: 'Escherichia coli',
+            errors: [],
+            correctionOffer: []
+        },
+        pathogen_text: { value: '', errors: [], correctionOffer: [] },
+        sampling_date: { value: '01.02.2017', errors: [], correctionOffer: [] },
+        isolation_date: {
+            value: '01.03.2017',
+            errors: [],
+            correctionOffer: []
+        },
+        sampling_location_adv: {
+            value: '11000000',
+            errors: [],
+            correctionOffer: []
+        },
+        sampling_location_zip: {
+            value: '10787',
+            errors: [],
+            correctionOffer: []
+        },
+        sampling_location_text: {
+            value: 'Berlin',
+            errors: [],
+            correctionOffer: []
+        },
+        topic_adv: { value: '01', errors: [], correctionOffer: [] },
+        matrix_adv: { value: '063502', errors: [], correctionOffer: [] },
+        matrix_text: {
+            value: 'Hähnchen auch tiefgefroren',
+            errors: [],
+            correctionOffer: []
+        },
+        process_state_adv: { value: '999', errors: [], correctionOffer: [] },
+        sampling_reason_adv: { value: '10', errors: [], correctionOffer: [] },
+        sampling_reason_text: {
+            value: 'Planprobe',
+            errors: [],
+            correctionOffer: []
+        },
+        operations_mode_adv: {
+            value: '4010000',
+            errors: [],
+            correctionOffer: []
+        },
+        operations_mode_text: {
+            value: 'Lebensmitteleinzelhandel',
+            errors: [],
+            correctionOffer: []
+        },
+        vvvo: { value: '', errors: [], correctionOffer: [] },
+        comment: { value: '', errors: [], correctionOffer: [] }
+    };
     describe('autoCorrectADV16', () => {
         // tslint:disable-next-line
         let mockCatalogService: any;
-        let genericSampleData: SampleData;
-        let genericTestSample: Sample;
 
         beforeEach(() => {
             let mockADVEntries = [
@@ -62,41 +117,6 @@ describe('Custom Auto-correction Functions', () => {
                 }),
                 getCatalogSearchAliases: () => []
             };
-            genericSampleData = {
-                sample_id: '1',
-                sample_id_avv: '1-ABC',
-                pathogen_adv: 'Escherichia coli',
-                pathogen_text: '',
-                sampling_date: '01.02.2017',
-                isolation_date: '01.03.2017',
-                sampling_location_adv: '11000000',
-                sampling_location_zip: '10787',
-                sampling_location_text: 'Berlin',
-                topic_adv: '01',
-                matrix_adv: '063502',
-                matrix_text: 'Hähnchen auch tiefgefroren',
-                process_state_adv: '999',
-                sampling_reason_adv: '10',
-                sampling_reason_text: 'Planprobe',
-                operations_mode_adv: '4010000',
-                operations_mode_text: 'Lebensmitteleinzelhandel',
-                vvvo: '',
-                comment: ''
-            };
-            genericTestSample = {
-                correctionSuggestions: [],
-                edits: {},
-                getData: jest.fn(() => genericSampleData),
-                pathogenId: '',
-                pathogenIdAVV: '',
-                setErrors: jest.fn(),
-                isZoMo: jest.fn(),
-                addErrorTo: jest.fn(),
-                addErrors: jest.fn(),
-                getErrors: jest.fn(),
-                correctField: jest.fn(),
-                clone: jest.fn()
-            };
         });
 
         it('should not attempt to correct string Escherichia coli in pathogen_adv', () => {
@@ -116,7 +136,11 @@ describe('Custom Auto-correction Functions', () => {
             const specificSampleData = {
                 ...genericSampleData,
                 ...{
-                    pathogen_adv: 'Escherigia coli'
+                    pathogen_adv: {
+                        value: 'Escherigia coli',
+                        errors: [],
+                        correctionOffer: []
+                    }
                 }
             };
 
@@ -140,7 +164,11 @@ describe('Custom Auto-correction Functions', () => {
             const specificSampleData = {
                 ...genericSampleData,
                 ...{
-                    pathogen_adv: '801014'
+                    pathogen_adv: {
+                        value: '801014',
+                        errors: [],
+                        correctionOffer: []
+                    }
                 }
             };
 
@@ -161,7 +189,11 @@ describe('Custom Auto-correction Functions', () => {
             const specificSampleData = {
                 ...genericSampleData,
                 ...{
-                    pathogen_adv: '0801014'
+                    pathogen_adv: {
+                        value: '0801014',
+                        errors: [],
+                        correctionOffer: []
+                    }
                 }
             };
 
@@ -182,7 +214,11 @@ describe('Custom Auto-correction Functions', () => {
             const specificSampleData = {
                 ...genericSampleData,
                 ...{
-                    pathogen_adv: 'E. coli'
+                    pathogen_adv: {
+                        value: 'E. coli',
+                        errors: [],
+                        correctionOffer: []
+                    }
                 }
             };
 
@@ -208,7 +244,7 @@ describe('Custom Auto-correction Functions', () => {
             const specificSampleData = {
                 ...genericSampleData,
                 ...{
-                    pathogen_adv: ''
+                    pathogen_adv: { value: '', errors: [], correctionOffer: [] }
                 }
             };
 
@@ -224,7 +260,11 @@ describe('Custom Auto-correction Functions', () => {
             const specificSampleData = {
                 ...genericSampleData,
                 ...{
-                    pathogen_adv: ' '
+                    pathogen_adv: {
+                        value: ' ',
+                        errors: [],
+                        correctionOffer: []
+                    }
                 }
             };
 
@@ -240,8 +280,6 @@ describe('Custom Auto-correction Functions', () => {
     describe('autoCorrectADV8', () => {
         // tslint:disable-next-line
         let mockCatalogService: any;
-        let genericSampleData: SampleData;
-        let genericTestSample: Sample;
 
         beforeEach(() => {
             let mockADVEntries = [
@@ -281,41 +319,6 @@ describe('Custom Auto-correction Functions', () => {
                 }),
                 getCatalogSearchAliases: () => []
             };
-            genericSampleData = {
-                sample_id: '1',
-                sample_id_avv: '1-ABC',
-                pathogen_adv: 'Escherichia coli',
-                pathogen_text: '',
-                sampling_date: '01.02.2017',
-                isolation_date: '01.03.2017',
-                sampling_location_adv: '11000000',
-                sampling_location_zip: '10787',
-                sampling_location_text: 'Berlin',
-                topic_adv: '01',
-                matrix_adv: '063502',
-                matrix_text: 'Hähnchen auch tiefgefroren',
-                process_state_adv: '999',
-                sampling_reason_adv: '10',
-                sampling_reason_text: 'Planprobe',
-                operations_mode_adv: '4010000',
-                operations_mode_text: 'Lebensmitteleinzelhandel',
-                vvvo: '',
-                comment: ''
-            };
-            genericTestSample = {
-                correctionSuggestions: [],
-                edits: {},
-                getData: jest.fn(() => genericSampleData),
-                pathogenId: '',
-                pathogenIdAVV: '',
-                setErrors: jest.fn(),
-                isZoMo: jest.fn(),
-                addErrorTo: jest.fn(),
-                addErrors: jest.fn(),
-                getErrors: jest.fn(),
-                correctField: jest.fn(),
-                clone: jest.fn()
-            };
         });
 
         it('should not attempt to correct correct string 4010000 operations_mode_adv', () => {
@@ -335,7 +338,11 @@ describe('Custom Auto-correction Functions', () => {
             const specificSampleData = {
                 ...genericSampleData,
                 ...{
-                    operations_mode_adv: ''
+                    operations_mode_adv: {
+                        value: '',
+                        errors: [],
+                        correctionOffer: []
+                    }
                 }
             };
 
@@ -351,7 +358,11 @@ describe('Custom Auto-correction Functions', () => {
             const specificSampleData = {
                 ...genericSampleData,
                 ...{
-                    operations_mode_adv: '40xxxxx'
+                    operations_mode_adv: {
+                        value: '40xxxxx',
+                        errors: [],
+                        correctionOffer: []
+                    }
                 }
             };
 
@@ -372,7 +383,11 @@ describe('Custom Auto-correction Functions', () => {
             const specificSampleData = {
                 ...genericSampleData,
                 ...{
-                    operations_mode_adv: '4010xxx'
+                    operations_mode_adv: {
+                        value: '4010xxx',
+                        errors: [],
+                        correctionOffer: []
+                    }
                 }
             };
 
@@ -393,7 +408,11 @@ describe('Custom Auto-correction Functions', () => {
             const specificSampleData = {
                 ...genericSampleData,
                 ...{
-                    operations_mode_adv: '401xxxx'
+                    operations_mode_adv: {
+                        value: '401xxxx',
+                        errors: [],
+                        correctionOffer: []
+                    }
                 }
             };
 
@@ -414,7 +433,11 @@ describe('Custom Auto-correction Functions', () => {
             const specificSampleData = {
                 ...genericSampleData,
                 ...{
-                    operations_mode_adv: '4xxxxxx'
+                    operations_mode_adv: {
+                        value: '4xxxxxx',
+                        errors: [],
+                        correctionOffer: []
+                    }
                 }
             };
 
@@ -435,8 +458,6 @@ describe('Custom Auto-correction Functions', () => {
     describe('autoCorrectADV9', () => {
         // tslint:disable-next-line
         let mockCatalogService: any;
-        let genericSampleData: SampleData;
-        let genericTestSample: Sample;
 
         beforeEach(() => {
             let mockADVEntries = [
@@ -470,41 +491,6 @@ describe('Custom Auto-correction Functions', () => {
                 }),
                 getCatalogSearchAliases: () => []
             };
-            genericSampleData = {
-                sample_id: '1',
-                sample_id_avv: '1-ABC',
-                pathogen_adv: 'Escherichia coli',
-                pathogen_text: '',
-                sampling_date: '01.02.2017',
-                isolation_date: '01.03.2017',
-                sampling_location_adv: '11000000',
-                sampling_location_zip: '10787',
-                sampling_location_text: 'Berlin',
-                topic_adv: '01',
-                matrix_adv: '063502',
-                matrix_text: 'Hähnchen auch tiefgefroren',
-                process_state_adv: '999',
-                sampling_reason_adv: '10',
-                sampling_reason_text: 'Planprobe',
-                operations_mode_adv: '4010000',
-                operations_mode_text: 'Lebensmitteleinzelhandel',
-                vvvo: '',
-                comment: ''
-            };
-            genericTestSample = {
-                correctionSuggestions: [],
-                edits: {},
-                getData: jest.fn(() => genericSampleData),
-                pathogenId: '',
-                pathogenIdAVV: '',
-                setErrors: jest.fn(),
-                isZoMo: jest.fn(),
-                addErrorTo: jest.fn(),
-                addErrors: jest.fn(),
-                getErrors: jest.fn(),
-                correctField: jest.fn(),
-                clone: jest.fn()
-            };
         });
 
         it('should not attempt to correct correct string 11000000 sampling_location_adv', () => {
@@ -524,7 +510,11 @@ describe('Custom Auto-correction Functions', () => {
             const specificSampleData = {
                 ...genericSampleData,
                 ...{
-                    sampling_location_adv: ''
+                    sampling_location_adv: {
+                        value: '',
+                        errors: [],
+                        correctionOffer: []
+                    }
                 }
             };
 
@@ -540,7 +530,11 @@ describe('Custom Auto-correction Functions', () => {
             const specificSampleData = {
                 ...genericSampleData,
                 ...{
-                    sampling_location_adv: '01051032'
+                    sampling_location_adv: {
+                        value: '01051032',
+                        errors: [],
+                        correctionOffer: []
+                    }
                 }
             };
 
@@ -556,7 +550,11 @@ describe('Custom Auto-correction Functions', () => {
             const specificSampleData = {
                 ...genericSampleData,
                 ...{
-                    sampling_location_adv: '1051032'
+                    sampling_location_adv: {
+                        value: '1051032',
+                        errors: [],
+                        correctionOffer: []
+                    }
                 }
             };
 
@@ -577,7 +575,11 @@ describe('Custom Auto-correction Functions', () => {
             const specificSampleData = {
                 ...genericSampleData,
                 ...{
-                    sampling_location_adv: '11000xxx'
+                    sampling_location_adv: {
+                        value: '11000xxx',
+                        errors: [],
+                        correctionOffer: []
+                    }
                 }
             };
 
@@ -598,8 +600,6 @@ describe('Custom Auto-correction Functions', () => {
     describe('autoCorrectADV3', () => {
         // tslint:disable-next-line
         let mockCatalogService: any;
-        let genericSampleData: SampleData;
-        let genericTestSample: Sample;
 
         beforeEach(() => {
             let mockADVEntries = [
@@ -627,41 +627,6 @@ describe('Custom Auto-correction Functions', () => {
                 }),
                 getCatalogSearchAliases: () => []
             };
-            genericSampleData = {
-                sample_id: '1',
-                sample_id_avv: '1-ABC',
-                pathogen_adv: 'Escherichia coli',
-                pathogen_text: '',
-                sampling_date: '01.02.2017',
-                isolation_date: '01.03.2017',
-                sampling_location_adv: '11000000',
-                sampling_location_zip: '10787',
-                sampling_location_text: 'Berlin',
-                topic_adv: '01',
-                matrix_adv: '063502',
-                matrix_text: 'Hähnchen auch tiefgefroren',
-                process_state_adv: '999',
-                sampling_reason_adv: '10',
-                sampling_reason_text: 'Planprobe',
-                operations_mode_adv: '4010000',
-                operations_mode_text: 'Lebensmitteleinzelhandel',
-                vvvo: '',
-                comment: ''
-            };
-            genericTestSample = {
-                correctionSuggestions: [],
-                edits: {},
-                getData: jest.fn(() => genericSampleData),
-                pathogenId: '',
-                pathogenIdAVV: '',
-                setErrors: jest.fn(),
-                isZoMo: jest.fn(),
-                addErrorTo: jest.fn(),
-                addErrors: jest.fn(),
-                getErrors: jest.fn(),
-                correctField: jest.fn(),
-                clone: jest.fn()
-            };
         });
 
         it('should not attempt to correct correct string 063502 matrix_adv', () => {
@@ -681,7 +646,7 @@ describe('Custom Auto-correction Functions', () => {
             const specificSampleData = {
                 ...genericSampleData,
                 ...{
-                    matrix_adv: ''
+                    matrix_adv: { value: '', errors: [], correctionOffer: [] }
                 }
             };
 
@@ -697,7 +662,11 @@ describe('Custom Auto-correction Functions', () => {
             const specificSampleData = {
                 ...genericSampleData,
                 ...{
-                    matrix_adv: '63502'
+                    matrix_adv: {
+                        value: '63502',
+                        errors: [],
+                        correctionOffer: []
+                    }
                 }
             };
 
@@ -718,8 +687,6 @@ describe('Custom Auto-correction Functions', () => {
     describe('autoCorrectADV12', () => {
         // tslint:disable-next-line
         let mockCatalogService: any;
-        let genericSampleData: SampleData;
-        let genericTestSample: Sample;
 
         beforeEach(() => {
             let mockADVEntries = [
@@ -751,41 +718,6 @@ describe('Custom Auto-correction Functions', () => {
                 }),
                 getCatalogSearchAliases: () => []
             };
-            genericSampleData = {
-                sample_id: '1',
-                sample_id_avv: '1-ABC',
-                pathogen_adv: 'Escherichia coli',
-                pathogen_text: '',
-                sampling_date: '01.02.2017',
-                isolation_date: '01.03.2017',
-                sampling_location_adv: '11000000',
-                sampling_location_zip: '10787',
-                sampling_location_text: 'Berlin',
-                topic_adv: '01',
-                matrix_adv: '063502',
-                matrix_text: 'Hähnchen auch tiefgefroren',
-                process_state_adv: '046',
-                sampling_reason_adv: '10',
-                sampling_reason_text: 'Planprobe',
-                operations_mode_adv: '4010000',
-                operations_mode_text: 'Lebensmitteleinzelhandel',
-                vvvo: '',
-                comment: ''
-            };
-            genericTestSample = {
-                correctionSuggestions: [],
-                edits: {},
-                getData: jest.fn(() => genericSampleData),
-                pathogenId: '',
-                pathogenIdAVV: '',
-                setErrors: jest.fn(),
-                isZoMo: jest.fn(),
-                addErrorTo: jest.fn(),
-                addErrors: jest.fn(),
-                getErrors: jest.fn(),
-                correctField: jest.fn(),
-                clone: jest.fn()
-            };
         });
 
         it('should not attempt to correct correct string 046 process_state_adv', () => {
@@ -805,7 +737,11 @@ describe('Custom Auto-correction Functions', () => {
             const specificSampleData = {
                 ...genericSampleData,
                 ...{
-                    process_state_adv: ''
+                    process_state_adv: {
+                        value: '',
+                        errors: [],
+                        correctionOffer: []
+                    }
                 }
             };
 
@@ -821,7 +757,11 @@ describe('Custom Auto-correction Functions', () => {
             const specificSampleData = {
                 ...genericSampleData,
                 ...{
-                    process_state_adv: '46'
+                    process_state_adv: {
+                        value: '46',
+                        errors: [],
+                        correctionOffer: []
+                    }
                 }
             };
 
@@ -842,7 +782,11 @@ describe('Custom Auto-correction Functions', () => {
             const specificSampleData = {
                 ...genericSampleData,
                 ...{
-                    process_state_adv: 'Kaltgeräuchert'
+                    process_state_adv: {
+                        value: 'Kaltgeräuchert',
+                        errors: [],
+                        correctionOffer: []
+                    }
                 }
             };
 
@@ -863,8 +807,6 @@ describe('Custom Auto-correction Functions', () => {
     describe('autoCorrectADV2', () => {
         // tslint:disable-next-line
         let mockCatalogService: any;
-        let genericSampleData: SampleData;
-        let genericTestSample: Sample;
 
         beforeEach(() => {
             let mockADVEntries = [
@@ -893,45 +835,11 @@ describe('Custom Auto-correction Functions', () => {
                             !!_.filter(mockADVEntries, e => e[k] === v)[0],
                         getEntriesWithKeyValue: (k: string, v: string) =>
                             // @ts-ignore
-                            _.filter(mockADVEntries, e => e[k] === v)
+                            _.filter(mockADVEntries, e => e[k] === v),
+                        containsUniqueEntryWithId: (v: string) => true
                     };
                 }),
                 getCatalogSearchAliases: () => []
-            };
-            genericSampleData = {
-                sample_id: '1',
-                sample_id_avv: '1-ABC',
-                pathogen_adv: 'Escherichia coli',
-                pathogen_text: '',
-                sampling_date: '01.02.2017',
-                isolation_date: '01.03.2017',
-                sampling_location_adv: '11000000',
-                sampling_location_zip: '10787',
-                sampling_location_text: 'Berlin',
-                topic_adv: '15',
-                matrix_adv: '001014',
-                matrix_text: 'Hähnchen auch tiefgefroren',
-                process_state_adv: '046',
-                sampling_reason_adv: '10',
-                sampling_reason_text: 'Planprobe',
-                operations_mode_adv: '4010000',
-                operations_mode_text: 'Lebensmitteleinzelhandel',
-                vvvo: '',
-                comment: ''
-            };
-            genericTestSample = {
-                correctionSuggestions: [],
-                edits: {},
-                getData: jest.fn(() => genericSampleData),
-                pathogenId: '',
-                pathogenIdAVV: '',
-                setErrors: jest.fn(),
-                isZoMo: jest.fn(),
-                addErrorTo: jest.fn(),
-                addErrors: jest.fn(),
-                getErrors: jest.fn(),
-                correctField: jest.fn(),
-                clone: jest.fn()
             };
         });
 
@@ -952,7 +860,12 @@ describe('Custom Auto-correction Functions', () => {
             const specificSampleData = {
                 ...genericSampleData,
                 ...{
-                    topic_adv: ''
+                    matrix_adv: {
+                        value: '001014',
+                        errors: [],
+                        correctionOffer: []
+                    },
+                    topic_adv: { value: '', errors: [], correctionOffer: [] }
                 }
             };
 
@@ -973,8 +886,12 @@ describe('Custom Auto-correction Functions', () => {
             const specificSampleData = {
                 ...genericSampleData,
                 ...{
-                    topic_adv: '01',
-                    matrix_adv: '001014'
+                    topic_adv: { value: '01', errors: [], correctionOffer: [] },
+                    matrix_adv: {
+                        value: '001014',
+                        errors: [],
+                        correctionOffer: []
+                    }
                 }
             };
 
@@ -995,8 +912,12 @@ describe('Custom Auto-correction Functions', () => {
             const specificSampleData = {
                 ...genericSampleData,
                 ...{
-                    topic_adv: '01',
-                    matrix_adv: '020302'
+                    topic_adv: { value: '01', errors: [], correctionOffer: [] },
+                    matrix_adv: {
+                        value: '020302',
+                        errors: [],
+                        correctionOffer: []
+                    }
                 }
             };
 

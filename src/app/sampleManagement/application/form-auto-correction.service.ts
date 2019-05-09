@@ -10,57 +10,63 @@ import {
 } from '../domain/custom-auto-correction-functions';
 import {
     CorrectionFunction,
-    FormAutoCorrectionService
+    FormAutoCorrectionService,
+    CorrectionSuggestions
 } from '../model/autocorrection.model';
 import { CatalogService } from '../model/catalog.model';
 import { ValidationErrorProvider } from '../model/validation.model';
-import { SampleCollection, Sample } from '../model/sample.model';
+import { Sample, SampleData } from '../model/sample.model';
+import { injectable, inject } from 'inversify';
+import { APPLICATION_TYPES } from './../../application.types';
 
-class DefaultFormAutoCorrectionService implements FormAutoCorrectionService {
+@injectable()
+export class DefaultFormAutoCorrectionService
+    implements FormAutoCorrectionService {
     private correctionFunctions: CorrectionFunction[] = [];
 
     constructor(
+        @inject(APPLICATION_TYPES.CatalogService)
         private catalogService: CatalogService,
+        @inject(APPLICATION_TYPES.ValidationErrorProvider)
         private validationErrorProvider: ValidationErrorProvider
     ) {
         this.registerCorrectionFunctions();
     }
 
-    async applyAutoCorrection(
-        sampleCollection: SampleCollection
-    ): Promise<SampleCollection> {
+    async applyAutoCorrection(sampleCollection: Sample[]): Promise<Sample[]> {
         logger.verbose(
-            'FormAutoCorrectionService.applyAutoCorrection, Starting Sample autoCorrection'
+            `${this.constructor.name}.${
+                this.applyAutoCorrection.name
+            }, starting Sample autoCorrection`
         );
 
-        let results = sampleCollection.samples.map(sample => {
+        let results = sampleCollection.map(sample => {
             const newSample: Sample = sample.clone();
+            const sampleData: SampleData = newSample.getAnnotatedData();
             this.correctionFunctions.forEach(fn => {
-                const correction = fn(newSample.getData());
+                const correction: CorrectionSuggestions | null = fn(sampleData);
                 if (correction) {
-                    newSample.correctionSuggestions.push(correction);
+                    newSample.addCorrectionTo(
+                        '' + correction.field,
+                        correction.correctionOffer
+                    );
                     if (correction.code) {
                         const err = this.validationErrorProvider.getError(
                             correction.code
                         );
-                        newSample.addErrorTo(correction.field, err);
+                        newSample.addErrorTo('' + correction.field, err);
                     }
-                    // Resolve single suggestion corrections
-                    const singleCorrections = _.remove(
-                        newSample.correctionSuggestions,
-                        c => c.correctionOffer.length === 1
-                    );
-                    for (let ac of singleCorrections) {
-                        const data = newSample.getData();
-                        newSample.edits[ac.field] = data[ac.field];
-                        data[ac.field] = ac.correctionOffer[0];
-                    }
+                    newSample.clearSingleCorrectionSuggestions();
                 }
             });
             return newSample;
         });
-        logger.info('Finishing Sample autoCorrection');
-        return { samples: results };
+        logger.info(
+            `${this.constructor.name}.${
+                this.applyAutoCorrection.name
+            }, finishing Sample autoCorrection`
+        );
+        return results;
     }
 
     private registerCorrectionFunctions() {
@@ -71,14 +77,4 @@ class DefaultFormAutoCorrectionService implements FormAutoCorrectionService {
         this.correctionFunctions.push(autoCorrectADV12(this.catalogService));
         this.correctionFunctions.push(autoCorrectADV2(this.catalogService));
     }
-}
-
-export function createService(
-    catalogService: CatalogService,
-    validationErrorProvider: ValidationErrorProvider
-): FormAutoCorrectionService {
-    return new DefaultFormAutoCorrectionService(
-        catalogService,
-        validationErrorProvider
-    );
 }

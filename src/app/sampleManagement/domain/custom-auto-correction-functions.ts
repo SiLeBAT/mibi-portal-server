@@ -1,20 +1,21 @@
 import * as _ from 'lodash';
 import { logger } from '../../../aspects';
-import { SampleData } from '../model/sample.model';
+import { SampleData, SampleProperty } from '../model/sample.model';
 import {
     CorrectionSuggestions,
     SearchAlias,
     CatalogEnhancement,
     ResultOptions,
-    FuzzySearchResultEntry
+    FuzzySearchResultEntry,
+    CorrectionFunction
 } from '../model/autocorrection.model';
 import { CatalogService } from '../model/catalog.model';
 
-function autoCorrectADV2(catalogService: CatalogService) {
+function autoCorrectADV2(catalogService: CatalogService): CorrectionFunction {
     const catalogName = 'adv2';
     const dependencyCatalogName = 'adv3';
-    const property: keyof SampleData = 'topic_adv';
-    const dependencyProperty: keyof SampleData = 'matrix_adv';
+    const property: SampleProperty = 'topic_adv';
+    const dependencyProperty: SampleProperty = 'matrix_adv';
     const catalog = catalogService.getCatalog(catalogName);
     const dependencyCatalog = catalogService.getCatalog(dependencyCatalogName);
     logger.debug(
@@ -22,21 +23,22 @@ function autoCorrectADV2(catalogService: CatalogService) {
     );
 
     return (sampleData: SampleData): CorrectionSuggestions | null => {
-        let trimmedEntry = sampleData[property].trim();
+        const originalValue = sampleData[property].value;
+        let trimmedEntry = originalValue.trim();
 
         const dependencies = dependencyCatalog.getEntriesWithKeyValue(
             'Kode',
-            sampleData[dependencyProperty]
+            sampleData[dependencyProperty].value
         );
 
         if (dependencies.length === 0) {
             if (
-                trimmedEntry !== sampleData[property] &&
+                trimmedEntry !== originalValue &&
                 catalog.containsUniqueEntryWithId(trimmedEntry)
             ) {
                 return createCacheEntry(
                     property,
-                    sampleData[property],
+                    originalValue,
                     [catalog.getUniqueEntryWithId(trimmedEntry)['Kode']],
                     94
                 );
@@ -44,35 +46,30 @@ function autoCorrectADV2(catalogService: CatalogService) {
             return null;
         } else if (dependencies.length === 1) {
             const value = dependencies[0]['Kodiersystem'];
-            if (sampleData[property] === value) {
+            if (originalValue === value) {
                 if (
-                    trimmedEntry !== sampleData[property] &&
+                    trimmedEntry !== originalValue &&
                     catalog.containsUniqueEntryWithId(trimmedEntry)
                 ) {
                     return createCacheEntry(
                         property,
-                        sampleData[property],
+                        originalValue,
                         [catalog.getUniqueEntryWithId(trimmedEntry)['Kode']],
                         93
                     );
                 }
                 return null;
             } else {
-                return createCacheEntry(
-                    property,
-                    sampleData[property],
-                    [value],
-                    93
-                );
+                return createCacheEntry(property, originalValue, [value], 93);
             }
         }
         return null;
     };
 }
 
-function autoCorrectADV12(catalogService: CatalogService) {
+function autoCorrectADV12(catalogService: CatalogService): CorrectionFunction {
     const catalogName = 'adv12';
-    const property: keyof SampleData = 'process_state_adv';
+    const property: SampleProperty = 'process_state_adv';
     const catalog = catalogService.getCatalog(catalogName);
     logger.debug(
         'Initializing auto-correction: Process state (ADV-12) & creating closure'
@@ -81,7 +78,8 @@ function autoCorrectADV12(catalogService: CatalogService) {
     const searchCache: Record<string, CorrectionSuggestions> = {};
 
     return (sampleData: SampleData): CorrectionSuggestions | null => {
-        let trimmedEntry = sampleData[property].trim();
+        const originalValue = sampleData[property].value;
+        const trimmedEntry = originalValue.trim();
         // Ignore empty entries
         if (!trimmedEntry) {
             return null;
@@ -97,7 +95,7 @@ function autoCorrectADV12(catalogService: CatalogService) {
         if (alteredEntry && catalog.containsUniqueEntryWithId(alteredEntry)) {
             searchCache[trimmedEntry] = createCacheEntry(
                 property,
-                sampleData[property],
+                originalValue,
                 [catalog.getUniqueEntryWithId(alteredEntry)['Kode']],
                 92
             );
@@ -107,7 +105,7 @@ function autoCorrectADV12(catalogService: CatalogService) {
         if (catalog.containsEntryWithKeyValue('Text1', trimmedEntry)) {
             searchCache[trimmedEntry] = {
                 field: property,
-                original: sampleData[property],
+                original: originalValue,
                 correctionOffer: [
                     catalog.getEntriesWithKeyValue('Text1', trimmedEntry)[0][
                         'Kode'
@@ -122,9 +120,9 @@ function autoCorrectADV12(catalogService: CatalogService) {
     };
 }
 
-function autoCorrectADV3(catalogService: CatalogService) {
+function autoCorrectADV3(catalogService: CatalogService): CorrectionFunction {
     const catalogName = 'adv3';
-    const property: keyof SampleData = 'matrix_adv';
+    const property: SampleProperty = 'matrix_adv';
     const catalog = catalogService.getCatalog(catalogName);
     logger.debug(
         'Initializing auto-correction: Matrix (ADV-3) & creating closure'
@@ -133,7 +131,8 @@ function autoCorrectADV3(catalogService: CatalogService) {
     const searchCache: Record<string, CorrectionSuggestions> = {};
 
     return (sampleData: SampleData): CorrectionSuggestions | null => {
-        let trimmedEntry = sampleData[property].trim();
+        const originalValue = sampleData[property].value;
+        const trimmedEntry = originalValue.trim();
         // Ignore empty entries
         if (!trimmedEntry) {
             return null;
@@ -145,12 +144,12 @@ function autoCorrectADV3(catalogService: CatalogService) {
         }
 
         if (
-            trimmedEntry !== sampleData[property] &&
+            trimmedEntry !== originalValue &&
             catalog.containsEntryWithKeyValue('Kode', trimmedEntry)
         ) {
             searchCache[trimmedEntry] = createCacheEntry(
                 property,
-                sampleData[property],
+                originalValue,
                 [trimmedEntry],
                 91
             );
@@ -165,7 +164,7 @@ function autoCorrectADV3(catalogService: CatalogService) {
         ) {
             searchCache[trimmedEntry] = createCacheEntry(
                 property,
-                sampleData[property],
+                originalValue,
                 [alteredEntry],
                 91
             );
@@ -176,9 +175,9 @@ function autoCorrectADV3(catalogService: CatalogService) {
     };
 }
 
-function autoCorrectADV8(catalogService: CatalogService) {
+function autoCorrectADV8(catalogService: CatalogService): CorrectionFunction {
     const catalogName = 'adv8';
-    const property: keyof SampleData = 'operations_mode_adv';
+    const property: SampleProperty = 'operations_mode_adv';
     const catalog = catalogService.getCatalog(catalogName);
     logger.debug(
         'Initializing auto-correction: Operations Mode (ADV-8) & creating closure'
@@ -187,7 +186,8 @@ function autoCorrectADV8(catalogService: CatalogService) {
     const searchCache: Record<string, CorrectionSuggestions> = {};
 
     return (sampleData: SampleData): CorrectionSuggestions | null => {
-        let trimmedEntry = sampleData[property].trim();
+        const originalValue = sampleData[property].value;
+        let trimmedEntry = originalValue.trim();
         // Ignore empty entries
         if (!trimmedEntry) {
             return null;
@@ -199,12 +199,12 @@ function autoCorrectADV8(catalogService: CatalogService) {
         }
 
         if (
-            trimmedEntry !== sampleData[property] &&
+            trimmedEntry !== originalValue &&
             catalog.containsUniqueEntryWithId(trimmedEntry)
         ) {
             searchCache[trimmedEntry] = createCacheEntry(
                 property,
-                sampleData[property],
+                originalValue,
                 [catalog.getUniqueEntryWithId(trimmedEntry)['Kode']],
                 90
             );
@@ -251,7 +251,7 @@ function autoCorrectADV8(catalogService: CatalogService) {
             ) {
                 searchCache[trimmedEntry] = createCacheEntry(
                     property,
-                    sampleData[property],
+                    originalValue,
                     [catalog.getUniqueEntryWithId(alteredEntry)['Kode']],
                     90
                 );
@@ -263,9 +263,9 @@ function autoCorrectADV8(catalogService: CatalogService) {
     };
 }
 
-function autoCorrectADV9(catalogService: CatalogService) {
+function autoCorrectADV9(catalogService: CatalogService): CorrectionFunction {
     const catalogName = 'adv9';
-    const property: keyof SampleData = 'sampling_location_adv';
+    const property: SampleProperty = 'sampling_location_adv';
     const catalog = catalogService.getCatalog(catalogName);
     logger.debug(
         'Initializing auto-correction: Sampling location (ADV-9) & creating closure'
@@ -274,7 +274,8 @@ function autoCorrectADV9(catalogService: CatalogService) {
     const searchCache: Record<string, CorrectionSuggestions> = {};
 
     return (sampleData: SampleData): CorrectionSuggestions | null => {
-        let trimmedEntry = sampleData[property].trim();
+        const originalValue = sampleData[property].value;
+        const trimmedEntry = originalValue.trim();
         // Ignore empty entries
         if (!trimmedEntry) {
             return null;
@@ -286,12 +287,12 @@ function autoCorrectADV9(catalogService: CatalogService) {
         }
 
         if (
-            trimmedEntry !== sampleData[property] &&
+            trimmedEntry !== originalValue &&
             catalog.containsUniqueEntryWithId(trimmedEntry)
         ) {
             searchCache[trimmedEntry] = createCacheEntry(
                 property,
-                sampleData[property],
+                originalValue,
                 [catalog.getUniqueEntryWithId(trimmedEntry)['Kode']],
                 89
             );
@@ -302,7 +303,7 @@ function autoCorrectADV9(catalogService: CatalogService) {
         if (alteredEntry && catalog.containsUniqueEntryWithId(alteredEntry)) {
             searchCache[trimmedEntry] = createCacheEntry(
                 property,
-                sampleData[property],
+                originalValue,
                 [catalog.getUniqueEntryWithId(alteredEntry)['Kode']],
                 89
             );
@@ -313,7 +314,7 @@ function autoCorrectADV9(catalogService: CatalogService) {
         if (alteredEntry && catalog.containsUniqueEntryWithId(alteredEntry)) {
             searchCache[trimmedEntry] = createCacheEntry(
                 property,
-                sampleData[property],
+                originalValue,
                 [catalog.getUniqueEntryWithId(alteredEntry)['Kode']],
                 89
             );
@@ -325,9 +326,9 @@ function autoCorrectADV9(catalogService: CatalogService) {
 }
 
 // ADV16: see #mps53
-function autoCorrectADV16(catalogService: CatalogService) {
+function autoCorrectADV16(catalogService: CatalogService): CorrectionFunction {
     const catalogName = 'adv16';
-    const property: keyof SampleData = 'pathogen_adv';
+    const property: SampleProperty = 'pathogen_adv';
     const catalog = catalogService.getCatalog(catalogName);
     logger.debug(
         'Initializing auto-correction: Pathogen (ADV-16) & creating closure'
@@ -344,7 +345,8 @@ function autoCorrectADV16(catalogService: CatalogService) {
     const searchCache: Record<string, CorrectionSuggestions> = {};
 
     return (sampleData: SampleData): CorrectionSuggestions | null => {
-        let trimmedEntry = sampleData[property].trim();
+        const originalValue = sampleData[property].value;
+        let trimmedEntry = originalValue.trim();
         // Ignore empty entries
         if (!trimmedEntry) {
             return null;
@@ -367,7 +369,7 @@ function autoCorrectADV16(catalogService: CatalogService) {
             if (catalog.containsUniqueEntryWithId(trimmedEntry)) {
                 searchCache[trimmedEntry] = createCacheEntry(
                     property,
-                    sampleData[property],
+                    originalValue,
                     [catalog.getUniqueEntryWithId(trimmedEntry)['Text1']],
                     87
                 );
@@ -380,7 +382,7 @@ function autoCorrectADV16(catalogService: CatalogService) {
         if (catalog.containsEntryWithKeyValue('Text1', genusEntry)) {
             searchCache[trimmedEntry] = {
                 field: property,
-                original: sampleData[property],
+                original: originalValue,
                 correctionOffer: [genusEntry],
                 code: 88
             };
@@ -404,7 +406,7 @@ function autoCorrectADV16(catalogService: CatalogService) {
             property,
             numberOfResults: 20,
             alias,
-            original: sampleData[property]
+            original: originalValue
         };
         searchCache[trimmedEntry] = doFuzzySearch(
             alteredEntry,
@@ -417,7 +419,7 @@ function autoCorrectADV16(catalogService: CatalogService) {
 
 // Utility functions
 function createCacheEntry(
-    field: keyof SampleData,
+    field: SampleProperty,
     original: string,
     correctionOffer: string[],
     code: number

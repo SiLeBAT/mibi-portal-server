@@ -2,17 +2,17 @@ import { User } from './user.model';
 import { RecoveryData } from './login.model';
 
 export interface RegistrationPort {
-    activateUser(token: string): Promise<void>;
-    adminActivateUser(token: string): Promise<string>;
+    verifyUser(token: string): Promise<string>;
+    activateUser(token: string): Promise<string>;
     registerUser(credentials: UserRegistration): Promise<void>;
 }
 
 export interface RegistrationService extends RegistrationPort {
-    prepareUserForActivation(
+    prepareUserForVerification(
         user: User,
         recoveryData: RecoveryData
     ): Promise<void>;
-    handleUserIfNotAdminActivated(user: User): Promise<void>;
+    handleNotActivatedUser(user: User): void;
 }
 
 export interface UserRegistration {

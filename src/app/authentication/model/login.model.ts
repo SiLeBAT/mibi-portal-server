@@ -8,7 +8,6 @@ export interface UserLoginInformation extends UserCredentials {
 export interface LoginResponse {
     user: User;
     token: string;
-    timeToWait?: string;
 }
 
 export interface LoginPort {
@@ -23,7 +22,7 @@ export interface RecoveryData {
     userAgent: string;
 }
 export interface PasswordPort {
-    recoverPassword(recoveryData: RecoveryData): Promise<void>;
+    requestPasswordReset(recoveryData: RecoveryData): Promise<void>;
     resetPassword(token: string, password: string): Promise<void>;
 }
 
