@@ -10,7 +10,7 @@ moment.locale('de');
 
 type SampleData = Record<string, string>;
 const ENDPOINT = '/api/v1/validation';
-const API_URL = config.get('server.apiUrl');
+const API_URL = config.get('application.apiUrl');
 const DATA_DIR: string = 'testData';
 const FORM_PROPERTIES: string[] = [
     'sample_id',
@@ -196,7 +196,7 @@ const testUrl = API_URL + ENDPOINT;
 
 const parser = new ExcelToJsonService();
 
-describe('Test verification endpoint: ' + ENDPOINT, () => {
+describe('Test verification endpoint: ' + testUrl, () => {
     let queryArray: TestData[];
     beforeAll(async () => {
         queryArray = await getDataFromFiles();
