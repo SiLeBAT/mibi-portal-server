@@ -31,13 +31,24 @@ function mapModelToInstitution(i: InstitutionModel): Institute {
 }
 
 function mapModelToUser(model: UserModel): User {
-    const institution = mapModelToInstitution(model.institution);
+    // FIXME: Remove this for fcl
+    // const institution = mapModelToInstitution(model.institution);
     return createUser(
         model._id.toHexString(),
         model.email,
         model.firstName,
         model.lastName,
-        institution,
+        {
+            uniqueId: '5ceb924cc76307386ddbf038',
+            stateShort: 'BB',
+            name: 'Temporary Institute',
+            addendum: 'Temporary Address',
+            city: 'Berlin',
+            zip: '12345',
+            phone: '',
+            fax: '',
+            email: []
+        },
         model.password,
         model.enabled,
         model.adminEnabled,

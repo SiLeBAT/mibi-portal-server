@@ -68,6 +68,7 @@ export class MongooseInstituteRepository
             });
     }
 
+    // FIXME: Remove this for fcl
     private returnTemporaryInstitute(): Institute {
         return {
             uniqueId: '5ceb924cc76307386ddbf038',

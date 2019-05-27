@@ -24,10 +24,6 @@ export class DefaultUserRepository extends MongooseRepositoryBase<UserModel>
         return super
             ._findById(id)
             .then((userModel: UserModel) => {
-                if (!userModel) return Promise.reject(null);
-                return populateWithAuxData(userModel);
-            })
-            .then((userModel: UserModel) => {
                 if (!userModel) {
                     throw new UserNotFoundError(`User not found. id=${id}`);
                 }
@@ -43,10 +39,6 @@ export class DefaultUserRepository extends MongooseRepositoryBase<UserModel>
 
         return super
             ._findOne({ email: { $regex: nameRegex } })
-            .then((userModel: UserModel) => {
-                if (!userModel) return Promise.reject(null);
-                return populateWithAuxData(userModel);
-            })
             .then((userModel: UserModel) => {
                 if (!userModel) {
                     throw new UserNotFoundError(
@@ -137,14 +129,4 @@ export class DefaultUserRepository extends MongooseRepositoryBase<UserModel>
                 throw error;
             });
     }
-}
-
-function populateWithAuxData(model: UserModel): Promise<UserModel> {
-    // For some reason .populate does not return a promise and only works with callback: although the docs promise otherwise.
-    return new Promise(function(resolve, reject) {
-        model.populate({ path: 'institution' }, function(err, data) {
-            if (err !== null) return reject(err);
-            resolve(data);
-        });
-    });
 }
