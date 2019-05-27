@@ -24,12 +24,13 @@ export class MongooseInstituteRepository
 
     findByInstituteId(id: string): Promise<Institute> {
         return super._findById(id).then(m => {
-            if (!m) {
-                throw new InstituteNotFoundError(
-                    `Institute not found. id=${id}`
-                );
-            }
-            return mapModelToInstitution(m);
+            // if (!m) {
+            //     throw new ApplicationDomainError(
+            //         `Institute not found. id=${id}`
+            //     );
+            // }
+            //  return mapModelToInstitution(m);
+            return this.returnTemporaryInstitute();
         });
     }
 
@@ -57,12 +58,27 @@ export class MongooseInstituteRepository
         return super
             ._findOne({ name1: name })
             .then((model: InstitutionModel) => {
-                if (!model) {
-                    throw new InstituteNotFoundError(
-                        `Institute not found. name=${name}`
-                    );
-                }
-                return createInstitution(model._id.toHexString());
+                // if (!model) {
+                //     throw new ApplicationDomainError(
+                //         `Institute not found. name=${name}`
+                //     );
+                // }
+                // return createInstitution(model._id.toHexString());
+                return this.returnTemporaryInstitute();
             });
+    }
+
+    private returnTemporaryInstitute(): Institute {
+        return {
+            uniqueId: '5ceb924cc76307386ddbf038',
+            stateShort: 'BB',
+            name: 'Temporary Institute',
+            addendum: 'Temporary Address',
+            city: 'Berlin',
+            zip: '12345',
+            phone: '',
+            fax: '',
+            email: []
+        };
     }
 }
