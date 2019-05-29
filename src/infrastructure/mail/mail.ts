@@ -22,7 +22,7 @@ export class DefaultMailService implements MailService {
     private host = 'localhost';
     private port = 25;
 
-    private viewsDir = __dirname + '/views/de/';
+    private viewsDir = __dirname + '/views/en/';
 
     constructor(
         @inject(MAIL_TYPES.MailConfiguration)

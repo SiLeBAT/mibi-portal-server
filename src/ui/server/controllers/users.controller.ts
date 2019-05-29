@@ -301,8 +301,7 @@ export class DefaultUsersController extends AbstractController
                     registrationDetail.firstName &&
                     registrationDetail.lastName &&
                     registrationDetail.email &&
-                    registrationDetail.password &&
-                    registrationDetail.instituteId
+                    registrationDetail.password
                 )
             ) {
                 throw new MalformedRequestError(
@@ -314,7 +313,7 @@ export class DefaultUsersController extends AbstractController
                 lastName: registrationDetail.lastName,
                 email: registrationDetail.email,
                 password: registrationDetail.password,
-                institution: registrationDetail.instituteId,
+                institution: '',
                 userAgent: req.headers['user-agent'] as string,
                 host: req.headers['host'] as string
             };

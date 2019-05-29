@@ -9,7 +9,6 @@ import { MongooseRepositoryBase } from '../data-store/mongoose/mongoose.reposito
 import { injectable, inject } from 'inversify';
 import { Model } from 'mongoose';
 import { PERSISTENCE_TYPES } from '../persistence.types';
-import { InstituteNotFoundError } from '../model/domain.error';
 
 @injectable()
 export class MongooseInstituteRepository
@@ -23,15 +22,7 @@ export class MongooseInstituteRepository
     }
 
     findByInstituteId(id: string): Promise<Institute> {
-        return super._findById(id).then(m => {
-            // if (!m) {
-            //     throw new ApplicationDomainError(
-            //         `Institute not found. id=${id}`
-            //     );
-            // }
-            //  return mapModelToInstitution(m);
-            return this.returnTemporaryInstitute();
-        });
+        return Promise.resolve(this.returnTemporaryInstitute());
     }
 
     retrieve(): Promise<Institute[]> {
@@ -55,17 +46,7 @@ export class MongooseInstituteRepository
     }
 
     findByInstituteName(name: string): Promise<Institute> {
-        return super
-            ._findOne({ name1: name })
-            .then((model: InstitutionModel) => {
-                // if (!model) {
-                //     throw new ApplicationDomainError(
-                //         `Institute not found. name=${name}`
-                //     );
-                // }
-                // return createInstitution(model._id.toHexString());
-                return this.returnTemporaryInstitute();
-            });
+        return Promise.resolve(this.returnTemporaryInstitute());
     }
 
     // FIXME: Remove this for fcl
