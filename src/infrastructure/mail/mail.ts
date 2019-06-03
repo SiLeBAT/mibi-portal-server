@@ -106,7 +106,10 @@ export class DefaultMailService implements MailService {
             if (templateFile) {
                 this.sendMail(data.payload, templateFile.toString('utf-8'), {
                     ...data.meta,
-                    ...this.mailConfiguration
+                    ...{
+                        from: this.mailConfiguration.fromAddress,
+                        replyTo: this.mailConfiguration.replyToAddress
+                    }
                 });
             }
         };

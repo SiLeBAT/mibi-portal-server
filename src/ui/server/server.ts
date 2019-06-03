@@ -81,7 +81,9 @@ export class DefaultAppServer implements AppServer {
                 })
             );
             app.use(validateToken(serverConfig.jwtSecret));
+        });
 
+        this.server.setErrorConfig(app => {
             app.use((
                 // tslint:disable-next-line
                 err: any,
@@ -101,9 +103,7 @@ export class DefaultAppServer implements AppServer {
                         .end();
                 }
             });
-        });
 
-        this.server.setErrorConfig(app => {
             app.get('*', (req: express.Request, res: express.Response) => {
                 res.sendFile(
                     path.join(__dirname, this.publicDir + '/index.html')

@@ -16,7 +16,9 @@ export interface MailConfiguration {
     replyToAddress: string;
 }
 
-export interface MailOptions extends MailConfiguration {
+export interface MailOptions {
+    replyTo: string;
+    from: string;
     to: string;
     cc: string[];
     subject: string;
