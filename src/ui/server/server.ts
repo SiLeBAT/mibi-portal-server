@@ -80,7 +80,10 @@ export class DefaultAppServer implements AppServer {
                     swaggerUrl: ROUTE.VERSION
                 })
             );
-            app.use(validateToken(serverConfig.jwtSecret));
+            app.use(
+                ROUTE.VERSION + '/*',
+                validateToken(serverConfig.jwtSecret)
+            );
         });
 
         this.server.setErrorConfig(app => {
