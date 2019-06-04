@@ -348,7 +348,9 @@ export class DefaultRegistrationService implements RegistrationService {
 
             payload: {
                 name: fullName,
-                appName: this.appName
+                appName: this.appName,
+                action_url: this.apiUrl + '/users/login',
+                api_url: this.apiUrl
             },
             meta: this.notificationService.createEmailNotificationMetaData(
                 user.email,
@@ -366,7 +368,9 @@ export class DefaultRegistrationService implements RegistrationService {
             type: NotificationType.NOTIFICATION_NOT_ADMIN_ACTIVATED,
             payload: {
                 name: fullName,
-                appName: this.appName
+                appName: this.appName,
+                action_url: this.apiUrl + '/users/login',
+                api_url: this.apiUrl
             },
             meta: this.notificationService.createEmailNotificationMetaData(
                 user.email,
@@ -387,7 +391,8 @@ export class DefaultRegistrationService implements RegistrationService {
                 email: user.email,
                 institution: user.institution.name,
                 location: user.institution.addendum,
-                appName: this.appName
+                appName: this.appName,
+                api_url: this.apiUrl
             },
             meta: this.notificationService.createEmailNotificationMetaData(
                 this.supportContact,
@@ -411,7 +416,8 @@ export class DefaultRegistrationService implements RegistrationService {
             payload: {
                 name: fullName,
                 action_url: this.apiUrl + '/users/recovery',
-                appName: this.appName
+                appName: this.appName,
+                api_url: this.apiUrl
             },
             meta: this.notificationService.createEmailNotificationMetaData(
                 credentials.email,

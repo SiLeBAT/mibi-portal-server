@@ -28,11 +28,11 @@ export interface UserRegistration {
 interface BaseNotificationPayload {
     name: string;
     appName: string;
+    api_url: string;
 }
 export interface RequestActivationNotificationPayload
     extends BaseNotificationPayload {
     action_url: string;
-    api_url: string;
     operating_system: string;
     user_agent: string;
     support_contact: string;
@@ -41,7 +41,6 @@ export interface RequestActivationNotificationPayload
 export interface RequestAdminActivationNotificationPayload
     extends BaseNotificationPayload {
     action_url: string;
-    api_url: string;
     email: string;
     institution: string;
     location: string;
@@ -49,13 +48,14 @@ export interface RequestAdminActivationNotificationPayload
 
 export interface RequestForUnknownInstituteNotificationPayload
     extends BaseNotificationPayload {
-    api_url: string;
     email: string;
     institution: string;
 }
 
 export interface AdminActivationNotificationPayload
-    extends BaseNotificationPayload {}
+    extends BaseNotificationPayload {
+    action_url: string;
+}
 
 export interface AdminActivationReminderPayload
     extends BaseNotificationPayload {
