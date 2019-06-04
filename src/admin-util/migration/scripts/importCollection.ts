@@ -116,7 +116,7 @@ function writeToDB(collection: string, entries: any[]) {
         logger.info(
             `Adding entry to collection. collection=${collection} entry=${e.toString()}`
         );
-        promises.push(repo.create(e));
+        promises.push(repo._create(e));
     });
 
     Promise.all(promises)
