@@ -4,9 +4,8 @@ import {
     createDataStore,
     mapCollectionToRepository
 } from '../../../infrastructure/ports';
-import { InstitutionModel } from '../../../infrastructure/persistence/data-store/mongoose/schemas/institution.schema';
 import { RepositoryBase } from '../../../infrastructure/persistence/data-store/mongoose/mongoose.repository';
-
+// tslint:disable: no-any
 /**
  * Script used to split the location attribute in the institution entries into a zip and a city entry: For Ticket mps#92
  * Run: >NODE_CONFIG_DIR=../../../config node updateInstituteCollection.js
@@ -35,11 +34,10 @@ function connectToDB() {
 
 async function updateInstitutCollection() {
     const db = connectToDB();
-    // tslint:disable-next-line:no-any
     const promises: Promise<any>[] = [];
-    // tslint:disable-next-line:no-any
     const repo: any = mapCollectionToRepository('institutions');
-    const entries: InstitutionModel[] = await repo.retrieve();
+
+    const entries: any[] = await repo.retrieve();
 
     addZipAndCity(entries, promises, repo);
     Promise.all(promises)
@@ -52,12 +50,11 @@ async function updateInstitutCollection() {
 }
 
 function addZipAndCity(
-    entries: InstitutionModel[],
-    // tslint:disable-next-line:no-any
+    entries: any[],
     promises: Promise<any>[],
-    repo: RepositoryBase<InstitutionModel>
+    repo: RepositoryBase<any>
 ) {
-    entries.forEach((e: InstitutionModel) => {
+    entries.forEach((e: any) => {
         logger.info(`Updating entry. entry=${e.name1}`);
         const location = e.location;
         const matches = location.match(/(\d{5}) (.*)/) || ['', '', ''];

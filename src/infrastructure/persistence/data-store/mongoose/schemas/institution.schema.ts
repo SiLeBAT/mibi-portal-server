@@ -6,7 +6,6 @@ export interface InstitutionModel extends Document {
     state_short: string;
     name1: string;
     name2: string;
-    location: string;
     zip: string;
     city: string;
     phone: string;
@@ -25,10 +24,6 @@ export const institutionSchema = new Schema({
     },
     name2: {
         type: String
-    },
-    location: {
-        type: String,
-        required: true
     },
     phone: {
         type: String,
