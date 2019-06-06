@@ -381,7 +381,7 @@ export class DefaultRegistrationService implements RegistrationService {
         const fullName = user.firstName + ' ' + user.lastName;
 
         return {
-            type: NotificationType.NOTIFICATION_ALREADY_REGISTERED,
+            type: NotificationType.REMINDER_ADMIN_ACTIVATION,
             payload: {
                 name: fullName,
                 email: user.email,
