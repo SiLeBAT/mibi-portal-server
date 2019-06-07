@@ -22,18 +22,14 @@ const testUrl = API_URL + ENDPOINT;
 
 const parser = new DefaultExcelUnmarshalService();
 
-describe('Test verification endpoint: ' + ENDPOINT, () => {
+describe('Test verification endpoint: ' + testUrl, () => {
     let queryArray: TestData[];
     beforeAll(async () => {
         queryArray = await getDataFromFiles();
     });
 
     it('should give response', async () => {
-        // expect.assertions(queryArray.reduce((acc, current) => {
-        //     return acc + current.order.samples.length * 2;
-        // }, 0));
 
-        sleep(5000);
         const responseArray: ServerResponse[] = [];
         queryArray.forEach(
             q => {
@@ -122,13 +118,4 @@ function fromSampleSetMetaDataToDTO(
         sender: data.sender,
         urgency: data.urgency.toString()
     };
-}
-
-function sleep(milliseconds: number) {
-    const start = new Date().getTime();
-    for (let i = 0; i < 1e7; i++) {
-        if ((new Date().getTime() - start) > milliseconds) {
-            break;
-        }
-    }
 }
