@@ -2,22 +2,20 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as _ from 'lodash';
 import * as config from 'config';
-import * as moment from 'moment';
 import axios from 'axios';
 import { logger } from '../src/aspects';
 import { SampleSet } from '../src/app/ports';
 import { SampleSetMetaData, Sample } from '../src/app/sampleManagement/model/sample.model';
 import { SampleDataContainerDTO } from '../src/ui/server/model/shared-dto.model';
 import { DefaultExcelUnmarshalService } from '../src/app/sampleManagement/application/excel-unmarshal.service';
-moment.locale('de');
-
+// tslint:disable: no-console
+// tslint:disable: no-any
 const ENDPOINT = '/v1/samples/validated';
 const API_URL = config.get('application.apiUrl');
 const DATA_DIR: string = 'testData';
 
-// tslint:disable-next-line
+
 type TestData = any;
-// tslint:disable-next-line
 type ServerResponse = any;
 
 const testUrl = API_URL + ENDPOINT;
@@ -31,9 +29,9 @@ describe('Test verification endpoint: ' + ENDPOINT, () => {
     });
 
     it('should give response', async () => {
-        expect.assertions(queryArray.reduce((acc, current) => {
-            return acc + current.order.samples.length * 2;
-        }, 0));
+        // expect.assertions(queryArray.reduce((acc, current) => {
+        //     return acc + current.order.samples.length * 2;
+        // }, 0));
 
         const responseArray: ServerResponse[] = [];
         queryArray.forEach(
@@ -52,7 +50,6 @@ describe('Test verification endpoint: ' + ENDPOINT, () => {
             dataArray => {
                 dataArray.forEach(
                     d => {
-
                         d.order.samples.forEach((element: SampleDataContainerDTO) => {
                             const receivedCodes: number[] = [];
                             for (let key of Object.keys(element.sample)) {
