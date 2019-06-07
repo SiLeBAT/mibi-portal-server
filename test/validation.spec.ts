@@ -33,6 +33,7 @@ describe('Test verification endpoint: ' + ENDPOINT, () => {
         //     return acc + current.order.samples.length * 2;
         // }, 0));
 
+        sleep(5000);
         const responseArray: ServerResponse[] = [];
         queryArray.forEach(
             q => {
@@ -121,4 +122,13 @@ function fromSampleSetMetaDataToDTO(
         sender: data.sender,
         urgency: data.urgency.toString()
     };
+}
+
+function sleep(milliseconds: number) {
+    const start = new Date().getTime();
+    for (let i = 0; i < 1e7; i++) {
+        if ((new Date().getTime() - start) > milliseconds) {
+            break;
+        }
+    }
 }
