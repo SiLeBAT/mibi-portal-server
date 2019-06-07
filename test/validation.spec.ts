@@ -26,6 +26,9 @@ describe('Test verification endpoint: ' + testUrl, () => {
     let queryArray: TestData[];
     beforeAll(async () => {
         queryArray = await getDataFromFiles();
+        const waitTill = new Date(new Date().getTime() + 5 * 1000);
+        // tslint:disable-next-line: no-empty
+        while (waitTill > new Date()) { }
     });
 
     it('should give response', async () => {
