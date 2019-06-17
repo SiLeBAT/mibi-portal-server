@@ -22,6 +22,8 @@ const testUrl = API_URL + ENDPOINT;
 
 const parser = new DefaultExcelUnmarshalService();
 
+const config = { proxy: { host: 'webproxy.bfr.bund.de', port: '8080' } }
+
 describe('Test verification endpoint: ' + testUrl, () => {
     let queryArray: TestData[];
     beforeAll(async () => {
@@ -36,7 +38,7 @@ describe('Test verification endpoint: ' + testUrl, () => {
         const responseArray: ServerResponse[] = [];
         queryArray.forEach(
             q => {
-                responseArray.push(axios.put(testUrl, q)
+                responseArray.push(axios.put(testUrl, q, config)
                     .then(function (response) {
                         return response.data;
                     })
