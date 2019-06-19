@@ -109,20 +109,20 @@ export class DefaultSamplesController extends AbstractController
         try {
             const orderDTO: OrderDTO = req.body;
 
-            const annotatedSampleSet: SampleSet = this.fromDTOToSampleSet(
+            const sampleSet: SampleSet = this.fromDTOToUnannotatedSampleSet(
                 orderDTO.order
             );
             const validationOptions = await this.getValidationOptions(
-                annotatedSampleSet.meta,
+                sampleSet.meta,
                 req
             );
             const validationResult: Sample[] = await this.validateSamples(
-                annotatedSampleSet.samples,
+                sampleSet.samples,
                 validationOptions
             );
             const validatedOrderDTO: OrderDTO = this.fromSampleCollectionToOrderDTO(
                 validationResult,
-                annotatedSampleSet.meta
+                sampleSet.meta
             );
             logger.info(
                 `${this.constructor.name}.${
@@ -371,6 +371,22 @@ export class DefaultSamplesController extends AbstractController
         const payload: TokenPayload = this.tokenService.verifyToken(token);
         const userId = payload.sub;
         return this.userService.getUserById(userId);
+    }
+
+    private fromDTOToUnannotatedSampleSet(dto: SampleSetDTO): SampleSet {
+        const cleanedDto: SampleSetDTO = {
+            meta: dto.meta,
+            samples: dto.samples.map(entry => {
+                const e = entry;
+                for (const prop in e.sample) {
+                    e.sample[prop] = {
+                        value: e.sample[prop].value
+                    };
+                }
+                return e;
+            })
+        };
+        return this.fromDTOToSampleSet(cleanedDto);
     }
 
     private fromDTOToSampleSet(dto: SampleSetDTO): SampleSet {

@@ -1,73 +1,73 @@
 import { SampleDataDTO } from './shared-dto.model';
 
 export interface RegistrationRequestResponseDTO {
-    readonly registerRequest: boolean;
-    readonly email: string;
+    registerRequest: boolean;
+    email: string;
 }
 
 export interface PasswordResetRequestResponseDTO {
-    readonly passwordResetRequest: boolean;
-    readonly email: string;
+    passwordResetRequest: boolean;
+    email: string;
 }
 
 export interface PasswordResetResponseDTO {
-    readonly passwordReset: boolean;
+    passwordReset: boolean;
 }
 
 export interface ActivationResponseDTO {
-    readonly activation: boolean;
-    readonly username: string;
+    activation: boolean;
+    username: string;
 }
 
 export interface TokenRefreshConfirmationResponseDTO {
-    readonly refresh: boolean;
-    readonly token: string;
+    refresh: boolean;
+    token: string;
 }
 
 interface ErrorDTO {
-    readonly code: number;
-    readonly message: string;
+    code: number;
+    message: string;
 }
 
 export interface DefaultServerErrorDTO extends ErrorDTO {}
 
 export interface InvalidInputErrorDTO extends DefaultServerErrorDTO {
-    readonly samples: SampleDataDTO[];
+    samples: SampleDataDTO[];
 }
 
 export interface AutoCorrectedInputErrorDTO extends DefaultServerErrorDTO {
-    readonly samples: SampleDataDTO[];
+    samples: SampleDataDTO[];
 }
 
 export interface FailedLoginErrorDTO extends ErrorDTO {
-    readonly waitTime?: number;
+    waitTime?: number;
 }
 
 export interface TokenizedUserDTO {
-    readonly firstName: string;
-    readonly lastName: string;
-    readonly email: string;
-    readonly token: string;
-    readonly instituteId: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    token: string;
+    instituteId: string;
 }
 
 export interface SystemInformationDTO {
-    readonly version: string;
-    readonly lastChange: string;
-    readonly supportContact: string;
+    version: string;
+    lastChange: string;
+    supportContact: string;
 }
 
 export interface InstituteCollectionDTO {
-    readonly institutes: InstituteDTO[];
+    institutes: InstituteDTO[];
 }
 export interface InstituteDTO {
-    readonly id: string;
-    readonly short: string;
-    readonly name: string;
-    readonly addendum: string;
-    readonly city: string;
-    readonly zip: string;
-    readonly phone: string;
-    readonly fax: string;
-    readonly email: string[];
+    id: string;
+    short: string;
+    name: string;
+    addendum: string;
+    city: string;
+    zip: string;
+    phone: string;
+    fax: string;
+    email: string[];
 }
