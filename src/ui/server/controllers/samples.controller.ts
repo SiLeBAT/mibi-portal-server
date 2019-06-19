@@ -374,19 +374,25 @@ export class DefaultSamplesController extends AbstractController
     }
 
     private fromDTOToUnannotatedSampleSet(dto: SampleSetDTO): SampleSet {
-        const cleanedDto: SampleSetDTO = {
-            meta: dto.meta,
-            samples: dto.samples.map(entry => {
-                const e = entry;
-                for (const prop in e.sample) {
-                    e.sample[prop] = {
-                        value: e.sample[prop].value
-                    };
-                }
-                return e;
-            })
-        };
-        return this.fromDTOToSampleSet(cleanedDto);
+        try {
+            const cleanedDto: SampleSetDTO = {
+                meta: dto.meta,
+                samples: dto.samples.map(entry => {
+                    const e = entry;
+                    for (const prop in e.sample) {
+                        e.sample[prop] = {
+                            value: e.sample[prop].value
+                        };
+                    }
+                    return e;
+                })
+            };
+            return this.fromDTOToSampleSet(cleanedDto);
+        } catch (error) {
+            throw new MalformedRequestError(
+                `Error parsing input. error=${error}`
+            );
+        }
     }
 
     private fromDTOToSampleSet(dto: SampleSetDTO): SampleSet {
