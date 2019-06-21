@@ -1,8 +1,8 @@
 {
   "openapi": "3.0.2",
   "info": {
-    "title": "MiBi-Portal Server",
-    "description": "This is the api of the MiBi-Portal server",
+    "title": "fcl-Portal Server",
+    "description": "This is the api of the fcl-Portal server",
     "contact": {
       "email": "mibi-portal@bfr.bund.de"
     },
@@ -14,11 +14,11 @@
   },
   "externalDocs": {
     "description": "Find out more about the MiBi-Portal",
-    "url": "https://mibi-portal.bfr.bund.de/content/faq"
+    "url": "https://fcl-portal.bfr.bund.de/content/faq"
   },
   "servers": [
     {
-      "url": "https://mibi-portal.bfr.bund.de/v1"
+      "url": "https://fcl-portal.bfr.bund.de/v1"
     }
   ],
   "tags": [
@@ -156,6 +156,7 @@
     "/samples/validated": {
       "put": {
         "operationId": "putValidated",
+        "description": "A user token can be supplied to aid in the validation process.",
         "tags": [
           "Sample"
         ],
