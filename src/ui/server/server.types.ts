@@ -4,6 +4,7 @@ const SERVER_TYPES = {
     InstitutesController: Symbol.for('InstitutesController'),
     UsersController: Symbol.for('UsersController'),
     SamplesController: Symbol.for('SamplesController'),
+    TokensController: Symbol.for('TokensController'),
     VersionRootController: Symbol.for('VersionRootController'),
     APIDocsController: Symbol.for('APIDocsController'),
     MulterMW: Symbol.for('MulterMW'),

@@ -1,10 +1,12 @@
+import { DefaultTokensController } from './controllers/tokens.controller';
 import { ContainerModule, interfaces } from 'inversify';
 import {
     SystemInfoController,
     InstitutesController,
     UsersController,
     SamplesController,
-    VersionRootController
+    VersionRootController,
+    TokensController
 } from './model/controller.model';
 import SERVER_TYPES from './server.types';
 import { DefaultSystemInfoController } from './controllers/info.controller';
@@ -36,6 +38,9 @@ export function getServerContainerModule(
             );
             bind<SamplesController>(SERVER_TYPES.SamplesController).to(
                 DefaultSamplesController
+            );
+            bind<TokensController>(SERVER_TYPES.TokensController).to(
+                DefaultTokensController
             );
             bind<VersionRootController>(SERVER_TYPES.VersionRootController).to(
                 DefaultVersionRootController
