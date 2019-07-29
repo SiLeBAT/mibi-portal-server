@@ -10,7 +10,7 @@
       "name": "MIT",
       "url": "https://opensource.org/licenses/MIT"
     },
-    "version": "1.0.0"
+    "version": "2.0.0"
   },
   "externalDocs": {
     "description": "Find out more about the MiBi-Portal",
@@ -84,6 +84,7 @@
           "Sample"
         ],
         "summary": "Convert a sample set JSON to an Einsendebogen excel or vice versa",
+        "description": "- JSON to Excel = application/json to multipart/form-data \n- Excel to JSON = multipart/form-data to application/json",
         "requestBody": {
           "$ref": "#/components/requestBodies/SampleRequest"
         },
@@ -96,7 +97,7 @@
                   "$ref": "#/components/schemas/OrderContainer"
                 }
               },
-              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {
+              "multipart/form-data": {
                 "schema": {
                   "$ref": "#/components/schemas/MarshalledData"
                 }
@@ -128,7 +129,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SampleList"
+                  "$ref": "#/components/schemas/ValidatedSampleList"
                 }
               }
             }
@@ -156,6 +157,7 @@
     "/samples/validated": {
       "put": {
         "operationId": "putValidated",
+        "description": "A user token can be supplied to aid in the validation process.",
         "tags": [
           "Sample"
         ],
@@ -273,7 +275,7 @@
         }
       }
     },
-    "/users/reset-password/{token}": {
+    "/users/reset-password/{reset-password-token}": {
       "patch": {
         "operationId": "patchResetPassword",
         "tags": [
@@ -285,7 +287,7 @@
         },
         "parameters": [
           {
-            "$ref": "#/components/parameters/pathToken"
+            "$ref": "#/components/parameters/ResetPasswordToken"
           }
         ],
         "responses": {
@@ -311,16 +313,16 @@
         }
       }
     },
-    "/users/verification/{token}": {
+    "/users/verification/{verification-token}": {
       "patch": {
         "operationId": "patchVerification",
         "tags": [
           "User"
         ],
-        "summary": "Activates a user identified by the token",
+        "summary": "Sets the user's state to e-mail verified",
         "parameters": [
           {
-            "$ref": "#/components/parameters/pathToken"
+            "$ref": "#/components/parameters/VerifyUserToken"
           }
         ],
         "responses": {
@@ -343,16 +345,16 @@
         }
       }
     },
-    "/users/activation/{token}": {
+    "/users/activation/{activation-token}": {
       "patch": {
         "operationId": "patchActivation",
         "tags": [
           "User"
         ],
-        "summary": "Admin ctivates a user identified by the token",
+        "summary": "Sets the user's state to activated",
         "parameters": [
           {
-            "$ref": "#/components/parameters/pathToken"
+            "$ref": "#/components/parameters/ActivateUserToken"
           }
         ],
         "responses": {
@@ -381,7 +383,7 @@
         "tags": [
           "Institute"
         ],
-        "summary": "Retrieve list of registered institutes",
+        "summary": "Returns list of registered institutes",
         "description": "Returns a list of currently registered institutes",
         "responses": {
           "200": {
@@ -406,7 +408,7 @@
         "tags": [
           "Token"
         ],
-        "summary": "Refreshes the jwt Token",
+        "summary": "Refreshes the jwt token",
         "responses": {
           "200": {
             "description": "successful operation",
@@ -435,25 +437,53 @@
   },
   "components": {
     "schemas": {
-      "OrderContainer": {
+      "Error": {
         "type": "object",
         "required": [
-          "order"
+          "code",
+          "message"
         ],
         "properties": {
-          "order": {
-            "$ref": "#/components/schemas/Order"
+          "message": {
+            "type": "string"
+          },
+          "code": {
+            "$ref": "#/components/schemas/ErrorCode"
           }
         }
       },
-      "ValidatedOrderContainer": {
-        "type": "object",
+      "ErrorCode": {
+        "type": "number",
+        "description": "- 1: Unknown error\n- 2: Authorization error\n- 3: Authentication error\n- 4: Input error\n- 5: Invalid input\n- 6: Autocorrected input",
+        "enum": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      "SystemInformation": {
         "required": [
-          "order"
+          "lastChange",
+          "version",
+          "supportContact"
         ],
+        "type": "object",
         "properties": {
-          "order": {
-            "$ref": "#/components/schemas/ValidatedOrder"
+          "version": {
+            "type": "string",
+            "description": "Server version number"
+          },
+          "supportContact": {
+            "type": "string",
+            "description": "Email of the MiBi-portal support"
+          },
+          "lastChange": {
+            "type": "string",
+            "description": "Date of last code change",
+            "format": "date-time"
           }
         }
       },
@@ -477,162 +507,151 @@
           }
         }
       },
-      "TokenRefreshConfirmation": {
+      "MarshalData": {
         "type": "object",
         "required": [
-          "refresh",
-          "token"
+          "file"
         ],
         "properties": {
-          "refresh": {
-            "type": "boolean"
-          },
-          "token": {
-            "type": "string"
-          }
-        }
-      },
-      "ActivationConfirmation": {
-        "type": "object",
-        "required": [
-          "activation"
-        ],
-        "properties": {
-          "username": {
-            "type": "string"
-          },
-          "activation": {
-            "type": "boolean"
-          }
-        }
-      },
-      "ResetRequestConfirmation": {
-        "type": "object",
-        "required": [
-          "passwordResetRequest"
-        ],
-        "properties": {
-          "email": {
-            "type": "string"
-          },
-          "passwordResetRequest": {
-            "type": "boolean"
-          }
-        }
-      },
-      "RegisterRequestConfirmation": {
-        "type": "object",
-        "required": [
-          "registerRequest"
-        ],
-        "properties": {
-          "email": {
-            "type": "string"
-          },
-          "registerRequest": {
-            "type": "boolean"
-          }
-        }
-      },
-      "ResetConfirmation": {
-        "type": "object",
-        "required": [
-          "passwordReset"
-        ],
-        "properties": {
-          "passwordReset": {
-            "type": "boolean"
-          }
-        }
-      },
-      "Credentials": {
-        "type": "object",
-        "required": [
-          "email",
-          "password"
-        ],
-        "properties": {
-          "email": {
-            "type": "string"
-          },
-          "password": {
+          "file": {
+            "description": "Microsoft Excel-Arbeitsblatt (.xlsx)",
             "type": "string",
-            "format": "password"
+            "format": "binary"
           }
         }
       },
-      "TokenizedUser": {
+      "SampleSubmission": {
         "type": "object",
         "required": [
-          "firstname",
-          "lastName",
-          "email",
-          "token",
-          "instituteId"
+          "order"
         ],
         "properties": {
-          "firstName": {
+          "comment": {
             "type": "string"
           },
-          "lastName": {
-            "type": "string"
-          },
-          "email": {
-            "type": "string"
-          },
-          "token": {
-            "$ref": "#/components/schemas/Token"
-          },
-          "instituteId": {
-            "type": "string"
+          "order": {
+            "$ref": "#/components/schemas/EditedOrder"
           }
         }
       },
-      "Token": {
-        "type": "string"
-      },
-      "Institute": {
+      "SampleDataError": {
+        "type": "object",
         "required": [
-          "id",
-          "city",
-          "name",
-          "short",
-          "zip"
+          "code",
+          "message",
+          "samples"
         ],
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "code": {
+            "$ref": "#/components/schemas/ErrorCode"
+          },
+          "samples": {
+            "$ref": "#/components/schemas/ValidatedSampleList"
+          }
+        }
+      },
+      "OrderMetaInformation": {
+        "type": "object",
+        "required": [
+          "nrl"
+        ],
+        "properties": {
+          "nrl": {
+            "type": "string"
+          },
+          "urgency": {
+            "type": "string",
+            "enum": [
+              "NORMAL",
+              "EILT"
+            ]
+          },
+          "analysis": {
+            "$ref": "#/components/schemas/Analysis"
+          },
+          "sender": {
+            "$ref": "#/components/schemas/Sender"
+          }
+        }
+      },
+      "Sender": {
         "type": "object",
         "properties": {
-          "name": {
+          "instituteName": {
             "type": "string"
           },
-          "id": {
+          "department": {
             "type": "string"
           },
-          "short": {
-            "$ref": "#/components/schemas/StateShort"
+          "street": {
+            "type": "string"
           },
-          "addendum": {
+          "zip": {
             "type": "string"
           },
           "city": {
             "type": "string"
           },
-          "zip": {
-            "maxLength": 5,
-            "minLength": 5,
-            "pattern": "[0-9]{5}",
+          "contactPerson": {
             "type": "string"
           },
-          "phone": {
-            "type": "string"
-          },
-          "fax": {
+          "telephone": {
             "type": "string"
           },
           "email": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
+            "type": "string"
+          }
+        }
+      },
+      "Analysis": {
+        "type": "object",
+        "properties": {
+          "species": {
+            "type": "boolean"
+          },
+          "serological": {
+            "type": "boolean"
+          },
+          "phageTyping": {
+            "type": "boolean"
+          },
+          "resistance": {
+            "type": "boolean"
+          },
+          "vaccination": {
+            "type": "boolean"
+          },
+          "molecularTyping": {
+            "type": "boolean"
+          },
+          "toxin": {
+            "type": "boolean"
+          },
+          "zoonosenIsolate": {
+            "type": "boolean"
+          },
+          "esblAmpCCarbapenemasen": {
+            "type": "boolean"
+          },
+          "other": {
+            "type": "string"
+          },
+          "compareHuman": {
+            "type": "boolean"
+          }
+        }
+      },
+      "OrderContainer": {
+        "type": "object",
+        "required": [
+          "order"
+        ],
+        "properties": {
+          "order": {
+            "$ref": "#/components/schemas/Order"
           }
         }
       },
@@ -762,6 +781,17 @@
           }
         }
       },
+      "EditedOrderContainer": {
+        "type": "object",
+        "required": [
+          "order"
+        ],
+        "properties": {
+          "order": {
+            "$ref": "#/components/schemas/EditedOrder"
+          }
+        }
+      },
       "EditedOrder": {
         "required": [
           "samples",
@@ -888,6 +918,17 @@
           },
           "oldValue": {
             "type": "string"
+          }
+        }
+      },
+      "ValidatedOrderContainer": {
+        "type": "object",
+        "required": [
+          "order"
+        ],
+        "properties": {
+          "order": {
+            "$ref": "#/components/schemas/ValidatedOrder"
           }
         }
       },
@@ -1053,6 +1094,55 @@
           }
         }
       },
+      "UserToken": {
+        "type": "string"
+      },
+      "AccessToken": {
+        "type": "string"
+      },
+      "Credentials": {
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "format": "password"
+          }
+        }
+      },
+      "TokenizedUser": {
+        "type": "object",
+        "required": [
+          "firstname",
+          "lastName",
+          "email",
+          "token",
+          "instituteId"
+        ],
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "token": {
+            "$ref": "#/components/schemas/UserToken"
+          },
+          "instituteId": {
+            "type": "string"
+          }
+        }
+      },
       "FailedLoginError": {
         "type": "object",
         "required": [
@@ -1070,225 +1160,6 @@
             "description": "Time interval in seconds",
             "type": "integer",
             "format": "int32"
-          }
-        }
-      },
-      "Error": {
-        "type": "object",
-        "required": [
-          "code",
-          "message"
-        ],
-        "properties": {
-          "message": {
-            "type": "string"
-          },
-          "code": {
-            "$ref": "#/components/schemas/ErrorCode"
-          }
-        }
-      },
-      "ErrorCode": {
-        "type": "number",
-        "enum": [
-          1,
-          2,
-          3,
-          4,
-          5,
-          6
-        ]
-      },
-      "SampleDataError": {
-        "type": "object",
-        "required": [
-          "code",
-          "message",
-          "samples"
-        ],
-        "properties": {
-          "message": {
-            "type": "string"
-          },
-          "code": {
-            "$ref": "#/components/schemas/ErrorCode"
-          },
-          "samples": {
-            "$ref": "#/components/schemas/SampleList"
-          }
-        }
-      },
-      "StateShort": {
-        "maxLength": 2,
-        "minLength": 2,
-        "pattern": "[A-Z]{2}",
-        "type": "string"
-      },
-      "OrderMetaInformation": {
-        "type": "object",
-        "required": [
-          "nrl"
-        ],
-        "properties": {
-          "nrl": {
-            "type": "string"
-          },
-          "uregency": {
-            "type": "string",
-            "enum": [
-              "NORMAL",
-              "EILT"
-            ]
-          },
-          "analysis": {
-            "$ref": "#/components/schemas/Analysis"
-          },
-          "sender": {
-            "$ref": "#/components/schemas/Sender"
-          }
-        }
-      },
-      "Sender": {
-        "type": "object",
-        "properties": {
-          "instituteName": {
-            "type": "string"
-          },
-          "department": {
-            "type": "string"
-          },
-          "street": {
-            "type": "string"
-          },
-          "zip": {
-            "type": "string"
-          },
-          "city": {
-            "type": "string"
-          },
-          "contactPerson": {
-            "type": "string"
-          },
-          "telephone": {
-            "type": "string"
-          },
-          "email": {
-            "type": "string"
-          }
-        }
-      },
-      "Analysis": {
-        "type": "object",
-        "properties": {
-          "species": {
-            "type": "boolean"
-          },
-          "serological": {
-            "type": "boolean"
-          },
-          "phageTyping": {
-            "type": "boolean"
-          },
-          "resistance": {
-            "type": "boolean"
-          },
-          "vaccination": {
-            "type": "boolean"
-          },
-          "molecularTyping": {
-            "type": "boolean"
-          },
-          "toxin": {
-            "type": "boolean"
-          },
-          "zoonosenIsolate": {
-            "type": "boolean"
-          },
-          "esblAmpCCarbapenemasen": {
-            "type": "boolean"
-          },
-          "other": {
-            "type": "string"
-          },
-          "compareHuman": {
-            "type": "boolean"
-          }
-        }
-      },
-      "SystemInformation": {
-        "required": [
-          "lastChange",
-          "version",
-          "supportContact"
-        ],
-        "type": "object",
-        "properties": {
-          "version": {
-            "type": "string",
-            "description": "Server version number"
-          },
-          "supportContact": {
-            "type": "string",
-            "description": "Email of the MiBi-portal support"
-          },
-          "lastChange": {
-            "type": "string",
-            "description": "Date of last code change",
-            "format": "date-time"
-          }
-        }
-      },
-      "InstituteContainer": {
-        "type": "object",
-        "required": [
-          "institutes"
-        ],
-        "properties": {
-          "institutes": {
-            "$ref": "#/components/schemas/InstituteList"
-          }
-        }
-      },
-      "InstituteList": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/Institute"
-        }
-      },
-      "AuthenticationInformation": {
-        "type": "object",
-        "required": [
-          "email",
-          "token"
-        ],
-        "properties": {
-          "token": {
-            "$ref": "#/components/schemas/Token"
-          },
-          "email": {
-            "type": "string"
-          }
-        }
-      },
-      "RecoveryInformation": {
-        "type": "object",
-        "required": [
-          "email"
-        ],
-        "properties": {
-          "email": {
-            "type": "string"
-          }
-        }
-      },
-      "ResetInformation": {
-        "type": "object",
-        "required": [
-          "password"
-        ],
-        "properties": {
-          "password": {
-            "type": "string"
           }
         }
       },
@@ -1320,41 +1191,162 @@
           }
         }
       },
-      "Einsendebogen": {
+      "RegisterRequestConfirmation": {
         "type": "object",
         "required": [
-          "file"
+          "registerRequest"
         ],
         "properties": {
-          "file": {
-            "type": "string",
-            "format": "binary"
-          }
-        }
-      },
-      "MarshalData": {
-        "type": "object",
-        "required": [
-          "file"
-        ],
-        "properties": {
-          "file": {
-            "type": "string",
-            "format": "binary"
-          }
-        }
-      },
-      "SampleSubmission": {
-        "type": "object",
-        "required": [
-          "order"
-        ],
-        "properties": {
-          "comment": {
+          "email": {
             "type": "string"
           },
-          "order": {
-            "$ref": "#/components/schemas/EditedOrder"
+          "registerRequest": {
+            "type": "boolean"
+          }
+        }
+      },
+      "RecoveryInformation": {
+        "type": "object",
+        "required": [
+          "email"
+        ],
+        "properties": {
+          "email": {
+            "type": "string"
+          }
+        }
+      },
+      "ResetRequestConfirmation": {
+        "type": "object",
+        "required": [
+          "passwordResetRequest"
+        ],
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "passwordResetRequest": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ResetInformation": {
+        "type": "object",
+        "required": [
+          "password"
+        ],
+        "properties": {
+          "password": {
+            "type": "string",
+            "format": "password"
+          }
+        }
+      },
+      "ResetConfirmation": {
+        "type": "object",
+        "required": [
+          "passwordReset"
+        ],
+        "properties": {
+          "passwordReset": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ActivationConfirmation": {
+        "type": "object",
+        "required": [
+          "activation"
+        ],
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "activation": {
+            "type": "boolean"
+          }
+        }
+      },
+      "InstituteContainer": {
+        "type": "object",
+        "required": [
+          "institutes"
+        ],
+        "properties": {
+          "institutes": {
+            "$ref": "#/components/schemas/InstituteList"
+          }
+        }
+      },
+      "InstituteList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Institute"
+        }
+      },
+      "Institute": {
+        "required": [
+          "id",
+          "city",
+          "name",
+          "short",
+          "zip"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "short": {
+            "$ref": "#/components/schemas/StateShort"
+          },
+          "addendum": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "zip": {
+            "maxLength": 5,
+            "minLength": 5,
+            "pattern": "[0-9]{5}",
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "fax": {
+            "type": "string"
+          },
+          "email": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "StateShort": {
+        "maxLength": 2,
+        "minLength": 2,
+        "pattern": "[A-Z]{2}",
+        "type": "string"
+      },
+      "TokenRefreshConfirmation": {
+        "type": "object",
+        "required": [
+          "refresh",
+          "token"
+        ],
+        "properties": {
+          "refresh": {
+            "type": "boolean"
+          },
+          "token": {
+            "$ref": "#/components/schemas/UserToken"
           }
         }
       }
@@ -1371,7 +1363,7 @@
         }
       },
       "UnauthorizedErrorResponse": {
-        "description": "Access Token is missing or invalid",
+        "description": "Token is missing or invalid",
         "content": {
           "application/json:": {
             "schema": {
@@ -1383,7 +1375,7 @@
       "Standard500ErrorResponse": {
         "description": "An unexpected error occured",
         "content": {
-          "application/json:": {
+          "application/json": {
             "schema": {
               "$ref": "#/components/schemas/Error"
             }
@@ -1393,7 +1385,7 @@
       "Standard400ErrorResponse": {
         "description": "Invalid request",
         "content": {
-          "application/json:": {
+          "application/json": {
             "schema": {
               "$ref": "#/components/schemas/Error"
             }
@@ -1412,17 +1404,51 @@
       }
     },
     "parameters": {
-      "pathToken": {
-        "name": "token",
+      "ResetPasswordToken": {
+        "name": "reset-password-token",
         "in": "path",
-        "description": "The supplied activation token",
+        "description": "The provided access token",
         "required": true,
         "schema": {
-          "$ref": "#/components/schemas/Token"
+          "$ref": "#/components/schemas/AccessToken"
+        }
+      },
+      "VerifyUserToken": {
+        "name": "verification-token",
+        "in": "path",
+        "description": "The provided access token",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/AccessToken"
+        }
+      },
+      "ActivateUserToken": {
+        "name": "activation-token",
+        "in": "path",
+        "description": "The provided access token",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/AccessToken"
         }
       }
     },
     "requestBodies": {
+      "SampleRequest": {
+        "description": "A set of samples and meta data",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/EditedOrderContainer"
+            }
+          },
+          "multipart/form-data": {
+            "schema": {
+              "$ref": "#/components/schemas/MarshalData"
+            }
+          }
+        },
+        "required": true
+      },
       "SendRequest": {
         "description": "Request for sending sample data to the BfR",
         "content": {
@@ -1433,15 +1459,16 @@
           }
         }
       },
-      "UnmarshalRequest": {
-        "description": "Excel XML unmarshal request",
+      "ValidationRequest": {
+        "description": "A set of samples and meta data",
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/Einsendebogen"
+              "$ref": "#/components/schemas/OrderContainer"
             }
           }
-        }
+        },
+        "required": true
       },
       "ResetRequest": {
         "description": "Password reset request",
@@ -1465,17 +1492,6 @@
         },
         "required": true
       },
-      "AuthorizationRequest": {
-        "description": "Authentication information",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/AuthenticationInformation"
-            }
-          }
-        },
-        "required": true
-      },
       "LoginRequest": {
         "description": "User credentials",
         "content": {
@@ -1487,58 +1503,12 @@
         },
         "required": true
       },
-      "ValidationRequest": {
-        "description": "A set of samples and meta data",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/OrderContainer"
-            }
-          }
-        },
-        "required": true
-      },
       "RegistrationRequest": {
         "description": "Registration details",
         "content": {
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/RegistrationDetails"
-            }
-          }
-        },
-        "required": true
-      },
-      "SampleRequest": {
-        "description": "A set of samples and meta data",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "required": [
-                "order"
-              ],
-              "properties": {
-                "order": {
-                  "$ref": "#/components/schemas/EditedOrder"
-                }
-              }
-            }
-          },
-          "multipart/form-data": {
-            "schema": {
-              "$ref": "#/components/schemas/MarshalData"
-            }
-          }
-        },
-        "required": true
-      },
-      "MarshalDataRequest": {
-        "description": "A set of samples and meta data to be marshalled into an Execel XML",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/MarshalData"
             }
           }
         },
