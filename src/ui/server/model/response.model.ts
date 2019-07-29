@@ -1,4 +1,4 @@
-import { SampleDataDTO } from './shared-dto.model';
+import { SampleDataContainerDTO } from './shared-dto.model';
 
 export interface RegistrationRequestResponseDTO {
     registerRequest: boolean;
@@ -32,11 +32,11 @@ interface ErrorDTO {
 export interface DefaultServerErrorDTO extends ErrorDTO {}
 
 export interface InvalidInputErrorDTO extends DefaultServerErrorDTO {
-    samples: SampleDataDTO[];
+    samples: SampleDataContainerDTO[];
 }
 
 export interface AutoCorrectedInputErrorDTO extends DefaultServerErrorDTO {
-    samples: SampleDataDTO[];
+    samples: SampleDataContainerDTO[];
 }
 
 export interface FailedLoginErrorDTO extends ErrorDTO {
