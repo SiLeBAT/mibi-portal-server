@@ -36,7 +36,8 @@ import {
     SampleSetDTO,
     SampleDataEntryDTO,
     OrderDTO,
-    SampleSetMetaDTO
+    SampleSetMetaDTO,
+    SampleDataContainerDTO
 } from '../model/shared-dto.model';
 import {
     InvalidInputErrorDTO,
@@ -162,7 +163,7 @@ export class DefaultSamplesController extends AbstractController
                 validationOptions
             );
 
-            const annotatedSampleDataDTO: SampleDataDTO[] = this.fromSampleCollectionToDTO(
+            const annotatedSampleDataDTO: SampleDataContainerDTO[] = this.fromSampleCollectionToSampleDataContainerDTO(
                 validatedSamples
             );
             if (this.hasSampleError(validatedSamples)) {
@@ -186,8 +187,8 @@ export class DefaultSamplesController extends AbstractController
 
             const sampleFile: ExcelFileInfo = await this.sampleService.convertToExcel(
                 {
-                    samples: annotatedSampleDataDTO.map(sample =>
-                        this.fromDTOToSample(sample)
+                    samples: annotatedSampleDataDTO.map(container =>
+                        this.fromDTOToSample(container.sample)
                     ),
                     meta: annotatedSampleSet.meta
                 }
@@ -525,17 +526,15 @@ export class DefaultSamplesController extends AbstractController
         meta: SampleSetMetaData
     ): SampleSetDTO {
         return {
-            samples: this.fromSampleCollectionToDTO(sampleCollection).map(
-                dto => ({ sample: dto })
-            ),
+            samples: this.fromSampleCollectionToSampleDataContainerDTO(sampleCollection),
             meta: this.fromSampleSetMetaDataToDTO(meta)
         };
     }
-    private fromSampleCollectionToDTO(
+    private fromSampleCollectionToSampleDataContainerDTO(
         sampleCollection: Sample[]
-    ): SampleDataDTO[] {
+    ): SampleDataContainerDTO[] {
         return sampleCollection.map((sample: Sample) =>
-            sample.getAnnotatedData()
+            ({ sample: sample.getAnnotatedData() })
         );
     }
 
