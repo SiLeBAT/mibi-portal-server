@@ -3,6 +3,7 @@ import { SERVER_ERROR_CODE } from '../model/enums';
 import { DefaultServerErrorDTO } from '../model/response.model';
 import { Controller } from '../model/controller.model';
 import { controller } from 'inversify-express-utils';
+import { MalformedRequestError } from '../model/domain.error';
 
 @controller('')
 export abstract class AbstractController implements Controller {
@@ -38,6 +39,16 @@ export abstract class AbstractController implements Controller {
             code: SERVER_ERROR_CODE.UNKNOWN_ERROR,
             message
         };
-        this.jsonResponse(response, 500, dto);
+        return this.jsonResponse(response, 500, dto);
+    }
+
+    protected tryParseInputDTO<T>(parseOp: () => T) : T {
+        try {
+            return parseOp();
+        } catch (error) {
+            throw new MalformedRequestError(
+                `Error parsing input. error=${error}`
+            );
+        }
     }
 }

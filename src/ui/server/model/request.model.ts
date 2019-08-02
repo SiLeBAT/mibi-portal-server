@@ -1,4 +1,4 @@
-import { SampleSetDTO } from './shared-dto.model';
+import { OrderDTO } from './shared-dto.model';
 
 export interface ResetRequestDTO {
     readonly email: string;
@@ -15,7 +15,15 @@ export interface RegistrationDetailsDTO {
     readonly password: string;
 }
 
-export interface SampleSubmissionDTO {
-    readonly order: SampleSetDTO;
-    readonly comment: string;
+export interface PutSamplesJSONRequestDTO {
+    readonly order: OrderDTO;
+}
+
+export interface PostSubmittedRequestDTO {
+    readonly order: OrderDTO;
+    readonly comment?: string;
+}
+
+export interface PutValidatedRequestDTO {
+    readonly order: OrderDTO;
 }

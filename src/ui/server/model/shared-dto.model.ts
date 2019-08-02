@@ -46,15 +46,15 @@ export interface SampleDataDTO {
     [key: string]: SampleDataEntryDTO;
 }
 
-export interface SampleDataContainerDTO {
-    sample: SampleDataDTO;
+export interface SampleDTO {
+    sampleData: SampleDataDTO;
 }
 
 export interface SampleSetDTO {
-    samples: SampleDataContainerDTO[];
+    samples: SampleDTO[];
     meta: SampleSetMetaDTO;
 }
 
 export interface OrderDTO {
-    order: SampleSetDTO;
+    sampleSet: SampleSetDTO;
 }
