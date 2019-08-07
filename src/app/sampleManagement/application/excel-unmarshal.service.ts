@@ -26,7 +26,7 @@ import {
     META_SENDER_ZIP_CITY_CELL,
     META_SENDER_TELEPHONE_CELL,
     META_SENDER_EMAIL_CELL,
-    META_UREGENCY_CELL,
+    META_URGENCY_CELL,
     META_NRL_CELL,
     FORM_PROPERTIES,
     META_ANALYSIS_PHAGETYPING_CELL,
@@ -186,7 +186,7 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
 
     private getUrgencyFromWorkSheet(workSheet: WorkSheet): Urgency {
         const urgency: string =
-            '' + this.getDataFromCell(workSheet[META_UREGENCY_CELL]);
+            '' + this.getDataFromCell(workSheet[META_URGENCY_CELL]);
 
         switch (urgency.trim().toLowerCase()) {
             case 'eilt':

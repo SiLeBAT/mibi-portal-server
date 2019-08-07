@@ -13,7 +13,7 @@ import {
     FORM_PROPERTIES,
     VALID_SHEET_NAME,
     META_NRL_CELL,
-    META_UREGENCY_CELL,
+    META_URGENCY_CELL,
     META_SENDER_INSTITUTENAME_CELL,
     META_SENDER_DEPARTMENT_CELL,
     META_SENDER_STREET_CELL,
@@ -103,7 +103,7 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
             sheet.cell(META_NRL_CELL).value(this.mapNRLToString(meta.nrl));
 
             sheet
-                .cell(META_UREGENCY_CELL)
+                .cell(META_URGENCY_CELL)
                 .value(this.mapUregencyEnumToString(meta.urgency));
 
             sheet

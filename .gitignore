@@ -26,10 +26,13 @@
 !.vscode/launch.json
 !.vscode/extensions.json
 
+# tests
+/coverage
+/jest-stare
+
 # misc
 /.sass-cache
 /connect.lock
-/coverage
 /libpeerconnection.log
 npm-debug.log
 yarn-error.log

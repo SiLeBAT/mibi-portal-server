@@ -23,7 +23,7 @@ export const FORM_PROPERTIES: string[] = [
 ];
 
 export const META_NRL_CELL = 'B7';
-export const META_UREGENCY_CELL = 'L27';
+export const META_URGENCY_CELL = 'L27';
 export const META_SENDER_INSTITUTENAME_CELL = 'C12';
 export const META_SENDER_DEPARTMENT_CELL = 'C15';
 export const META_SENDER_STREET_CELL = 'C17';
