@@ -1,6 +1,9 @@
 import { Institute } from '../model/institute.model';
 
 class DefaultInstitute implements Institute {
+    static create(id: string): Institute {
+        return new DefaultInstitute(id);
+    }
     uniqueId: string;
     stateShort: string;
     name: string;
@@ -17,5 +20,5 @@ class DefaultInstitute implements Institute {
 }
 
 export function createInstitution(id: string): Institute {
-    return new DefaultInstitute(id);
+    return DefaultInstitute.create(id);
 }

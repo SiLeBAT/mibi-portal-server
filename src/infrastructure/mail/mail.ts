@@ -7,154 +7,163 @@ import * as readFilePromise from 'fs-readfile-promise';
 
 // local
 import { logger } from './../../aspects';
+import { NotificationType } from '../../app/ports';
+import { injectable, inject } from 'inversify';
 import {
-    NotificationPort,
-    NotificationType,
-    getConfigurationService,
-    MailConfiguration
-} from '../../app/ports';
+    MailService,
+    MailConfiguration,
+    EmailData,
+    MailOptions
+} from './mail.model';
+import { MAIL_TYPES } from './mail.types';
 
-interface Attachment {
-    filename: string;
-    content: Buffer;
-    contentType: string;
-}
+@injectable()
+export class DefaultMailService implements MailService {
+    private host = 'localhost';
+    private port = 25;
 
-interface EmailData {
-    type: NotificationType;
-    meta: MailOptions;
-    payload: Record<string, string>;
-}
-interface MailOptions {
-    to: string;
-    cc: string[];
-    subject: string;
-    attachments: Attachment[];
-}
+    private viewsDir = __dirname + '/views/de/';
 
-const mailConfig: MailConfiguration = getConfigurationService().getMailConfiguration();
+    constructor(
+        @inject(MAIL_TYPES.MailConfiguration)
+        private mailConfiguration: MailConfiguration
+    ) {}
 
-const fromAddress = mailConfig.fromAddress;
-const replyToAddress = mailConfig.replyToAddress;
-const host = 'localhost';
-const port = 25;
-
-const viewsDir = __dirname + '/views/de/';
-
-function registerListeners(notificationService: NotificationPort) {
-    notificationService.addHandler(async (data: EmailData) => {
-        let templateFile;
-        switch (data.type) {
-            case NotificationType.RESET_SUCCESS:
-                templateFile = await readFilePromise(
-                    viewsDir + 'pwnotification.html'
-                );
-                break;
-            case NotificationType.REQUEST_ACTIVATION:
-                templateFile = await readFilePromise(
-                    viewsDir + 'regactivation.html'
-                );
-                break;
-            case NotificationType.REQUEST_ALTERNATIVE_CONTACT:
-                templateFile = await readFilePromise(
-                    viewsDir + 'pwresethelp.html'
-                );
-                break;
-            case NotificationType.REQUEST_RESET:
-                templateFile = await readFilePromise(viewsDir + 'pwreset.html');
-                break;
-            case NotificationType.REQUEST_JOB:
-                templateFile = await readFilePromise(
-                    viewsDir + 'jobnotification.html'
-                );
-                break;
-            case NotificationType.REQUEST_ADMIN_ACTIVATION:
-                templateFile = await readFilePromise(
-                    viewsDir + 'adminactivation.html'
-                );
-                break;
-            case NotificationType.REQUEST_UNKNOWN_INSTITUTE:
-                templateFile = await readFilePromise(
-                    viewsDir + 'adminactivationUnknownInst.html'
-                );
-                break;
-            case NotificationType.NOTIFICATION_ADMIN_ACTIVATION:
-                templateFile = await readFilePromise(
-                    viewsDir + 'adminactivationNotification.html'
-                );
-                break;
-            case NotificationType.NOTIFICATION_NOT_ADMIN_ACTIVATED:
-                templateFile = await readFilePromise(
-                    viewsDir + 'notAdminactivationNotification.html'
-                );
-                break;
-            case NotificationType.NOTIFICATION_ALREADY_REGISTERED:
-                templateFile = await readFilePromise(
-                    viewsDir + 'reguserexists.html'
-                );
-                break;
-            case NotificationType.REMINDER_ADMIN_ACTIVATION:
-                templateFile = await readFilePromise(
-                    viewsDir + 'adminactivationReminder.html'
-                );
-                break;
-            case NotificationType.NOTIFICATION_SENT:
-                templateFile = await readFilePromise(
-                    viewsDir + 'sentnotification.html'
-                );
-                break;
-            default:
-                logger.warn('Unknown notification type', {
-                    notification: data.type
+    getMailHandler() {
+        return async (data: EmailData) => {
+            let templateFile;
+            logger.info(
+                `${
+                    this.constructor.name
+                }, handling notification type. data.type=${data.type}`
+            );
+            switch (data.type) {
+                case NotificationType.RESET_SUCCESS:
+                    templateFile = await readFilePromise(
+                        this.viewsDir + 'pwnotification.html'
+                    );
+                    break;
+                case NotificationType.REQUEST_ACTIVATION:
+                    templateFile = await readFilePromise(
+                        this.viewsDir + 'regactivation.html'
+                    );
+                    break;
+                case NotificationType.REQUEST_ALTERNATIVE_CONTACT:
+                    templateFile = await readFilePromise(
+                        this.viewsDir + 'pwresethelp.html'
+                    );
+                    break;
+                case NotificationType.REQUEST_RESET:
+                    templateFile = await readFilePromise(
+                        this.viewsDir + 'pwreset.html'
+                    );
+                    break;
+                case NotificationType.REQUEST_JOB:
+                    templateFile = await readFilePromise(
+                        this.viewsDir + 'jobnotification.html'
+                    );
+                    break;
+                case NotificationType.REQUEST_ADMIN_ACTIVATION:
+                    templateFile = await readFilePromise(
+                        this.viewsDir + 'adminactivation.html'
+                    );
+                    break;
+                case NotificationType.REQUEST_UNKNOWN_INSTITUTE:
+                    templateFile = await readFilePromise(
+                        this.viewsDir + 'adminactivationUnknownInst.html'
+                    );
+                    break;
+                case NotificationType.NOTIFICATION_ADMIN_ACTIVATION:
+                    templateFile = await readFilePromise(
+                        this.viewsDir + 'adminactivationNotification.html'
+                    );
+                    break;
+                case NotificationType.NOTIFICATION_NOT_ADMIN_ACTIVATED:
+                    templateFile = await readFilePromise(
+                        this.viewsDir + 'notAdminactivationNotification.html'
+                    );
+                    break;
+                case NotificationType.NOTIFICATION_ALREADY_REGISTERED:
+                    templateFile = await readFilePromise(
+                        this.viewsDir + 'reguserexists.html'
+                    );
+                    break;
+                case NotificationType.REMINDER_ADMIN_ACTIVATION:
+                    templateFile = await readFilePromise(
+                        this.viewsDir + 'adminactivationReminder.html'
+                    );
+                    break;
+                case NotificationType.NOTIFICATION_SENT:
+                    templateFile = await readFilePromise(
+                        this.viewsDir + 'sentnotification.html'
+                    );
+                    break;
+                default:
+                    logger.warn('Unknown notification type', {
+                        notification: data.type
+                    });
+            }
+            if (templateFile) {
+                this.sendMail(data.payload, templateFile.toString('utf-8'), {
+                    ...data.meta,
+                    ...{
+                        from: this.mailConfiguration.fromAddress,
+                        replyTo: this.mailConfiguration.replyToAddress
+                    }
                 });
-        }
-        if (templateFile) {
-            sendMail(data.payload, templateFile.toString('utf-8'), data.meta);
-        }
-    });
-}
+            }
+        };
+    }
 
-function sendMail(
-    // tslint:disable-next-line
-    templateData: any,
-    templateFile: string,
-    options: MailOptions
-) {
-    templateData.copyrightYear = new Date().getFullYear();
+    private sendMail(
+        // tslint:disable-next-line
+        templateData: any,
+        templateFile: string,
+        options: MailOptions
+    ) {
+        templateData.copyrightYear = new Date().getFullYear();
 
-    let template = handlebars.compile(templateFile);
-    let result = template(templateData);
+        let template = handlebars.compile(templateFile);
+        let result = template(templateData);
 
-    const transporter = nodemailer.createTransport({
-        host: host,
-        port: port,
-        tls: {
-            rejectUnauthorized: false
-        }
-    });
+        const transporter = nodemailer.createTransport({
+            host: this.host,
+            port: this.port,
+            tls: {
+                rejectUnauthorized: false
+            }
+        });
 
-    const mailOptions = {
-        ...options,
-        ...{
-            from: fromAddress,
-            replyTo: replyToAddress,
-            html: result
-        }
-    };
-
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
+        const mailOptions = {
+            ...options,
+            ...{
+                html: result
+            }
+        };
+        try {
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    logger.error(
+                        `Error sending mail. error=${error} mailSubject="${
+                            mailOptions.subject
+                        }"`
+                    );
+                    return error;
+                } else {
+                    logger.info('Email sent', {
+                        subject: mailOptions.subject
+                    });
+                    logger.verbose(JSON.stringify(info));
+                    return info;
+                }
+            });
+        } catch (error) {
             logger.error(
                 `Error sending mail. error=${error} mailSubject="${
                     mailOptions.subject
                 }"`
             );
-        } else {
-            logger.info('Email sent', {
-                subject: mailOptions.subject
-            });
+            throw error;
         }
-    });
+    }
 }
-
-export { registerListeners };

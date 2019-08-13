@@ -1,2 +1,3 @@
-export { createApplication } from './server';
-export { createFactory } from './core/factories/controllerFactory';
+export { createServer } from './server';
+export { AppServerConfiguration, APIDocConfig } from './model/server.model';
+export { getServerContainerModule } from './server.module';

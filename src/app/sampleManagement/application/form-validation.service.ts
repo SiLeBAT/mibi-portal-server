@@ -13,26 +13,33 @@ import {
 } from '../model/validation.model';
 import { CatalogService } from '../model/catalog.model';
 import { createValidator } from '../domain/validator.entity';
-import { SampleCollection, Sample } from '../model/sample.model';
+import { Sample } from '../model/sample.model';
 import {
     baseConstraints,
     zoMoConstraints,
     standardConstraints
 } from '../domain/validation-constraints';
-import { ApplicationDomainError } from '../../core/domain/domain.error';
+import { injectable, inject } from 'inversify';
+import { APPLICATION_TYPES } from './../../application.types';
+import { NotValidatedIdError } from '../domain/domain.error';
 
 enum ConstraintSet {
     STANDARD = 'standard',
     ZOMO = 'ZoMo'
 }
 
-class DefaultFormValidatorService implements FormValidatorService {
+@injectable()
+export class DefaultFormValidatorService implements FormValidatorService {
     private validator: Validator;
 
     constructor(
+        @inject(APPLICATION_TYPES.CatalogService)
         private catalogService: CatalogService,
+        @inject(APPLICATION_TYPES.AVVFormatProvider)
         private avvFormatProvider: AVVFormatProvider,
+        @inject(APPLICATION_TYPES.ValidationErrorProvider)
         private validationErrorProvider: ValidationErrorProvider,
+        @inject(APPLICATION_TYPES.NRLSelectorProvider)
         private nrlSelectorProvider: NRLSelectorProvider
     ) {
         this.validator = createValidator({
@@ -43,23 +50,29 @@ class DefaultFormValidatorService implements FormValidatorService {
     }
 
     async validateSamples(
-        sampleCollection: SampleCollection,
+        sampleCollection: Sample[],
         validationOptions: ValidationOptions
-    ): Promise<SampleCollection> {
+    ): Promise<Sample[]> {
         logger.verbose(
-            'FormValidatorService.validateSamples, Starting Sample validation'
+            `${this.constructor.name}.${
+                this.validateSamples.name
+            }, starting Sample validation`
         );
 
         let results = this.validateIndividualSamples(
-            sampleCollection.samples,
+            sampleCollection,
             validationOptions
         );
         if (results.length > 1) {
             results = this.validateSamplesBatch(results);
         }
 
-        logger.info('Finishing Sample validation');
-        sampleCollection.samples = results;
+        logger.info(
+            `${this.constructor.name}.${
+                this.validateSamples.name
+            }, finishing Sample validation`
+        );
+        sampleCollection = results;
         return sampleCollection;
     }
 
@@ -139,7 +152,7 @@ class DefaultFormValidatorService implements FormValidatorService {
                     error: 6
                 };
             default:
-                throw new ApplicationDomainError(
+                throw new NotValidatedIdError(
                     `Invalid Input: This unique ID is not validated uniqueId=${uniqueId}`
                 );
         }
@@ -236,18 +249,4 @@ class DefaultFormValidatorService implements FormValidatorService {
         }
         return { ...newConstraints };
     }
-}
-
-export function createService(
-    catalogService: CatalogService,
-    avvFormatProvider: AVVFormatProvider,
-    validationErrorProvider: ValidationErrorProvider,
-    nrlSelectorProvider: NRLSelectorProvider
-): FormValidatorService {
-    return new DefaultFormValidatorService(
-        catalogService,
-        avvFormatProvider,
-        validationErrorProvider,
-        nrlSelectorProvider
-    );
 }

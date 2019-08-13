@@ -1,80 +1,160 @@
-// local
+import * as config from 'config';
+import { logger, getContainer } from './aspects';
+import { createServer, getServerContainerModule } from './ui/server/ports';
 import {
-    createApplication,
-    createFactory as createControllerFactory
-} from './ui/server/ports';
-import {
-    DataStoreType,
     createDataStore,
-    registerListeners,
+    getPersistenceContainerModule,
+    MailService,
     initialiseCatalogRepository,
     initialiseSearchAliasRepository,
-    institutionRepository,
-    nrlRepository,
-    stateRepository,
-    userRepository,
-    tokenRepository,
-    validationErrorRepository
+    getMailContainerModule,
+    MAIL_TYPES
 } from './infrastructure/ports';
 import {
-    createFactory as createServiceFactory,
-    ServerConfiguration,
-    getNotificationService,
-    getConfigurationService,
-    GeneralConfiguration,
-    ApplicationSystemError,
-    DataStoreConfiguration
+    createApplication,
+    MiBiApplication,
+    getApplicationContainerModule
 } from './app/ports';
-import { logger } from './aspects';
+import {
+    SystemConfigurationService,
+    LoginConfiguration,
+    GeneralConfiguration,
+    ServerConfiguration,
+    MailConfiguration,
+    AppConfiguration,
+    DataStoreConfiguration
+} from './main.model';
+
+export class DefaultConfigurationService implements SystemConfigurationService {
+    private loginConfigurationDefaults: LoginConfiguration = {
+        threshold: 5,
+        secondsDelay: 300
+    };
+
+    private generalConfigurationDefaults: GeneralConfiguration = {
+        logLevel: 'info',
+        supportContact: '',
+        jwtSecret: ''
+    };
+
+    getServerConfiguration(): ServerConfiguration {
+        return config.get('server');
+    }
+
+    getDataStoreConfiguration(): DataStoreConfiguration {
+        return config.get('dataStore');
+    }
+
+    getMailConfiguration(): MailConfiguration {
+        return config.get('mail');
+    }
+
+    getApplicationConfiguration(): AppConfiguration {
+        const appConfiguration: AppConfiguration = config.get('application');
+
+        if (!config.has('application.login')) {
+            appConfiguration.login = {
+                threshold: this.loginConfigurationDefaults.threshold,
+                secondsDelay: this.loginConfigurationDefaults.secondsDelay
+            };
+        }
+
+        if (!config.has('application.login.threshold')) {
+            appConfiguration.login.threshold = this.loginConfigurationDefaults.threshold;
+        }
+
+        if (!config.has('application.login.secondsDelay')) {
+            appConfiguration.login.secondsDelay = this.loginConfigurationDefaults.secondsDelay;
+        }
+
+        return appConfiguration;
+    }
+
+    getGeneralConfiguration(): GeneralConfiguration {
+        let generalConfiguration: GeneralConfiguration = config.get('general');
+
+        if (!config.has('general')) {
+            generalConfiguration = {
+                logLevel: this.generalConfigurationDefaults.logLevel,
+                supportContact: this.generalConfigurationDefaults
+                    .supportContact,
+                jwtSecret: this.generalConfigurationDefaults.jwtSecret
+            };
+        }
+
+        if (!config.has('general.logLevel')) {
+            generalConfiguration.logLevel = this.generalConfigurationDefaults.logLevel;
+        }
+
+        return generalConfiguration;
+    }
+}
 
 async function init() {
-    const catalogRepository = await initialiseCatalogRepository().catch(
-        (err: Error) => {
-            throw new Error(`Unable to start server error=${err}`);
-        }
-    );
-
-    const searchAliasRepository = await initialiseSearchAliasRepository().catch(
-        (err: Error) => {
-            throw new Error(`Unable to start server error=${err}`);
-        }
-    );
-    const configurationService = getConfigurationService();
+    const configurationService = new DefaultConfigurationService();
     const serverConfig: ServerConfiguration = configurationService.getServerConfiguration();
     const generalConfig: GeneralConfiguration = configurationService.getGeneralConfiguration();
     const dataStoreConfig: DataStoreConfiguration = configurationService.getDataStoreConfiguration();
+    const appConfiguration: AppConfiguration = configurationService.getApplicationConfiguration();
+    const mailConfiguration: MailConfiguration = configurationService.getMailConfiguration();
 
-    const primaryDataStore = createDataStore(DataStoreType.MONGO);
-    primaryDataStore.initialize(dataStoreConfig.connectionString);
-
-    const serviceFactory = createServiceFactory({
-        catalogRepository,
-        nrlRepository,
-        stateRepository,
-        institutionRepository,
-        userRepository,
-        tokenRepository,
-        validationErrorRepository,
-        searchAliasRepository
+    const catalogRepository = await initialiseCatalogRepository(
+        dataStoreConfig.dataDir
+    ).catch((error: Error) => {
+        logger.error(`Failed to initialize Catalog Repository. error=${error}`);
+        throw error;
     });
 
-    registerListeners(getNotificationService());
+    const searchAliasRepository = await initialiseSearchAliasRepository(
+        dataStoreConfig.dataDir
+    ).catch((error: Error) => {
+        logger.error(
+            `Failed to initialize Search Alias Repository. error=${error}`
+        );
+        throw error;
+    });
 
-    const application = createApplication(
-        serverConfig,
-        generalConfig,
-        createControllerFactory(serviceFactory)
+    createDataStore(dataStoreConfig.connectionString);
+
+    const container = getContainer({ defaultScope: 'Singleton' });
+
+    container.load(
+        getApplicationContainerModule({
+            ...appConfiguration,
+            supportContact: generalConfig.supportContact,
+            jwtSecret: generalConfig.jwtSecret
+        }),
+        getPersistenceContainerModule({
+            searchAliasRepository,
+            catalogRepository,
+            dataDir: dataStoreConfig.dataDir
+        }),
+        getServerContainerModule({
+            ...serverConfig,
+            jwtSecret: generalConfig.jwtSecret,
+            logLevel: generalConfig.logLevel,
+            supportContact: generalConfig.supportContact
+        }),
+        getMailContainerModule(mailConfiguration)
     );
-    application.startServer();
 
-    process.on('uncaughtException', err => {
-        logger.error(`Uncaught Exception. error=${err}`);
+    const application: MiBiApplication = createApplication(container);
+
+    const mailService = container.get<MailService>(MAIL_TYPES.MailService);
+    application.addNotificationHandler(
+        mailService.getMailHandler().bind(mailService)
+    );
+
+    const server = createServer(container);
+    server.startServer();
+
+    process.on('uncaughtException', error => {
+        logger.error(`Uncaught Exception. error=${error}`);
         process.exit(1);
     });
 }
 
 init().catch(error => {
-    throw new ApplicationSystemError(
-        `Unable to initialise application. error=${error}`
-    );
+    logger.error(`Unable to initialise application. error=${error}`);
+    throw error;
 });

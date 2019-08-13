@@ -18,13 +18,15 @@ class FileCatalogRepository implements CatalogRepository {
     private catalogs: {
         [key: string]: Catalog<CatalogData>;
     };
-    constructor() {
+    constructor(private dataDir: string) {
         this.catalogs = {};
     }
 
     initialise() {
         logger.verbose(
-            `FileCatalogRepository.initialize, Loading Catalog data from Filesystem.`
+            `${this.constructor.name}.${
+                this.initialise.name
+            }, loading Catalog data from Filesystem.`
         );
 
         const catalogsConfig: CatalogConfig[] = [
@@ -102,6 +104,7 @@ class FileCatalogRepository implements CatalogRepository {
         const promiseArray = catalogsConfig.map(catalogConfig => {
             return loadCSVFile<CatalogData>(
                 catalogConfig.filename,
+                this.dataDir,
                 catalogConfig.filterFunction
             ).then(
                 (data: CatalogData[]) =>
@@ -111,7 +114,9 @@ class FileCatalogRepository implements CatalogRepository {
                 (error: Error) => {
                     return new Promise((resolve, reject) => {
                         logger.warn(
-                            `Catalog missing on Filesystem. catalog=${
+                            `${this.constructor.name}.${
+                                this.initialise.name
+                            }, Catalog missing on Filesystem. catalog=${
                                 catalogConfig.filename
                             }; error=${error}`
                         );
@@ -126,7 +131,9 @@ class FileCatalogRepository implements CatalogRepository {
 
         return Promise.all(promiseArray).then(() =>
             logger.info(
-                `Finished initialising Catalog Repository from Filesystem.`
+                `${this.constructor.name}.${
+                    this.initialise.name
+                }, finished initialising Catalog Repository from Filesystem.`
             )
         );
     }
@@ -161,8 +168,12 @@ class FileCatalogRepository implements CatalogRepository {
     }
 }
 
-const repository = new FileCatalogRepository();
+let repo: FileCatalogRepository;
 
-export async function initialiseRepository() {
+export async function initialiseRepository(
+    dataDir: string
+): Promise<CatalogRepository> {
+    const repository = repo ? repo : new FileCatalogRepository(dataDir);
+    repo = repository;
     return repository.initialise().then(() => repository);
 }

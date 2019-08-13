@@ -2,215 +2,46 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as _ from 'lodash';
 import * as config from 'config';
-import * as moment from 'moment';
 import axios from 'axios';
-import { WorkBook, WorkSheet, readFile, utils } from 'xlsx';
 import { logger } from '../src/aspects';
-moment.locale('de');
-
-type SampleData = Record<string, string>;
-const ENDPOINT = '/api/v1/validation';
-const API_URL = config.get('server.apiUrl');
+import { SampleSet } from '../src/app/ports';
+import { SampleSetMetaData, Sample } from '../src/app/sampleManagement/model/sample.model';
+import { SampleDataContainerDTO } from '../src/ui/server/model/shared-dto.model';
+import { DefaultExcelUnmarshalService } from '../src/app/sampleManagement/application/excel-unmarshal.service';
+// tslint:disable: no-console
+// tslint:disable: no-any
+const ENDPOINT = '/v1/samples/validated';
+const API_URL = config.get('application.apiUrl');
 const DATA_DIR: string = 'testData';
-const FORM_PROPERTIES: string[] = [
-    'sample_id',
-    'sample_id_avv',
-    'pathogen_adv',
-    'pathogen_text',
-    'sampling_date',
-    'isolation_date',
-    'sampling_location_adv',
-    'sampling_location_zip',
-    'sampling_location_text',
-    'topic_adv',
-    'matrix_adv',
-    'matrix_text',
-    'process_state_adv',
-    'sampling_reason_adv',
-    'sampling_reason_text',
-    'operations_mode_adv',
-    'operations_mode_text',
-    'vvvo',
-    'comment'
-];
 
-// tslint:disable-next-line
+
 type TestData = any;
-// tslint:disable-next-line
 type ServerResponse = any;
-class ExcelToJsonService {
-
-    // tslint:disable-next-line:no-any
-    async convertExcelToJSJson(file: string): Promise<TestData> {
-        let data: SampleData[];
-        let nrl: string = '';
-        try {
-            const workbook: WorkBook = readFile(file);
-            const worksheetName: string = workbook.SheetNames[0];
-            const sampleSheet: WorkSheet = workbook.Sheets[worksheetName];
-            data = this.fromWorksheetToData(sampleSheet);
-            nrl = this.getNRLFromWorkSheet(sampleSheet);
-
-            return {
-                data: data,
-                meta: {
-                    nrl
-                }
-            } as TestData;
-
-        } catch (err) {
-            throw new Error('Ein Fehler ist aufgetreten beim einlesen der Datei.');
-        }
-    }
-
-    private getNRLFromWorkSheet(workSheet: WorkSheet): string {
-        const workSheetNRL: string = workSheet['B7'].v || '';
-        let nrl = '';
-
-        switch (workSheetNRL.trim()) {
-            case 'NRL Überwachung von Bakterien in zweischaligen Weichtieren':
-                nrl = 'NRL-Vibrio';
-                break;
-
-            case 'NRL Escherichia coli einschließlich verotoxinbildende E. coli':
-            case 'NRL Verotoxinbildende Escherichia coli':
-                nrl = 'NRL-VTEC';
-                break;
-
-            case 'Bacillus spp.':
-            case 'Clostridium spp. (C. difficile)':
-                nrl = 'Sporenbildner';
-                break;
-            case 'NRL koagulasepositive Staphylokokken einschließlich Staphylococcus aureus':
-                nrl = 'NRL-Staph';
-                break;
-
-            case 'NRL Salmonellen(Durchführung von Analysen und Tests auf Zoonosen)':
-                nrl = 'NRL-Salm';
-                break;
-            case 'NRL Listeria monocytogenes':
-                nrl = 'NRL-Listeria';
-                break;
-            case 'NRL Campylobacter':
-                nrl = 'NRL-Campy';
-                break;
-            case 'NRL Antibiotikaresistenz':
-                nrl = 'NRL-AR';
-                break;
-            case 'Yersinia':
-                nrl = 'KL-Yersinia';
-                break;
-            default:
-
-        }
-        return nrl;
-    }
-
-    private fromWorksheetToData(workSheet: WorkSheet): SampleData[] {
-
-        let data: AOO;
-        const lineNumber: number = this.getVersionDependentLine(workSheet);
-        data = utils.sheet_to_json(workSheet, {
-            header: FORM_PROPERTIES,
-            range: lineNumber,
-            defval: '',
-            raw: false
-        });
-        const cleanedData = this.fromDataToCleanedSamples(data);
-        const formattedData = this.formatData(cleanedData);
-        return formattedData;
-    }
-
-    // tslint:disable-next-line:no-any
-    private formatData(data: any) {
-        const formattedData = data.map(
-            (sample: SampleData) => {
-                for (const props in sample) {
-                    if (this.isDateField(props)) {
-                        sample[props] = this.parseDate(sample[props]);
-                    }
-                }
-                return sample;
-            }
-        );
-        return formattedData;
-    }
-
-    private parseDate(date: string) {
-        let parseOptions = {
-            dateFormat: 'DD.MM.YYYY'
-        };
-        const americanDF = /\d\d?\/\d\d?\/\d\d\d?\d?/;
-        if (americanDF.test(date)) {
-            parseOptions = {
-                dateFormat: 'MM/DD/YYYY'
-            };
-        }
-        try {
-            const parsedDate = moment(date, parseOptions.dateFormat).locale('de').format('DD.MM.YYYY');
-            if (parsedDate === 'Invalid date') {
-                return date;
-            }
-            return parsedDate;
-        } catch (e) {
-            return date;
-        }
-    }
-
-    private isDateField(field: string) {
-        switch (field) {
-            case 'sampling_date':
-            case 'isolation_date':
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    private getVersionDependentLine(workSheet: WorkSheet): number {
-        let num = 41;
-        _.find(workSheet, (o, i) => {
-            if (o.v === 'Ihre Probe-nummer') {
-                const h = i.replace(/\D/, '');
-                num = parseInt(h, 10);
-                return true;
-            }
-            return false;
-        });
-        return num;
-    }
-
-    private fromDataToCleanedSamples(data: AOO): AOO {
-        const cleanedData: AOO = data
-            .filter(sampleObj => (Object.keys(sampleObj)
-                .map(key => sampleObj[key]))
-                .filter(item => item !== '')
-                .length > 0);
-
-        return cleanedData;
-    }
-
-}
 
 const testUrl = API_URL + ENDPOINT;
 
-const parser = new ExcelToJsonService();
+const parser = new DefaultExcelUnmarshalService();
 
-describe('Test verification endpoint: ' + ENDPOINT, () => {
+const axiosconfig = {
+    proxy:
+        { host: 'webproxy.bfr.bund.de', port: 8080 }
+};
+
+describe('Test verification endpoint: ' + testUrl, () => {
     let queryArray: TestData[];
     beforeAll(async () => {
         queryArray = await getDataFromFiles();
+        const waitTill = new Date(new Date().getTime() + 5 * 1000);
+        // tslint:disable-next-line: no-empty
+        while (waitTill > new Date()) { }
     });
 
     it('should give response', async () => {
-        expect.assertions(queryArray.reduce((acc, current) => {
-            return acc + current.data.length * 2;
-        }, 0));
 
         const responseArray: ServerResponse[] = [];
         queryArray.forEach(
             q => {
-                responseArray.push(axios.post(testUrl, q)
+                responseArray.push(axios.put(testUrl, q, axiosconfig)
                     .then(function (response) {
                         return response.data;
                     })
@@ -224,19 +55,23 @@ describe('Test verification endpoint: ' + ENDPOINT, () => {
             dataArray => {
                 dataArray.forEach(
                     d => {
-                        // tslint:disable-next-line
-                        d.forEach((element: any) => {
-                            const receivedCodes = [];
-                            for (let key of Object.keys(element.errors)) {
-                                // tslint:disable-next-line
-                                receivedCodes.push(...element.errors[key].map((e: any) => e.code));
+                        d.order.samples.forEach((element: SampleDataContainerDTO) => {
+                            const receivedCodes: number[] = [];
+                            for (let key of Object.keys(element.sample)) {
+                                const ary = element.sample[key].errors || [];
+                                receivedCodes.push(...ary.map(e => e.code));
+
                             }
-                            let expectedCodes = [];
-                            if (element.data.comment) {
-                                expectedCodes = element.data.comment.split(',').map((str: string) => parseInt(str.trim(), 10));
+                            let expectedCodes: number[] = [];
+
+                            if (element.sample.comment.value) {
+                                expectedCodes = element.sample.comment.value.split(',').map((str: string) => parseInt(str.trim(), 10));
                             }
+
                             logger.info('Expected Codes: ' + expectedCodes);
                             logger.info('Received Codes: ' + receivedCodes);
+                            console.log('Expected Codes: ' + expectedCodes);
+                            console.log('Received Codes: ' + receivedCodes);
                             expect(receivedCodes.length).toBe(expectedCodes.length);
                             expect(receivedCodes).toEqual(expect.arrayContaining(expectedCodes));
                         });
@@ -247,10 +82,8 @@ describe('Test verification endpoint: ' + ENDPOINT, () => {
     });
 });
 
-// tslint:disable-next-line:no-any
-type AOO = any[];
 
-async function getDataFromFiles(): Promise<TestData> {
+async function getDataFromFiles(): Promise<TestData[]> {
     const filenames: string[] = [];
     fs.readdirSync(path.join('.', DATA_DIR)).forEach(function (file) {
 
@@ -262,8 +95,35 @@ async function getDataFromFiles(): Promise<TestData> {
 
     });
     logger.info(`Found ${filenames.length} datafiles in directory ${DATA_DIR}`);
-    const result = await Promise.all(filenames.map(file => {
-        return parser.convertExcelToJSJson(file);
+    const result: SampleSet[] = await Promise.all(filenames.map(file => {
+        const buffer = fs.readFileSync(file);
+        return parser.convertExcelToJSJson(buffer, file);
     }));
-    return result;
+    return result.map(r => ({
+        order: {
+            samples: fromSampleCollectionToDTO(r.samples).map(
+                dto => ({ sample: dto })
+            ),
+            meta: fromSampleSetMetaDataToDTO(r.meta)
+        }
+    }));
+}
+
+function fromSampleCollectionToDTO(
+    sampleCollection: Sample[]
+) {
+    return sampleCollection.map((sample: Sample) =>
+        sample.getAnnotatedData()
+    );
+}
+
+function fromSampleSetMetaDataToDTO(
+    data: SampleSetMetaData
+) {
+    return {
+        nrl: data.nrl,
+        analysis: data.analysis,
+        sender: data.sender,
+        urgency: data.urgency.toString()
+    };
 }

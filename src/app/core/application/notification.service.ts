@@ -6,8 +6,11 @@ import {
     EmailNotificationMeta,
     Attachment
 } from '../model/notification.model';
+import { injectable } from 'inversify';
+import { logger } from '../../../aspects';
 
-class DefaultNotificationService implements NotificationService {
+@injectable()
+export class DefaultNotificationService implements NotificationService {
     private notificationName = 'mibi-notification';
 
     private sender: EventEmitter = new EventEmitter();
@@ -15,12 +18,24 @@ class DefaultNotificationService implements NotificationService {
     sendNotification<T, V extends NotificationMeta>(
         notification: Notification<T, V>
     ): void {
+        logger.info(
+            `${this.constructor.name}.${
+                this.sendNotification.name
+            }, sending notification.  notification.type=${notification.type}`
+        );
         this.sender.emit(this.notificationName, notification);
     }
 
     addHandler<T, V extends NotificationMeta>(
         handler: (notification: Notification<T, V>) => void
     ): void {
+        logger.info(
+            `${this.constructor.name}.${
+                this.addHandler.name
+            }, adding handler to notification. notificationName=${
+                this.notificationName
+            }`
+        );
         this.sender.on(this.notificationName, handler);
     }
 
@@ -38,10 +53,3 @@ class DefaultNotificationService implements NotificationService {
         };
     }
 }
-
-const notificationService = new DefaultNotificationService();
-
-function getNotificationService(): NotificationService {
-    return notificationService;
-}
-export { getNotificationService };

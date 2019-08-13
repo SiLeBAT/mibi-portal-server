@@ -1,34 +1,38 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import * as csv from 'fast-csv';
-import * as rootDir from 'app-root-dir';
 import { logger } from '../../../../aspects';
-import {
-    ApplicationSystemError,
-    DataStoreConfiguration,
-    getConfigurationService
-} from '../../../../app/ports';
+import { FileNotFoundError } from '../../model/domain.error';
 
-const dataStoreConfig: DataStoreConfiguration = getConfigurationService().getDataStoreConfiguration();
-
-const dataDir = dataStoreConfig.dataDir || path.join(rootDir.get(), 'data');
+// TODO: Turn into class
+async function loadBinaryFile(
+    fileName: string,
+    dataDir: string
+): Promise<Buffer> {
+    logger.verbose(
+        `Loading data from Filesystem. fileName=${fileName} dataDir=${dataDir}`
+    );
+    const filePath = resolveFilePath(fileName, dataDir);
+    return importBinaryFile(filePath);
+}
 
 async function loadCSVFile<T>(
     fileName: string,
+    dataDir: string,
     filterFunction?: Function
 ): Promise<T[]> {
     logger.verbose(
         `Loading data from Filesystem. fileName=${fileName} dataDir=${dataDir}`
     );
-    const filePath = resolveFilePath(fileName);
+    const filePath = resolveFilePath(fileName, dataDir);
     return importCSVFile<T>(filePath, filterFunction);
 }
 
-async function loadJSONFile(fileName: string): Promise<{}> {
+async function loadJSONFile(fileName: string, dataDir: string): Promise<{}> {
     logger.verbose(
         `Loading data from Filesystem. fileName=${fileName} dataDir=${dataDir}`
     );
-    const filePath = resolveFilePath(fileName);
+    const filePath = resolveFilePath(fileName, dataDir);
     return importJSONFile(filePath);
 }
 
@@ -64,15 +68,26 @@ async function importJSONFile(filePath: string): Promise<{}> {
     });
 }
 
-function resolveFilePath(fileName: string) {
+// tslint:disable-next-line: no-any
+async function importBinaryFile(filePath: string): Promise<any> {
+    return new Promise(function(resolve, reject) {
+        fs.readFile(filePath, function(err, data) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(data);
+            }
+        });
+    });
+}
+
+function resolveFilePath(fileName: string, dataDir: string) {
     const filePath = path.join(dataDir, fileName);
     if (fs.existsSync(filePath)) {
         return filePath;
     } else {
-        throw new ApplicationSystemError(
-            `File not found. fileName=${fileName}`
-        );
+        throw new FileNotFoundError(`File not found. fileName=${fileName}`);
     }
 }
 
-export { loadCSVFile, loadJSONFile };
+export { loadCSVFile, loadJSONFile, loadBinaryFile };

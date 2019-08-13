@@ -1,23 +1,26 @@
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import { logger } from '../../../aspects';
 import { AVVFormatProvider } from '../model/validation.model';
-import { ApplicationSystemError } from '../../core/domain/technical.error';
 import { AVVFormatCollection, StateRepository } from '../../ports';
+import { injectable, inject } from 'inversify';
+import { APPLICATION_TYPES } from './../../application.types';
 
 moment.locale('de');
 
 // TODO: should these be in the DB?
-class DefaultAVVFormatProvider implements AVVFormatProvider {
+@injectable()
+export class DefaultAVVFormatProvider implements AVVFormatProvider {
     private stateFormats: AVVFormatCollection = {};
 
-    constructor(private stateRepository: StateRepository) {
+    constructor(
+        @inject(APPLICATION_TYPES.StateRepository)
+        private stateRepository: StateRepository
+    ) {
         this.stateRepository
             .getAllFormats()
             .then(data => (this.stateFormats = data))
             .catch(error => {
-                logger.error(error);
-                throw new ApplicationSystemError('Unable to load AVV Formats.');
+                throw error;
             });
     }
     getFormat(state?: string): string[] {

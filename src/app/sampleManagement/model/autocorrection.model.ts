@@ -1,7 +1,7 @@
-import { SampleData, SampleCollection } from './sample.model';
+import { Sample, SampleData, SampleProperty } from './sample.model';
 
 export interface CorrectionSuggestions {
-    field: keyof SampleData;
+    field: SampleProperty;
     original: string;
     correctionOffer: string[];
     code: number;
@@ -28,7 +28,7 @@ export interface ResultOptions {
     alias?: string;
     original: string;
     numberOfResults: number;
-    property: keyof SampleData;
+    property: SampleProperty;
 }
 export interface FuzzySearchResultEntry {
     item: string;
@@ -36,9 +36,7 @@ export interface FuzzySearchResultEntry {
 }
 
 export interface FormAutoCorrectionPort {
-    applyAutoCorrection(
-        sampleCollection: SampleCollection
-    ): Promise<SampleCollection>;
+    applyAutoCorrection(sampleCollection: Sample[]): Promise<Sample[]>;
 }
 
 export interface FormAutoCorrectionService extends FormAutoCorrectionPort {}

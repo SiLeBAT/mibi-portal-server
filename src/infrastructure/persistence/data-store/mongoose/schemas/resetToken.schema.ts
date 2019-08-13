@@ -3,13 +3,13 @@ import { UserToken } from '../../../../../app/ports';
 
 const Schema = mongoose.Schema;
 
-export interface ResetTokenModel extends mongoose.Document, UserToken {
+export interface TokenModel extends mongoose.Document, UserToken {
     user: string;
     created: Date;
     updated: Date;
 }
 
-export const resetTokenSchema = new Schema({
+export const tokenSchema = new Schema({
     token: {
         type: String,
         required: true
@@ -34,7 +34,7 @@ export const resetTokenSchema = new Schema({
     }
 }).pre('save', function(next) {
     if (this) {
-        let doc = this as ResetTokenModel;
+        let doc = this as TokenModel;
         let now = new Date();
         if (!doc.created) {
             doc.created = now;

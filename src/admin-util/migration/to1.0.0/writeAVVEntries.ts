@@ -4,7 +4,6 @@ import * as config from 'config';
 import { logger } from '../../../aspects';
 import {
     createDataStore,
-    DataStoreType,
     mapCollectionToRepository
 } from '../../../infrastructure/ports';
 
@@ -22,7 +21,6 @@ async function start() {
 }
 
 function connectToDB() {
-    const primaryDataStore = createDataStore(DataStoreType.MONGO);
     let connectionString: string;
     try {
         connectionString = config.get('dataStore.connectionString');
@@ -30,7 +28,7 @@ function connectToDB() {
         logger.error(`Error during state insert. err= ${e}`);
         return process.exit(1);
     }
-    return primaryDataStore.initialize(connectionString);
+    return createDataStore(connectionString);
 }
 
 function parseCommandLine(): string {
@@ -62,7 +60,8 @@ function writeToDB(collection: string, entries: any[]) {
     const db = connectToDB();
     // tslint:disable-next-line:no-any
     const promises: Promise<any>[] = [];
-    const repo = mapCollectionToRepository(collection);
+    // tslint:disable-next-line:no-any
+    const repo: any = mapCollectionToRepository(collection);
     entries.forEach(e => {
         logger.info(
             `Adding entry to collection. collection=${collection} entry=${
@@ -77,12 +76,12 @@ function writeToDB(collection: string, entries: any[]) {
                     (d: any) => {
                         return repo
                             .update(d._id.toString(), { AVV: e['AVV'] })
-                            .catch(e => {
+                            .catch((e: Error) => {
                                 throw e;
                             });
                     }
                 )
-                .catch(e => {
+                .catch((e: Error) => {
                     throw e;
                 })
         );

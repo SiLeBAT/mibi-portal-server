@@ -12,12 +12,48 @@ export const zoMoConstraints: ValidationConstraints = {
         presence: {
             error: 14,
             allowEmpty: false
+        },
+        registeredZoMo: {
+            error: 49,
+            group: [
+                {
+                    attr: 'operations_mode_adv',
+                    code: 'ADV8-Kode'
+                },
+                {
+                    attr: 'matrix_adv',
+                    code: 'ADV3-Kode'
+                },
+                {
+                    attr: 'topic_adv',
+                    code: 'Kodiersystem'
+                }
+            ],
+            year: ['sampling_date', 'isolation_date']
         }
     },
     isolation_date: {
         presence: {
             error: 18,
             allowEmpty: false
+        },
+        registeredZoMo: {
+            error: 49,
+            group: [
+                {
+                    attr: 'operations_mode_adv',
+                    code: 'ADV8-Kode'
+                },
+                {
+                    attr: 'matrix_adv',
+                    code: 'ADV3-Kode'
+                },
+                {
+                    attr: 'topic_adv',
+                    code: 'Kodiersystem'
+                }
+            ],
+            year: ['sampling_date', 'isolation_date']
         }
     },
     matrix_adv: {
