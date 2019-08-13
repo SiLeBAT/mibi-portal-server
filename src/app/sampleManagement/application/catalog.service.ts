@@ -3,10 +3,15 @@ import { CatalogRepository, SearchAliasRepository } from '../../ports';
 import { logger } from '../../../aspects';
 import { CatalogService, Catalog, CatalogData } from '../model/catalog.model';
 import { SearchAlias } from '../model/validation.model';
+import { injectable, inject } from 'inversify';
+import { APPLICATION_TYPES } from './../../application.types';
 
-class DefaultCatalogService implements CatalogService {
+@injectable()
+export class DefaultCatalogService implements CatalogService {
     constructor(
+        @inject(APPLICATION_TYPES.CatalogRepository)
         private catalogRepository: CatalogRepository,
+        @inject(APPLICATION_TYPES.SearchAliasRepository)
         private searchAliasRepository: SearchAliasRepository
     ) {}
 
@@ -24,16 +29,13 @@ class DefaultCatalogService implements CatalogService {
                         e.catalog.toLowerCase().localeCompare(catalogName) === 0
                 )
                 .value();
-        } catch (err) {
-            logger.warn('No SearchAlias configuration found in configuration.');
+        } catch (error) {
+            logger.warn(
+                `${this.constructor.name}.${
+                    this.getCatalogSearchAliases.name
+                }, no SearchAlias configuration found in configuration, error=${error}`
+            );
         }
         return searchAlias;
     }
-}
-
-export function createService(
-    catalogRepository: CatalogRepository,
-    searchAliasRepository: SearchAliasRepository
-): CatalogService {
-    return new DefaultCatalogService(catalogRepository, searchAliasRepository);
 }

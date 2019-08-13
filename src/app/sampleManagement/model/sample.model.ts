@@ -1,75 +1,129 @@
-import { CorrectionSuggestions, EditValue } from './autocorrection.model';
+import { EditValue } from './autocorrection.model';
 import { ValidationError, ValidationErrorCollection } from './validation.model';
 import { User } from '../../authentication/model/user.model';
 import { Institute } from '../../authentication/model/institute.model';
+import { ExcelFileInfo } from './excel.model';
+import { Attachment } from '../../core/model/notification.model';
+import { Urgency } from '../domain/enums';
 
+export type SamplePropertyValues = Record<SampleProperty, string>;
+export type SampleProperty = keyof SampleData;
+export interface SampleDataEntry {
+    value: string;
+}
+
+export interface AnnotatedSampleDataEntry extends SampleDataEntry {
+    errors: SampleValidationError[];
+    correctionOffer: string[];
+    oldValue?: string;
+}
 export interface SampleData {
-    sample_id: string;
-    sample_id_avv: string;
-    pathogen_adv: string;
-    pathogen_text: string;
-    sampling_date: string;
-    isolation_date: string;
-    sampling_location_adv: string;
-    sampling_location_zip: string;
-    sampling_location_text: string;
-    topic_adv: string;
-    matrix_adv: string;
-    matrix_text: string;
-    process_state_adv: string;
-    sampling_reason_adv: string;
-    sampling_reason_text: string;
-    operations_mode_adv: string;
-    operations_mode_text: string;
-    vvvo: string;
-    comment: string;
+    sample_id: AnnotatedSampleDataEntry;
+    sample_id_avv: AnnotatedSampleDataEntry;
+    pathogen_adv: AnnotatedSampleDataEntry;
+    pathogen_text: AnnotatedSampleDataEntry;
+    sampling_date: AnnotatedSampleDataEntry;
+    isolation_date: AnnotatedSampleDataEntry;
+    sampling_location_adv: AnnotatedSampleDataEntry;
+    sampling_location_zip: AnnotatedSampleDataEntry;
+    sampling_location_text: AnnotatedSampleDataEntry;
+    topic_adv: AnnotatedSampleDataEntry;
+    matrix_adv: AnnotatedSampleDataEntry;
+    matrix_text: AnnotatedSampleDataEntry;
+    process_state_adv: AnnotatedSampleDataEntry;
+    sampling_reason_adv: AnnotatedSampleDataEntry;
+    sampling_reason_text: AnnotatedSampleDataEntry;
+    operations_mode_adv: AnnotatedSampleDataEntry;
+    operations_mode_text: AnnotatedSampleDataEntry;
+    vvvo: AnnotatedSampleDataEntry;
+    comment: AnnotatedSampleDataEntry;
+    [key: string]: AnnotatedSampleDataEntry;
+}
+
+export interface Address {
+    instituteName: string;
+    department?: string;
+    street: string;
+    zip: string;
+    city: string;
+    contactPerson: string;
+    telephone: string;
+    email: string;
+}
+
+export interface Analysis {
+    species: boolean;
+    serological: boolean;
+    phageTyping: boolean;
+    resistance: boolean;
+    vaccination: boolean;
+    molecularTyping: boolean;
+    toxin: boolean;
+    zoonosenIsolate: boolean;
+    esblAmpCCarbapenemasen: boolean;
+    other: string;
+    compareHuman: boolean;
+}
+export interface SampleSetMetaData {
+    nrl: string;
+    sender: Address;
+    analysis: Analysis;
+    urgency: Urgency;
+    fileName: string;
+}
+
+export interface SampleSet {
+    samples: Sample[];
+    meta: SampleSetMetaData;
+}
+
+export interface SampleValidationError {
+    code: number;
+    level: number;
+    message: string;
 }
 
 export interface Sample {
     readonly pathogenIdAVV?: string;
     readonly pathogenId?: string;
-    correctionSuggestions: CorrectionSuggestions[];
-    edits: Record<string, EditValue>;
+    getValueFor(property: SampleProperty): string;
+    getEntryFor(property: SampleProperty): AnnotatedSampleDataEntry;
+    getOldValues(): Record<string, EditValue>;
     clone(): Sample;
-    getData(): SampleData;
-    correctField(key: keyof SampleData, value: string): void;
-    setErrors(errors: ValidationErrorCollection): void;
+    getAnnotatedData(): SampleData;
+    getDataValues(): Record<string, { value: string }>;
+    getPropertyvalues(): Record<string, string>;
     addErrorTo(id: string, errors: ValidationError): void;
-    getErrors(): ValidationErrorCollection;
+    addCorrectionTo(id: string, correctionOffer: string[]): void;
+    isValid(): boolean;
     addErrors(errors: ValidationErrorCollection): void;
     isZoMo(): boolean;
+    getErrorCount(level: number): number;
+    clearSingleCorrectionSuggestions(): void;
 }
-
-export interface DatasetFile {
-    filename: string;
-    encoding: string;
-    contentType: string;
-    size: number;
-    content: Buffer;
-}
-
 export interface SenderInfo {
-    email: string;
-    instituteId: string;
+    user: User;
     comment: string;
     recipient: string;
 }
 
-export interface DatasetPort {
-    sendDatasetFile(dataset: DatasetFile, senderInfo: SenderInfo): void;
+export interface SamplePort {
+    sendSampleFile(attachment: Attachment, senderInfo: SenderInfo): void;
+    convertToJson(
+        buffer: Buffer,
+        fileName: string,
+        token: string | null
+    ): Promise<SampleSet>;
+    convertToExcel(sampleSet: SampleSet): Promise<ExcelFileInfo>;
 }
 
-export interface DatasetService extends DatasetPort {}
+export interface SampleService extends SamplePort {}
 
 export interface ResolvedSenderInfo {
     user: User;
     institute: Institute;
     comment: string;
     recipient: string;
-}
-
-export interface SampleCollection {
-    samples: Sample[];
 }
 
 interface BaseDatasetNotificationPayload {

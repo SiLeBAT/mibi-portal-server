@@ -17,6 +17,31 @@ class GenericUser implements User {
     email: string;
     institution: Institute;
 
+    static create(
+        id: string,
+        email: string,
+        fname: string,
+        lname: string,
+        inst: Institute,
+        password: string,
+        enabled: boolean = false,
+        adminEnabled: boolean = false,
+        numAttempt: number = 0,
+        lastAttempt: number = Date.now()
+    ): User {
+        return new GenericUser(
+            id,
+            email,
+            fname,
+            lname,
+            inst,
+            password,
+            enabled,
+            adminEnabled,
+            numAttempt,
+            lastAttempt
+        );
+    }
     constructor(
         id: string,
         email: string,
@@ -44,14 +69,14 @@ class GenericUser implements User {
         return this.firstName + ' ' + this.lastName;
     }
 
-    isActivated(active?: boolean) {
-        if (!(active === undefined)) {
-            this.enabled = !!active;
+    isVerified(verified?: boolean) {
+        if (!(verified === undefined)) {
+            this.enabled = !!verified;
         }
         return this.enabled;
     }
 
-    isAdminActivated(active?: boolean) {
+    isActivated(active?: boolean) {
         if (!(active === undefined)) {
             this.adminEnabled = !!active;
         }
@@ -105,7 +130,7 @@ export function createUser(
     numAttempt: number = 0,
     lastAttempt: number = Date.now()
 ): User {
-    return new GenericUser(
+    return GenericUser.create(
         id,
         email,
         fname,

@@ -1,8 +1,11 @@
 import * as winston from 'winston';
+import * as config from 'config';
 import { TransformableInfo } from 'logform';
-import { getConfigurationService } from '../../app/ports';
 
-const generalConfig = getConfigurationService().getGeneralConfiguration();
+interface LogConfiguration {
+    logLevel: string;
+}
+const logConfiguration: LogConfiguration = config.get('general');
 /*
  *
  * Log levels are:
@@ -20,7 +23,7 @@ export class Logger {
     constructor() {
         let logLevel: string = 'error';
         try {
-            logLevel = generalConfig.logLevel;
+            logLevel = logConfiguration.logLevel;
         } catch (err) {
             // tslint:disable-next-line:no-console
             console.warn(

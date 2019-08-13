@@ -59,7 +59,7 @@ class SampleValidator implements Validator {
         sample: Sample,
         constraintSet: ValidationConstraints
     ): ValidationErrorCollection {
-        return validate(sample.getData(), constraintSet);
+        return validate(sample.getPropertyvalues(), constraintSet);
     }
 
     private registerCustomValidators() {

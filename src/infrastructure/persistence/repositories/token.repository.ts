@@ -1,73 +1,53 @@
+import { TokenModel } from '../data-store/mongoose/schemas/resetToken.schema';
+import { MongooseRepositoryBase } from '../data-store/mongoose/mongoose.repository';
+import { JsonWebTokenError } from 'jsonwebtoken';
 import {
     TokenRepository,
-    UserToken,
     User,
-    ApplicationDomainError,
-    TokenType
-} from '../../../app/ports';
-import { ResetTokenModel } from '../data-store/mongoose/schemas/resetToken.schema';
-import { ResetTokenSchema } from '../data-store/mongoose/mongoose';
-import {
-    createRepository,
-    RepositoryBase
-} from '../data-store/mongoose/mongoose.repository';
+    TokenType,
+    UserToken
+} from './../../../app/ports';
+import { injectable, inject } from 'inversify';
+import { Model } from 'mongoose';
+import { PERSISTENCE_TYPES } from '../persistence.types';
 
-class DefaultTokenRepository implements TokenRepository {
-    constructor(private baseRepo: RepositoryBase<ResetTokenModel>) {}
-    hasTokenForUser(user: User): Promise<boolean> {
-        return this.baseRepo
-            .find({ user: user.uniqueId, type: TokenType.ACTIVATE }, {}, {})
-            .then(docs => {
-                return docs.length > 0;
-            });
+@injectable()
+export class DefaultTokenRepository extends MongooseRepositoryBase<TokenModel>
+    implements TokenRepository {
+    constructor(
+        @inject(PERSISTENCE_TYPES.TokenModel) private model: Model<TokenModel>
+    ) {
+        super(model);
     }
-    hasResetTokenForUser(user: User): Promise<boolean> {
-        return this.baseRepo
-            .find({ user: user.uniqueId, type: TokenType.RESET }, {}, {})
-            .then(docs => {
-                return docs.length > 0;
-            });
+    hasTokenForUser(
+        user: User,
+        type: TokenType = TokenType.ACTIVATE
+    ): Promise<boolean> {
+        return super._find({ user: user.uniqueId, type }, {}, {}).then(docs => {
+            return docs.length > 0;
+        });
     }
-    hasAdminTokenForUser(user: User): Promise<boolean> {
-        return this.baseRepo
-            .find({ user: user.uniqueId, type: TokenType.ADMIN }, {}, {})
-            .then(docs => {
-                return docs.length > 0;
-            });
+    deleteTokenForUser(
+        user: User,
+        type: TokenType = TokenType.ACTIVATE
+    ): Promise<boolean> {
+        return super
+            ._findOne({ user: user.uniqueId, type })
+            .then((token: TokenModel) => !!super._delete(token._id));
     }
-    deleteTokenForUser(user: User): Promise<boolean> {
-        return this.baseRepo
-            .findOne({ user: user.uniqueId, type: TokenType.ACTIVATE })
-            .then(
-                (token: ResetTokenModel) => !!this.baseRepo.delete(token._id)
-            );
-    }
-    deleteResetTokenForUser(user: User): Promise<boolean> {
-        return this.baseRepo
-            .findOne({ user: user.uniqueId, type: TokenType.RESET })
-            .then(
-                (token: ResetTokenModel) => !!this.baseRepo.delete(token._id)
-            );
-    }
-    deleteAdminTokenForUser(user: User): Promise<boolean> {
-        return this.baseRepo
-            .findOne({ user: user.uniqueId, type: TokenType.ADMIN })
-            .then(
-                (token: ResetTokenModel) => !!this.baseRepo.delete(token._id)
-            );
-    }
+
     saveToken(token: UserToken): Promise<UserToken> {
-        const newToken = new ResetTokenSchema({
+        const newToken = new this.model({
             token: token.token,
             type: token.type,
             user: token.userId
         });
-        return this.baseRepo.create(newToken).then(res => newToken);
+        return super._create(newToken).then(res => newToken);
     }
     getUserTokenByJWT(token: string): Promise<UserToken> {
-        return this.baseRepo.findOne({ token: token }).then(model => {
+        return super._findOne({ token: token }).then(model => {
             if (!model) {
-                throw new ApplicationDomainError(
+                throw new JsonWebTokenError(
                     `No UserToken for JWT Token. token=${token}`
                 );
             }
@@ -79,7 +59,3 @@ class DefaultTokenRepository implements TokenRepository {
         });
     }
 }
-
-export const repository: TokenRepository = new DefaultTokenRepository(
-    createRepository(ResetTokenSchema)
-);

@@ -2,12 +2,18 @@ import * as _ from 'lodash';
 import * as moment from 'moment';
 import { NRLRepository } from '../../ports';
 import { NRLConfig, NRLSelectorProvider } from '../model/validation.model';
+import { injectable, inject } from 'inversify';
+import { APPLICATION_TYPES } from './../../application.types';
 
 moment.locale('de');
 
-class DefaultNRLSelectorProvider implements NRLSelectorProvider {
+@injectable()
+export class DefaultNRLSelectorProvider implements NRLSelectorProvider {
     private nrls: NRLConfig[] = [];
-    constructor(private nrlRepository: NRLRepository) {
+    constructor(
+        @inject(APPLICATION_TYPES.NRLRepository)
+        private nrlRepository: NRLRepository
+    ) {
         this.nrlRepository
             .getAllNRLs()
             .then(data => (this.nrls = data))
@@ -26,7 +32,4 @@ class DefaultNRLSelectorProvider implements NRLSelectorProvider {
         }
         return result;
     }
-}
-export function createService(repository: NRLRepository): NRLSelectorProvider {
-    return new DefaultNRLSelectorProvider(repository);
 }

@@ -1,63 +1,56 @@
-import { logger } from '../../../aspects';
-import { UserRepository, TokenRepository } from '../../ports';
-import { getConfigurationService } from '../../core/application/configuration.service';
 import {
     PasswordService,
     RecoveryData,
     ResetSuccessNotificationPayload,
     ResetRequestNotificationPayload
 } from '../model/login.model';
-import { generateToken, verifyToken } from '../domain/token.service';
 import { TokenType } from './../domain/enums';
-import { User, UserToken } from './../model/user.model';
+import { User, UserToken, UserService } from './../model/user.model';
 import { NotificationType } from '../../core/domain/enums';
 import {
     NotificationService,
     EmailNotificationMeta,
     Notification
 } from '../../core/model/notification.model';
+import { TokenService } from '../model/token.model';
+import { ConfigurationService } from '../../core/model/configuration.model';
+import { injectable, inject } from 'inversify';
+import { APPLICATION_TYPES } from './../../application.types';
+@injectable()
+export class DefaultPasswordService implements PasswordService {
+    private appName: string;
+    private apiUrl: string;
+    private supportContact: string;
 
-const appConfig = getConfigurationService().getApplicationConfiguration();
-const serverConfig = getConfigurationService().getServerConfiguration();
-const generalConfig = getConfigurationService().getGeneralConfiguration();
-
-const APP_NAME = appConfig.appName;
-const API_URL = serverConfig.apiUrl;
-const SUPPORT_CONTACT = generalConfig.supportContact;
-
-class DefaultPasswordService implements PasswordService {
     constructor(
-        private userRepository: UserRepository,
-        private tokenRepository: TokenRepository,
-        private notificationService: NotificationService
-    ) {}
+        @inject(APPLICATION_TYPES.NotificationService)
+        private notificationService: NotificationService,
+        @inject(APPLICATION_TYPES.TokenService)
+        private tokenService: TokenService,
+        @inject(APPLICATION_TYPES.ConfigurationService)
+        private configurationService: ConfigurationService,
+        @inject(APPLICATION_TYPES.UserService) private userService: UserService
+    ) {
+        this.appName = this.configurationService.getApplicationConfiguration().appName;
+        this.apiUrl = this.configurationService.getApplicationConfiguration().apiUrl;
+        this.supportContact = this.configurationService.getApplicationConfiguration().supportContact;
+    }
+    async requestPasswordReset(recoveryData: RecoveryData): Promise<void> {
+        const user = await this.userService.getUserByEmail(recoveryData.email);
 
-    async recoverPassword(recoveryData: RecoveryData): Promise<void> {
-        let user;
-        try {
-            user = await this.userRepository.findByUsername(recoveryData.email);
-        } catch (err) {
-            logger.error(
-                `recoverPassword: no user for provided email found, error=${err}`
-            );
-        }
-
-        if (!user) {
-            return;
-        }
-
-        const hasOldToken = await this.tokenRepository.hasResetTokenForUser(
-            user
+        const hasOldToken = await this.tokenService.hasTokenForUser(
+            user,
+            TokenType.RESET
         );
         if (hasOldToken) {
-            await this.tokenRepository.deleteResetTokenForUser(user);
+            await this.tokenService.deleteTokenForUser(user, TokenType.RESET);
         }
-        const token = generateToken(user.uniqueId);
-        const resetToken = await this.tokenRepository.saveToken({
-            token: token,
-            type: TokenType.RESET,
-            userId: user.uniqueId
-        });
+        const token = this.tokenService.generateToken(user.uniqueId);
+        const resetToken = await this.tokenService.saveToken(
+            token,
+            TokenType.RESET,
+            user.uniqueId
+        );
 
         const requestResetNotification = this.createResetRequestNotification(
             user,
@@ -70,13 +63,13 @@ class DefaultPasswordService implements PasswordService {
     }
 
     async resetPassword(token: string, password: string): Promise<void> {
-        const userToken = await this.tokenRepository.getUserTokenByJWT(token);
+        const userToken = await this.tokenService.getUserTokenByJWT(token);
         const userId = userToken.userId;
-        verifyToken(token, String(userId));
-        const user = await this.userRepository.findById(userId);
+        this.tokenService.verifyTokenWithUser(token, String(userId));
+        const user = await this.userService.getUserById(userId);
         await user.updatePassword(password);
-        await this.userRepository.updateUser(user);
-        await this.tokenRepository.deleteResetTokenForUser(user);
+        await this.userService.updateUser(user);
+        await this.tokenService.deleteTokenForUser(user, TokenType.RESET);
         const resetSuccessNotification = this.createResetSuccessNotification(
             user
         );
@@ -94,16 +87,16 @@ class DefaultPasswordService implements PasswordService {
             type: NotificationType.REQUEST_RESET,
             payload: {
                 name: user.firstName + ' ' + user.lastName,
-                action_url: API_URL + '/users/reset/' + resetToken.token,
-                api_url: API_URL,
+                action_url: this.apiUrl + '/users/reset/' + resetToken.token,
+                api_url: this.apiUrl,
                 operating_system: recoveryData.host,
                 user_agent: recoveryData.userAgent,
-                support_contact: SUPPORT_CONTACT,
-                appName: APP_NAME
+                support_contact: this.supportContact,
+                appName: this.appName
             },
             meta: this.notificationService.createEmailNotificationMetaData(
                 user.email,
-                `Setzen Sie Ihr ${APP_NAME}-Konto Passwort zurück.`
+                `Setzen Sie Ihr ${this.appName}-Konto Passwort zurück.`
             )
         };
     }
@@ -115,27 +108,15 @@ class DefaultPasswordService implements PasswordService {
             type: NotificationType.RESET_SUCCESS,
             payload: {
                 name: user.firstName + ' ' + user.lastName,
-                api_url: API_URL,
+                api_url: this.apiUrl,
                 email: user.email,
-                action_url: API_URL + '/users/login',
-                appName: APP_NAME
+                action_url: this.apiUrl + '/users/login',
+                appName: this.appName
             },
             meta: this.notificationService.createEmailNotificationMetaData(
                 user.email,
-                `Passwort für ${APP_NAME}-Konto erfolgreich zurückgesetzt.`
+                `Passwort für ${this.appName}-Konto erfolgreich zurückgesetzt.`
             )
         };
     }
-}
-
-export function createService(
-    userRepository: UserRepository,
-    tokenRepository: TokenRepository,
-    notifcationService: NotificationService
-): PasswordService {
-    return new DefaultPasswordService(
-        userRepository,
-        tokenRepository,
-        notifcationService
-    );
 }

@@ -1,46 +1,26 @@
 /**
  * core exports
  */
-export {
-    ServerConfiguration,
-    DataStoreConfiguration,
-    MailConfiguration,
-    GeneralConfiguration,
-    ConfigurationPort
-} from './core/model/configuration.model';
-
+export { getApplicationContainerModule } from './application.module';
+export { ApplicationConfiguration } from './core/model/configuration.model';
+export { createApplication, MiBiApplication } from './application';
 export {
     Notification,
+    Attachment,
     NotificationPort
 } from './core/model/notification.model';
-
-export {
-    ServiceFactory,
-    createFactory
-} from './core/factories/service.factory';
-
-export {
-    getConfigurationService
-} from './core/application/configuration.service';
-
-export {
-    getNotificationService
-} from './core/application/notification.service';
+export { ConfigurationService } from './core/model/configuration.model';
 
 export { NotificationType } from './core/domain/enums';
-
-export { ApplicationDomainError } from './core/domain/domain.error';
-
-export { ApplicationSystemError } from './core/domain/technical.error';
 
 /**
  * authentication exports
  */
-export { LoginResult, TokenType } from './authentication/domain/enums';
-
+export { TokenType } from './authentication/domain/enums';
 export {
     Institute,
-    InstitutePort
+    InstitutePort,
+    InstituteRepository
 } from './authentication/model/institute.model';
 
 export {
@@ -50,25 +30,42 @@ export {
     PasswordPort
 } from './authentication/model/login.model';
 
-export { RegistrationPort } from './authentication/model/registration.model';
+export {
+    RegistrationPort,
+    UserRegistration
+} from './authentication/model/registration.model';
 
-export { User, UserToken } from './authentication/model/user.model';
+export {
+    User,
+    UserToken,
+    UserPort,
+    UserRepository
+} from './authentication/model/user.model';
 
 export { createInstitution } from './authentication/domain/institute.entity';
 
 export { createUser } from './authentication/domain/user.entity';
 
-export { generateToken } from './authentication/domain/token.service';
+export { AuthorizationError } from './authentication/domain/domain.error';
+
+export {
+    TokenPort,
+    TokenPayload,
+    TokenRepository
+} from './authentication/model/token.model';
 
 /**
  * sampleManagement exports
  */
 export {
-    SampleCollection,
     Sample,
-    DatasetFile,
     SenderInfo,
-    DatasetPort
+    SamplePort,
+    SampleSet,
+    AnnotatedSampleDataEntry,
+    SampleData,
+    SampleProperty,
+    SampleSetMetaData
 } from './sampleManagement/model/sample.model';
 
 export {
@@ -76,6 +73,11 @@ export {
     CorrectionSuggestions,
     FormAutoCorrectionPort
 } from './sampleManagement/model/autocorrection.model';
+
+export {
+    ExcelUnmarshalPort,
+    ExcelFileInfo
+} from './sampleManagement/model/excel.model';
 
 export { Catalog, CatalogData } from './sampleManagement/model/catalog.model';
 
@@ -86,28 +88,20 @@ export {
     ValidationOptions,
     SearchAlias,
     State,
-    AVVFormatCollection
+    AVVFormatCollection,
+    ValidationErrorCollection
 } from './sampleManagement/model/validation.model';
 
 export { createCatalog } from './sampleManagement/domain/catalog.entity';
 
-export {
-    createSampleCollection
-} from './sampleManagement/domain/sample-collection.entity';
-
 export { createSample } from './sampleManagement/domain/sample.entity';
-
-/**
- * Respository interface exports
- */
+export { Urgency } from './sampleManagement/domain/enums';
 
 export {
     ValidationErrorRepository,
-    InstituteRepository,
     SearchAliasRepository,
     StateRepository,
-    UserRepository,
-    TokenRepository,
     NRLRepository,
-    CatalogRepository
-} from './core/model/repository.model';
+    CatalogRepository,
+    FileRepository
+} from './sampleManagement/model/repository.model';

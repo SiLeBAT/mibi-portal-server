@@ -4,6 +4,7 @@
     },
     "testRegex": "(.*|(\\.|/)(test|spec))\\.(ts)$",
     "roots": ["test"],
+    "setupFilesAfterEnv": ["./test/setup.js"],
     "moduleFileExtensions": [
       "ts",
       "js",

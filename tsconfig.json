@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+        "baseUrl": ".",
         "target": "es6",
         "module": "commonjs",
         "outDir": "lib",
@@ -9,6 +10,8 @@
         "removeComments": true,
         "forceConsistentCasingInFileNames": true,
         "alwaysStrict": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
         "typeRoots": [
             "./node_modules/@types",
             "./typings"

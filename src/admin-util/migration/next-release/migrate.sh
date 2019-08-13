@@ -11,5 +11,5 @@ DATA_DIR=./db
 NODE_CONFIG_DIR=$CONFIG_DIR node $SCRIPT_DIR/importCollection.js $DATA_DIR/nrls/nrls.json
 NODE_CONFIG_DIR=$CONFIG_DIR node $SCRIPT_DIR/importCollection.js $DATA_DIR/validation-errors/validationerrors.json
 
-# Updating old Institution collection
-NODE_CONFIG_DIR=$CONFIG_DIR node ./updateInstituteCollection.js
+# Updating old State collection
+NODE_CONFIG_DIR=$CONFIG_DIR node ./updateStateCollection.js $DATA_DIR/states/states.json

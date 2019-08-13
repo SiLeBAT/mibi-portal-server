@@ -1,8 +1,4 @@
-import {
-    createRepository,
-    Read
-} from '../data-store/mongoose/mongoose.repository';
-import { StateSchema } from '../data-store/mongoose/mongoose';
+import { MongooseRepositoryBase } from '../data-store/mongoose/mongoose.repository';
 import {
     StateRepository,
     State,
@@ -10,9 +6,18 @@ import {
 } from '../../../app/ports';
 import { mapModelToState } from './data-mappers';
 import { StateModel } from '../data-store/mongoose/schemas/state.schema';
+import { injectable, inject } from 'inversify';
+import { Model } from 'mongoose';
+import { PERSISTENCE_TYPES } from '../persistence.types';
 
-class DefaultStateRepository implements StateRepository {
-    constructor(private baseRepo: Read<StateModel>) {}
+@injectable()
+export class DefaultStateRepository extends MongooseRepositoryBase<StateModel>
+    implements StateRepository {
+    constructor(
+        @inject(PERSISTENCE_TYPES.StateModel) model: Model<StateModel>
+    ) {
+        super(model);
+    }
 
     getAllFormats(): Promise<AVVFormatCollection> {
         return this.retrieve().then(states => {
@@ -23,12 +28,8 @@ class DefaultStateRepository implements StateRepository {
     }
 
     private retrieve(): Promise<State[]> {
-        return this.baseRepo.retrieve().then(modelArray => {
+        return super._retrieve().then(modelArray => {
             return modelArray.map(m => mapModelToState(m));
         });
     }
 }
-
-export const repository: StateRepository = new DefaultStateRepository(
-    createRepository(StateSchema)
-);

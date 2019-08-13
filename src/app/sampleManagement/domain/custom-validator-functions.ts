@@ -1,6 +1,5 @@
 import * as moment from 'moment';
 import * as _ from 'lodash';
-import { SampleData } from '../model/sample.model';
 import {
     ValidationError,
     DependentFieldEntryOptions,
@@ -16,16 +15,17 @@ import {
     NumbersOnlyOptions,
     ReferenceDateOptions
 } from '../model/validation.model';
-import { ApplicationDomainError } from '../../ports';
 import { CatalogService } from '../model/catalog.model';
+import { SampleProperty, SamplePropertyValues } from '../model/sample.model';
+import { MalformedValidationOptionsError } from './domain.error';
 
 moment.locale('de');
 
 function dependentFieldEntry(
     value: string,
     options: DependentFieldEntryOptions,
-    key: keyof SampleData,
-    attributes: SampleData
+    key: SampleProperty,
+    attributes: Record<string, string>
 ) {
     const re = new RegExp(options.regex);
     const matchResult = re.test(attributes[options.field]);
@@ -42,8 +42,8 @@ function numbersOnlyValue(value: string): boolean {
 function matchesRegexPattern(
     value: string,
     options: MatchRegexPatternOptions,
-    key: keyof SampleData,
-    attributes: SampleData
+    key: SampleProperty,
+    attributes: SamplePropertyValues
 ) {
     if (!value || !options.regex.length) {
         return null;
@@ -66,8 +66,8 @@ function matchesRegexPattern(
 function matchesIdToSpecificYear(
     value: string,
     options: MatchIdToYearOptions,
-    key: keyof SampleData,
-    attributes: SampleData
+    key: SampleProperty,
+    attributes: SamplePropertyValues
 ) {
     if (!value) {
         return null;
@@ -126,8 +126,8 @@ function nonUniqueEntry(
     return (
         value: string,
         options: NonUniqueEntryOptions,
-        key: keyof SampleData,
-        attributes: SampleData
+        key: SampleProperty,
+        attributes: SamplePropertyValues
     ) => {
         if (attributes[key]) {
             const cat = catalogService.getCatalog(options.catalog);
@@ -163,8 +163,8 @@ function inCatalog(
     return (
         value: string,
         options: InCatalogOptions,
-        key: keyof SampleData,
-        attributes: SampleData
+        key: SampleProperty,
+        attributes: SamplePropertyValues
     ) => {
         const trimmedValue = value.trim();
         if (attributes[key]) {
@@ -190,8 +190,8 @@ function matchADVNumberOrString(
     return (
         value: string,
         options: MatchADVNumberOrStringOptions,
-        key: keyof SampleData,
-        attributes: SampleData
+        key: SampleProperty,
+        attributes: SamplePropertyValues
     ) => {
         const trimmedValue = value.trim();
         const altKeys = options.alternateKeys || [];
@@ -233,10 +233,10 @@ function registeredZoMo(
     return (
         value: string,
         options: RegisteredZoMoOptions,
-        key: keyof SampleData,
-        attributes: SampleData
+        key: SampleProperty,
+        attributes: SamplePropertyValues
     ) => {
-        const years = options.year.map((y: keyof SampleData) => {
+        const years = options.year.map((y: SampleProperty) => {
             const yearValue = attributes[y];
             const formattedYear = moment
                 .utc(yearValue, 'DD-MM-YYYY')
@@ -272,8 +272,8 @@ function registeredZoMo(
 function atLeastOneOf(
     value: string,
     options: AtLeastOneOfOptions,
-    key: keyof SampleData,
-    attributes: SampleData
+    key: SampleProperty,
+    attributes: SamplePropertyValues
 ) {
     if (isEmptyString(attributes[key])) {
         for (let i = 0; i < options.additionalMembers.length; i++) {
@@ -289,8 +289,8 @@ function atLeastOneOf(
 function dateAllowEmpty(
     value: string,
     options: AtLeastOneOfOptions,
-    key: keyof SampleData,
-    attributes: SampleData
+    key: SampleProperty,
+    attributes: SamplePropertyValues
 ) {
     if (isEmptyString(value)) {
         return null;
@@ -313,8 +313,8 @@ function dateAllowEmpty(
 function dependentFields(
     value: string,
     options: DependentFieldsOptions,
-    key: keyof SampleData,
-    attributes: SampleData
+    key: SampleProperty,
+    attributes: SamplePropertyValues
 ) {
     if (attributes[key]) {
         for (let i = 0; i < options.dependents.length; i++) {
@@ -330,8 +330,8 @@ function dependentFields(
 function numbersOnly(
     value: string,
     options: NumbersOnlyOptions,
-    key: keyof SampleData,
-    attributes: SampleData
+    key: SampleProperty,
+    attributes: SamplePropertyValues
 ) {
     if (attributes[key]) {
         if (!numbersOnlyValue(value)) {
@@ -344,7 +344,7 @@ function numbersOnly(
 function referenceDate(
     value: string,
     options: ReferenceDateOptions,
-    key: keyof SampleData,
+    key: SampleProperty,
     // tslint:disable-next-line
     attributes: any
 ) {
@@ -360,7 +360,7 @@ function referenceDate(
             referenceDateId = options.latest;
             refereceOperation = dateIsSameOrAfterReference;
         } else {
-            throw new ApplicationDomainError(
+            throw new MalformedValidationOptionsError(
                 'Error occured trying to validate'
             );
         }
