@@ -48,7 +48,7 @@ describe('Sample controller', () => {
         sampleSetDTO = {
             samples: [
                 {
-                    sample: {
+                    sampleData: {
                         sample_id: {
                             value: 'string',
                             oldValue: 'string'
@@ -162,7 +162,7 @@ describe('Sample controller', () => {
     });
 
     describe('root', () => {
-        it('should respond with error if incorrect payload', function() {
+        it('should respond with error if incorrect payload', function () {
             const req = new mockReq({
                 method: 'PUT',
                 headers: {
@@ -182,7 +182,7 @@ describe('Sample controller', () => {
             });
         });
 
-        it('should respond with Order JSON', function() {
+        it('should respond with Order JSON', function () {
             const req = new mockReq({
                 method: 'PUT',
                 headers: {
@@ -190,7 +190,9 @@ describe('Sample controller', () => {
                     'content-type': 'application/json'
                 },
                 body: {
-                    order: sampleSetDTO
+                    order: {
+                        sampleSet: sampleSetDTO
+                    }
                 }
             });
             const res = new mockRes();
@@ -200,94 +202,96 @@ describe('Sample controller', () => {
                 const body = res._getJSON();
                 expect(body).toMatchObject({
                     order: {
-                        samples: [
-                            {
-                                sample: {
-                                    sample_id: {
-                                        value: 'string'
-                                    },
-                                    sample_id_avv: {
-                                        value: 'string'
-                                    },
-                                    pathogen_adv: {
-                                        value: 'string'
-                                    },
-                                    pathogen_text: {
-                                        value: 'string'
-                                    },
-                                    sampling_date: {
-                                        value: 'string'
-                                    },
-                                    isolation_date: {
-                                        value: 'string'
-                                    },
-                                    sampling_location_adv: {
-                                        value: 'string'
-                                    },
-                                    sampling_location_zip: {
-                                        value: 'string'
-                                    },
-                                    sampling_location_text: {
-                                        value: 'string'
-                                    },
-                                    topic_adv: {
-                                        value: 'string'
-                                    },
-                                    matrix_adv: {
-                                        value: 'string'
-                                    },
-                                    matrix_text: {
-                                        value: 'string'
-                                    },
-                                    process_state_adv: {
-                                        value: 'string'
-                                    },
-                                    sampling_reason_adv: {
-                                        value: 'string'
-                                    },
-                                    sampling_reason_text: {
-                                        value: 'string'
-                                    },
-                                    operations_mode_adv: {
-                                        value: 'string'
-                                    },
-                                    operations_mode_text: {
-                                        value: 'string'
-                                    },
-                                    vvvo: {
-                                        value: 'string'
-                                    },
-                                    comment: {
-                                        value: 'string'
+                        sampleSet: {
+                            samples: [
+                                {
+                                    sampleData: {
+                                        sample_id: {
+                                            value: 'string'
+                                        },
+                                        sample_id_avv: {
+                                            value: 'string'
+                                        },
+                                        pathogen_adv: {
+                                            value: 'string'
+                                        },
+                                        pathogen_text: {
+                                            value: 'string'
+                                        },
+                                        sampling_date: {
+                                            value: 'string'
+                                        },
+                                        isolation_date: {
+                                            value: 'string'
+                                        },
+                                        sampling_location_adv: {
+                                            value: 'string'
+                                        },
+                                        sampling_location_zip: {
+                                            value: 'string'
+                                        },
+                                        sampling_location_text: {
+                                            value: 'string'
+                                        },
+                                        topic_adv: {
+                                            value: 'string'
+                                        },
+                                        matrix_adv: {
+                                            value: 'string'
+                                        },
+                                        matrix_text: {
+                                            value: 'string'
+                                        },
+                                        process_state_adv: {
+                                            value: 'string'
+                                        },
+                                        sampling_reason_adv: {
+                                            value: 'string'
+                                        },
+                                        sampling_reason_text: {
+                                            value: 'string'
+                                        },
+                                        operations_mode_adv: {
+                                            value: 'string'
+                                        },
+                                        operations_mode_text: {
+                                            value: 'string'
+                                        },
+                                        vvvo: {
+                                            value: 'string'
+                                        },
+                                        comment: {
+                                            value: 'string'
+                                        }
                                     }
                                 }
-                            }
-                        ],
-                        meta: {
-                            nrl: 'string',
-                            sender: {
-                                instituteName: '',
-                                department: '',
-                                street: '',
-                                zip: '',
-                                city: '',
-                                contactPerson: '',
-                                telephone: '',
-                                email: ''
-                            },
-                            urgency: 'NORMAL',
-                            analysis: {
-                                species: false,
-                                serological: false,
-                                phageTyping: false,
-                                resistance: false,
-                                vaccination: false,
-                                molecularTyping: false,
-                                toxin: false,
-                                zoonosenIsolate: false,
-                                esblAmpCCarbapenemasen: false,
-                                other: '',
-                                compareHuman: false
+                            ],
+                            meta: {
+                                nrl: 'string',
+                                sender: {
+                                    instituteName: '',
+                                    department: '',
+                                    street: '',
+                                    zip: '',
+                                    city: '',
+                                    contactPerson: '',
+                                    telephone: '',
+                                    email: ''
+                                },
+                                urgency: 'NORMAL',
+                                analysis: {
+                                    species: false,
+                                    serological: false,
+                                    phageTyping: false,
+                                    resistance: false,
+                                    vaccination: false,
+                                    molecularTyping: false,
+                                    toxin: false,
+                                    zoonosenIsolate: false,
+                                    esblAmpCCarbapenemasen: false,
+                                    other: '',
+                                    compareHuman: false
+                                }
                             }
                         }
                     }
@@ -296,7 +300,7 @@ describe('Sample controller', () => {
         });
     });
     describe('validate sample', () => {
-        it('should respond with error if incorrect payload', function() {
+        it('should respond with error if incorrect payload', function () {
             const req = new mockReq({
                 method: 'PUT',
                 headers: {
@@ -316,7 +320,7 @@ describe('Sample controller', () => {
             });
         });
 
-        it('should respond with Order JSON', function() {
+        it('should respond with Order JSON', function () {
             const req = new mockReq({
                 method: 'PUT',
                 headers: {
@@ -325,94 +329,96 @@ describe('Sample controller', () => {
                 },
                 body: {
                     order: {
-                        samples: [
-                            {
-                                sample: {
-                                    sample_id: {
-                                        value: 'string'
-                                    },
-                                    sample_id_avv: {
-                                        value: 'string'
-                                    },
-                                    pathogen_adv: {
-                                        value: 'string'
-                                    },
-                                    pathogen_text: {
-                                        value: 'string'
-                                    },
-                                    sampling_date: {
-                                        value: 'string'
-                                    },
-                                    isolation_date: {
-                                        value: 'string'
-                                    },
-                                    sampling_location_adv: {
-                                        value: 'string'
-                                    },
-                                    sampling_location_zip: {
-                                        value: 'string'
-                                    },
-                                    sampling_location_text: {
-                                        value: 'string'
-                                    },
-                                    topic_adv: {
-                                        value: 'string'
-                                    },
-                                    matrix_adv: {
-                                        value: 'string'
-                                    },
-                                    matrix_text: {
-                                        value: 'string'
-                                    },
-                                    process_state_adv: {
-                                        value: 'string'
-                                    },
-                                    sampling_reason_adv: {
-                                        value: 'string'
-                                    },
-                                    sampling_reason_text: {
-                                        value: 'string'
-                                    },
-                                    operations_mode_adv: {
-                                        value: 'string'
-                                    },
-                                    operations_mode_text: {
-                                        value: 'string'
-                                    },
-                                    vvvo: {
-                                        value: 'string'
-                                    },
-                                    comment: {
-                                        value: 'string'
+                        sampleSet: {
+                            samples: [
+                                {
+                                    sampleData: {
+                                        sample_id: {
+                                            value: 'string'
+                                        },
+                                        sample_id_avv: {
+                                            value: 'string'
+                                        },
+                                        pathogen_adv: {
+                                            value: 'string'
+                                        },
+                                        pathogen_text: {
+                                            value: 'string'
+                                        },
+                                        sampling_date: {
+                                            value: 'string'
+                                        },
+                                        isolation_date: {
+                                            value: 'string'
+                                        },
+                                        sampling_location_adv: {
+                                            value: 'string'
+                                        },
+                                        sampling_location_zip: {
+                                            value: 'string'
+                                        },
+                                        sampling_location_text: {
+                                            value: 'string'
+                                        },
+                                        topic_adv: {
+                                            value: 'string'
+                                        },
+                                        matrix_adv: {
+                                            value: 'string'
+                                        },
+                                        matrix_text: {
+                                            value: 'string'
+                                        },
+                                        process_state_adv: {
+                                            value: 'string'
+                                        },
+                                        sampling_reason_adv: {
+                                            value: 'string'
+                                        },
+                                        sampling_reason_text: {
+                                            value: 'string'
+                                        },
+                                        operations_mode_adv: {
+                                            value: 'string'
+                                        },
+                                        operations_mode_text: {
+                                            value: 'string'
+                                        },
+                                        vvvo: {
+                                            value: 'string'
+                                        },
+                                        comment: {
+                                            value: 'string'
+                                        }
                                     }
                                 }
-                            }
-                        ],
-                        meta: {
-                            nrl: 'string',
-                            sender: {
-                                instituteName: '',
-                                department: '',
-                                street: '',
-                                zip: '',
-                                city: '',
-                                contactPerson: '',
-                                telephone: '',
-                                email: ''
-                            },
-                            urgency: 'NORMAL',
-                            analysis: {
-                                species: false,
-                                serological: false,
-                                phageTyping: false,
-                                resistance: false,
-                                vaccination: false,
-                                molecularTyping: false,
-                                toxin: false,
-                                zoonosenIsolate: false,
-                                esblAmpCCarbapenemasen: false,
-                                other: '',
-                                compareHuman: false
+                            ],
+                            meta: {
+                                nrl: 'string',
+                                sender: {
+                                    instituteName: '',
+                                    department: '',
+                                    street: '',
+                                    zip: '',
+                                    city: '',
+                                    contactPerson: '',
+                                    telephone: '',
+                                    email: ''
+                                },
+                                urgency: 'NORMAL',
+                                analysis: {
+                                    species: false,
+                                    serological: false,
+                                    phageTyping: false,
+                                    resistance: false,
+                                    vaccination: false,
+                                    molecularTyping: false,
+                                    toxin: false,
+                                    zoonosenIsolate: false,
+                                    esblAmpCCarbapenemasen: false,
+                                    other: '',
+                                    compareHuman: false
+                                }
                             }
                         }
                     }
@@ -425,94 +431,96 @@ describe('Sample controller', () => {
                 const body = res._getJSON();
                 expect(body).toMatchObject({
                     order: {
-                        samples: [
-                            {
-                                sample: {
-                                    sample_id: {
-                                        value: 'string'
-                                    },
-                                    sample_id_avv: {
-                                        value: 'string'
-                                    },
-                                    pathogen_adv: {
-                                        value: 'string'
-                                    },
-                                    pathogen_text: {
-                                        value: 'string'
-                                    },
-                                    sampling_date: {
-                                        value: 'string'
-                                    },
-                                    isolation_date: {
-                                        value: 'string'
-                                    },
-                                    sampling_location_adv: {
-                                        value: 'string'
-                                    },
-                                    sampling_location_zip: {
-                                        value: 'string'
-                                    },
-                                    sampling_location_text: {
-                                        value: 'string'
-                                    },
-                                    topic_adv: {
-                                        value: 'string'
-                                    },
-                                    matrix_adv: {
-                                        value: 'string'
-                                    },
-                                    matrix_text: {
-                                        value: 'string'
-                                    },
-                                    process_state_adv: {
-                                        value: 'string'
-                                    },
-                                    sampling_reason_adv: {
-                                        value: 'string'
-                                    },
-                                    sampling_reason_text: {
-                                        value: 'string'
-                                    },
-                                    operations_mode_adv: {
-                                        value: 'string'
-                                    },
-                                    operations_mode_text: {
-                                        value: 'string'
-                                    },
-                                    vvvo: {
-                                        value: 'string'
-                                    },
-                                    comment: {
-                                        value: 'string'
+                        sampleSet: {
+                            samples: [
+                                {
+                                    sampleData: {
+                                        sample_id: {
+                                            value: 'string'
+                                        },
+                                        sample_id_avv: {
+                                            value: 'string'
+                                        },
+                                        pathogen_adv: {
+                                            value: 'string'
+                                        },
+                                        pathogen_text: {
+                                            value: 'string'
+                                        },
+                                        sampling_date: {
+                                            value: 'string'
+                                        },
+                                        isolation_date: {
+                                            value: 'string'
+                                        },
+                                        sampling_location_adv: {
+                                            value: 'string'
+                                        },
+                                        sampling_location_zip: {
+                                            value: 'string'
+                                        },
+                                        sampling_location_text: {
+                                            value: 'string'
+                                        },
+                                        topic_adv: {
+                                            value: 'string'
+                                        },
+                                        matrix_adv: {
+                                            value: 'string'
+                                        },
+                                        matrix_text: {
+                                            value: 'string'
+                                        },
+                                        process_state_adv: {
+                                            value: 'string'
+                                        },
+                                        sampling_reason_adv: {
+                                            value: 'string'
+                                        },
+                                        sampling_reason_text: {
+                                            value: 'string'
+                                        },
+                                        operations_mode_adv: {
+                                            value: 'string'
+                                        },
+                                        operations_mode_text: {
+                                            value: 'string'
+                                        },
+                                        vvvo: {
+                                            value: 'string'
+                                        },
+                                        comment: {
+                                            value: 'string'
+                                        }
                                     }
                                 }
-                            }
-                        ],
-                        meta: {
-                            nrl: 'string',
-                            sender: {
-                                instituteName: '',
-                                department: '',
-                                street: '',
-                                zip: '',
-                                city: '',
-                                contactPerson: '',
-                                telephone: '',
-                                email: ''
-                            },
-                            urgency: 'NORMAL',
-                            analysis: {
-                                species: false,
-                                serological: false,
-                                phageTyping: false,
-                                resistance: false,
-                                vaccination: false,
-                                molecularTyping: false,
-                                toxin: false,
-                                zoonosenIsolate: false,
-                                esblAmpCCarbapenemasen: false,
-                                other: '',
-                                compareHuman: false
+                            ],
+                            meta: {
+                                nrl: 'string',
+                                sender: {
+                                    instituteName: '',
+                                    department: '',
+                                    street: '',
+                                    zip: '',
+                                    city: '',
+                                    contactPerson: '',
+                                    telephone: '',
+                                    email: ''
+                                },
+                                urgency: 'NORMAL',
+                                analysis: {
+                                    species: false,
+                                    serological: false,
+                                    phageTyping: false,
+                                    resistance: false,
+                                    vaccination: false,
+                                    molecularTyping: false,
+                                    toxin: false,
+                                    zoonosenIsolate: false,
+                                    esblAmpCCarbapenemasen: false,
+                                    other: '',
+                                    compareHuman: false
+                                }
                             }
                         }
                     }
@@ -564,7 +572,9 @@ describe('Sample controller', () => {
             const req = new mockReq({
                 body: {
                     email: 'test',
-                    order: sampleSetDTO
+                    order: {
+                        sampleSet: sampleSetDTO
+                    }
                 }
             });
             req.file = true;

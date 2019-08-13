@@ -1,4 +1,5 @@
-import { SampleDataDTO } from './shared-dto.model';
+import { OrderDTO } from './shared-dto.model';
+import { ExcelFileInfo } from 'src/app/ports';
 
 export interface RegistrationRequestResponseDTO {
     registerRequest: boolean;
@@ -24,6 +25,20 @@ export interface TokenRefreshConfirmationResponseDTO {
     token: string;
 }
 
+export interface PutSamplesXLSXResponseDTO extends ExcelFileInfo {}
+
+export interface PutSamplesJSONResponseDTO {
+    order: OrderDTO;
+}
+
+export interface PutValidatedResponseDTO {
+    order: OrderDTO;
+}
+
+export interface PostSubmittedResponseDTO {
+    order: OrderDTO;
+}
+
 interface ErrorDTO {
     code: number;
     message: string;
@@ -32,11 +47,11 @@ interface ErrorDTO {
 export interface DefaultServerErrorDTO extends ErrorDTO {}
 
 export interface InvalidInputErrorDTO extends DefaultServerErrorDTO {
-    samples: SampleDataDTO[];
+    order: OrderDTO;
 }
 
 export interface AutoCorrectedInputErrorDTO extends DefaultServerErrorDTO {
-    samples: SampleDataDTO[];
+    order: OrderDTO;
 }
 
 export interface FailedLoginErrorDTO extends ErrorDTO {
