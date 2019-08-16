@@ -298,6 +298,7 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
     }
 
     private parseDate(date: string) {
+        date = date.toString();
         let parseOptions = {
             dateFormat: 'DD.MM.YYYY'
         };
@@ -308,9 +309,19 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
             };
         }
         try {
-            const parsedDate = moment(date, parseOptions.dateFormat)
+            let parsedDate = 'Invalid date';
+            if(date.includes('GMT')){
+                const offset = moment().utcOffset();
+                parsedDate = moment.utc(date)
+                .utcOffset(offset)
                 .locale('de')
                 .format('DD.MM.YYYY');
+            }
+            else {
+                parsedDate = moment(date, parseOptions.dateFormat)
+                .locale('de')
+                .format('DD.MM.YYYY');
+            }           
             if (parsedDate === 'Invalid date') {
                 return date;
             }
