@@ -23,12 +23,10 @@ import { DefaultSampleService } from './sampleManagement/application/sample.serv
 import { CatalogService } from './sampleManagement/model/catalog.model';
 import { DefaultCatalogService } from './sampleManagement/application/catalog.service';
 import {
-    NRLSelectorProvider,
     AVVFormatProvider,
     ValidationErrorProvider,
     FormValidatorService
 } from './sampleManagement/model/validation.model';
-import { DefaultNRLSelectorProvider } from './sampleManagement/application/nrl-selector-provider.service';
 import { DefaultAVVFormatProvider } from './sampleManagement/application/avv-format-provider.service';
 import { DefaultValidationErrorProvider } from './sampleManagement/application/validation-error-provider.service';
 import { RegistrationService } from './authentication/model/registration.model';
@@ -43,6 +41,8 @@ import { FormAutoCorrectionService } from './sampleManagement/model/autocorrecti
 import { DefaultFormAutoCorrectionService } from './sampleManagement/application/form-auto-correction.service';
 import { DefaultFormValidatorService } from './sampleManagement/application/form-validation.service';
 import { APPLICATION_TYPES } from './application.types';
+import { NRLService } from './sampleManagement/model/nrl.model';
+import { DefaultNRLService } from './sampleManagement/application/nrl.service';
 
 export function getApplicationContainerModule(
     appConfiguration: ApplicationConfiguration
@@ -86,10 +86,6 @@ export function getApplicationContainerModule(
                 DefaultCatalogService
             );
 
-            bind<NRLSelectorProvider>(APPLICATION_TYPES.NRLSelectorProvider).to(
-                DefaultNRLSelectorProvider
-            );
-
             bind<AVVFormatProvider>(APPLICATION_TYPES.AVVFormatProvider).to(
                 DefaultAVVFormatProvider
             );
@@ -116,6 +112,10 @@ export function getApplicationContainerModule(
             bind<FormValidatorService>(
                 APPLICATION_TYPES.FormValidatorService
             ).to(DefaultFormValidatorService);
+
+            bind<NRLService>(APPLICATION_TYPES.NRLService).to(
+                DefaultNRLService
+            );
         }
     );
 }

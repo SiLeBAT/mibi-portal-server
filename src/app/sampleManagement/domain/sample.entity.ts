@@ -1,3 +1,4 @@
+import { SampleMetaData } from './../model/sample.model';
 import * as _ from 'lodash';
 import {
     Sample,
@@ -10,6 +11,7 @@ import {
     ValidationError,
     ValidationErrorCollection
 } from '../model/validation.model';
+import { NRL } from './enums';
 
 class DefaultSample implements Sample {
     static ZOMO_CODE: number = 81;
@@ -25,17 +27,15 @@ class DefaultSample implements Sample {
         return new DefaultSample(cleanedData);
     }
 
-    static toDTO(sample: Sample): SampleData {
-        return sample.getAnnotatedData();
+    nrl: NRL;
+    constructor(private data: SampleData) {
+        this.nrl = NRL.UNKNOWN;
     }
-    constructor(private data: SampleData) {}
 
-    getPropertyvalues() {
-        const valuesOnly: Record<SampleProperty, string> = {};
-        return Object.keys(this.data).reduce((accumulator, property) => {
-            accumulator[property] = this.data[property].value;
-            return accumulator;
-        }, valuesOnly);
+    getSampleMetaData(): SampleMetaData {
+        return {
+            nrl: this.nrl
+        };
     }
 
     getDataValues(): Record<string, { value: string }> {
@@ -69,31 +69,20 @@ class DefaultSample implements Sample {
     }
 
     get pathogenId(): string | undefined {
-        if (
-            !this.getPropertyvalues().sample_id ||
-            !this.getPropertyvalues().pathogen_adv
-        ) {
+        if (!this.data.sample_id.value || !this.data.pathogen_adv.value) {
             return;
         }
-        return (
-            this.getPropertyvalues().sample_id +
-            this.getPropertyvalues().pathogen_adv
-        );
+        return this.data.sample_id.value + this.data.pathogen_adv.value;
     }
 
     get pathogenIdAVV(): string | undefined {
-        if (
-            !this.getPropertyvalues().sample_id_avv ||
-            !this.getPropertyvalues().pathogen_adv
-        ) {
+        if (!this.data.sample_id_avv.value || !this.data.pathogen_adv.value) {
             return;
         }
         return (
-            this.getPropertyvalues().sample_id_avv +
-            this.getPropertyvalues().pathogen_adv +
-            (this.getPropertyvalues().sample_id
-                ? this.getPropertyvalues().sample_id
-                : '')
+            this.data.sample_id_avv.value +
+            this.data.pathogen_adv.value +
+            (this.data.sample_id.value ? this.data.sample_id.value : '')
         );
     }
 
@@ -169,8 +158,4 @@ function createSample(data: SampleData): Sample {
     return DefaultSample.create(data);
 }
 
-function toSampleDTO(data: Sample): SampleData {
-    return DefaultSample.toDTO(data);
-}
-
-export { createSample, toSampleDTO };
+export { createSample };

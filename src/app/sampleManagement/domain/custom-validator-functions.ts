@@ -2,7 +2,7 @@ import * as moment from 'moment';
 import * as _ from 'lodash';
 import {
     ValidationError,
-    DependentFieldEntryOptions,
+    RequiredIfOtherOptions,
     MatchRegexPatternOptions,
     MatchIdToYearOptions,
     ValidatorFunction,
@@ -13,22 +13,48 @@ import {
     AtLeastOneOfOptions,
     DependentFieldsOptions,
     NumbersOnlyOptions,
-    ReferenceDateOptions
+    ReferenceDateOptions,
+    ValidatiorFunctionOptions
 } from '../model/validation.model';
 import { CatalogService } from '../model/catalog.model';
 import { SampleProperty, SamplePropertyValues } from '../model/sample.model';
 import { MalformedValidationOptionsError } from './domain.error';
+import { NRL } from './enums';
 
 moment.locale('de');
 
-function dependentFieldEntry(
+function nrlExists(
     value: string,
-    options: DependentFieldEntryOptions,
+    options: ValidatiorFunctionOptions,
+    key: SampleProperty,
+    attributes: Record<string, string>
+) {
+    if (attributes.nrl === NRL.UNKNOWN) {
+        return { ...options.message };
+    }
+    return null;
+}
+
+function noPlanprobeForNRL_AR(
+    value: string,
+    options: ValidatiorFunctionOptions,
+    key: SampleProperty,
+    attributes: Record<string, string>
+) {
+    const disallowed = [10, '10', 'Planprobe'];
+    return attributes.nrl === NRL.NRL_AR && _.includes(disallowed, value)
+        ? { ...options.message }
+        : null;
+}
+
+function requiredIfOther(
+    value: string,
+    options: RequiredIfOtherOptions,
     key: SampleProperty,
     attributes: Record<string, string>
 ) {
     const re = new RegExp(options.regex);
-    const matchResult = re.test(attributes[options.field]);
+    const matchResult = re.test(attributes[options.field].toString());
     if (matchResult && isEmptyString(attributes[key])) {
         return { ...options.message };
     }
@@ -143,7 +169,6 @@ function nonUniqueEntry(
                     );
                     if (n.length === 1) return null;
                 }
-                // TODO: find better way to do this
                 const newMessage: ValidationError = { ...options.message };
                 newMessage.message += ` Entweder '${
                     entries[0].Kodiersystem
@@ -307,7 +332,6 @@ function dateAllowEmpty(
     } else {
         return { ...options.message };
     }
-    return null;
 }
 
 function dependentFields(
@@ -429,12 +453,14 @@ export {
     atLeastOneOf,
     dateAllowEmpty,
     dependentFields,
-    dependentFieldEntry,
+    requiredIfOther,
     numbersOnly,
     inCatalog,
     registeredZoMo,
     nonUniqueEntry,
     matchADVNumberOrString,
     matchesRegexPattern,
-    matchesIdToSpecificYear
+    matchesIdToSpecificYear,
+    nrlExists,
+    noPlanprobeForNRL_AR
 };

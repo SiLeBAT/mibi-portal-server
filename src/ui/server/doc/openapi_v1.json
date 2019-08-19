@@ -10,7 +10,7 @@
       "name": "MIT",
       "url": "https://opensource.org/licenses/MIT"
     },
-    "version": "1.0.0"
+    "version": "1.1.0"
   },
   "externalDocs": {
     "description": "Find out more about the MiBi-Portal",
@@ -1014,11 +1014,42 @@
       "ValidatedSample": {
         "type": "object",
         "required": [
-          "sampleData"
+          "sampleData",
+          "sampleMeta"
         ],
         "properties": {
           "sampleData": {
             "$ref": "#/components/schemas/ValidatedSampleData"
+          },
+          "sampleMeta": {
+            "$ref": "#/components/schemas/ValidatedSampleMeta"
+          }
+        }
+      },
+      "ValidatedSampleMeta": {
+        "type": "object",
+        "required": [
+          "nrl"
+        ],
+        "properties": {
+          "nrl": {
+            "type": "string",
+            "enum": [
+              "Labor nicht erkannt",
+              "L-Bacillus",
+              "NRL-Vibrio",
+              "L-Clostridium",
+              "NRL-AR",
+              "NRL-VTEC",
+              "NRL-Staph",
+              "NRL-Salm",
+              "NRL-Trichinella",
+              "NRL-Listeria",
+              "KL-Yersinia",
+              "NRL-Virus",
+              "NRL-Campy",
+              "KL-Leptospira"
+            ]
           }
         }
       },

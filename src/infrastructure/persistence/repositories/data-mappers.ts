@@ -5,13 +5,16 @@ import {
     User,
     State,
     ValidationError,
-    NRLConfig
+    NRLConfig,
+    NRL,
+    DefaultNRLService
 } from '../../../app/ports';
 import { InstitutionModel } from '../data-store/mongoose/schemas/institution.schema';
 import { UserModel } from '../data-store/mongoose/schemas/user.schema';
 import { StateModel } from '../data-store/mongoose/schemas/state.schema';
 import { ValidationErrorModel } from '../data-store/mongoose/schemas/validationError.schema';
 import { NRLModel } from '../data-store/mongoose/schemas/nrl.schema';
+import { logger } from '../../../aspects';
 
 function mapModelToInstitution(i: InstitutionModel): Institute {
     const inst = createInstitution(i._id);
@@ -65,9 +68,17 @@ function mapModelToValidationError(
 }
 
 function mapModelToNRL(model: NRLModel): NRLConfig {
+    let name: NRL = NRL.UNKNOWN;
+    let selector: string[] = [];
+    try {
+        name = DefaultNRLService.mapNRLStringToEnum(model.name);
+        selector = model.selector;
+    } catch (e) {
+        logger.warn(`Unable to identify NRL. error=${e}`);
+    }
     return {
-        name: model.name,
-        selectors: model.selector
+        name: name,
+        selectors: selector
     };
 }
 

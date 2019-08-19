@@ -20,8 +20,7 @@ export const genericValidationErrors = [
     {
         code: 8,
         level: 2,
-        message:
-            'Erreger nicht erkannt. Der verwendete Text/Code kodiert keinen Erreger, der am BfR untersucht wird.'
+        message: 'Erreger nicht erkannt.'
     },
     {
         code: 10,
@@ -337,6 +336,11 @@ export const genericValidationErrors = [
         level: 1,
         message:
             'Planproben sind normalerweise nicht für das NRL Antibiotikaresistenz bestimmt.'
+    },
+    {
+        code: 96,
+        level: 1,
+        message: 'Dieser Erreger wird von keinem BfR-Labor untersucht.'
     }
 ];
 export function getMockValidationErrorRepository(): ValidationErrorRepository {

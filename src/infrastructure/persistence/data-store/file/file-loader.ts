@@ -4,7 +4,6 @@ import * as csv from 'fast-csv';
 import { logger } from '../../../../aspects';
 import { FileNotFoundError } from '../../model/domain.error';
 
-// TODO: Turn into class
 async function loadBinaryFile(
     fileName: string,
     dataDir: string

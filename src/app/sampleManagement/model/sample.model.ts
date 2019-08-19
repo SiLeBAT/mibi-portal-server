@@ -4,10 +4,11 @@ import { User } from '../../authentication/model/user.model';
 import { Institute } from '../../authentication/model/institute.model';
 import { ExcelFileInfo } from './excel.model';
 import { Attachment } from '../../core/model/notification.model';
-import { Urgency } from '../domain/enums';
+import { Urgency, NRL } from '../domain/enums';
 
 export type SamplePropertyValues = Record<SampleProperty, string>;
 export type SampleProperty = keyof SampleData;
+export type SampleDataValues = Record<SampleProperty, SampleDataEntry>;
 export interface SampleDataEntry {
     value: string;
 }
@@ -40,6 +41,9 @@ export interface SampleData {
     [key: string]: AnnotatedSampleDataEntry;
 }
 
+export interface SampleMetaData {
+    nrl: NRL;
+}
 export interface Address {
     instituteName: string;
     department?: string;
@@ -65,7 +69,7 @@ export interface Analysis {
     compareHuman: boolean;
 }
 export interface SampleSetMetaData {
-    nrl: string;
+    nrl: NRL;
     sender: Address;
     analysis: Analysis;
     urgency: Urgency;
@@ -86,13 +90,13 @@ export interface SampleValidationError {
 export interface Sample {
     readonly pathogenIdAVV?: string;
     readonly pathogenId?: string;
+    nrl: NRL;
     getValueFor(property: SampleProperty): string;
     getEntryFor(property: SampleProperty): AnnotatedSampleDataEntry;
     getOldValues(): Record<string, EditValue>;
     clone(): Sample;
     getAnnotatedData(): SampleData;
-    getDataValues(): Record<string, { value: string }>;
-    getPropertyvalues(): Record<string, string>;
+    getDataValues(): SampleDataValues;
     addErrorTo(id: string, errors: ValidationError): void;
     addCorrectionTo(id: string, correctionOffer: string[]): void;
     isValid(): boolean;
@@ -100,6 +104,7 @@ export interface Sample {
     isZoMo(): boolean;
     getErrorCount(level: number): number;
     clearSingleCorrectionSuggestions(): void;
+    getSampleMetaData(): SampleMetaData;
 }
 export interface SenderInfo {
     user: User;

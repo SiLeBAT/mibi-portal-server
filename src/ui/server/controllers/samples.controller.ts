@@ -1,3 +1,5 @@
+import { SampleMetaDTO } from './../model/shared-dto.model';
+import { SampleMetaData } from './../../../app/sampleManagement/model/sample.model';
 import * as moment from 'moment';
 import * as _ from 'lodash';
 import { Request, Response } from 'express';
@@ -19,11 +21,17 @@ import {
     TokenPayload,
     TokenPort,
     UserPort,
+    NRLPort,
     Urgency,
-    User
+    User,
+    DefaultNRLService
 } from '../../../app/ports';
 import { SamplesController } from '../model/controller.model';
-import { PostSubmittedRequestDTO, PutValidatedRequestDTO, PutSamplesJSONRequestDTO } from '../model/request.model';
+import {
+    PostSubmittedRequestDTO,
+    PutValidatedRequestDTO,
+    PutSamplesJSONRequestDTO
+} from '../model/request.model';
 import { SERVER_ERROR_CODE, ROUTE } from '../model/enums';
 import {
     MalformedRequestError,
@@ -81,7 +89,8 @@ export class DefaultSamplesController extends AbstractController
         @inject(APPLICATION_TYPES.SampleService)
         private sampleService: SamplePort,
         @inject(APPLICATION_TYPES.TokenService) private tokenService: TokenPort,
-        @inject(APPLICATION_TYPES.UserService) private userService: UserPort
+        @inject(APPLICATION_TYPES.UserService) private userService: UserPort,
+        @inject(APPLICATION_TYPES.NRLService) private nrlService: NRLPort
     ) {
         super();
     }
@@ -98,7 +107,7 @@ export class DefaultSamplesController extends AbstractController
         } catch (error) {
             logger.info(
                 `${this.constructor.name}.${
-                this.putSamples.name
+                    this.putSamples.name
                 } has thrown an error. ${error}`
             );
             this.handleError(res, error);
@@ -108,18 +117,17 @@ export class DefaultSamplesController extends AbstractController
     async putValidated(@request() req: Request, @response() res: Response) {
         logger.info(
             `${this.constructor.name}.${
-            this.putValidated.name
+                this.putValidated.name
             }, Request received`
         );
         try {
             const requestDTO: PutValidatedRequestDTO = req.body;
             const sampleSet: SampleSet = this.tryParseInputDTO(() => {
-                return this.fromDTOToUnannotatedSampleSet(requestDTO.order.sampleSet);
+                return this.fromDTOToUnannotatedSampleSet(
+                    requestDTO.order.sampleSet
+                );
             });
-            const validationOptions = await this.getValidationOptions(
-                sampleSet.meta,
-                req
-            );
+            const validationOptions = await this.getValidationOptions(req);
             const validationResult: Sample[] = await this.validateSamples(
                 sampleSet.samples,
                 validationOptions
@@ -130,10 +138,10 @@ export class DefaultSamplesController extends AbstractController
             );
             const responseDTO: PutValidatedResponseDTO = {
                 order: validatedOrderDTO
-            }
+            };
             logger.info(
                 `${this.constructor.name}.${
-                this.putValidated.name
+                    this.putValidated.name
                 }, Response sent`
             );
             logger.verbose('Response:', responseDTO);
@@ -141,7 +149,7 @@ export class DefaultSamplesController extends AbstractController
         } catch (error) {
             logger.info(
                 `${this.constructor.name}.${
-                this.putValidated.name
+                    this.putValidated.name
                 } has thrown an error. ${error}`
             );
             this.handleError(res, error);
@@ -151,7 +159,7 @@ export class DefaultSamplesController extends AbstractController
     async postSubmitted(@request() req: Request, @response() res: Response) {
         logger.info(
             `${this.constructor.name}.${
-            this.postSubmitted.name
+                this.postSubmitted.name
             }, Request received`
         );
         try {
@@ -160,7 +168,6 @@ export class DefaultSamplesController extends AbstractController
                 return this.fromDTOToSampleSet(requestDTO.order.sampleSet);
             });
             const validationOptions: ValidationOptions = await this.getValidationOptions(
-                annotatedSampleSet.meta,
                 req
             );
             const validatedSamples: Sample[] = await this.validateSamples(
@@ -194,7 +201,7 @@ export class DefaultSamplesController extends AbstractController
 
             const responseDTO: PostSubmittedResponseDTO = {
                 order: orderDTO
-            }
+            };
 
             const sampleFile: ExcelFileInfo = await this.sampleService.convertToExcel(
                 {
@@ -215,13 +222,16 @@ export class DefaultSamplesController extends AbstractController
             }
             const user: User = await this.getUserFromToken(token);
             const senderInfo = this.tryParseInputDTO(() => {
-                return this.fromPostSubmittedRequestDTOToSenderInfo(requestDTO, user);
+                return this.fromPostSubmittedRequestDTOToSenderInfo(
+                    requestDTO,
+                    user
+                );
             });
             this.sampleService.sendSampleFile(attachment, senderInfo);
 
             logger.info(
                 `${this.constructor.name}.${
-                this.postSubmitted.name
+                    this.postSubmitted.name
                 }, Response sent`
             );
             logger.verbose('Response:', responseDTO);
@@ -229,7 +239,7 @@ export class DefaultSamplesController extends AbstractController
         } catch (error) {
             logger.info(
                 `${this.constructor.name}.${
-                this.postSubmitted.name
+                    this.postSubmitted.name
                 } has thrown an error. ${error}`
             );
             this.handleError(res, error);
@@ -249,7 +259,7 @@ export class DefaultSamplesController extends AbstractController
                     return {
                         buffer: req.file.buffer,
                         name: req.file.originalname
-                    }
+                    };
                 });
                 return this.sampleService
                     .convertToJson(file.buffer, file.name, token)
@@ -284,7 +294,7 @@ export class DefaultSamplesController extends AbstractController
                 );
                 logger.info(
                     `${this.constructor.name}.${
-                    this.putSamples.name
+                        this.putSamples.name
                     }, Response sent`
                 );
                 this.ok(res, result);
@@ -293,10 +303,10 @@ export class DefaultSamplesController extends AbstractController
             default:
                 const successResponse: PutSamplesJSONResponseDTO = {
                     order: this.fromAnnotatedSampleSetToOrderDTO(sampleSet)
-                }
+                };
                 logger.info(
                     `${this.constructor.name}.${
-                    this.putSamples.name
+                        this.putSamples.name
                     }, Response sent`
                 );
                 this.ok(res, successResponse);
@@ -324,9 +334,11 @@ export class DefaultSamplesController extends AbstractController
         if (typeString.includes('multipart/form-data')) {
             returnType = RESOURCE_VIEW_TYPE.XLSX;
         }
-        if (typeString.includes(
+        if (
+            typeString.includes(
                 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-            )) {
+            )
+        ) {
             returnType = RESOURCE_VIEW_TYPE.XLSX;
         }
         return returnType;
@@ -344,12 +356,19 @@ export class DefaultSamplesController extends AbstractController
         samples: Sample[],
         options: ValidationOptions
     ): Promise<Sample[]> {
-        // Auto-correction needs to happen before validation.
+        // 1) Auto-correction needs to happen before validation.
+        // 2) Assign NRL
+        // 3) Validate Samples
         const autocorrectedSamples = await this.formAutoCorrectionService.applyAutoCorrection(
             samples
         );
+
+        const assignedSamples = this.nrlService.assignNRLsToSamples(
+            autocorrectedSamples
+        );
+
         const validationResult = await this.formValidationService.validateSamples(
-            autocorrectedSamples,
+            assignedSamples,
             options
         );
 
@@ -357,12 +376,9 @@ export class DefaultSamplesController extends AbstractController
     }
 
     private async getValidationOptions(
-        meta: SampleSetMetaData,
         req: Request
     ): Promise<ValidationOptions> {
-        const validationOptions: ValidationOptions = {
-            nrl: meta.nrl
-        };
+        const validationOptions: ValidationOptions = {};
 
         const token = getTokenFromHeader(req);
         let stateShort = '';
@@ -374,7 +390,7 @@ export class DefaultSamplesController extends AbstractController
             } catch (error) {
                 logger.info(
                     `${this.constructor.name}.${
-                    this.getValidationOptions.name
+                        this.getValidationOptions.name
                     }, no state found for user. Using default state. error=${error}`
                 );
             }
@@ -420,7 +436,7 @@ export class DefaultSamplesController extends AbstractController
         dto: SampleSetMetaDTO
     ): SampleSetMetaData {
         return {
-            nrl: dto.nrl,
+            nrl: DefaultNRLService.mapNRLStringToEnum(dto.nrl),
             analysis: dto.analysis,
             sender: dto.sender,
             urgency: this.fromUrgencyStringToEnum(dto.urgency),
@@ -501,7 +517,8 @@ export class DefaultSamplesController extends AbstractController
             sampleSet: {
                 meta: this.fromSampleSetMetaDataToDTO(annotatedSampleSet.meta),
                 samples: annotatedSampleSet.samples.map(sample => ({
-                    sampleData: sample.getDataValues()
+                    sampleData: sample.getDataValues(),
+                    sampleMeta: sample.getSampleMetaData()
                 }))
             }
         };
@@ -531,9 +548,18 @@ export class DefaultSamplesController extends AbstractController
     private fromSampleCollectionToSampleDTO(
         sampleCollection: Sample[]
     ): SampleDTO[] {
-        return sampleCollection.map((sample: Sample) =>
-            ({ sampleData: sample.getAnnotatedData() })
-        );
+        return sampleCollection.map((sample: Sample) => ({
+            sampleData: sample.getAnnotatedData(),
+            sampleMeta: this.fromSampleMetaToSampleMetaDTO(
+                sample.getSampleMetaData()
+            )
+        }));
+    }
+
+    private fromSampleMetaToSampleMetaDTO(meta: SampleMetaData): SampleMetaDTO {
+        return {
+            nrl: meta.nrl.toString()
+        };
     }
 
     private fromPostSubmittedRequestDTOToSenderInfo(
