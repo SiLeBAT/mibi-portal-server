@@ -1,3 +1,4 @@
+import { NRL } from './../domain/enums';
 import * as _ from 'lodash';
 import { logger } from '../../../aspects';
 import {
@@ -5,7 +6,6 @@ import {
     Validator,
     AVVFormatProvider,
     ValidationErrorProvider,
-    NRLSelectorProvider,
     ValidationOptions,
     ValidationConstraints,
     ValidationRuleSet,
@@ -38,9 +38,7 @@ export class DefaultFormValidatorService implements FormValidatorService {
         @inject(APPLICATION_TYPES.AVVFormatProvider)
         private avvFormatProvider: AVVFormatProvider,
         @inject(APPLICATION_TYPES.ValidationErrorProvider)
-        private validationErrorProvider: ValidationErrorProvider,
-        @inject(APPLICATION_TYPES.NRLSelectorProvider)
-        private nrlSelectorProvider: NRLSelectorProvider
+        private validationErrorProvider: ValidationErrorProvider
     ) {
         this.validator = createValidator({
             dateFormat: 'DD-MM-YYYY',
@@ -221,17 +219,8 @@ export class DefaultFormValidatorService implements FormValidatorService {
         newConstraints: ValidationConstraints,
         options: ValidationOptions
     ): ValidationConstraints {
-        if (
-            newConstraints['pathogen_adv'] &&
-            newConstraints['pathogen_adv']['matchesRegexPattern']
-        ) {
-            // Necessary because of Ticket #54
-            newConstraints['pathogen_adv'][
-                'matchesRegexPattern'
-            ].regex = this.nrlSelectorProvider.getSelectors(options.nrl);
-        }
         switch (options.nrl) {
-            case 'NRL-AR':
+            case NRL.NRL_AR:
                 newConstraints['sampling_reason_adv'] =
                     newConstraints['sampling_reason_adv'] || {};
                 newConstraints['sampling_reason_adv']['exclusion'] = {

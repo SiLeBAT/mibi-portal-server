@@ -1,5 +1,6 @@
 import { Sample, SampleProperty, SamplePropertyValues } from './sample.model';
 import { CatalogService } from './catalog.model';
+import { NRL } from '../domain/enums';
 
 export interface ValidationError {
     code: number;
@@ -10,7 +11,7 @@ export interface ValidationError {
 
 export interface NRLConfig {
     selectors: string[];
-    name: string;
+    name: NRL;
 }
 export interface ValidationRule {
     error: number;
@@ -64,7 +65,7 @@ export interface AVVFormatProvider {
 
 export interface ValidationOptions {
     state?: string;
-    nrl?: string;
+    nrl?: NRL;
     year?: string;
 }
 export interface FormValidatorPort {
@@ -75,10 +76,6 @@ export interface FormValidatorPort {
 }
 
 export interface FormValidatorService extends FormValidatorPort {}
-
-export interface NRLSelectorProvider {
-    getSelectors(nrl?: string): RegExp[];
-}
 
 export interface ValidationErrorProviderPort {}
 
@@ -106,7 +103,7 @@ export interface MatchRegexPatternOptions extends MatchIdToYearOptions {
     caseInsensitive?: boolean;
 }
 
-export interface DependentFieldEntryOptions extends ValidatiorFunctionOptions {
+export interface RequiredIfOtherOptions extends ValidatiorFunctionOptions {
     regex: string;
     field: SampleProperty;
 }

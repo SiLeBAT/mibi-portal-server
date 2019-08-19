@@ -162,7 +162,7 @@ describe('Sample controller', () => {
     });
 
     describe('root', () => {
-        it('should respond with error if incorrect payload', function () {
+        it('should respond with error if incorrect payload', function() {
             const req = new mockReq({
                 method: 'PUT',
                 headers: {
@@ -182,7 +182,7 @@ describe('Sample controller', () => {
             });
         });
 
-        it('should respond with Order JSON', function () {
+        it('should respond with Order JSON', function() {
             const req = new mockReq({
                 method: 'PUT',
                 headers: {
@@ -267,7 +267,7 @@ describe('Sample controller', () => {
                                 }
                             ],
                             meta: {
-                                nrl: 'string',
+                                nrl: 'Labor nicht erkannt',
                                 sender: {
                                     instituteName: '',
                                     department: '',
@@ -300,7 +300,7 @@ describe('Sample controller', () => {
         });
     });
     describe('validate sample', () => {
-        it('should respond with error if incorrect payload', function () {
+        it('should respond with error if incorrect payload', function() {
             const req = new mockReq({
                 method: 'PUT',
                 headers: {
@@ -320,7 +320,7 @@ describe('Sample controller', () => {
             });
         });
 
-        it('should respond with Order JSON', function () {
+        it('should respond with Order JSON', function() {
             const req = new mockReq({
                 method: 'PUT',
                 headers: {
@@ -492,11 +492,14 @@ describe('Sample controller', () => {
                                         comment: {
                                             value: 'string'
                                         }
+                                    },
+                                    sampleMeta: {
+                                        nrl: 'Labor nicht erkannt'
                                     }
                                 }
                             ],
                             meta: {
-                                nrl: 'string',
+                                nrl: 'Labor nicht erkannt',
                                 sender: {
                                     instituteName: '',
                                     department: '',

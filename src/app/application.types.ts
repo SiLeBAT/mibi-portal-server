@@ -10,12 +10,12 @@ export const APPLICATION_TYPES = {
     TokenService: Symbol.for('TokenService'),
     SampleService: Symbol.for('SampleService'),
     CatalogService: Symbol.for('CatalogService'),
-    NRLSelectorProvider: Symbol.for('NRLSelectorProvider'),
     AVVFormatProvider: Symbol.for('AVVFormatProvider'),
     ValidationErrorProvider: Symbol.for('ValidationErrorProvider'),
     RegistrationService: Symbol.for('RegistrationService'),
     PasswordService: Symbol.for('PasswordService'),
     LoginService: Symbol.for('LoginService'),
+    NRLService: Symbol.for('NRLService'),
     FormAutoCorrectionService: Symbol.for('FormAutoCorrectionService'),
     FormValidatorService: Symbol.for('FormValidatorService'),
 

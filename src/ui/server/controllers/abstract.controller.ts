@@ -42,7 +42,7 @@ export abstract class AbstractController implements Controller {
         return this.jsonResponse(response, 500, dto);
     }
 
-    protected tryParseInputDTO<T>(parseOp: () => T) : T {
+    protected tryParseInputDTO<T>(parseOp: () => T): T {
         try {
             return parseOp();
         } catch (error) {

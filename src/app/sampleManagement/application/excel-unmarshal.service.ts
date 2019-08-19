@@ -14,7 +14,7 @@ import {
 
 import { ExcelUnmarshalService } from '../model/excel.model';
 import { createSample } from '../domain/sample.entity';
-import { Urgency } from '../domain/enums';
+import { Urgency, NRL } from '../domain/enums';
 import { injectable } from 'inversify';
 import {
     VALID_SHEET_NAME,
@@ -40,6 +40,7 @@ import {
     META_ANALYSIS_SEROLOGICAL_CELL,
     META_SENDER_CONTACTPERSON_CELL
 } from '../domain/constants';
+import { DefaultNRLService } from './nrl.service';
 
 @injectable()
 export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
@@ -196,56 +197,9 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
                 return Urgency.NORMAL;
         }
     }
-    private getNRLFromWorkSheet(workSheet: WorkSheet): string {
+    private getNRLFromWorkSheet(workSheet: WorkSheet): NRL {
         const workSheetNRL: string = workSheet[META_NRL_CELL].v || '';
-        let nrl = '';
-
-        switch (workSheetNRL.trim()) {
-            case 'NRL Überwachung von Bakterien in zweischaligen Weichtieren':
-                nrl = 'NRL-Vibrio';
-                break;
-
-            case 'NRL Escherichia coli einschließlich verotoxinbildende E. coli':
-            case 'NRL Verotoxinbildende Escherichia coli':
-                nrl = 'NRL-VTEC';
-                break;
-            case 'Sporenbildner':
-            case 'Bacillus spp.':
-            case 'Clostridium spp. (C. difficile)':
-                nrl = 'Sporenbildner';
-                break;
-            case 'NRL koagulasepositive Staphylokokken einschließlich Staphylococcus aureus':
-                nrl = 'NRL-Staph';
-                break;
-
-            case 'NRL Salmonellen (Durchführung von Analysen und Tests auf Zoonosen)':
-                nrl = 'NRL-Salm';
-                break;
-            case 'NRL Listeria monocytogenes':
-                nrl = 'NRL-Listeria';
-                break;
-            case 'NRL Campylobacter':
-                nrl = 'NRL-Campy';
-                break;
-            case 'NRL Antibiotikaresistenz':
-                nrl = 'NRL-AR';
-                break;
-            case 'Yersinia':
-                nrl = 'KL-Yersinia';
-                break;
-            case 'NRL Trichinella':
-                nrl = 'NRL-Trichinella';
-                break;
-            case 'NRL Überwachung von Viren in zweischaligen Weichtieren':
-                nrl = 'NRL-Virus';
-                break;
-            case 'Leptospira':
-                nrl = 'KL-Leptospira';
-                break;
-            default:
-        }
-
-        return nrl;
+        return DefaultNRLService.mapNRLStringToEnum(workSheetNRL);
     }
 
     private getDataFromCell(
@@ -310,18 +264,18 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
         }
         try {
             let parsedDate = 'Invalid date';
-            if(date.includes('GMT')){
+            if (date.includes('GMT')) {
                 const offset = moment().utcOffset();
-                parsedDate = moment.utc(date)
-                .utcOffset(offset)
-                .locale('de')
-                .format('DD.MM.YYYY');
-            }
-            else {
+                parsedDate = moment
+                    .utc(date)
+                    .utcOffset(offset)
+                    .locale('de')
+                    .format('DD.MM.YYYY');
+            } else {
                 parsedDate = moment(date, parseOptions.dateFormat)
-                .locale('de')
-                .format('DD.MM.YYYY');
-            }           
+                    .locale('de')
+                    .format('DD.MM.YYYY');
+            }
             if (parsedDate === 'Invalid date') {
                 return date;
             }

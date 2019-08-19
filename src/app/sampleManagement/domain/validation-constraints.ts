@@ -178,7 +178,7 @@ export const zoMoConstraints: ValidationConstraints = {
         }
     },
     process_state_adv: {
-        dependentFieldEntry: {
+        requiredIfOther: {
             error: 39,
             field: 'operations_mode_adv',
             regex: '^4'
@@ -232,11 +232,8 @@ export const baseConstraints: ValidationConstraints = {
             catalog: 'adv16',
             alternateKeys: ['Text1']
         },
-        matchesRegexPattern: {
-            caseInsensitive: true,
-            error: 73,
-            regex: [],
-            ignoreNumbers: true
+        nrlExists: {
+            error: 96
         }
     },
     sampling_date: {

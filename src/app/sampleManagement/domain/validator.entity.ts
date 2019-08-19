@@ -1,3 +1,4 @@
+import { SampleMetaData } from './../model/sample.model';
 import * as validate from 'validate.js';
 import * as moment from 'moment';
 import * as _ from 'lodash';
@@ -7,14 +8,15 @@ import {
     atLeastOneOf,
     dateAllowEmpty,
     dependentFields,
-    dependentFieldEntry,
+    requiredIfOther,
     numbersOnly,
     inCatalog,
     registeredZoMo,
     nonUniqueEntry,
     matchADVNumberOrString,
     matchesRegexPattern,
-    matchesIdToSpecificYear
+    matchesIdToSpecificYear,
+    nrlExists
 } from './custom-validator-functions';
 import { Sample } from '../model/sample.model';
 import {
@@ -24,6 +26,7 @@ import {
     ValidationConstraints
 } from '../model/validation.model';
 import { CatalogService } from '../model/catalog.model';
+import { NRL } from './enums';
 
 moment.locale('de');
 
@@ -59,19 +62,28 @@ class SampleValidator implements Validator {
         sample: Sample,
         constraintSet: ValidationConstraints
     ): ValidationErrorCollection {
-        return validate(sample.getPropertyvalues(), constraintSet);
+        const data = sample.getDataValues();
+        const meta: SampleMetaData = sample.getSampleMetaData();
+        let dataValuesOnly: Record<string, string | NRL> = {};
+        dataValuesOnly = Object.keys(data).reduce((accumulator, property) => {
+            accumulator[property] = data[property].value;
+            return accumulator;
+        }, dataValuesOnly);
+        dataValuesOnly = { ...meta, ...dataValuesOnly };
+        return validate(dataValuesOnly, constraintSet);
     }
 
     private registerCustomValidators() {
         // Register Custom Validators
         validate.validators.futureDate = referenceDate;
+        validate.validators.nrlExists = nrlExists;
         validate.validators.oldSample = referenceDate;
         validate.validators.atLeastOneOf = atLeastOneOf;
         validate.validators.dateAllowEmpty = dateAllowEmpty;
         validate.validators.referenceDate = referenceDate;
         validate.validators.timeBetween = referenceDate;
         validate.validators.dependentFields = dependentFields;
-        validate.validators.dependentFieldEntry = dependentFieldEntry;
+        validate.validators.requiredIfOther = requiredIfOther;
         validate.validators.numbersOnly = numbersOnly;
         validate.validators.matchesRegexPattern = matchesRegexPattern;
         validate.validators.matchesIdToSpecificYear = matchesIdToSpecificYear;

@@ -46,8 +46,13 @@ export interface SampleDataDTO {
     [key: string]: SampleDataEntryDTO;
 }
 
+export interface SampleMetaDTO {
+    nrl: string;
+}
+
 export interface SampleDTO {
     sampleData: SampleDataDTO;
+    sampleMeta: SampleMetaDTO;
 }
 
 export interface SampleSetDTO {

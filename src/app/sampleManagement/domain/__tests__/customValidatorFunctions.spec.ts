@@ -3,7 +3,6 @@ import * as _ from 'lodash';
 import {
     referenceDate,
     atLeastOneOf,
-    dependentFieldEntry,
     dependentFields,
     numbersOnly,
     registeredZoMo,
@@ -11,7 +10,8 @@ import {
     inCatalog,
     matchADVNumberOrString,
     matchesRegexPattern,
-    matchesIdToSpecificYear
+    matchesIdToSpecificYear,
+    requiredIfOther
 } from '../custom-validator-functions';
 import {
     ValidationError,
@@ -56,9 +56,9 @@ describe('Custom Validator Functions', () => {
         };
     });
 
-    describe('dependentFieldEntry', () => {
+    describe('requiredIfOther', () => {
         it('should validate without errors', () => {
-            const error = dependentFieldEntry(
+            const error = requiredIfOther(
                 testSample.process_state_adv,
                 {
                     message: validationError,
@@ -72,7 +72,7 @@ describe('Custom Validator Functions', () => {
         });
 
         it('should validate without errors', () => {
-            const error = dependentFieldEntry(
+            const error = requiredIfOther(
                 testSample.process_state_adv,
                 {
                     message: validationError,
@@ -90,7 +90,7 @@ describe('Custom Validator Functions', () => {
                 ...testSample,
                 ...{ process_state_adv: '' }
             };
-            const error = dependentFieldEntry(
+            const error = requiredIfOther(
                 differentSample.process_state_adv,
                 {
                     message: validationError,
@@ -108,7 +108,7 @@ describe('Custom Validator Functions', () => {
                 ...testSample,
                 ...{ process_state_adv: '' }
             };
-            const error = dependentFieldEntry(
+            const error = requiredIfOther(
                 differentSample.process_state_adv,
                 {
                     message: validationError,
