@@ -1,0 +1,188 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d550fa91_40919c87",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1015828
+      },
+      "writtenOn": "2019-08-21T12:51:12Z",
+      "side": 1,
+      "message": "Change to Story Ticket",
+      "range": {
+        "startLine": 11,
+        "startChar": 9,
+        "endLine": 11,
+        "endChar": 12
+      },
+      "revId": "04726790211f9b258939390d45b914dc6bab0a51",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "09029849_302a8f30",
+        "filename": "src/app/sampleManagement/application/__tests__/nrl.spec.ts",
+        "patchSetId": 1
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 1015828
+      },
+      "writtenOn": "2019-08-21T12:51:12Z",
+      "side": 1,
+      "message": "typo",
+      "range": {
+        "startLine": 149,
+        "startChar": 15,
+        "endLine": 149,
+        "endChar": 22
+      },
+      "revId": "04726790211f9b258939390d45b914dc6bab0a51",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b56b85a5_b45dbd0c",
+        "filename": "src/app/sampleManagement/application/__tests__/nrl.spec.ts",
+        "patchSetId": 1
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 1015828
+      },
+      "writtenOn": "2019-08-21T12:51:12Z",
+      "side": 1,
+      "message": "typo",
+      "range": {
+        "startLine": 174,
+        "startChar": 15,
+        "endLine": 174,
+        "endChar": 22
+      },
+      "revId": "04726790211f9b258939390d45b914dc6bab0a51",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "db14286f_39aeb5a6",
+        "filename": "src/app/sampleManagement/application/nrl.service.ts",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1015828
+      },
+      "writtenOn": "2019-08-21T12:51:12Z",
+      "side": 1,
+      "message": "tzypo",
+      "range": {
+        "startLine": 13,
+        "startChar": 30,
+        "endLine": 13,
+        "endChar": 39
+      },
+      "revId": "04726790211f9b258939390d45b914dc6bab0a51",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "75bc504e_9d2535a5",
+        "filename": "src/app/sampleManagement/domain/custom-validator-functions.ts",
+        "patchSetId": 1
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1015828
+      },
+      "writtenOn": "2019-08-21T12:51:12Z",
+      "side": 1,
+      "message": "error",
+      "range": {
+        "startLine": 27,
+        "startChar": 13,
+        "endLine": 27,
+        "endChar": 35
+      },
+      "revId": "04726790211f9b258939390d45b914dc6bab0a51",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "93c6e2f5_d008a261",
+        "filename": "src/app/sampleManagement/domain/validator.entity.ts",
+        "patchSetId": 1
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1015828
+      },
+      "writtenOn": "2019-08-21T12:51:12Z",
+      "side": 1,
+      "message": "type it",
+      "range": {
+        "startLine": 65,
+        "startChar": 14,
+        "endLine": 65,
+        "endChar": 19
+      },
+      "revId": "04726790211f9b258939390d45b914dc6bab0a51",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "755c5f4d_6c153d3e",
+        "filename": "src/ui/server/controllers/samples.controller.ts",
+        "patchSetId": 1
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1015828
+      },
+      "writtenOn": "2019-08-21T12:51:12Z",
+      "side": 1,
+      "message": "why you use the concrete service?",
+      "range": {
+        "startLine": 27,
+        "startChar": 4,
+        "endLine": 27,
+        "endChar": 21
+      },
+      "revId": "04726790211f9b258939390d45b914dc6bab0a51",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b35d1f10_4107376c",
+        "filename": "src/ui/server/controllers/samples.controller.ts",
+        "patchSetId": 1
+      },
+      "lineNbr": 387,
+      "author": {
+        "id": 1015828
+      },
+      "writtenOn": "2019-08-21T12:51:12Z",
+      "side": 1,
+      "message": "is this option still needed for validation?\nIf not remove",
+      "range": {
+        "startLine": 387,
+        "startChar": 12,
+        "endLine": 387,
+        "endChar": 63
+      },
+      "revId": "04726790211f9b258939390d45b914dc6bab0a51",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    }
+  ]
+}
