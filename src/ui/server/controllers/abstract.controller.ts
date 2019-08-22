@@ -7,11 +7,11 @@ import { MalformedRequestError } from '../model/domain.error';
 
 @controller('')
 export abstract class AbstractController implements Controller {
-    protected jsonResponse<T>(response: Response, code: number, dto: T) {
+    protected jsonResponse<T>(response: Response, code: number, dto: T): Response {
         return response.status(code).json(dto);
     }
 
-    protected ok<T>(response: Response, dto?: T) {
+    protected ok<T>(response: Response, dto?: T): Response {
         if (dto) {
             return this.jsonResponse<T>(response, 200, dto);
         } else {
@@ -19,11 +19,11 @@ export abstract class AbstractController implements Controller {
         }
     }
 
-    protected unauthorized<T>(response: Response, dto: T) {
+    protected unauthorized<T>(response: Response, dto: T): Response {
         return this.jsonResponse<T>(response, 401, dto);
     }
 
-    protected clientError(response: Response) {
+    protected clientError(response: Response): Response {
         const dto: DefaultServerErrorDTO = {
             code: SERVER_ERROR_CODE.INPUT_ERROR,
             message: 'Malformed request'
@@ -34,7 +34,7 @@ export abstract class AbstractController implements Controller {
     protected fail(
         response: Response,
         message: string = 'An unknown error occured'
-    ) {
+    ): Response {
         const dto: DefaultServerErrorDTO = {
             code: SERVER_ERROR_CODE.UNKNOWN_ERROR,
             message
@@ -42,7 +42,7 @@ export abstract class AbstractController implements Controller {
         return this.jsonResponse(response, 500, dto);
     }
 
-    protected tryParseInputDTO<T>(parseOp: () => T): T {
+    protected parseInputDTO<T>(parseOp: () => T): T {
         try {
             return parseOp();
         } catch (error) {

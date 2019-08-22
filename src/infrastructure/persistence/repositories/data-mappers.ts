@@ -68,17 +68,9 @@ function mapModelToValidationError(
 }
 
 function mapModelToNRL(model: NRLModel): NRLConfig {
-    let name: NRL = NRL.UNKNOWN;
-    let selector: string[] = [];
-    try {
-        name = DefaultNRLService.mapNRLStringToEnum(model.name);
-        selector = model.selector;
-    } catch (e) {
-        logger.warn(`Unable to identify NRL. error=${e}`);
-    }
     return {
-        name: name,
-        selectors: selector
+        name: DefaultNRLService.mapNRLStringToEnum(model.name),
+        selectors: model.selector
     };
 }
 

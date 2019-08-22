@@ -47,12 +47,12 @@ export interface SampleDataDTO {
 }
 
 export interface SampleMetaDTO {
-    nrl: string;
+    nrl?: string;
 }
 
 export interface SampleDTO {
     sampleData: SampleDataDTO;
-    sampleMeta: SampleMetaDTO;
+    sampleMeta?: SampleMetaDTO;
 }
 
 export interface SampleSetDTO {

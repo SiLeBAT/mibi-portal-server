@@ -26,6 +26,7 @@ import { UnauthorizedError } from 'express-jwt';
 import { ConfigurationService } from '../../core/model/configuration.model';
 import { injectable, inject } from 'inversify';
 import { APPLICATION_TYPES } from './../../application.types';
+import moment = require('moment');
 
 @injectable()
 export class DefaultSampleService implements SampleService {
@@ -47,36 +48,29 @@ export class DefaultSampleService implements SampleService {
         this.jobRecipient = this.configurationService.getApplicationConfiguration().jobRecipient;
     }
 
-    async sendSampleFile(
-        attachment: Attachment,
-        senderInfo: SenderInfo
-    ): Promise<void> {
-        const sender: User = senderInfo.user;
-        const institution: Institute = sender.institution;
-        if (institution.name === 'dummy') {
-            logger.warn(
-                `${this.constructor.name}.${
-                    this.sendSampleFile.name
-                }, user assigned to dummy institute. User=${sender.uniqueId}`
-            );
-        }
-        const resolvedSenderInfo: ResolvedSenderInfo = {
-            user: sender,
-            institute: institution,
-            comment: senderInfo.comment,
-            recipient: senderInfo.recipient
-        };
+    async sendSamples(sampleSet: SampleSet, senderInfo: SenderInfo): Promise<void> {
+        const nrlSampleSets: SampleSet[] = this.splitSampleSet(sampleSet);
+
+        const sampleFiles: ExcelFileInfo[] = await Promise.all(nrlSampleSets.map(async (nrlSampleSet) => {
+            let sampleFile: ExcelFileInfo = await this.jsonMarshalService.convertJSONToExcel(nrlSampleSet);
+            sampleFile.fileName = this.amendXLSXFileName(sampleFile.fileName, '_' + nrlSampleSet.meta.nrl + '_validated');
+            return sampleFile;
+        }));
+        
+        const attachments: Attachment[] = sampleFiles.map((fileInfo) => this.createNotificationAttachment(fileInfo));
+        const resolvedSenderInfo = this.ResolveSenderInfo(senderInfo);
+       
         const newSampleCopyNotification = this.createNewSampleCopyNotification(
-            attachment,
+            attachments,
             resolvedSenderInfo
         );
         this.notificationService.sendNotification(newSampleCopyNotification);
 
         const newSampleNotification = this.createNewSampleNotification(
-            attachment,
+            attachments,
             resolvedSenderInfo
         );
-        return this.notificationService.sendNotification(newSampleNotification);
+        this.notificationService.sendNotification(newSampleNotification);
     }
 
     async convertToJson(
@@ -108,11 +102,61 @@ export class DefaultSampleService implements SampleService {
     }
 
     async convertToExcel(sampleSet: SampleSet): Promise<ExcelFileInfo> {
-        return this.jsonMarshalService.convertJSONToExcel(sampleSet);
+        const result: ExcelFileInfo = await this.jsonMarshalService.convertJSONToExcel(sampleSet);
+        result.fileName = this.amendXLSXFileName(
+            result.fileName,
+            '.MP_' + moment().unix()
+        );
+        return result;
+    }
+
+    private splitSampleSet(sampleSet: SampleSet): SampleSet[] {
+            let sampleSetMap = new Map<string, SampleSet>();
+            sampleSet.samples.forEach((sample) => {
+                const nrl = sample.getSampleMetaData().nrl;
+                let nrlSampleSet = sampleSetMap.get(nrl);
+                if(!nrlSampleSet) {
+                    nrlSampleSet = {
+                        samples: [],
+                        meta: {...sampleSet.meta, nrl: nrl }
+                    }
+                    sampleSetMap.set(nrl, nrlSampleSet);
+                }
+                nrlSampleSet.samples.push(sample);
+            });
+            return Array.from(sampleSetMap.values());
+    }
+
+    private ResolveSenderInfo(senderInfo: SenderInfo): ResolvedSenderInfo {
+        const sender: User = senderInfo.user;
+        const institution: Institute = sender.institution;
+        if (institution.name === 'dummy') {
+            logger.warn(
+                `${this.constructor.name}.${
+                    this.sendSamples.name
+                }, user assigned to dummy institute. User=${sender.uniqueId}`
+            );
+        }
+        return {
+            user: sender,
+            institute: institution,
+            comment: senderInfo.comment,
+            recipient: senderInfo.recipient
+        };
+    }
+    
+    private createNotificationAttachment(
+        excelInfo: ExcelFileInfo
+    ): Attachment {
+        return {
+            filename: excelInfo.fileName,
+            contentType: excelInfo.type,
+            content: Buffer.from(excelInfo.data, 'base64')
+        };
     }
 
     private createNewSampleCopyNotification(
-        dataset: Attachment,
+        datasets: Attachment[],
         senderInfo: ResolvedSenderInfo
     ): Notification<NewDatasetCopyNotificationPayload, EmailNotificationMeta> {
         const fullName = senderInfo.user.getFullName();
@@ -127,13 +171,13 @@ export class DefaultSampleService implements SampleService {
                 senderInfo.user.email,
                 `Neuer Auftrag an das BfR`,
                 [],
-                [dataset]
+                datasets
             )
         };
     }
 
     private createNewSampleNotification(
-        dataset: Attachment,
+        datasets: Attachment[],
         senderInfo: ResolvedSenderInfo
     ): Notification<NewDatasetNotificationPayload, EmailNotificationMeta> {
         return {
@@ -152,8 +196,22 @@ export class DefaultSampleService implements SampleService {
                 `Neuer Auftrag von ${senderInfo.institute.city ||
                     '<unbekannt>'} an ${senderInfo.recipient || '<unbekannt>'}`,
                 [],
-                [dataset]
+                datasets
             )
         };
+    }
+
+    private amendXLSXFileName(
+        originalFileName: string,
+        fileNameAddon: string
+    ): string {
+        const entries: string[] = originalFileName.split('.xlsx');
+        let fileName: string = '';
+        if (entries.length > 0) {
+            fileName += entries[0];
+        }
+        fileName += fileNameAddon + '.xlsx';
+        fileName = fileName.replace(' ', '_');
+        return fileName;
     }
 }
