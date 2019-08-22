@@ -14,7 +14,7 @@ import {
     DependentFieldsOptions,
     NumbersOnlyOptions,
     ReferenceDateOptions,
-    ValidatiorFunctionOptions
+    ValidatorFunctionOptions
 } from '../model/validation.model';
 import { CatalogService } from '../model/catalog.model';
 import { SampleProperty, SamplePropertyValues } from '../model/sample.model';
@@ -25,7 +25,7 @@ moment.locale('de');
 
 function nrlExists(
     value: string,
-    options: ValidatiorFunctionOptions,
+    options: ValidatorFunctionOptions,
     key: SampleProperty,
     attributes: Record<string, string>
 ) {
@@ -37,7 +37,7 @@ function nrlExists(
 
 function noPlanprobeForNRL_AR(
     value: string,
-    options: ValidatiorFunctionOptions,
+    options: ValidatorFunctionOptions,
     key: SampleProperty,
     attributes: Record<string, string>
 ) {

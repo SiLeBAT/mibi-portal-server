@@ -12,8 +12,6 @@ import {
     ValidationOptions,
     SamplePort,
     SenderInfo,
-    ExcelFileInfo,
-    Attachment,
     AnnotatedSampleDataEntry,
     SampleData,
     SampleSet,
@@ -101,9 +99,9 @@ export class DefaultSamplesController extends AbstractController
             `${this.constructor.name}.${this.putSamples.name}, Request received`
         );
         try {
-            const sampleSet: SampleSet = await this.transformInput(req, res);
+            const sampleSet: SampleSet = await this.putSamplesTransformInput(req, res);
 
-            await this.sendResponse(req, res, sampleSet);
+            await this.putSamplesSendResponse(req, res, sampleSet);
         } catch (error) {
             logger.info(
                 `${this.constructor.name}.${
@@ -122,7 +120,7 @@ export class DefaultSamplesController extends AbstractController
         );
         try {
             const requestDTO: PutValidatedRequestDTO = req.body;
-            const sampleSet: SampleSet = this.tryParseInputDTO(() => {
+            const sampleSet: SampleSet = this.parseInputDTO(() => {
                 return this.fromDTOToUnannotatedSampleSet(
                     requestDTO.order.sampleSet
                 );
@@ -132,10 +130,11 @@ export class DefaultSamplesController extends AbstractController
                 sampleSet.samples,
                 validationOptions
             );
-            const validatedOrderDTO: OrderDTO = this.fromSampleCollectionToOrderDTO(
-                validationResult,
-                sampleSet.meta
-            );
+            const validatedSampleSet: SampleSet = {
+                samples: validationResult,
+                meta: sampleSet.meta
+            }
+            const validatedOrderDTO: OrderDTO = this.fromSampleSetToOrderDTO(validatedSampleSet);
             const responseDTO: PutValidatedResponseDTO = {
                 order: validatedOrderDTO
             };
@@ -164,7 +163,7 @@ export class DefaultSamplesController extends AbstractController
         );
         try {
             const requestDTO: PostSubmittedRequestDTO = req.body;
-            const annotatedSampleSet: SampleSet = this.tryParseInputDTO(() => {
+            const annotatedSampleSet: SampleSet = this.parseInputDTO(() => {
                 return this.fromDTOToSampleSet(requestDTO.order.sampleSet);
             });
             const validationOptions: ValidationOptions = await this.getValidationOptions(
@@ -175,10 +174,11 @@ export class DefaultSamplesController extends AbstractController
                 validationOptions
             );
 
-            const orderDTO: OrderDTO = this.fromSampleCollectionToOrderDTO(
-                validatedSamples,
-                annotatedSampleSet.meta
-            );
+            const validatedSampleSet: SampleSet = { 
+                samples: validatedSamples, meta: annotatedSampleSet.meta 
+            };
+
+            const orderDTO: OrderDTO = this.fromSampleSetToOrderDTO(validatedSampleSet);
 
             if (this.hasSampleError(validatedSamples)) {
                 const errorDTO: InvalidInputErrorDTO = {
@@ -203,31 +203,19 @@ export class DefaultSamplesController extends AbstractController
                 order: orderDTO
             };
 
-            const sampleFile: ExcelFileInfo = await this.sampleService.convertToExcel(
-                {
-                    samples: validatedSamples,
-                    meta: annotatedSampleSet.meta
-                }
-            );
-            sampleFile.fileName = this.amendXLSXFileName(
-                sampleFile.fileName,
-                '_validated'
-            );
-            const attachment: Attachment = this.fromExcelFileInfoToAttachment(
-                sampleFile
-            );
             const token = getTokenFromHeader(req);
             if (!token) {
                 throw new TokenNotFoundError('Invalid user.');
             }
             const user: User = await this.getUserFromToken(token);
-            const senderInfo = this.tryParseInputDTO(() => {
+            const senderInfo: SenderInfo = this.parseInputDTO(() => {
                 return this.fromPostSubmittedRequestDTOToSenderInfo(
                     requestDTO,
                     user
                 );
             });
-            this.sampleService.sendSampleFile(attachment, senderInfo);
+
+            await this.sampleService.sendSamples(validatedSampleSet, senderInfo);
 
             logger.info(
                 `${this.constructor.name}.${
@@ -246,7 +234,7 @@ export class DefaultSamplesController extends AbstractController
         }
     }
 
-    private async transformInput(
+    private async putSamplesTransformInput(
         req: Request,
         res: Response
     ): Promise<SampleSet> {
@@ -255,7 +243,7 @@ export class DefaultSamplesController extends AbstractController
         const token: string | null = getTokenFromHeader(req);
         switch (type) {
             case RESOURCE_VIEW_TYPE.XLSX:
-                const file = this.tryParseInputDTO(() => {
+                const file = this.parseInputDTO(() => {
                     return {
                         buffer: req.file.buffer,
                         name: req.file.originalname
@@ -269,13 +257,13 @@ export class DefaultSamplesController extends AbstractController
             case RESOURCE_VIEW_TYPE.JSON:
             default:
                 const dto: PutSamplesJSONRequestDTO = req.body;
-                return this.tryParseInputDTO(() => {
+                return this.parseInputDTO(() => {
                     return this.fromDTOToSampleSet(dto.order.sampleSet);
                 });
         }
     }
 
-    private async sendResponse(
+    private async putSamplesSendResponse(
         req: Request,
         res: Response,
         sampleSet: SampleSet
@@ -288,10 +276,6 @@ export class DefaultSamplesController extends AbstractController
                 const result: PutSamplesXLSXResponseDTO = await this.sampleService.convertToExcel(
                     sampleSet
                 );
-                result.fileName = this.amendXLSXFileName(
-                    result.fileName,
-                    '.MP_' + moment().unix()
-                );
                 logger.info(
                     `${this.constructor.name}.${
                         this.putSamples.name
@@ -302,7 +286,7 @@ export class DefaultSamplesController extends AbstractController
             case RESOURCE_VIEW_TYPE.JSON:
             default:
                 const successResponse: PutSamplesJSONResponseDTO = {
-                    order: this.fromAnnotatedSampleSetToOrderDTO(sampleSet)
+                    order: this.fromSampleSetToUnannotatedOrderDTO(sampleSet)
                 };
                 logger.info(
                     `${this.constructor.name}.${
@@ -313,19 +297,6 @@ export class DefaultSamplesController extends AbstractController
         }
     }
 
-    private amendXLSXFileName(
-        originalFileName: string,
-        fileNameAddon: string
-    ): string {
-        const entries: string[] = originalFileName.split('.xlsx');
-        let fileName: string = '';
-        if (entries.length > 0) {
-            fileName += entries[0];
-        }
-
-        fileName += fileNameAddon + '.xlsx';
-        return fileName;
-    }
     private getResourceViewType(
         typeString: string = 'application/json'
     ): RESOURCE_VIEW_TYPE {
@@ -500,63 +471,42 @@ export class DefaultSamplesController extends AbstractController
         return annotatedSampleDataEntry;
     }
 
-    private fromExcelFileInfoToAttachment(
-        excelInfo: ExcelFileInfo
-    ): Attachment {
-        return {
-            filename: excelInfo.fileName,
-            contentType: excelInfo.type,
-            content: Buffer.from(excelInfo.data, 'base64')
-        };
-    }
-
-    private fromAnnotatedSampleSetToOrderDTO(
-        annotatedSampleSet: SampleSet
+    private fromSampleSetToUnannotatedOrderDTO(
+        sampleSet: SampleSet
     ): OrderDTO {
         return {
             sampleSet: {
-                meta: this.fromSampleSetMetaDataToDTO(annotatedSampleSet.meta),
-                samples: annotatedSampleSet.samples.map(sample => ({
-                    sampleData: sample.getDataValues(),
-                    sampleMeta: sample.getSampleMetaData()
+                meta: this.fromSampleSetMetaDataToDTO(sampleSet.meta),
+                samples: sampleSet.samples.map(sample => ({
+                    sampleData: sample.getDataValues()
                 }))
             }
         };
     }
 
-    private fromSampleCollectionToOrderDTO(
-        sampleCollection: Sample[],
-        meta: SampleSetMetaData
+    private fromSampleSetToOrderDTO(
+        sampleSet: SampleSet
     ): OrderDTO {
         return {
-            sampleSet: this.fromSampleCollectionToSampleSetDTO(
-                sampleCollection,
-                meta
-            )
+            sampleSet: {
+                samples: this.fromSampleCollectionToSampleDTO(sampleSet.samples),
+                meta: this.fromSampleSetMetaDataToDTO(sampleSet.meta)
+            }
         };
     }
 
-    private fromSampleCollectionToSampleSetDTO(
-        sampleCollection: Sample[],
-        meta: SampleSetMetaData
-    ): SampleSetDTO {
-        return {
-            samples: this.fromSampleCollectionToSampleDTO(sampleCollection),
-            meta: this.fromSampleSetMetaDataToDTO(meta)
-        };
-    }
     private fromSampleCollectionToSampleDTO(
         sampleCollection: Sample[]
     ): SampleDTO[] {
         return sampleCollection.map((sample: Sample) => ({
             sampleData: sample.getAnnotatedData(),
-            sampleMeta: this.fromSampleMetaToSampleMetaDTO(
+            sampleMeta: this.fromSampleMetaToDTO(
                 sample.getSampleMetaData()
             )
         }));
     }
 
-    private fromSampleMetaToSampleMetaDTO(meta: SampleMetaData): SampleMetaDTO {
+    private fromSampleMetaToDTO(meta: SampleMetaData): SampleMetaDTO {
         return {
             nrl: meta.nrl.toString()
         };
