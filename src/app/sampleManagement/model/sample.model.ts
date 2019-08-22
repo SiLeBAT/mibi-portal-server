@@ -113,7 +113,7 @@ export interface SenderInfo {
 }
 
 export interface SamplePort {
-    sendSampleFile(attachment: Attachment, senderInfo: SenderInfo): void;
+    sendSamples(sampleSet: SampleSet, senderInfo: SenderInfo): Promise<void>;
     convertToJson(
         buffer: Buffer,
         fileName: string,
