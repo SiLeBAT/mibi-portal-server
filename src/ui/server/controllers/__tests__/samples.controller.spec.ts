@@ -125,6 +125,9 @@ describe('Sample controller', () => {
                             value: 'string',
                             oldValue: 'string'
                         }
+                    },
+                    sampleMeta: {
+                        nrl: 'Labor nicht erkannt.'
                     }
                 }
             ],
@@ -162,7 +165,7 @@ describe('Sample controller', () => {
     });
 
     describe('root', () => {
-        it('should respond with error if incorrect payload', function() {
+        it('should respond with error if incorrect payload', function () {
             const req = new mockReq({
                 method: 'PUT',
                 headers: {
@@ -182,7 +185,7 @@ describe('Sample controller', () => {
             });
         });
 
-        it('should respond with Order JSON', function() {
+        it('should respond with Order JSON', function () {
             const req = new mockReq({
                 method: 'PUT',
                 headers: {
@@ -300,7 +303,7 @@ describe('Sample controller', () => {
         });
     });
     describe('validate sample', () => {
-        it('should respond with error if incorrect payload', function() {
+        it('should respond with error if incorrect payload', function () {
             const req = new mockReq({
                 method: 'PUT',
                 headers: {
@@ -320,7 +323,7 @@ describe('Sample controller', () => {
             });
         });
 
-        it('should respond with Order JSON', function() {
+        it('should respond with Order JSON', function () {
             const req = new mockReq({
                 method: 'PUT',
                 headers: {
