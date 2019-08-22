@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "32574f99_d6e32ceb",
+        "filename": "src/app/sampleManagement/model/validation.model.ts",
+        "patchSetId": 2
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1015828
+      },
+      "writtenOn": "2019-08-22T10:21:09Z",
+      "side": 1,
+      "message": "typo",
+      "range": {
+        "startLine": 93,
+        "startChar": 17,
+        "endLine": 93,
+        "endChar": 43
+      },
+      "revId": "83b991d22578863ac2945ab3d5910681983c2268",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f51924e3_e1a27e56",
+        "filename": "src/infrastructure/persistence/repositories/data-mappers.ts",
+        "patchSetId": 2
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1015828
+      },
+      "writtenOn": "2019-08-22T10:21:09Z",
+      "side": 1,
+      "message": "It looks like mapNRLStringToEnum does not throw any errors. name \u003d UNKNOWN is the faulty state, so the catch block will never be called. Please remove.",
+      "range": {
+        "startLine": 73,
+        "startChar": 4,
+        "endLine": 78,
+        "endChar": 5
+      },
+      "revId": "83b991d22578863ac2945ab3d5910681983c2268",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    }
+  ]
+}
