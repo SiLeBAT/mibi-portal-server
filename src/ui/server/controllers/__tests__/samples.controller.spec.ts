@@ -125,9 +125,6 @@ describe('Sample controller', () => {
                             value: 'string',
                             oldValue: 'string'
                         }
-                    },
-                    sampleMeta: {
-                        nrl: 'Labor nicht erkannt.'
                     }
                 }
             ],

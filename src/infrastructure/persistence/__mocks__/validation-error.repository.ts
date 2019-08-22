@@ -339,7 +339,7 @@ export const genericValidationErrors = [
     },
     {
         code: 96,
-        level: 1,
+        level: 2,
         message: 'Dieser Erreger wird von keinem BfR-Labor untersucht.'
     }
 ];
