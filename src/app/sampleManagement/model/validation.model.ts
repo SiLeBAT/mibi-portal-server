@@ -82,7 +82,7 @@ export interface ValidationErrorProvider extends ValidationErrorProviderPort {
     getError(id: number): ValidationError;
 }
 
-export interface ValidatorFunction<T extends ValidatiorFunctionOptions> {
+export interface ValidatorFunction<T extends ValidatorFunctionOptions> {
     (
         value: string,
         options: T,
@@ -90,10 +90,10 @@ export interface ValidatorFunction<T extends ValidatiorFunctionOptions> {
         attributes: SamplePropertyValues
     ): ValidationError | null;
 }
-export interface ValidatiorFunctionOptions {
+export interface ValidatorFunctionOptions {
     message: ValidationError;
 }
-export interface MatchIdToYearOptions extends ValidatiorFunctionOptions {
+export interface MatchIdToYearOptions extends ValidatorFunctionOptions {
     regex: string[];
 }
 
@@ -102,18 +102,18 @@ export interface MatchRegexPatternOptions extends MatchIdToYearOptions {
     caseInsensitive?: boolean;
 }
 
-export interface RequiredIfOtherOptions extends ValidatiorFunctionOptions {
+export interface RequiredIfOtherOptions extends ValidatorFunctionOptions {
     regex: string;
     field: SampleProperty;
 }
 
-export interface NonUniqueEntryOptions extends ValidatiorFunctionOptions {
+export interface NonUniqueEntryOptions extends ValidatorFunctionOptions {
     catalog: string;
     key: string;
     differentiator: [string, SampleProperty];
 }
 
-export interface InCatalogOptions extends ValidatiorFunctionOptions {
+export interface InCatalogOptions extends ValidatorFunctionOptions {
     catalog: string;
     key: string;
 }
@@ -126,22 +126,22 @@ interface Group {
     code: string;
     attr: SampleProperty;
 }
-export interface RegisteredZoMoOptions extends ValidatiorFunctionOptions {
+export interface RegisteredZoMoOptions extends ValidatorFunctionOptions {
     year: string[];
     group: Group[];
 }
 
-export interface AtLeastOneOfOptions extends ValidatiorFunctionOptions {
+export interface AtLeastOneOfOptions extends ValidatorFunctionOptions {
     additionalMembers: (SampleProperty)[];
 }
 
-export interface DependentFieldsOptions extends ValidatiorFunctionOptions {
+export interface DependentFieldsOptions extends ValidatorFunctionOptions {
     dependents: (SampleProperty)[];
 }
 
-export interface NumbersOnlyOptions extends ValidatiorFunctionOptions {}
+export interface NumbersOnlyOptions extends ValidatorFunctionOptions {}
 
-export interface ReferenceDateOptions extends ValidatiorFunctionOptions {
+export interface ReferenceDateOptions extends ValidatorFunctionOptions {
     earliest?: (SampleProperty) | string;
     latest?: (SampleProperty) | string;
     modifier?: {
