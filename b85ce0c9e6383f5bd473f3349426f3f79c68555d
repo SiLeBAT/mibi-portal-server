@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "54035177_78ef25c4",
+        "filename": "src/app/sampleManagement/application/sample.service.ts",
+        "patchSetId": 2
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1013694
+      },
+      "writtenOn": "2019-08-23T08:03:04Z",
+      "side": 1,
+      "message": "lower-case",
+      "range": {
+        "startLine": 130,
+        "startChar": 12,
+        "endLine": 130,
+        "endChar": 29
+      },
+      "revId": "b85ce0c9e6383f5bd473f3349426f3f79c68555d",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    }
+  ]
+}
