@@ -7,7 +7,11 @@ import { MalformedRequestError } from '../model/domain.error';
 
 @controller('')
 export abstract class AbstractController implements Controller {
-    protected jsonResponse<T>(response: Response, code: number, dto: T): Response {
+    protected jsonResponse<T>(
+        response: Response,
+        code: number,
+        dto: T
+    ): Response {
         return response.status(code).json(dto);
     }
 

@@ -59,7 +59,7 @@ export {
  */
 export {
     Sample,
-    SenderInfo,
+    ApplicantMetaData,
     SamplePort,
     SampleSet,
     AnnotatedSampleDataEntry,
