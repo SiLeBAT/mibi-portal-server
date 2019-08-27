@@ -13,8 +13,6 @@ import {
     EmailNotificationMeta,
     Attachment
 } from '../../core/model/notification.model';
-import { User } from '../../authentication/model/user.model';
-import { Institute } from '../../authentication/model/institute.model';
 import { NotificationType } from '../../core/domain/enums';
 import {
     ExcelUnmarshalPort,
@@ -27,11 +25,13 @@ import { ConfigurationService } from '../../core/model/configuration.model';
 import { injectable, inject } from 'inversify';
 import { APPLICATION_TYPES } from './../../application.types';
 import moment = require('moment');
+import { NRL } from '../domain/enums';
+import { NRLService } from '../model/nrl.model';
 
 @injectable()
 export class DefaultSampleService implements SampleService {
     private appName: string;
-    private jobRecipient: string;
+    private defaultJobRecipient: string;
     constructor(
         @inject(APPLICATION_TYPES.NotificationService)
         private notificationService: NotificationService,
@@ -42,35 +42,53 @@ export class DefaultSampleService implements SampleService {
         @inject(APPLICATION_TYPES.ConfigurationService)
         private configurationService: ConfigurationService,
         @inject(APPLICATION_TYPES.JSONMarshalService)
-        private jsonMarshalService: JSONMarshalService
+        private jsonMarshalService: JSONMarshalService,
+        @inject(APPLICATION_TYPES.NRLService)
+        private nrlService: NRLService
     ) {
         this.appName = this.configurationService.getApplicationConfiguration().appName;
-        this.jobRecipient = this.configurationService.getApplicationConfiguration().jobRecipient;
+        this.defaultJobRecipient = this.configurationService.getApplicationConfiguration().jobRecipient;
     }
 
-    async sendSamples(sampleSet: SampleSet, senderInfo: SenderInfo): Promise<void> {
+    async sendSamples(
+        sampleSet: SampleSet,
+        senderInfo: SenderInfo
+    ): Promise<void> {
         const nrlSampleSets: SampleSet[] = this.splitSampleSet(sampleSet);
 
-        const sampleFiles: ExcelFileInfo[] = await Promise.all(nrlSampleSets.map(async (nrlSampleSet) => {
-            let sampleFile: ExcelFileInfo = await this.jsonMarshalService.convertJSONToExcel(nrlSampleSet);
-            sampleFile.fileName = this.amendXLSXFileName(sampleFile.fileName, '_' + nrlSampleSet.meta.nrl + '_validated');
-            return sampleFile;
-        }));
-        
-        const attachments: Attachment[] = sampleFiles.map((fileInfo) => this.createNotificationAttachment(fileInfo));
-        const resolvedSenderInfo = this.resolveSenderInfo(senderInfo);
-       
-        const newSampleCopyNotification = this.createNewSampleCopyNotification(
-            attachments,
-            resolvedSenderInfo
-        );
-        this.notificationService.sendNotification(newSampleCopyNotification);
+        const attachments: Attachment[] = await Promise.all(
+            nrlSampleSets.map(async nrlSampleSet => {
+                const fileInfo: ExcelFileInfo = await this.jsonMarshalService.convertJSONToExcel(
+                    nrlSampleSet
+                );
+                fileInfo.fileName = this.amendXLSXFileName(
+                    fileInfo.fileName,
+                    '_' + nrlSampleSet.meta.nrl + '_validated'
+                );
+                const attachment: Attachment = this.createNotificationAttachment(
+                    fileInfo
+                );
 
-        const newSampleNotification = this.createNewSampleNotification(
-            attachments,
-            resolvedSenderInfo
+                const resolvedSenderInfo = this.resolveSenderInfo(
+                    senderInfo,
+                    nrlSampleSet.meta.nrl
+                );
+
+                const newOrderNotification = this.createNewOrderNotification(
+                    [attachment],
+                    resolvedSenderInfo
+                );
+                this.notificationService.sendNotification(newOrderNotification);
+
+                return attachment;
+            })
         );
-        this.notificationService.sendNotification(newSampleNotification);
+
+        const newOrderCopyNotification = this.createNewOrderCopyNotification(
+            attachments,
+            senderInfo
+        );
+        this.notificationService.sendNotification(newOrderCopyNotification);
     }
 
     async convertToJson(
@@ -102,7 +120,9 @@ export class DefaultSampleService implements SampleService {
     }
 
     async convertToExcel(sampleSet: SampleSet): Promise<ExcelFileInfo> {
-        const result: ExcelFileInfo = await this.jsonMarshalService.convertJSONToExcel(sampleSet);
+        const result: ExcelFileInfo = await this.jsonMarshalService.convertJSONToExcel(
+            sampleSet
+        );
         result.fileName = this.amendXLSXFileName(
             result.fileName,
             '.MP_' + moment().unix()
@@ -111,43 +131,38 @@ export class DefaultSampleService implements SampleService {
     }
 
     private splitSampleSet(sampleSet: SampleSet): SampleSet[] {
-            let sampleSetMap = new Map<string, SampleSet>();
-            sampleSet.samples.forEach((sample) => {
-                const nrl = sample.getSampleMetaData().nrl;
-                let nrlSampleSet = sampleSetMap.get(nrl);
-                if(!nrlSampleSet) {
-                    nrlSampleSet = {
-                        samples: [],
-                        meta: {...sampleSet.meta, nrl: nrl }
-                    }
-                    sampleSetMap.set(nrl, nrlSampleSet);
-                }
-                nrlSampleSet.samples.push(sample);
-            });
-            return Array.from(sampleSetMap.values());
+        let sampleSetMap = new Map<string, SampleSet>();
+        sampleSet.samples.forEach(sample => {
+            const nrl = sample.getSampleMetaData().nrl;
+            let nrlSampleSet = sampleSetMap.get(nrl);
+            if (!nrlSampleSet) {
+                nrlSampleSet = {
+                    samples: [],
+                    meta: { ...sampleSet.meta, nrl: nrl }
+                };
+                sampleSetMap.set(nrl, nrlSampleSet);
+            }
+            nrlSampleSet.samples.push(sample);
+        });
+        return Array.from(sampleSetMap.values());
     }
 
-    private resolveSenderInfo(senderInfo: SenderInfo): ResolvedSenderInfo {
-        const sender: User = senderInfo.user;
-        const institution: Institute = sender.institution;
-        if (institution.name === 'dummy') {
-            logger.warn(
-                `${this.constructor.name}.${
-                    this.sendSamples.name
-                }, user assigned to dummy institute. User=${sender.uniqueId}`
-            );
-        }
+    private resolveSenderInfo(
+        senderInfo: SenderInfo,
+        nrl: NRL
+    ): ResolvedSenderInfo {
+        const email: string = this.nrlService.getEmailForNRL(nrl);
         return {
-            user: sender,
-            institute: institution,
+            user: senderInfo.user,
             comment: senderInfo.comment,
-            recipient: senderInfo.recipient
+            recipient: {
+                email,
+                name: nrl.toString()
+            }
         };
     }
-    
-    private createNotificationAttachment(
-        excelInfo: ExcelFileInfo
-    ): Attachment {
+
+    private createNotificationAttachment(excelInfo: ExcelFileInfo): Attachment {
         return {
             filename: excelInfo.fileName,
             contentType: excelInfo.type,
@@ -155,9 +170,9 @@ export class DefaultSampleService implements SampleService {
         };
     }
 
-    private createNewSampleCopyNotification(
+    private createNewOrderCopyNotification(
         datasets: Attachment[],
-        senderInfo: ResolvedSenderInfo
+        senderInfo: SenderInfo
     ): Notification<NewDatasetCopyNotificationPayload, EmailNotificationMeta> {
         const fullName = senderInfo.user.getFullName();
         return {
@@ -176,7 +191,7 @@ export class DefaultSampleService implements SampleService {
         };
     }
 
-    private createNewSampleNotification(
+    private createNewOrderNotification(
         datasets: Attachment[],
         senderInfo: ResolvedSenderInfo
     ): Notification<NewDatasetNotificationPayload, EmailNotificationMeta> {
@@ -192,9 +207,12 @@ export class DefaultSampleService implements SampleService {
                 comment: senderInfo.comment
             },
             meta: this.notificationService.createEmailNotificationMetaData(
-                this.jobRecipient,
-                `Neuer Auftrag von ${senderInfo.institute.city ||
-                    '<unbekannt>'} an ${senderInfo.recipient || '<unbekannt>'}`,
+                senderInfo.recipient.email
+                    ? senderInfo.recipient.email
+                    : this.defaultJobRecipient,
+                `Neuer Auftrag von ${senderInfo.user.institution.city ||
+                    '<unbekannt>'} an ${senderInfo.recipient.name ||
+                    '<unbekannt>'}`,
                 [],
                 datasets
             )
