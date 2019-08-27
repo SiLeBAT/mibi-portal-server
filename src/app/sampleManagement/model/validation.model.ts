@@ -12,6 +12,7 @@ export interface ValidationError {
 export interface NRLConfig {
     selectors: string[];
     name: NRL;
+    email: string;
 }
 export interface ValidationRule {
     error: number;

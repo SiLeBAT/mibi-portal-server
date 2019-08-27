@@ -163,7 +163,8 @@ describe('NRL Assignment Service', () => {
                         '^Escherichia coli ESBL-bildend$',
                         '^Escherichia coli ESBL/AmpC-bildend$',
                         '^Enterobacteriaceae Carbapenemase-bildend$'
-                    ]
+                    ],
+                    email: 'fakeNRL@nrl.com'
                 }
             ])
         );
@@ -188,7 +189,8 @@ describe('NRL Assignment Service', () => {
                         '^Escherichia coli ESBL-bildend$',
                         '^Escherichia coli ESBL/AmpC-bildend$',
                         '^Enterobacteriaceae Carbapenemase-bildend$'
-                    ]
+                    ],
+                    email: 'fakeNRL@nrl.com'
                 }
             ])
         );
