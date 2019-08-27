@@ -1,3 +1,4 @@
+import { ApplicationDomainError } from './../../core/domain/domain.error';
 import { NRLConfig } from './../model/validation.model';
 import { Sample } from '../model/sample.model';
 import { NRLService } from '../model/nrl.model';
@@ -20,8 +21,10 @@ export class DefaultNRLService implements NRLService {
             case 'NRL-VTEC':
                 return NRL.NRL_VTEC;
             case 'Bacillus spp.':
+            case 'L-Bacillus':
                 return NRL.L_Bacillus;
             case 'Clostridium spp. (C. difficile)':
+            case 'L-Clostridium':
                 return NRL.L_Clostridium;
             case 'NRL koagulasepositive Staphylokokken einschließlich Staphylococcus aureus':
             case 'NRL-Staph':
@@ -80,6 +83,16 @@ export class DefaultNRLService implements NRLService {
         });
     }
 
+    getEmailForNRL(nrl: NRL): string {
+        const found = this.nrlCache.find(n => n.name === nrl);
+        if (!found) {
+            throw new ApplicationDomainError(
+                `Unable to retrieve email for NRL. nrl=${nrl.toString()}`
+            );
+        }
+        return found.email;
+    }
+
     private getNRLForPathogen(pathogen: string): NRL {
         if (!pathogen) {
             return NRL.UNKNOWN;
@@ -94,17 +107,5 @@ export class DefaultNRLService implements NRLService {
             }
         }
         return NRL.UNKNOWN;
-    }
-
-    getSelectorsForNRL(nrl?: NRL): RegExp[] {
-        let result: RegExp[] = [];
-        if (!nrl) {
-            return result;
-        }
-        const found = this.nrlCache.find(n => n.name === nrl);
-        if (found) {
-            result = found.selectors.map(s => new RegExp(s));
-        }
-        return result;
     }
 }

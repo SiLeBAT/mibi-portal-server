@@ -52,6 +52,10 @@ export class DefaultConfigurationService implements SystemConfigurationService {
     getApplicationConfiguration(): AppConfiguration {
         const appConfiguration: AppConfiguration = config.get('application');
 
+        if (!config.has('application.jobRecipient')) {
+            appConfiguration.jobRecipient = '';
+        }
+
         if (!config.has('application.login')) {
             appConfiguration.login = {
                 threshold: this.loginConfigurationDefaults.threshold,
