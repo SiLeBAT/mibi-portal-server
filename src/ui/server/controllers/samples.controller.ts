@@ -99,7 +99,10 @@ export class DefaultSamplesController extends AbstractController
             `${this.constructor.name}.${this.putSamples.name}, Request received`
         );
         try {
-            const sampleSet: SampleSet = await this.putSamplesTransformInput(req, res);
+            const sampleSet: SampleSet = await this.putSamplesTransformInput(
+                req,
+                res
+            );
 
             await this.putSamplesSendResponse(req, res, sampleSet);
         } catch (error) {
@@ -133,8 +136,10 @@ export class DefaultSamplesController extends AbstractController
             const validatedSampleSet: SampleSet = {
                 samples: validationResult,
                 meta: sampleSet.meta
-            }
-            const validatedOrderDTO: OrderDTO = this.fromSampleSetToOrderDTO(validatedSampleSet);
+            };
+            const validatedOrderDTO: OrderDTO = this.fromSampleSetToOrderDTO(
+                validatedSampleSet
+            );
             const responseDTO: PutValidatedResponseDTO = {
                 order: validatedOrderDTO
             };
@@ -174,11 +179,14 @@ export class DefaultSamplesController extends AbstractController
                 validationOptions
             );
 
-            const validatedSampleSet: SampleSet = { 
-                samples: validatedSamples, meta: annotatedSampleSet.meta 
+            const validatedSampleSet: SampleSet = {
+                samples: validatedSamples,
+                meta: annotatedSampleSet.meta
             };
 
-            const orderDTO: OrderDTO = this.fromSampleSetToOrderDTO(validatedSampleSet);
+            const orderDTO: OrderDTO = this.fromSampleSetToOrderDTO(
+                validatedSampleSet
+            );
 
             if (this.hasSampleError(validatedSamples)) {
                 const errorDTO: InvalidInputErrorDTO = {
@@ -215,7 +223,10 @@ export class DefaultSamplesController extends AbstractController
                 );
             });
 
-            await this.sampleService.sendSamples(validatedSampleSet, senderInfo);
+            await this.sampleService.sendSamples(
+                validatedSampleSet,
+                senderInfo
+            );
 
             logger.info(
                 `${this.constructor.name}.${
@@ -471,9 +482,7 @@ export class DefaultSamplesController extends AbstractController
         return annotatedSampleDataEntry;
     }
 
-    private fromSampleSetToUnannotatedOrderDTO(
-        sampleSet: SampleSet
-    ): OrderDTO {
+    private fromSampleSetToUnannotatedOrderDTO(sampleSet: SampleSet): OrderDTO {
         return {
             sampleSet: {
                 meta: this.fromSampleSetMetaDataToDTO(sampleSet.meta),
@@ -484,12 +493,12 @@ export class DefaultSamplesController extends AbstractController
         };
     }
 
-    private fromSampleSetToOrderDTO(
-        sampleSet: SampleSet
-    ): OrderDTO {
+    private fromSampleSetToOrderDTO(sampleSet: SampleSet): OrderDTO {
         return {
             sampleSet: {
-                samples: this.fromSampleCollectionToSampleDTO(sampleSet.samples),
+                samples: this.fromSampleCollectionToSampleDTO(
+                    sampleSet.samples
+                ),
                 meta: this.fromSampleSetMetaDataToDTO(sampleSet.meta)
             }
         };
@@ -500,9 +509,7 @@ export class DefaultSamplesController extends AbstractController
     ): SampleDTO[] {
         return sampleCollection.map((sample: Sample) => ({
             sampleData: sample.getAnnotatedData(),
-            sampleMeta: this.fromSampleMetaToDTO(
-                sample.getSampleMetaData()
-            )
+            sampleMeta: this.fromSampleMetaToDTO(sample.getSampleMetaData())
         }));
     }
 
@@ -518,8 +525,7 @@ export class DefaultSamplesController extends AbstractController
     ): SenderInfo {
         return {
             user,
-            comment: requestDTO.comment || '',
-            recipient: requestDTO.order.sampleSet.meta.nrl || ''
+            comment: requestDTO.comment || ''
         };
     }
 

@@ -2,6 +2,7 @@ import { Schema, Document } from 'mongoose';
 
 export interface NRLModel extends Document {
     name: string;
+    email: string;
     selector: string[];
     created: Date;
     updated: Date;
@@ -9,6 +10,10 @@ export interface NRLModel extends Document {
 
 export const nrlSchema = new Schema({
     name: {
+        type: String,
+        required: true
+    },
+    email: {
         type: String,
         required: true
     },

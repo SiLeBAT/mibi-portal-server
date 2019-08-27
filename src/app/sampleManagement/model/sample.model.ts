@@ -3,7 +3,6 @@ import { ValidationError, ValidationErrorCollection } from './validation.model';
 import { User } from '../../authentication/model/user.model';
 import { Institute } from '../../authentication/model/institute.model';
 import { ExcelFileInfo } from './excel.model';
-import { Attachment } from '../../core/model/notification.model';
 import { Urgency, NRL } from '../domain/enums';
 
 export type SamplePropertyValues = Record<SampleProperty, string>;
@@ -106,10 +105,14 @@ export interface Sample {
     clearSingleCorrectionSuggestions(): void;
     getSampleMetaData(): SampleMetaData;
 }
+
+interface RecipientInfo {
+    name: string;
+    email: string;
+}
 export interface SenderInfo {
     user: User;
     comment: string;
-    recipient: string;
 }
 
 export interface SamplePort {
@@ -126,9 +129,8 @@ export interface SampleService extends SamplePort {}
 
 export interface ResolvedSenderInfo {
     user: User;
-    institute: Institute;
     comment: string;
-    recipient: string;
+    recipient: RecipientInfo;
 }
 
 interface BaseDatasetNotificationPayload {
