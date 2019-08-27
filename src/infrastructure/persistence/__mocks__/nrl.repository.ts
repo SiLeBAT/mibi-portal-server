@@ -14,7 +14,8 @@ export function getMockNRLRepository(): NRLRepository {
                         '^Escherichia coli ESBL-bildend$',
                         '^Escherichia coli ESBL/AmpC-bildend$',
                         '^Enterobacteriaceae Carbapenemase-bildend$'
-                    ]
+                    ],
+                    email: 'fakeNRL@nrl.com'
                 }
             ])
         )
