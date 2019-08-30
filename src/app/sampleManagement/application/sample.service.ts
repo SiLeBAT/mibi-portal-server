@@ -48,18 +48,30 @@ export class DefaultSampleService implements SampleService {
         this.jobRecipient = this.configurationService.getApplicationConfiguration().jobRecipient;
     }
 
-    async sendSamples(sampleSet: SampleSet, senderInfo: SenderInfo): Promise<void> {
+    async sendSamples(
+        sampleSet: SampleSet,
+        senderInfo: SenderInfo
+    ): Promise<void> {
         const nrlSampleSets: SampleSet[] = this.splitSampleSet(sampleSet);
 
-        const sampleFiles: ExcelFileInfo[] = await Promise.all(nrlSampleSets.map(async (nrlSampleSet) => {
-            let sampleFile: ExcelFileInfo = await this.jsonMarshalService.convertJSONToExcel(nrlSampleSet);
-            sampleFile.fileName = this.amendXLSXFileName(sampleFile.fileName, '_' + nrlSampleSet.meta.nrl + '_validated');
-            return sampleFile;
-        }));
-        
-        const attachments: Attachment[] = sampleFiles.map((fileInfo) => this.createNotificationAttachment(fileInfo));
+        const sampleFiles: ExcelFileInfo[] = await Promise.all(
+            nrlSampleSets.map(async nrlSampleSet => {
+                let sampleFile: ExcelFileInfo = await this.jsonMarshalService.convertJSONToExcel(
+                    nrlSampleSet
+                );
+                sampleFile.fileName = this.amendXLSXFileName(
+                    sampleFile.fileName,
+                    '_' + nrlSampleSet.meta.nrl + '_validated'
+                );
+                return sampleFile;
+            })
+        );
+
+        const attachments: Attachment[] = sampleFiles.map(fileInfo =>
+            this.createNotificationAttachment(fileInfo)
+        );
         const resolvedSenderInfo = this.resolveSenderInfo(senderInfo);
-       
+
         const newSampleCopyNotification = this.createNewSampleCopyNotification(
             attachments,
             resolvedSenderInfo
@@ -102,7 +114,9 @@ export class DefaultSampleService implements SampleService {
     }
 
     async convertToExcel(sampleSet: SampleSet): Promise<ExcelFileInfo> {
-        const result: ExcelFileInfo = await this.jsonMarshalService.convertJSONToExcel(sampleSet);
+        const result: ExcelFileInfo = await this.jsonMarshalService.convertJSONToExcel(
+            sampleSet
+        );
         result.fileName = this.amendXLSXFileName(
             result.fileName,
             '.MP_' + moment().unix()
@@ -111,32 +125,25 @@ export class DefaultSampleService implements SampleService {
     }
 
     private splitSampleSet(sampleSet: SampleSet): SampleSet[] {
-            let sampleSetMap = new Map<string, SampleSet>();
-            sampleSet.samples.forEach((sample) => {
-                const nrl = sample.getSampleMetaData().nrl;
-                let nrlSampleSet = sampleSetMap.get(nrl);
-                if(!nrlSampleSet) {
-                    nrlSampleSet = {
-                        samples: [],
-                        meta: {...sampleSet.meta, nrl: nrl }
-                    }
-                    sampleSetMap.set(nrl, nrlSampleSet);
-                }
-                nrlSampleSet.samples.push(sample);
-            });
-            return Array.from(sampleSetMap.values());
+        let sampleSetMap = new Map<string, SampleSet>();
+        sampleSet.samples.forEach(sample => {
+            const nrl = sample.getSampleMetaData().nrl;
+            let nrlSampleSet = sampleSetMap.get(nrl);
+            if (!nrlSampleSet) {
+                nrlSampleSet = {
+                    samples: [],
+                    meta: { ...sampleSet.meta, nrl: nrl }
+                };
+                sampleSetMap.set(nrl, nrlSampleSet);
+            }
+            nrlSampleSet.samples.push(sample);
+        });
+        return Array.from(sampleSetMap.values());
     }
 
     private resolveSenderInfo(senderInfo: SenderInfo): ResolvedSenderInfo {
         const sender: User = senderInfo.user;
         const institution: Institute = sender.institution;
-        if (institution.name === 'dummy') {
-            logger.warn(
-                `${this.constructor.name}.${
-                    this.sendSamples.name
-                }, user assigned to dummy institute. User=${sender.uniqueId}`
-            );
-        }
         return {
             user: sender,
             institute: institution,
@@ -144,10 +151,8 @@ export class DefaultSampleService implements SampleService {
             recipient: senderInfo.recipient
         };
     }
-    
-    private createNotificationAttachment(
-        excelInfo: ExcelFileInfo
-    ): Attachment {
+
+    private createNotificationAttachment(excelInfo: ExcelFileInfo): Attachment {
         return {
             filename: excelInfo.fileName,
             contentType: excelInfo.type,

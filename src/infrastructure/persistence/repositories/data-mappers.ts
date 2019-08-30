@@ -6,7 +6,6 @@ import {
     State,
     ValidationError,
     NRLConfig,
-    NRL,
     DefaultNRLService
 } from '../../../app/ports';
 import { InstitutionModel } from '../data-store/mongoose/schemas/institution.schema';
@@ -14,7 +13,6 @@ import { UserModel } from '../data-store/mongoose/schemas/user.schema';
 import { StateModel } from '../data-store/mongoose/schemas/state.schema';
 import { ValidationErrorModel } from '../data-store/mongoose/schemas/validationError.schema';
 import { NRLModel } from '../data-store/mongoose/schemas/nrl.schema';
-import { logger } from '../../../aspects';
 
 function mapModelToInstitution(i: InstitutionModel): Institute {
     const inst = createInstitution(i._id);
