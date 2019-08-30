@@ -108,7 +108,7 @@ export class DefaultSampleService implements SampleService {
                 if (error instanceof UnauthorizedError) {
                     logger.info(
                         `${this.constructor.name}.${
-                            this.convertToJson.name
+                        this.convertToJson.name
                         }, unable to determine user origin because of invalid token. error=${error}`
                     );
                 } else {
@@ -211,7 +211,7 @@ export class DefaultSampleService implements SampleService {
                     : orderNotificationMetaData.recipient.email,
                 `Neuer Auftrag von ${orderNotificationMetaData.user.institution
                     .city || '<unbekannt>'} an ${orderNotificationMetaData
-                    .recipient.name || '<unbekannt>'}`,
+                        .recipient.name || '<unbekannt>'}`,
                 [],
                 [dataset]
             )

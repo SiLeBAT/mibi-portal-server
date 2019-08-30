@@ -46,12 +46,6 @@ export interface RequestAdminActivationNotificationPayload
     location: string;
 }
 
-export interface RequestForUnknownInstituteNotificationPayload
-    extends BaseNotificationPayload {
-    email: string;
-    institution: string;
-}
-
 export interface AdminActivationNotificationPayload
     extends BaseNotificationPayload {
     action_url: string;
