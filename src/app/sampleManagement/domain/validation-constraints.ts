@@ -198,6 +198,46 @@ export const standardConstraints: ValidationConstraints = {
             error: 19,
             additionalMembers: ['sampling_date']
         }
+    },
+    sampling_reason_adv: {
+        shouldBeZoMo: {
+            error: 97,
+            group: [
+                {
+                    attr: 'operations_mode_adv',
+                    code: 'ADV8-Kode'
+                },
+                {
+                    attr: 'matrix_adv',
+                    code: 'ADV3-Kode'
+                },
+                {
+                    attr: 'topic_adv',
+                    code: 'Kodiersystem'
+                }
+            ],
+            year: ['sampling_date', 'isolation_date']
+        }
+    },
+    sampling_reason_text: {
+        shouldBeZoMo: {
+            error: 97,
+            group: [
+                {
+                    attr: 'operations_mode_adv',
+                    code: 'ADV8-Kode'
+                },
+                {
+                    attr: 'matrix_adv',
+                    code: 'ADV3-Kode'
+                },
+                {
+                    attr: 'topic_adv',
+                    code: 'Kodiersystem'
+                }
+            ],
+            year: ['sampling_date', 'isolation_date']
+        }
     }
 };
 

@@ -17,7 +17,8 @@ import {
     matchesRegexPattern,
     matchesIdToSpecificYear,
     nrlExists,
-    noPlanprobeForNRL_AR
+    noPlanprobeForNRL_AR,
+    shouldBeZoMo
 } from './custom-validator-functions';
 import { Sample } from '../model/sample.model';
 import {
@@ -96,6 +97,7 @@ class SampleValidator implements Validator {
         validate.validators.registeredZoMo = registeredZoMo(
             this.catalogService
         );
+        validate.validators.shouldBeZoMo = shouldBeZoMo(this.catalogService);
         validate.validators.nonUniqueEntry = nonUniqueEntry(
             this.catalogService
         );
