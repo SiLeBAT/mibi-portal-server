@@ -265,10 +265,13 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
         try {
             let parsedDate = 'Invalid date';
             if (date.includes('GMT')) {
-                const offset = moment().utcOffset();
-                parsedDate = moment
-                    .utc(date)
-                    .utcOffset(offset)
+                const localOffset = moment().utcOffset();
+                // parse as localelized date of input timezone
+                // this is the date as parsed by xlsx
+                parsedDate = moment(date)
+                    // convert to utc time and offset to local server timezone
+                    // this is the date as interpreted by xlsx before parsing
+                    .utcOffset(localOffset)
                     .locale('de')
                     .format('DD.MM.YYYY');
             } else {
