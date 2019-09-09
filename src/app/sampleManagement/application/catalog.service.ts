@@ -15,8 +15,8 @@ export class DefaultCatalogService implements CatalogService {
         private searchAliasRepository: SearchAliasRepository
     ) {}
 
-    getCatalog(catalogName: string): Catalog<CatalogData> {
-        return this.catalogRepository.getCatalog(catalogName);
+    getCatalog<T extends CatalogData>(catalogName: string): Catalog<T> {
+        return this.catalogRepository.getCatalog<T>(catalogName);
     }
 
     getCatalogSearchAliases(catalogName: string) {

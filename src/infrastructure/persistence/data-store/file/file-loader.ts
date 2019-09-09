@@ -1,9 +1,17 @@
+import { CatalogConfig } from './../../../../app/ports';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as csv from 'fast-csv';
 import { logger } from '../../../../aspects';
 import { FileNotFoundError } from '../../model/domain.error';
 
+interface CSVImportOptions {
+    filePath: string;
+    filterFunction: Function;
+    mappingFunction: Function;
+    headers: boolean;
+    delimiter: string;
+}
 async function loadBinaryFile(
     fileName: string,
     dataDir: string
@@ -16,15 +24,26 @@ async function loadBinaryFile(
 }
 
 async function loadCSVFile<T>(
-    fileName: string,
-    dataDir: string,
-    filterFunction?: Function
+    catalogConfig: CatalogConfig,
+    dataDir: string
 ): Promise<T[]> {
     logger.verbose(
-        `Loading data from Filesystem. fileName=${fileName} dataDir=${dataDir}`
+        `Loading data from Filesystem. fileName=${
+            catalogConfig.filename
+        } dataDir=${dataDir}`
     );
-    const filePath = resolveFilePath(fileName, dataDir);
-    return importCSVFile<T>(filePath, filterFunction);
+    const filePath = resolveFilePath(catalogConfig.filename, dataDir);
+    return importCSVFile<T>({
+        filePath,
+        filterFunction: catalogConfig.filterFunction
+            ? catalogConfig.filterFunction
+            : () => true,
+        headers: !!catalogConfig.headers,
+        delimiter: catalogConfig.delimiter ? catalogConfig.delimiter : ',',
+        mappingFunction: catalogConfig.mappingFunction
+            ? catalogConfig.mappingFunction
+            : (e: T) => e
+    });
 }
 
 async function loadJSONFile(fileName: string, dataDir: string): Promise<{}> {
@@ -35,17 +54,17 @@ async function loadJSONFile(fileName: string, dataDir: string): Promise<{}> {
     return importJSONFile(filePath);
 }
 
-async function importCSVFile<T>(
-    filePath: string,
-    entryFilter: Function = () => true
-): Promise<T[]> {
+async function importCSVFile<T>(options: CSVImportOptions): Promise<T[]> {
     const data: T[] = [];
 
     return new Promise<T[]>(function(resolve, reject) {
-        csv.fromPath(filePath, { headers: true })
+        csv.fromPath(options.filePath, {
+            headers: options.headers,
+            delimiter: options.delimiter
+        })
             .on('data', function(entry) {
-                if (entryFilter(entry)) {
-                    data.push(entry);
+                if (options.filterFunction(entry)) {
+                    data.push(options.mappingFunction(entry));
                 }
             })
             .on('end', function() {

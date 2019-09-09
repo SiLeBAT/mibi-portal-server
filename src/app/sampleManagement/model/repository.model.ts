@@ -18,7 +18,7 @@ export interface NRLRepository {
 }
 
 export interface CatalogRepository {
-    getCatalog(catalogName: string): Catalog<CatalogData>;
+    getCatalog<T extends CatalogData>(catalogName: string): Catalog<T>;
 }
 
 export interface SearchAliasRepository {

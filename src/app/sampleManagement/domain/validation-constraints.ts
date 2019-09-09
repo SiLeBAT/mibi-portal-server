@@ -230,7 +230,7 @@ export const baseConstraints: ValidationConstraints = {
         matchADVNumberOrString: {
             error: 8,
             catalog: 'adv16',
-            alternateKeys: ['Text1']
+            alternateKeys: ['Text']
         },
         nrlExists: {
             error: 96

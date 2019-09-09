@@ -531,12 +531,12 @@ describe('Custom Validator Functions', () => {
                     {
                         Kodiersystem: '01',
                         Kode: '020301',
-                        Text1: 'Test1'
+                        Text: 'Test1'
                     },
                     {
                         Kodiersystem: '15',
                         Kode: '020301',
-                        Text1: 'Test2'
+                        Text: 'Test2'
                     }
                 ],
                 getUniqueEntryWithId: (id: string) => ({}),
@@ -574,12 +574,12 @@ describe('Custom Validator Functions', () => {
                     {
                         Kodiersystem: '01',
                         Kode: '020301',
-                        Text1: 'Test1'
+                        Text: 'Test1'
                     },
                     {
                         Kodiersystem: '15',
                         Kode: '020301',
-                        Text1: 'Test2'
+                        Text: 'Test2'
                     }
                 ],
                 getUniqueEntryWithId: (id: string) => ({}),
@@ -621,12 +621,12 @@ describe('Custom Validator Functions', () => {
                     {
                         Kodiersystem: '01',
                         Kode: '020301',
-                        Text1: 'Test1'
+                        Text: 'Test1'
                     },
                     {
                         Kodiersystem: '15',
                         Kode: '020301',
-                        Text1: 'Test2'
+                        Text: 'Test2'
                     }
                 ],
                 getUniqueEntryWithId: (id: string) => ({}),
@@ -757,7 +757,7 @@ describe('Custom Validator Functions', () => {
                     message: validationError,
                     catalog: 'adv16',
                     key: 'Kode',
-                    alternateKeys: ['Text1']
+                    alternateKeys: ['Text']
                 } as MatchADVNumberOrStringOptions,
                 'pathogen_adv',
                 testSample
@@ -774,7 +774,7 @@ describe('Custom Validator Functions', () => {
                     message: validationError,
                     catalog: 'adv16',
                     key: 'Kode',
-                    alternateKeys: ['Text1']
+                    alternateKeys: ['Text']
                 } as MatchADVNumberOrStringOptions,
                 'pathogen_adv',
                 testSample
@@ -791,7 +791,7 @@ describe('Custom Validator Functions', () => {
                     message: validationError,
                     catalog: 'adv16',
                     key: 'Kode',
-                    alternateKeys: ['Text1']
+                    alternateKeys: ['Text']
                 } as MatchADVNumberOrStringOptions,
                 'pathogen_adv',
                 testSample
@@ -808,7 +808,7 @@ describe('Custom Validator Functions', () => {
                     message: validationError,
                     catalog: 'adv16',
                     key: 'Kode',
-                    alternateKeys: ['Text1']
+                    alternateKeys: ['Text']
                 } as MatchADVNumberOrStringOptions,
                 'pathogen_adv',
                 testSample
@@ -825,7 +825,7 @@ describe('Custom Validator Functions', () => {
                     message: validationError,
                     catalog: 'adv16',
                     key: 'Kode',
-                    alternateKeys: ['Text1']
+                    alternateKeys: ['Text']
                 } as MatchADVNumberOrStringOptions,
                 'pathogen_adv',
                 testSample
@@ -842,7 +842,7 @@ describe('Custom Validator Functions', () => {
                     message: validationError,
                     catalog: 'adv16',
                     key: 'Kode',
-                    alternateKeys: ['Text1']
+                    alternateKeys: ['Text']
                 } as MatchADVNumberOrStringOptions,
                 'pathogen_adv',
                 testSample

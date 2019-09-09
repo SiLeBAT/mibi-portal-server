@@ -1,3 +1,4 @@
+import { ADVCatalogEntry, ZSPCatalogEntry } from './../model/catalog.model';
 import * as moment from 'moment';
 import * as _ from 'lodash';
 import {
@@ -156,14 +157,16 @@ function nonUniqueEntry(
         attributes: SamplePropertyValues
     ) => {
         if (attributes[key]) {
-            const cat = catalogService.getCatalog(options.catalog);
+            const cat = catalogService.getCatalog<ADVCatalogEntry>(
+                options.catalog
+            );
             if (cat && options.key) {
                 const entries = cat.getEntriesWithKeyValue(options.key, value);
                 if (entries.length < 2) return null;
                 if (attributes[options.differentiator[1]]) {
                     const n = _.filter(
                         entries,
-                        e =>
+                        (e: ADVCatalogEntry) =>
                             e[options.differentiator[0]] ===
                             attributes[options.differentiator[1]]
                     );
@@ -172,9 +175,9 @@ function nonUniqueEntry(
                 const newMessage: ValidationError = { ...options.message };
                 newMessage.message += ` Entweder '${
                     entries[0].Kodiersystem
-                }' für '${entries[0].Text1}' oder '${
+                }' für '${entries[0].Text}' oder '${
                     entries[1].Kodiersystem
-                }' für '${entries[1].Text1}'.`;
+                }' für '${entries[1].Text}'.`;
                 return newMessage;
             }
         }
@@ -270,7 +273,9 @@ function registeredZoMo(
         });
         if (years.length > 0) {
             const yearToCheck = Math.min(...years);
-            const cat = catalogService.getCatalog('zsp' + yearToCheck);
+            const cat = catalogService.getCatalog<ZSPCatalogEntry>(
+                'zsp' + yearToCheck
+            );
             if (cat) {
                 const groupValues = options.group.map(g => attributes[g.attr]);
                 const entry = cat.getEntriesWithKeyValue(
