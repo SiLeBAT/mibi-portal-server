@@ -1,0 +1,972 @@
+{
+  "order": {
+    "sampleSet": {
+      "samples": [
+        {
+          "sampleData": {
+            "sample_id": {
+              "value": "1",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sample_id_avv": {
+              "value": "1-ABC",
+              "errors": [
+                {
+                  "code": 72,
+                  "level": 1,
+                  "message": "Das Format der AVV Nummer scheint nicht korrekt zu sein."
+                }
+              ],
+              "correctionOffer": []
+            },
+            "pathogen_adv": {
+              "value": "Escherichia coli",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "pathogen_text": {
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_date": {
+              "value": "01.01.2019",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "isolation_date": {
+              "value": "02.01.2019",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_location_adv": {
+              "value": "11000000",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_location_zip": {
+              "value": "10178",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_location_text": {
+              "value": "Berlin",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "topic_adv": {
+              "value": "01",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "matrix_adv": {
+              "value": "063502",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "matrix_text": {
+              "value": "Hähnchen auch tiefgefroren",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "process_state_adv": {
+              "value": "999",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_reason_adv": {
+              "value": "10",
+              "errors": [
+                {
+                  "code": 95,
+                  "level": 1,
+                  "message": "Planproben sind normalerweise nicht für das NRL Antibiotikaresistenz bestimmt."
+                }
+              ],
+              "correctionOffer": []
+            },
+            "sampling_reason_text": {
+              "value": "Planprobe",
+              "errors": [
+                {
+                  "code": 95,
+                  "level": 1,
+                  "message": "Planproben sind normalerweise nicht für das NRL Antibiotikaresistenz bestimmt."
+                }
+              ],
+              "correctionOffer": []
+            },
+            "operations_mode_adv": {
+              "value": "4010000",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "operations_mode_text": {
+              "value": "Lebensmitteleinzelhandel",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "vvvo": {
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "comment": {
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
+            }
+          },
+          "sampleMeta": {
+            "nrl": "NRL-AR"
+          }
+        },
+        {
+          "sampleData": {
+            "sample_id": {
+              "value": "",
+              "errors": [
+                {
+                  "code": 69,
+                  "level": 2,
+                  "message": "Keine Probenummer angegeben."
+                },
+                {
+                  "code": 68,
+                  "level": 1,
+                  "message": "Wenn vorhanden, geben Sie bitte auch ihre Probenummer ein."
+                }
+              ],
+              "correctionOffer": []
+            },
+            "sample_id_avv": {
+              "value": "",
+              "errors": [
+                {
+                  "code": 69,
+                  "level": 2,
+                  "message": "Keine Probenummer angegeben."
+                }
+              ],
+              "correctionOffer": []
+            },
+            "pathogen_adv": {
+              "value": "Escherichia coli",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "pathogen_text": {
+              "value": "Escherichia coli",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_date": {
+              "value": "02.01.2019",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "isolation_date": {
+              "value": "03.01.2019",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_location_adv": {
+              "value": "11000000",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_location_zip": {
+              "value": "10178",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_location_text": {
+              "value": "Berlin",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "topic_adv": {
+              "value": "01",
+              "errors": [
+                {
+                  "code": 93,
+                  "level": 4,
+                  "message": "Falscher ADV2-Code. Ursprünglicher Code wurde durch den zum ADV3-Code passenden Code ersetzt."
+                }
+              ],
+              "correctionOffer": [],
+              "oldValue": "1"
+            },
+            "matrix_adv": {
+              "value": "063502",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "matrix_text": {
+              "value": "Hähnchen auch tiefgefroren",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "process_state_adv": {
+              "value": "052",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_reason_adv": {
+              "value": "10",
+              "errors": [
+                {
+                  "code": 95,
+                  "level": 1,
+                  "message": "Planproben sind normalerweise nicht für das NRL Antibiotikaresistenz bestimmt."
+                }
+              ],
+              "correctionOffer": []
+            },
+            "sampling_reason_text": {
+              "value": "Planprobe",
+              "errors": [
+                {
+                  "code": 95,
+                  "level": 1,
+                  "message": "Planproben sind normalerweise nicht für das NRL Antibiotikaresistenz bestimmt."
+                }
+              ],
+              "correctionOffer": []
+            },
+            "operations_mode_adv": {
+              "value": "4010000",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "operations_mode_text": {
+              "value": "Lebensmitteleinzelhandel",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "vvvo": {
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "comment": {
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
+            }
+          },
+          "sampleMeta": {
+            "nrl": "NRL-AR"
+          }
+        },
+        {
+          "sampleData": {
+            "sample_id": {
+              "value": "3",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sample_id_avv": {
+              "value": "3-ABC",
+              "errors": [
+                {
+                  "code": 72,
+                  "level": 1,
+                  "message": "Das Format der AVV Nummer scheint nicht korrekt zu sein."
+                }
+              ],
+              "correctionOffer": []
+            },
+            "pathogen_adv": {
+              "value": "Escherichia coli AmpC-Resistenz",
+              "errors": [
+                {
+                  "code": 8,
+                  "level": 2,
+                  "message": "Erreger nicht erkannt."
+                },
+                {
+                  "code": 96,
+                  "level": 2,
+                  "message": "Dieser Erreger wird von keinem BfR-Labor untersucht."
+                }
+              ],
+              "correctionOffer": [
+                "Escherichia coli AmpC-bildend",
+                "Escherichia coli ESBL/AmpC-bildend"
+              ]
+            },
+            "pathogen_text": {
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_date": {
+              "value": "03.01.2019",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "isolation_date": {
+              "value": "04.01.2019",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_location_adv": {
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_location_zip": {
+              "value": "12277",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_location_text": {
+              "value": "Berlin",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "topic_adv": {
+              "value": "15",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "matrix_adv": {
+              "value": "010011",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "matrix_text": {
+              "value": "Mastschweine; Kot",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "process_state_adv": {
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_reason_adv": {
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_reason_text": {
+              "value": "Zoonosen-Monitoring - Planprobe",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "operations_mode_adv": {
+              "value": "1010000",
+              "errors": [
+                {
+                  "code": 90,
+                  "level": 4,
+                  "message": "Code erkannt. Ursprünglicher Code wurde durch Code aus ADV-Katalog Nr. 8 ersetzt."
+                }
+              ],
+              "correctionOffer": [],
+              "oldValue": "1010xxx"
+            },
+            "operations_mode_text": {
+              "value": "Erzeuger v. Lebensmitteln tierischer Herkunft",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "vvvo": {
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "comment": {
+              "value": "EB4",
+              "errors": [],
+              "correctionOffer": []
+            }
+          },
+          "sampleMeta": {
+            "nrl": "Labor nicht erkannt"
+          }
+        },
+        {
+          "sampleData": {
+            "sample_id": {
+              "value": "4",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sample_id_avv": {
+              "value": "4-ABC",
+              "errors": [
+                {
+                  "code": 72,
+                  "level": 1,
+                  "message": "Das Format der AVV Nummer scheint nicht korrekt zu sein."
+                }
+              ],
+              "correctionOffer": []
+            },
+            "pathogen_adv": {
+              "value": "Escherichia coli Carbapenemase-bildend",
+              "errors": [
+                {
+                  "code": 87,
+                  "level": 4,
+                  "message": "ADV16-Code wurde erkannt und durch den entsprechenden ADV-Text ersetzt."
+                }
+              ],
+              "correctionOffer": [],
+              "oldValue": "0801014"
+            },
+            "pathogen_text": {
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_date": {
+              "value": "10.01.2019",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "isolation_date": {
+              "value": "15.01.2019",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_location_adv": {
+              "value": "11000000",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_location_zip": {
+              "value": "10178",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_location_text": {
+              "value": "Berlin",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "topic_adv": {
+              "value": "01",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "matrix_adv": {
+              "value": "0602xx",
+              "errors": [
+                {
+                  "code": 79,
+                  "level": 2,
+                  "message": "Falscher Code. ADV3 - Codes bestehen ausschliesslich aus Ziffern."
+                },
+                {
+                  "code": 33,
+                  "level": 2,
+                  "message": "Code ist nicht im ADV - Katalog Nr. 3 enthalten."
+                }
+              ],
+              "correctionOffer": []
+            },
+            "matrix_text": {
+              "value": "Fleischteilstücke Rind auch tiefgefroren",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "process_state_adv": {
+              "value": "052",
+              "errors": [
+                {
+                  "code": 92,
+                  "level": 4,
+                  "message": "Eintrag erkannt. Ursprünglicher Eintrag wurde durch Code aus ADV-Katalog Nr. 12 ersetzt."
+                }
+              ],
+              "correctionOffer": [],
+              "oldValue": "52"
+            },
+            "sampling_reason_adv": {
+              "value": "10",
+              "errors": [
+                {
+                  "code": 95,
+                  "level": 1,
+                  "message": "Planproben sind normalerweise nicht für das NRL Antibiotikaresistenz bestimmt."
+                }
+              ],
+              "correctionOffer": []
+            },
+            "sampling_reason_text": {
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "operations_mode_adv": {
+              "value": "4010000",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "operations_mode_text": {
+              "value": "Lebensmittel-Einzelhändler",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "vvvo": {
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "comment": {
+              "value": "EH13",
+              "errors": [],
+              "correctionOffer": []
+            }
+          },
+          "sampleMeta": {
+            "nrl": "NRL-AR"
+          }
+        },
+        {
+          "sampleData": {
+            "sample_id": {
+              "value": "7",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sample_id_avv": {
+              "value": "7-ABC",
+              "errors": [
+                {
+                  "code": 72,
+                  "level": 1,
+                  "message": "Das Format der AVV Nummer scheint nicht korrekt zu sein."
+                }
+              ],
+              "correctionOffer": []
+            },
+            "pathogen_adv": {
+              "value": "Escherichia coli Carbapenemase-bildend",
+              "errors": [
+                {
+                  "code": 87,
+                  "level": 4,
+                  "message": "ADV16-Code wurde erkannt und durch den entsprechenden ADV-Text ersetzt."
+                }
+              ],
+              "correctionOffer": [],
+              "oldValue": "0801014"
+            },
+            "pathogen_text": {
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_date": {
+              "value": "10.09.2017",
+              "errors": [
+                {
+                  "code": 49,
+                  "level": 1,
+                  "message": "Kombination aus ADV2-Code, ADV3-Code, ADV8-Code und Jahr passt zu keinem Zoonosen-Monitoring-Programm."
+                }
+              ],
+              "correctionOffer": []
+            },
+            "isolation_date": {
+              "value": "11.09.2017",
+              "errors": [
+                {
+                  "code": 49,
+                  "level": 1,
+                  "message": "Kombination aus ADV2-Code, ADV3-Code, ADV8-Code und Jahr passt zu keinem Zoonosen-Monitoring-Programm."
+                }
+              ],
+              "correctionOffer": []
+            },
+            "sampling_location_adv": {
+              "value": "11000000",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_location_zip": {
+              "value": "10178",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_location_text": {
+              "value": "Berlin",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "topic_adv": {
+              "value": "15",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "matrix_adv": {
+              "value": "010011",
+              "errors": [
+                {
+                  "code": 49,
+                  "level": 1,
+                  "message": "Kombination aus ADV2-Code, ADV3-Code, ADV8-Code und Jahr passt zu keinem Zoonosen-Monitoring-Programm."
+                }
+              ],
+              "correctionOffer": []
+            },
+            "matrix_text": {
+              "value": "Mastschweine; Kot",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "process_state_adv": {
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_reason_adv": {
+              "value": "81",
+              "errors": [
+                {
+                  "code": 49,
+                  "level": 1,
+                  "message": "Kombination aus ADV2-Code, ADV3-Code, ADV8-Code und Jahr passt zu keinem Zoonosen-Monitoring-Programm."
+                }
+              ],
+              "correctionOffer": []
+            },
+            "sampling_reason_text": {
+              "value": "Zoonosen-Monitoring - Planprobe",
+              "errors": [
+                {
+                  "code": 49,
+                  "level": 1,
+                  "message": "Kombination aus ADV2-Code, ADV3-Code, ADV8-Code und Jahr passt zu keinem Zoonosen-Monitoring-Programm."
+                }
+              ],
+              "correctionOffer": []
+            },
+            "operations_mode_adv": {
+              "value": "1010200",
+              "errors": [
+                {
+                  "code": 49,
+                  "level": 1,
+                  "message": "Kombination aus ADV2-Code, ADV3-Code, ADV8-Code und Jahr passt zu keinem Zoonosen-Monitoring-Programm."
+                }
+              ],
+              "correctionOffer": []
+            },
+            "operations_mode_text": {
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "vvvo": {
+              "value": "276110000009999/Herde1",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "comment": {
+              "value": "EB4",
+              "errors": [],
+              "correctionOffer": []
+            }
+          },
+          "sampleMeta": {
+            "nrl": "NRL-AR"
+          }
+        },
+        {
+          "sampleData": {
+            "sample_id": {
+              "value": "8",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sample_id_avv": {
+              "value": "8-ABC",
+              "errors": [
+                {
+                  "code": 72,
+                  "level": 1,
+                  "message": "Das Format der AVV Nummer scheint nicht korrekt zu sein."
+                }
+              ],
+              "correctionOffer": []
+            },
+            "pathogen_adv": {
+              "value": "Escherichia coli Carbapenemase-bildend",
+              "errors": [
+                {
+                  "code": 87,
+                  "level": 4,
+                  "message": "ADV16-Code wurde erkannt und durch den entsprechenden ADV-Text ersetzt."
+                }
+              ],
+              "correctionOffer": [],
+              "oldValue": "0801014"
+            },
+            "pathogen_text": {
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_date": {
+              "value": "30.12.2018",
+              "errors": [
+                {
+                  "code": 49,
+                  "level": 1,
+                  "message": "Kombination aus ADV2-Code, ADV3-Code, ADV8-Code und Jahr passt zu keinem Zoonosen-Monitoring-Programm."
+                }
+              ],
+              "correctionOffer": []
+            },
+            "isolation_date": {
+              "value": "31.12.2018",
+              "errors": [
+                {
+                  "code": 49,
+                  "level": 1,
+                  "message": "Kombination aus ADV2-Code, ADV3-Code, ADV8-Code und Jahr passt zu keinem Zoonosen-Monitoring-Programm."
+                }
+              ],
+              "correctionOffer": []
+            },
+            "sampling_location_adv": {
+              "value": "11000000",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_location_zip": {
+              "value": "10178",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_location_text": {
+              "value": "Berlin",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "topic_adv": {
+              "value": "15",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "matrix_adv": {
+              "value": "010011",
+              "errors": [
+                {
+                  "code": 49,
+                  "level": 1,
+                  "message": "Kombination aus ADV2-Code, ADV3-Code, ADV8-Code und Jahr passt zu keinem Zoonosen-Monitoring-Programm."
+                }
+              ],
+              "correctionOffer": []
+            },
+            "matrix_text": {
+              "value": "Mastschweine; Kot",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "process_state_adv": {
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_reason_adv": {
+              "value": "81",
+              "errors": [
+                {
+                  "code": 49,
+                  "level": 1,
+                  "message": "Kombination aus ADV2-Code, ADV3-Code, ADV8-Code und Jahr passt zu keinem Zoonosen-Monitoring-Programm."
+                }
+              ],
+              "correctionOffer": []
+            },
+            "sampling_reason_text": {
+              "value": "Zoonosen-Monitoring - Planprobe",
+              "errors": [
+                {
+                  "code": 49,
+                  "level": 1,
+                  "message": "Kombination aus ADV2-Code, ADV3-Code, ADV8-Code und Jahr passt zu keinem Zoonosen-Monitoring-Programm."
+                }
+              ],
+              "correctionOffer": []
+            },
+            "operations_mode_adv": {
+              "value": "1010200",
+              "errors": [
+                {
+                  "code": 49,
+                  "level": 1,
+                  "message": "Kombination aus ADV2-Code, ADV3-Code, ADV8-Code und Jahr passt zu keinem Zoonosen-Monitoring-Programm."
+                }
+              ],
+              "correctionOffer": []
+            },
+            "operations_mode_text": {
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "vvvo": {
+              "value": "276110000009999/Herde1",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "comment": {
+              "value": "EB4",
+              "errors": [],
+              "correctionOffer": []
+            }
+          },
+          "sampleMeta": {
+            "nrl": "NRL-AR"
+          }
+        },
+        {
+          "sampleData": {
+            "sample_id": {
+              "value": "9",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sample_id_avv": {
+              "value": "9_ABC",
+              "errors": [
+                {
+                  "code": 72,
+                  "level": 1,
+                  "message": "Das Format der AVV Nummer scheint nicht korrekt zu sein."
+                }
+              ],
+              "correctionOffer": []
+            },
+            "pathogen_adv": {
+              "value": "Salmonella",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "pathogen_text": {
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_date": {
+              "value": "31.12.2018",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "isolation_date": {
+              "value": "01.01.2019",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_location_adv": {
+              "value": "11000000",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_location_zip": {
+              "value": "10178",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_location_text": {
+              "value": "Berlin",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "topic_adv": {
+              "value": "15",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "matrix_adv": {
+              "value": "010300",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "matrix_text": {
+              "value": "Mastschweine; Futtermittel",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "process_state_adv": {
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_reason_adv": {
+              "value": "81",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_reason_text": {
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "operations_mode_adv": {
+              "value": "8000000",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "operations_mode_text": {
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "vvvo": {
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "comment": {
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
+            }
+          },
+          "sampleMeta": {
+            "nrl": "NRL-Salm"
+          }
+        }
+      ],
+      "meta": {
+        "nrl": "NRL-AR",
+        "analysis": {
+          "species": false,
+          "serological": false,
+          "phageTyping": false,
+          "resistance": false,
+          "vaccination": false,
+          "molecularTyping": false,
+          "toxin": false,
+          "zoonosenIsolate": false,
+          "esblAmpCCarbapenemasen": false,
+          "other": "",
+          "compareHuman": false
+        },
+        "sender": {
+          "instituteName": "",
+          "department": "",
+          "street": "",
+          "zip": "",
+          "city": "",
+          "contactPerson": "",
+          "telephone": "",
+          "email": ""
+        },
+        "urgency": "NORMAL",
+        "fileName": "mps155_timezone_bug.xlsx"
+      }
+    }
+  }
+}
