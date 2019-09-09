@@ -1,5 +1,9 @@
 import { Sample, SampleProperty, SamplePropertyValues } from './sample.model';
-import { CatalogService } from './catalog.model';
+import {
+    CatalogService,
+    ADVCatalogEntry,
+    ZSPCatalogEntry
+} from './catalog.model';
 import { NRL } from '../domain/enums';
 
 export interface ValidationError {
@@ -111,7 +115,7 @@ export interface RequiredIfOtherOptions extends ValidatorFunctionOptions {
 export interface NonUniqueEntryOptions extends ValidatorFunctionOptions {
     catalog: string;
     key: string;
-    differentiator: [string, SampleProperty];
+    differentiator: [keyof ADVCatalogEntry, SampleProperty];
 }
 
 export interface InCatalogOptions extends ValidatorFunctionOptions {
@@ -124,7 +128,7 @@ export interface MatchADVNumberOrStringOptions extends InCatalogOptions {
 }
 
 interface Group {
-    code: string;
+    code: keyof ZSPCatalogEntry;
     attr: SampleProperty;
 }
 export interface RegisteredZoMoOptions extends ValidatorFunctionOptions {

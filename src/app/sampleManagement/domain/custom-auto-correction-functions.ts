@@ -9,15 +9,21 @@ import {
     FuzzySearchResultEntry,
     CorrectionFunction
 } from '../model/autocorrection.model';
-import { CatalogService } from '../model/catalog.model';
+import {
+    CatalogService,
+    ADVCatalogEntry,
+    ADV9CatalogEntry
+} from '../model/catalog.model';
 
 function autoCorrectADV2(catalogService: CatalogService): CorrectionFunction {
     const catalogName = 'adv2';
     const dependencyCatalogName = 'adv3';
     const property: SampleProperty = 'topic_adv';
     const dependencyProperty: SampleProperty = 'matrix_adv';
-    const catalog = catalogService.getCatalog(catalogName);
-    const dependencyCatalog = catalogService.getCatalog(dependencyCatalogName);
+    const catalog = catalogService.getCatalog<ADVCatalogEntry>(catalogName);
+    const dependencyCatalog = catalogService.getCatalog<ADVCatalogEntry>(
+        dependencyCatalogName
+    );
     logger.debug(
         'Initializing auto-correction: Topic (ADV-2) & creating closure'
     );
@@ -39,7 +45,7 @@ function autoCorrectADV2(catalogService: CatalogService): CorrectionFunction {
                 return createCacheEntry(
                     property,
                     originalValue,
-                    [catalog.getUniqueEntryWithId(trimmedEntry)['Kode']],
+                    [catalog.getUniqueEntryWithId(trimmedEntry).Kode],
                     94
                 );
             }
@@ -70,7 +76,7 @@ function autoCorrectADV2(catalogService: CatalogService): CorrectionFunction {
 function autoCorrectADV12(catalogService: CatalogService): CorrectionFunction {
     const catalogName = 'adv12';
     const property: SampleProperty = 'process_state_adv';
-    const catalog = catalogService.getCatalog(catalogName);
+    const catalog = catalogService.getCatalog<ADVCatalogEntry>(catalogName);
     logger.debug(
         'Initializing auto-correction: Process state (ADV-12) & creating closure'
     );
@@ -102,12 +108,12 @@ function autoCorrectADV12(catalogService: CatalogService): CorrectionFunction {
             return searchCache[trimmedEntry];
         }
 
-        if (catalog.containsEntryWithKeyValue('Text1', trimmedEntry)) {
+        if (catalog.containsEntryWithKeyValue('Text', trimmedEntry)) {
             searchCache[trimmedEntry] = {
                 field: property,
                 original: originalValue,
                 correctionOffer: [
-                    catalog.getEntriesWithKeyValue('Text1', trimmedEntry)[0][
+                    catalog.getEntriesWithKeyValue('Text', trimmedEntry)[0][
                         'Kode'
                     ]
                 ],
@@ -123,7 +129,7 @@ function autoCorrectADV12(catalogService: CatalogService): CorrectionFunction {
 function autoCorrectADV3(catalogService: CatalogService): CorrectionFunction {
     const catalogName = 'adv3';
     const property: SampleProperty = 'matrix_adv';
-    const catalog = catalogService.getCatalog(catalogName);
+    const catalog = catalogService.getCatalog<ADVCatalogEntry>(catalogName);
     logger.debug(
         'Initializing auto-correction: Matrix (ADV-3) & creating closure'
     );
@@ -178,7 +184,7 @@ function autoCorrectADV3(catalogService: CatalogService): CorrectionFunction {
 function autoCorrectADV8(catalogService: CatalogService): CorrectionFunction {
     const catalogName = 'adv8';
     const property: SampleProperty = 'operations_mode_adv';
-    const catalog = catalogService.getCatalog(catalogName);
+    const catalog = catalogService.getCatalog<ADVCatalogEntry>(catalogName);
     logger.debug(
         'Initializing auto-correction: Operations Mode (ADV-8) & creating closure'
     );
@@ -266,7 +272,7 @@ function autoCorrectADV8(catalogService: CatalogService): CorrectionFunction {
 function autoCorrectADV9(catalogService: CatalogService): CorrectionFunction {
     const catalogName = 'adv9';
     const property: SampleProperty = 'sampling_location_adv';
-    const catalog = catalogService.getCatalog(catalogName);
+    const catalog = catalogService.getCatalog<ADV9CatalogEntry>(catalogName);
     logger.debug(
         'Initializing auto-correction: Sampling location (ADV-9) & creating closure'
     );
@@ -329,7 +335,7 @@ function autoCorrectADV9(catalogService: CatalogService): CorrectionFunction {
 function autoCorrectADV16(catalogService: CatalogService): CorrectionFunction {
     const catalogName = 'adv16';
     const property: SampleProperty = 'pathogen_adv';
-    const catalog = catalogService.getCatalog(catalogName);
+    const catalog = catalogService.getCatalog<ADVCatalogEntry>(catalogName);
     logger.debug(
         'Initializing auto-correction: Pathogen (ADV-16) & creating closure'
     );
@@ -357,7 +363,7 @@ function autoCorrectADV16(catalogService: CatalogService): CorrectionFunction {
             return searchCache[trimmedEntry];
         }
 
-        if (catalog.containsEntryWithKeyValue('Text1', trimmedEntry)) {
+        if (catalog.containsEntryWithKeyValue('Text', trimmedEntry)) {
             return null;
         }
 
@@ -370,7 +376,7 @@ function autoCorrectADV16(catalogService: CatalogService): CorrectionFunction {
                 searchCache[trimmedEntry] = createCacheEntry(
                     property,
                     originalValue,
-                    [catalog.getUniqueEntryWithId(trimmedEntry)['Text1']],
+                    [catalog.getUniqueEntryWithId(trimmedEntry)['Text']],
                     87
                 );
                 return searchCache[trimmedEntry];
@@ -379,7 +385,7 @@ function autoCorrectADV16(catalogService: CatalogService): CorrectionFunction {
 
         // Search for Genus
         const genusEntry = 'Genus ' + trimmedEntry;
-        if (catalog.containsEntryWithKeyValue('Text1', genusEntry)) {
+        if (catalog.containsEntryWithKeyValue('Text', genusEntry)) {
             searchCache[trimmedEntry] = {
                 field: property,
                 original: originalValue,
@@ -493,7 +499,7 @@ function cleanText(str: string) {
 
 function getFuseOptions() {
     return {
-        id: 'Text1',
+        id: 'Text',
         shouldSort: true,
         tokenize: true,
         includeScore: true,
@@ -505,7 +511,7 @@ function getFuseOptions() {
         minMatchCharLength: 1,
         keys: [
             {
-                name: 'Text1',
+                name: 'Text',
                 weight: 0.9
             },
             {

@@ -14,7 +14,7 @@ interface IMockCatalogData {
     Kode: string;
     Kodiersystem: string;
     'P-Code3': string;
-    Text1: string;
+    Text: string;
 }
 describe('Pathogen Index', () => {
     let testData: IMockCatalogData[];
@@ -29,7 +29,7 @@ describe('Pathogen Index', () => {
                 Kode: '0801001',
                 Kodiersystem: '000',
                 'P-Code3': 'Escherichia coli',
-                Text1: 'Escherichia coli'
+                Text: 'Escherichia coli'
             },
             {
                 id: '801004',
@@ -38,7 +38,7 @@ describe('Pathogen Index', () => {
                 Kode: '0801001',
                 Kodiersystem: '000',
                 'P-Code3': '',
-                Text1: 'Escherichia coli O157:H7'
+                Text: 'Escherichia coli O157:H7'
             },
             {
                 id: '803101',
@@ -47,7 +47,7 @@ describe('Pathogen Index', () => {
                 Kode: '0803101',
                 Kodiersystem: '000',
                 'P-Code3': 'S.Typhi',
-                Text1: 'Salmonella Typhi'
+                Text: 'Salmonella Typhi'
             }
         ];
 

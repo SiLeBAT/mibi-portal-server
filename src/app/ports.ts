@@ -82,7 +82,13 @@ export {
     ExcelFileInfo
 } from './sampleManagement/model/excel.model';
 
-export { Catalog, CatalogData } from './sampleManagement/model/catalog.model';
+export {
+    Catalog,
+    CatalogData,
+    CatalogConfig,
+    ADVCatalogEntry,
+    ADV9CatalogEntry
+} from './sampleManagement/model/catalog.model';
 
 export {
     ValidationError,

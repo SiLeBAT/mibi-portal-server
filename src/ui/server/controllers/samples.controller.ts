@@ -108,7 +108,7 @@ export class DefaultSamplesController extends AbstractController
         } catch (error) {
             logger.info(
                 `${this.constructor.name}.${
-                this.putSamples.name
+                    this.putSamples.name
                 } has thrown an error. ${error}`
             );
             this.handleError(res, error);
@@ -118,7 +118,7 @@ export class DefaultSamplesController extends AbstractController
     async putValidated(@request() req: Request, @response() res: Response) {
         logger.info(
             `${this.constructor.name}.${
-            this.putValidated.name
+                this.putValidated.name
             }, Request received`
         );
         try {
@@ -145,7 +145,7 @@ export class DefaultSamplesController extends AbstractController
             };
             logger.info(
                 `${this.constructor.name}.${
-                this.putValidated.name
+                    this.putValidated.name
                 }, Response sent`
             );
             logger.verbose('Response:', responseDTO);
@@ -153,7 +153,7 @@ export class DefaultSamplesController extends AbstractController
         } catch (error) {
             logger.info(
                 `${this.constructor.name}.${
-                this.putValidated.name
+                    this.putValidated.name
                 } has thrown an error. ${error}`
             );
             this.handleError(res, error);
@@ -163,7 +163,7 @@ export class DefaultSamplesController extends AbstractController
     async postSubmitted(@request() req: Request, @response() res: Response) {
         logger.info(
             `${this.constructor.name}.${
-            this.postSubmitted.name
+                this.postSubmitted.name
             }, Request received`
         );
         try {
@@ -232,7 +232,7 @@ export class DefaultSamplesController extends AbstractController
 
             logger.info(
                 `${this.constructor.name}.${
-                this.postSubmitted.name
+                    this.postSubmitted.name
                 }, Response sent`
             );
             logger.verbose('Response:', responseDTO);
@@ -240,7 +240,7 @@ export class DefaultSamplesController extends AbstractController
         } catch (error) {
             logger.info(
                 `${this.constructor.name}.${
-                this.postSubmitted.name
+                    this.postSubmitted.name
                 } has thrown an error. ${error}`
             );
             this.handleError(res, error);
@@ -291,7 +291,7 @@ export class DefaultSamplesController extends AbstractController
                 );
                 logger.info(
                     `${this.constructor.name}.${
-                    this.putSamples.name
+                        this.putSamples.name
                     }, Response sent`
                 );
                 this.ok(res, result);
@@ -303,7 +303,7 @@ export class DefaultSamplesController extends AbstractController
                 };
                 logger.info(
                     `${this.constructor.name}.${
-                    this.putSamples.name
+                        this.putSamples.name
                     }, Response sent`
                 );
                 this.ok(res, successResponse);
@@ -374,7 +374,7 @@ export class DefaultSamplesController extends AbstractController
             } catch (error) {
                 logger.info(
                     `${this.constructor.name}.${
-                    this.getValidationOptions.name
+                        this.getValidationOptions.name
                     }, no state found for user. Using default state. error=${error}`
                 );
             }

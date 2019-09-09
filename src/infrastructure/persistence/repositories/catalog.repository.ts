@@ -3,16 +3,12 @@ import {
     CatalogRepository,
     Catalog,
     createCatalog,
-    CatalogData
+    CatalogData,
+    CatalogConfig,
+    ADVCatalogEntry,
+    ADV9CatalogEntry
 } from '../../../app/ports';
 import { loadCSVFile } from '../data-store/file/file-loader';
-
-interface CatalogConfig {
-    filename: string;
-    id: string;
-    uId?: string;
-    filterFunction?: Function;
-}
 
 class FileCatalogRepository implements CatalogRepository {
     private catalogs: {
@@ -33,38 +29,88 @@ class FileCatalogRepository implements CatalogRepository {
             {
                 filename: 'ADV2.csv',
                 id: 'adv2',
-                uId: 'Kode'
+                uId: 'Kode',
+                delimiter: '#',
+                headers: false,
+                mappingFunction: (e: string[]) => ({
+                    Kode: e[2],
+                    Kodiersystem: e[1],
+                    Text: e[6].concat(e[7], e[8], e[9], e[10], e[11])
+                })
             },
             {
                 filename: 'ADV3.csv',
-                id: 'adv3'
+                id: 'adv3',
+                delimiter: '#',
+                headers: false,
+                mappingFunction: (e: string[]): ADVCatalogEntry => ({
+                    Kode: e[2],
+                    Kodiersystem: e[1].replace(/^0/, ''),
+                    Text: e[6].concat(e[7], e[8], e[9], e[10], e[11])
+                })
             },
             {
                 filename: 'ADV4.csv',
                 id: 'adv4',
-                uId: 'Kode'
+                uId: 'Kode',
+                headers: false,
+                delimiter: '#',
+                mappingFunction: (e: string[]): ADVCatalogEntry => ({
+                    Kode: e[2],
+                    Kodiersystem: e[1],
+                    Text: e[6]
+                })
             },
             {
                 filename: 'ADV8.csv',
                 id: 'adv8',
-                uId: 'Kode'
+                uId: 'Kode',
+                headers: false,
+                delimiter: '#',
+                mappingFunction: (e: string[]): ADVCatalogEntry => ({
+                    Kode: e[2],
+                    Kodiersystem: e[1],
+                    Text: e[6]
+                })
             },
             {
                 filename: 'ADV9.csv',
                 id: 'adv9',
-                uId: 'Kode'
+                uId: 'Kode',
+                headers: false,
+                delimiter: '#',
+                mappingFunction: (e: string[]): ADV9CatalogEntry => ({
+                    Kode: e[2],
+                    Kodiersystem: e[1],
+                    Text: e[6],
+                    PLZ: e[8]
+                })
             },
             {
                 filename: 'ADV12.csv',
                 id: 'adv12',
-                uId: 'Kode'
+                uId: 'Kode',
+                headers: false,
+                delimiter: '#',
+                mappingFunction: (e: string[]): ADVCatalogEntry => ({
+                    Kode: e[2],
+                    Kodiersystem: e[1],
+                    Text: e[6]
+                })
             },
             {
                 filename: 'ADV16.csv',
                 id: 'adv16',
                 uId: 'Kode',
-                filterFunction: (entry: { Kode: string }) => {
-                    const code = parseInt(entry.Kode, 10);
+                headers: false,
+                delimiter: '#',
+                mappingFunction: (e: string[]): ADVCatalogEntry => ({
+                    Kode: e[2],
+                    Kodiersystem: e[1],
+                    Text: e[6]
+                }),
+                filterFunction: (entry: string[]) => {
+                    const code = parseInt(entry[2], 10);
                     return (
                         (code >= 302000 && code < 306000) ||
                         (code >= 500000 && code < 1700000) ||
@@ -74,39 +120,17 @@ class FileCatalogRepository implements CatalogRepository {
                 }
             },
             {
-                filename: 'BW_Grund_Codes.csv',
-                id: 'bw_grund',
-                uId: 'Kode'
-            },
-            {
-                filename: 'BW_Matrix_Codes.csv',
-                id: 'bw_matrix',
-                uId: 'Kode'
-            },
-            {
-                filename: 'BW_MatrixOberbegriff_Codes.csv',
-                id: 'bw_ober',
-                uId: 'Kode'
-            },
-            {
-                filename: 'NRLs_u_Erreger.csv',
-                id: 'erreger'
-            },
-            {
                 filename: 'PLZ.csv',
                 id: 'plz',
-                uId: 'plz'
+                uId: 'plz',
+                headers: true
             }
         ];
 
         this.addZoMoDates(catalogsConfig);
 
         const promiseArray = catalogsConfig.map(catalogConfig => {
-            return loadCSVFile<CatalogData>(
-                catalogConfig.filename,
-                this.dataDir,
-                catalogConfig.filterFunction
-            ).then(
+            return loadCSVFile<CatalogData>(catalogConfig, this.dataDir).then(
                 (data: CatalogData[]) =>
                     (this.catalogs[catalogConfig.id] = createCatalog<
                         CatalogData
@@ -138,8 +162,8 @@ class FileCatalogRepository implements CatalogRepository {
         );
     }
 
-    getCatalog(catalogName: string): Catalog<CatalogData> {
-        return this.catalogs[catalogName];
+    getCatalog<T extends CatalogData>(catalogName: string): Catalog<T> {
+        return this.catalogs[catalogName] as Catalog<T>;
     }
 
     private addZoMoDates(catalogsConfig: CatalogConfig[]): CatalogConfig[] {
@@ -151,17 +175,20 @@ class FileCatalogRepository implements CatalogRepository {
 
         catalogsConfig.push({
             filename: currentName.toUpperCase() + '.csv',
-            id: currentName
+            id: currentName,
+            headers: true
         });
 
         catalogsConfig.push({
             filename: lastName.toUpperCase() + '.csv',
-            id: lastName
+            id: lastName,
+            headers: true
         });
 
         catalogsConfig.push({
             filename: futureName.toUpperCase() + '.csv',
-            id: futureName
+            id: futureName,
+            headers: true
         });
 
         return catalogsConfig;
