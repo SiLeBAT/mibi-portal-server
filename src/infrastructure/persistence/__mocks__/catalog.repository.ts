@@ -3,7 +3,8 @@ import { CatalogData, Catalog, CatalogRepository } from '../../../app/ports';
 const mockFuse = {
     search: jest.fn(() => [])
 };
-const mockCatalog: Catalog<CatalogData> = {
+// tslint:disable-next-line: no-any
+const mockCatalog: Catalog<any> = {
     getEntriesWithKeyValue: jest.fn(() => []),
     getUniqueEntryWithId: jest.fn(),
     containsUniqueEntryWithId: jest.fn(),
