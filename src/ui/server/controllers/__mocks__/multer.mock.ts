@@ -1,4 +1,9 @@
-export function addMulterSingleFileFormToMockRequest(req: {}, fieldName: string, file: Buffer, fileName: string): {file: {}} {
+export function addMulterSingleFileFormToMockRequest(
+    req: {},
+    fieldName: string,
+    file: Buffer,
+    fileName: string
+): { file: {} } {
     const multerMock = {
         fieldname: fieldName,
         originalname: fileName,
@@ -7,5 +12,5 @@ export function addMulterSingleFileFormToMockRequest(req: {}, fieldName: string,
         size: file.buffer.byteLength,
         buffer: file
     };
-    return {...req, file: multerMock};
-};
+    return { ...req, file: multerMock };
+}

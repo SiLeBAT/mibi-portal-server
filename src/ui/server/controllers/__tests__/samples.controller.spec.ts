@@ -7,7 +7,10 @@ import { SamplesController } from '../../model/controller.model';
 import { SampleSetDTO } from '../../model/shared-dto.model';
 import { Container } from 'inversify';
 import { getServerContainerModule } from '../../server.module';
-import { getApplicationContainerModule, FileRepository } from '../../../../app/ports';
+import {
+    getApplicationContainerModule,
+    FileRepository
+} from '../../../../app/ports';
 import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
 import SERVER_TYPES from '../../server.types';
 import { rebindMocks } from '../../../../__mocks__/util';
@@ -196,8 +199,15 @@ describe('Sample controller', () => {
                 }
             });
             const MPS155 = 'mps155_timezone_bug.xlsx';
-            const mps155XLSX = await promisify(fs.readFile)('testData/' + MPS155);
-            req = addMulterSingleFileFormToMockRequest(req, 'file', mps155XLSX, MPS155);
+            const mps155XLSX = await promisify(fs.readFile)(
+                'testData/' + MPS155
+            );
+            req = addMulterSingleFileFormToMockRequest(
+                req,
+                'file',
+                mps155XLSX,
+                MPS155
+            );
 
             const res = new mockRes();
             expect.assertions(2);
@@ -210,13 +220,13 @@ describe('Sample controller', () => {
         it('should convert json to excel', async () => {
             container.unbind(APPLICATION_TYPES.FileRepository);
             container.bind(PERSISTENCE_TYPES.DataDir).toConstantValue('./data');
-            container.bind<FileRepository>(APPLICATION_TYPES.FileRepository).to(
-                DefaultFileRepository
-            );
+            container
+                .bind<FileRepository>(APPLICATION_TYPES.FileRepository)
+                .to(DefaultFileRepository);
             controller = container.get<SamplesController>(
                 SERVER_TYPES.SamplesController
             );
-            
+
             expect.assertions(3);
 
             let req = new mockReq({
@@ -234,7 +244,9 @@ describe('Sample controller', () => {
             const body = res._getJSON();
             expect(body).toHaveProperty('data');
             const buf = Buffer.from(body.data, 'base64');
-            const mps155ValidatedXLSX = await promisify(fs.readFile)('testData/mps155_timezone_bug_validated.xlsx');
+            const mps155ValidatedXLSX = await promisify(fs.readFile)(
+                'testData/mps155_timezone_bug_validated.xlsx'
+            );
             expect(CRC32.buf(buf)).toEqual(CRC32.buf(mps155ValidatedXLSX));
 
             container.unbind(PERSISTENCE_TYPES.DataDir);

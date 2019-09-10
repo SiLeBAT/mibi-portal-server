@@ -100,7 +100,7 @@ export class DefaultNRLService implements NRLService {
 
         for (const nrlConfig of this.nrlCache) {
             for (const selector of nrlConfig.selectors) {
-                const regexp = new RegExp(selector);
+                const regexp = new RegExp(selector, 'i');
                 if (regexp.test(pathogen)) {
                     return nrlConfig.name;
                 }
