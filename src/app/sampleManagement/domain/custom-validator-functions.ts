@@ -255,6 +255,41 @@ function matchADVNumberOrString(
     };
 }
 
+function shouldBeZoMo(
+    catalogService: CatalogService
+): ValidatorFunction<RegisteredZoMoOptions> {
+    return (
+        value: string,
+        options: RegisteredZoMoOptions,
+        key: SampleProperty,
+        attributes: SamplePropertyValues
+    ) => {
+        const years = getYears(options.year, attributes);
+
+        let result = null;
+        _.forEach(years, yearToCheck => {
+            const cat = catalogService.getCatalog<ZSPCatalogEntry>(
+                'zsp' + yearToCheck
+            );
+            if (cat) {
+                const groupValues = options.group.map(g => attributes[g.attr]);
+                const entry = cat.getEntriesWithKeyValue(
+                    options.group[0].code,
+                    groupValues[0]
+                );
+                const filtered = _.filter(
+                    entry,
+                    e => e[options.group[2].code] === groupValues[2]
+                ).filter(m => m[options.group[1].code] === groupValues[1]);
+                if (filtered.length >= 1) {
+                    result = { ...options.message };
+                }
+            }
+        });
+        return result;
+    };
+}
+
 function registeredZoMo(
     catalogService: CatalogService
 ): ValidatorFunction<RegisteredZoMoOptions> {
@@ -264,13 +299,7 @@ function registeredZoMo(
         key: SampleProperty,
         attributes: SamplePropertyValues
     ) => {
-        const years = options.year.map((y: SampleProperty) => {
-            const yearValue = attributes[y];
-            const formattedYear = moment
-                .utc(yearValue, 'DD-MM-YYYY')
-                .format('YYYY');
-            return parseInt(formattedYear, 10);
-        });
+        const years = getYears(options.year, attributes);
         if (years.length > 0) {
             const yearToCheck = Math.min(...years);
             const cat = catalogService.getCatalog<ZSPCatalogEntry>(
@@ -297,6 +326,18 @@ function registeredZoMo(
         }
         return null;
     };
+}
+
+function getYears(ary: string[], attributes: SamplePropertyValues): number[] {
+    const tmp = ary.map((y: SampleProperty) => {
+        const yearValue = attributes[y];
+        const formattedYear = moment
+            .utc(yearValue, 'DD-MM-YYYY')
+            .format('YYYY');
+        return parseInt(formattedYear, 10);
+    });
+
+    return Array.from(new Set(tmp));
 }
 
 function atLeastOneOf(
@@ -462,6 +503,7 @@ export {
     numbersOnly,
     inCatalog,
     registeredZoMo,
+    shouldBeZoMo,
     nonUniqueEntry,
     matchADVNumberOrString,
     matchesRegexPattern,

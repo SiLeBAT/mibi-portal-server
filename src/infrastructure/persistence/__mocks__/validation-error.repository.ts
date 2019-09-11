@@ -341,6 +341,12 @@ export const genericValidationErrors = [
         code: 96,
         level: 2,
         message: 'Dieser Erreger wird von keinem BfR-Labor untersucht.'
+    },
+    {
+        code: 97,
+        level: 1,
+        message:
+            'Ihre Daten passen zum Zoonosen-Stichprobenplan. Bitte prüfen Sie noch einmal, ob Sie nicht als Grund Code 81 bzw. Text "Zoonosen-Monitoring - Planprobe" angeben sollten.'
     }
 ];
 export function getMockValidationErrorRepository(): ValidationErrorRepository {
