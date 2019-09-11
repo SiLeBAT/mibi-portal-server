@@ -170,7 +170,7 @@ describe('Sample controller', () => {
     });
 
     describe('root', () => {
-        it('should respond with error if incorrect payload', function() {
+        it('should respond with error if incorrect payload', function () {
             const req = new mockReq({
                 method: 'PUT',
                 headers: {
@@ -217,7 +217,7 @@ describe('Sample controller', () => {
             expect(body).toEqual(mps155JSON);
         });
 
-        it('should convert json to excel', async () => {
+        xit('should convert json to excel', async () => {
             container.unbind(APPLICATION_TYPES.FileRepository);
             container.bind(PERSISTENCE_TYPES.DataDir).toConstantValue('./data');
             container
@@ -258,7 +258,7 @@ describe('Sample controller', () => {
             );
         });
 
-        it('should respond with Order JSON', function() {
+        it('should respond with Order JSON', function () {
             const req = new mockReq({
                 method: 'PUT',
                 headers: {
@@ -376,7 +376,7 @@ describe('Sample controller', () => {
         });
     });
     describe('validate sample', () => {
-        it('should respond with error if incorrect payload', function() {
+        it('should respond with error if incorrect payload', function () {
             const req = new mockReq({
                 method: 'PUT',
                 headers: {
@@ -396,7 +396,7 @@ describe('Sample controller', () => {
             });
         });
 
-        it('should respond with Order JSON', function() {
+        it('should respond with Order JSON', function () {
             const req = new mockReq({
                 method: 'PUT',
                 headers: {
