@@ -1,4 +1,10 @@
+// Mail
+
 export { MAIL_TYPES } from './mail/mail.types';
+export { MailService } from './mail/mail.model';
+export { getMailContainerModule } from './mail/mail.module';
+
+// Persistence
 
 export {
     getPersistenceContainerModule
@@ -12,10 +18,6 @@ export {
     mapCollectionToRepository
 } from './persistence/data-store/mongoose/mongoose';
 export { DataStore } from './persistence/model/data-store.model';
-
-export { MailService } from './mail/mail.model';
-
-export { getMailContainerModule } from './mail/mail.module';
 
 export {
     initialiseRepository as initialiseCatalogRepository
