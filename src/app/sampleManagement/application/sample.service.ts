@@ -28,6 +28,7 @@ import moment = require('moment');
 import { NRL } from '../domain/enums';
 import { NRLService } from '../model/nrl.model';
 import { FileBuffer } from '../../core/model/file.model';
+import { PDFCreatorService } from '../model/pdf.model';
 
 @injectable()
 export class DefaultSampleService implements SampleService {
@@ -50,7 +51,9 @@ export class DefaultSampleService implements SampleService {
         @inject(APPLICATION_TYPES.JSONMarshalService)
         private jsonMarshalService: JSONMarshalService,
         @inject(APPLICATION_TYPES.NRLService)
-        private nrlService: NRLService
+        private nrlService: NRLService,
+        @inject(APPLICATION_TYPES.PDFCreatorService)
+        private pdfCreatorService: PDFCreatorService
     ) {
         this.appName = this.configurationService.getApplicationConfiguration().appName;
         this.overrideRecipient = this.configurationService.getApplicationConfiguration().jobRecipient;
@@ -64,9 +67,17 @@ export class DefaultSampleService implements SampleService {
 
         const attachments: Attachment[] = await Promise.all(
             nrlSampleSets.map(async nrlSampleSet => {
-                const fileBuffer: FileBuffer = await this.jsonMarshalService.convertJSONToExcel(
+                // PDF TEST
+
+                // const fileBuffer: FileBuffer = await this.jsonMarshalService.convertJSONToExcel(
+                //     nrlSampleSet
+                // );
+
+                const fileBuffer: FileBuffer = await this.pdfCreatorService.createPDF(
                     nrlSampleSet
                 );
+
+                // PDF TEST END
 
                 const fileName =
                     nrlSampleSet.meta.fileName || this.DEFAULT_FILE_NAME;
