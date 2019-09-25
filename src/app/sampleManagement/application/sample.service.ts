@@ -73,6 +73,7 @@ export class DefaultSampleService implements SampleService {
                 // const fileBuffer: FileBuffer = await this.jsonMarshalService.convertJSONToExcel(
                 //     nrlSampleSet
                 // );
+                
 
                 const fileBuffer: FileBuffer = await this.pdfCreatorService.createPDF(nrlSampleSet);
 
