@@ -1,14 +1,14 @@
 import * as _ from 'lodash';
 // @ts-ignore
 import * as XlsxPopulate from 'xlsx-populate';
-import { JSONMarshalService, ExcelFileInfo } from '../model/excel.model';
+import { JSONMarshalService } from '../model/excel.model';
 import { FileRepository } from '../model/repository.model';
 import { SampleSet, Sample, SampleSetMetaData } from '../model/sample.model';
-import { ApplicationDomainError } from './../../core/domain/domain.error';
-import { ApplicationSystemError } from './../../core/domain/technical.error';
+import { ApplicationDomainError } from '../../core/domain/domain.error';
+import { ApplicationSystemError } from '../../core/domain/technical.error';
 import { Urgency } from '../domain/enums';
 import { injectable, inject } from 'inversify';
-import { APPLICATION_TYPES } from './../../application.types';
+import { APPLICATION_TYPES } from '../../application.types';
 import {
     FORM_PROPERTIES,
     VALID_SHEET_NAME,
@@ -33,44 +33,49 @@ import {
     META_ANALYSIS_OTHER_CELL,
     META_ANALYSIS_COMPAREHUMAN_CELL
 } from '../domain/constants';
+import { NRLConstants } from '../model/nrl.model';
+import { FileBuffer } from '../../core/model/file.model';
 
 type ChangedValueCollection = Record<string, string>;
 
 @injectable()
 export class DefaultJSONMarshalService implements JSONMarshalService {
-    private fileName = 'Einsendebogen.xlsx';
+    private readonly TEMPLATE_FILE_NAME = 'Einsendebogen.xlsx';
+    private readonly FILE_EXTENSION = '.xlsx';
 
     constructor(
         @inject(APPLICATION_TYPES.FileRepository)
-        private fileRepository: FileRepository
+        private fileRepository: FileRepository,
+        @inject(APPLICATION_TYPES.NRLConstants)
+        private nrlConstants: NRLConstants
     ) {}
 
-    async convertJSONToExcel(data: SampleSet): Promise<ExcelFileInfo> {
-        const buffer = await this.fileRepository.getFileBuffer(this.fileName);
+    async convertJSONToExcel(sampleSet: SampleSet): Promise<FileBuffer> {
+        const buffer = await this.fileRepository.getFileBuffer(this.TEMPLATE_FILE_NAME);
 
         if (!buffer) {
             throw new ApplicationSystemError('No Excel data available.');
         }
 
         const highlights: Record<string, string>[] = [];
-        data.samples.forEach((sample: Sample) => {
+        sampleSet.samples.forEach((sample: Sample) => {
             highlights.push(sample.getOldValues());
         });
-        const dataToSave = this.fromDataObjToAOO(data.samples);
+        const dataToSave = this.fromDataObjToAOO(sampleSet.samples);
         let workbook = await this.fromFileToWorkbook(buffer);
         workbook = this.addValidatedDataToWorkbook(
             workbook,
             dataToSave,
             highlights
         );
-        workbook = this.addMetaDataToWorkbook(workbook, data.meta);
+        workbook = this.addMetaDataToWorkbook(workbook, sampleSet.meta);
 
-        const workbookBuffer = await workbook.outputAsync('base64');
+        const workbookBuffer = await workbook.outputAsync();
 
         return {
-            data: workbookBuffer,
-            fileName: data.meta.fileName || this.fileName,
-            type: XlsxPopulate.MIME_TYPE
+            buffer: workbookBuffer,
+            extension: this.FILE_EXTENSION,
+            mimeType: XlsxPopulate.MIME_TYPE
         };
     }
 
@@ -100,7 +105,7 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
     ) {
         const sheet = workbook.sheet(VALID_SHEET_NAME);
         if (sheet) {
-            sheet.cell(META_NRL_CELL).value(this.mapNRLToString(meta.nrl));
+            sheet.cell(META_NRL_CELL).value(this.nrlConstants.longNames[meta.nrl]);
 
             sheet
                 .cell(META_URGENCY_CELL)
@@ -191,40 +196,6 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
             default:
                 return 'NORMAL';
         }
-    }
-    private mapNRLToString(nrl: string): string {
-        switch (nrl) {
-            case 'NRL-Vibrio':
-                return 'NRL Überwachung von Bakterien in zweischaligen Weichtieren';
-            case 'NRL-VTEC':
-                return 'NRL Escherichia coli einschließlich verotoxinbildende E. coli';
-
-            case 'Sporenbildner':
-                return 'Sporenbildner';
-            case 'NRL-Staph':
-                return 'NRL koagulasepositive Staphylokokken einschließlich Staphylococcus aureus';
-
-            case 'NRL-Salm':
-                return 'NRL Salmonellen (Durchführung von Analysen und Tests auf Zoonosen)';
-
-            case 'NRL-Listeria':
-                return 'NRL Listeria monocytogenes';
-            case 'NRL-Campy':
-                return 'NRL Campylobacter';
-            case 'NRL-AR':
-                return 'NRL Antibiotikaresistenz';
-            case 'KL-Yersinia':
-                return 'Yersinia';
-            case 'NRL-Trichinella':
-                return 'NRL Trichinella';
-            case 'NRL-Virus':
-                return 'NRL Überwachung von Viren in zweischaligen Weichtieren';
-            case 'KL-Leptospira':
-                return 'Leptospira';
-            default:
-        }
-
-        return nrl;
     }
 
     private addValidatedDataToWorkbook(

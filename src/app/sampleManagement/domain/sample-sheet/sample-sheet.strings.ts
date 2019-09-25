@@ -1,0 +1,113 @@
+export const sampleSheetMetaStrings = {
+    header: {
+        title: 'Untersuchungsauftrag für Isolate/Proben',
+        titleSup: 'a,b',
+        subtitle: 'Erläuterungen zum Ausfüllen dieses Formulars befinden sich im zweiten Tabellenblatt dieser Datei',
+        version: 'Version',
+    },
+    recipient: {
+        title: 'Empfänger',
+        institute: 'Bundesinstitut für Risikobewertung',
+        street: 'Diedersdorfer Weg 1',
+        place: 'D-12277 Berlin',
+        nrl: 'Labor'
+    },
+    stamp: {
+        entryDate: 'Eingangsdatum beim BfR',
+        senderFileNumber: 'Aktenzeichen des Einsenders'
+    },
+    sender: {
+        title: 'Einsender',
+        instituteName: 'Institut',
+        department: 'Abteilung',
+        street: 'Strasse',
+        place: 'PLZ, Ort',
+        contactPerson: 'Ansprechpartner',
+        telephone: 'Telefon-Nr.',
+        email: 'Email-Adresse'
+    },
+    signature: {
+        meta: 'Ort, Datum',
+        dataProcessingText: 'Informationen zur Datenverarbeitung: Siehe ',
+        dataProcessingLink: 'https://www.bfr.bund.de/de/datenschutzerklaerung-107546.html',
+        signature: 'Unterschrift'
+    },
+    analysis: {
+        title: 'Bitte führen Sie folgende Untersuchungen der Isolate durch',
+        titleSup: 'c',
+        marked: 'X',
+        species: 'Speziesbestimmung/-differenzierung (bzw. Bestätigung der Differenzierung)',
+        serological: 'Serologische Differenzierung',
+        phageTyping: 'Phagentypisierung',
+        resistance: 'Resistenzermittlung',
+        vaccination: 'Impfstammidentifikation',
+        molecularTyping: 'Weitergehende molekularbiologische Feintypisierung',
+        molecularTypingSup: 'd',
+        toxin: 'Prüfung auf Toxine bzw. Virulenzeigenschaften',
+        zoonosenIsolate: 'Isolate aus Zoonosen-Stichprobenplan',
+        esblAmpCCarbapenemasen: 'ESBL/AmpC/Carbapenemasen',
+        other: 'sonstiges (nach Absprache):',
+        compareHuman: 'Vergleiche mit humanen Isolaten',
+        compareHumanSup: 'e'
+    },
+    urgency: {
+        title: 'Dringlichkeit:'
+    },
+    instructions: {
+        sendInstructions: 'Bitte senden Sie die Excel-Datei mit eindeutiger Zuordnung (z.B. "E.coli.xlsx") an die allgemeine E-Mail-Adresse der mikrobiologischen NRLs des BfR: ',
+        sendInstructionsMail: 'NRLs-Mibi@bfr.bund.de',
+        sendInstructionsPost: '.',
+        printInstructions: 'Danach drucken Sie bitte das Formular, unterschreiben es und legen es als Begleitschein den Proben bei.',
+    },
+    footer:{
+        validated: 'Validiert durch OE-Mibi, AL-4 am 09.10.2017',
+        sop: 'Mibi-SOP 059',
+        page: 'Seite',
+        pageOf: 'von'
+    }
+};
+
+export const sampleSheetSamplesStrings = {
+    titles: {
+        sample_id: 'Ihre Probe-nummer',
+        sample_id_avv: 'Probe-nummer nach AVVData',
+        pathogen_adv: 'Erreger',
+        pathogen_text: 'Erreger',
+        sampling_date: 'Datum der Probe-nahme',
+        isolation_date: 'Datum der Isolierung',
+        sampling_location_adv: 'Ort der Probe-nahme',
+        sampling_location_zip: 'Ort der Probe-nahme',
+        sampling_location_text: 'Ort der Probe-nahme',
+        topic_adv: 'Oberbe-griff (Kodier-system) der Matrizes',
+        matrix_adv: 'Matrix Code',
+        matrix_text: 'Matrix',
+        process_state_adv: 'Ver-arbeitungs-zustand',
+        sampling_reason_adv: 'Grund der Probe-nahme',
+        sampling_reason_text: 'Grund der Probe-nahme',
+        operations_mode_adv: 'Betriebsart',
+        operations_mode_text: 'Betriebsart',
+        vvvo: 'VVVO-Nr / Herde',
+        comment: 'Bemerkung'
+    },
+    subtitles: {
+        sample_id: '',
+        sample_id_avv: '',
+        pathogen_adv: '(Text aus ADV-Kat-Nr.16)',
+        pathogen_text: '(Textfeld/ Ergänzung)',
+        sampling_date: '',
+        isolation_date: '',
+        sampling_location_adv: '(Code aus ADV-Kat-Nr.9)',
+        sampling_location_zip: '(PLZ)',
+        sampling_location_text: '(Text)',
+        topic_adv: '(Code aus ADV-Kat-Nr.2)',
+        matrix_adv: '(Code aus ADV-Kat-Nr.3)',
+        matrix_text: '(Textfeld/ Ergänzung)',
+        process_state_adv: '(Code aus ADV-Kat-Nr.12)',
+        sampling_reason_adv: '(Code aus ADV-Kat-Nr.4)',
+        sampling_reason_text: '(Textfeld/ Ergänzung)',
+        operations_mode_adv: '(Code aus ADV-Kat-Nr.8)',
+        operations_mode_text: '(Textfeld/ Ergänzung)',
+        vvvo: '',
+        comment: '(u.a. Untersuchungs-programm)'
+    }
+};
