@@ -68,9 +68,15 @@ export class DefaultSampleService implements SampleService {
         const attachments: Attachment[] = await Promise.all(
             nrlSampleSets.map(async nrlSampleSet => {
 
-                const fileBuffer: FileBuffer = await this.jsonMarshalService.convertJSONToExcel(
-                    nrlSampleSet
-                );
+                // PDF TEST
+
+                // const fileBuffer: FileBuffer = await this.jsonMarshalService.convertJSONToExcel(
+                //     nrlSampleSet
+                // );
+                
+                const fileBuffer: FileBuffer = await this.pdfCreatorService.createPDF(nrlSampleSet);
+
+                // PDF TEST END
 
                 const fileName = nrlSampleSet.meta.fileName || this.DEFAULT_FILE_NAME;
                 const attachment: Attachment = this.createNotificationAttachment(fileBuffer, fileName, nrlSampleSet.meta.nrl);
