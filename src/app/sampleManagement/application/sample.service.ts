@@ -27,11 +27,17 @@ import { APPLICATION_TYPES } from './../../application.types';
 import moment = require('moment');
 import { NRL } from '../domain/enums';
 import { NRLService } from '../model/nrl.model';
+import { FileBuffer } from '../../core/model/file.model';
 
 @injectable()
 export class DefaultSampleService implements SampleService {
     private appName: string;
     private overrideRecipient: string;
+
+    private readonly ENCODING = 'base64';
+    private readonly DEFAULT_FILE_NAME = 'Einsendebogen';
+    private readonly IMPORTED_FILE_EXTENSION = '.xlsx';
+
     constructor(
         @inject(APPLICATION_TYPES.NotificationService)
         private notificationService: NotificationService,
@@ -58,15 +64,16 @@ export class DefaultSampleService implements SampleService {
 
         const attachments: Attachment[] = await Promise.all(
             nrlSampleSets.map(async nrlSampleSet => {
-                const fileInfo: ExcelFileInfo = await this.jsonMarshalService.convertJSONToExcel(
+                const fileBuffer: FileBuffer = await this.jsonMarshalService.convertJSONToExcel(
                     nrlSampleSet
                 );
-                fileInfo.fileName = this.amendXLSXFileName(
-                    fileInfo.fileName,
-                    '_' + nrlSampleSet.meta.nrl + '_validated'
-                );
+
+                const fileName =
+                    nrlSampleSet.meta.fileName || this.DEFAULT_FILE_NAME;
                 const attachment: Attachment = this.createNotificationAttachment(
-                    fileInfo
+                    fileBuffer,
+                    fileName,
+                    nrlSampleSet.meta.nrl
                 );
 
                 const orderNotificationMetaData = this.resolveOrderNotificationMetaData(
@@ -107,9 +114,7 @@ export class DefaultSampleService implements SampleService {
             } catch (error) {
                 if (error instanceof UnauthorizedError) {
                     logger.info(
-                        `${this.constructor.name}.${
-                            this.convertToJson.name
-                        }, unable to determine user origin because of invalid token. error=${error}`
+                        `${this.constructor.name}.${this.convertToJson.name}, unable to determine user origin because of invalid token. error=${error}`
                     );
                 } else {
                     throw error;
@@ -120,14 +125,21 @@ export class DefaultSampleService implements SampleService {
     }
 
     async convertToExcel(sampleSet: SampleSet): Promise<ExcelFileInfo> {
-        const result: ExcelFileInfo = await this.jsonMarshalService.convertJSONToExcel(
+        const fileBuffer: FileBuffer = await this.jsonMarshalService.convertJSONToExcel(
             sampleSet
         );
-        result.fileName = this.amendXLSXFileName(
-            result.fileName,
-            '.MP_' + moment().unix()
+
+        const fileName = this.amendFileName(
+            sampleSet.meta.fileName || this.DEFAULT_FILE_NAME,
+            '.MP_' + moment().unix(),
+            fileBuffer.extension
         );
-        return result;
+
+        return {
+            data: fileBuffer.buffer.toString(this.ENCODING),
+            fileName: fileName,
+            type: fileBuffer.mimeType
+        };
     }
 
     private splitSampleSet(sampleSet: SampleSet): SampleSet[] {
@@ -161,11 +173,19 @@ export class DefaultSampleService implements SampleService {
         };
     }
 
-    private createNotificationAttachment(excelInfo: ExcelFileInfo): Attachment {
+    private createNotificationAttachment(
+        fileBuffer: FileBuffer,
+        fileName: string,
+        nrl: NRL
+    ): Attachment {
         return {
-            filename: excelInfo.fileName,
-            contentType: excelInfo.type,
-            content: Buffer.from(excelInfo.data, 'base64')
+            filename: this.amendFileName(
+                fileName,
+                '_' + nrl + '_validated',
+                fileBuffer.extension
+            ),
+            content: fileBuffer.buffer,
+            contentType: fileBuffer.mimeType
         };
     }
 
@@ -218,16 +238,19 @@ export class DefaultSampleService implements SampleService {
         };
     }
 
-    private amendXLSXFileName(
+    private amendFileName(
         originalFileName: string,
-        fileNameAddon: string
+        fileNameAddon: string,
+        fileExtension: string
     ): string {
-        const entries: string[] = originalFileName.split('.xlsx');
+        const entries: string[] = originalFileName.split(
+            this.IMPORTED_FILE_EXTENSION
+        );
         let fileName: string = '';
         if (entries.length > 0) {
             fileName += entries[0];
         }
-        fileName += fileNameAddon + '.xlsx';
+        fileName += fileNameAddon + fileExtension;
         fileName = fileName.replace(' ', '_');
         return fileName;
     }

@@ -1,5 +1,6 @@
 import { WorkSheet } from 'xlsx';
 import { SampleSet } from './sample.model';
+import { FileBuffer } from '../../core/model/file.model';
 
 export interface ExcelUnmarshalService {
     convertExcelToJSJson(buffer: Buffer, fileName: string): Promise<SampleSet>;
@@ -22,7 +23,7 @@ export interface ExcelFileInfo {
 }
 
 export interface JSONMarshalService {
-    convertJSONToExcel(data: SampleSet): Promise<ExcelFileInfo>;
+    convertJSONToExcel(data: SampleSet): Promise<FileBuffer>;
 }
 
 export interface JSONMarshalPort extends JSONMarshalService {}
