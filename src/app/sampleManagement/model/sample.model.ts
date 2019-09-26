@@ -3,7 +3,7 @@ import { ValidationError, ValidationErrorCollection } from './validation.model';
 import { User } from '../../authentication/model/user.model';
 import { Institute } from '../../authentication/model/institute.model';
 import { ExcelFileInfo } from './excel.model';
-import { Urgency, NRL } from '../domain/enums';
+import { Urgency, NRL, ReceiveAs } from '../domain/enums';
 
 export type SamplePropertyValues = Record<SampleProperty, string>;
 export type SampleProperty = keyof SampleData;
@@ -113,6 +113,7 @@ interface RecipientInfo {
 export interface ApplicantMetaData {
     user: User;
     comment: string;
+    receiveAs: ReceiveAs;
 }
 
 export interface SamplePort {

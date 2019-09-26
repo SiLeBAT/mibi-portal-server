@@ -3,6 +3,11 @@ export enum Urgency {
     URGENT = 'EILT'
 }
 
+export enum ReceiveAs {
+    EXCEL,
+    PDF
+}
+
 export enum NRL {
     UNKNOWN = 'Labor nicht erkannt',
     NRL_Vibrio = 'NRL-Vibrio',
