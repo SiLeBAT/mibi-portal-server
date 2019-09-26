@@ -19,7 +19,9 @@ export class DefaultNotificationService implements NotificationService {
         notification: Notification<T, V>
     ): void {
         logger.info(
-            `${this.constructor.name}.${this.sendNotification.name}, sending notification.  notification.type=${notification.type}`
+            `${this.constructor.name}.${
+                this.sendNotification.name
+            }, sending notification.  notification.type=${notification.type}`
         );
         this.sender.emit(this.notificationName, notification);
     }
@@ -28,7 +30,11 @@ export class DefaultNotificationService implements NotificationService {
         handler: (notification: Notification<T, V>) => void
     ): void {
         logger.info(
-            `${this.constructor.name}.${this.addHandler.name}, adding handler to notification. notificationName=${this.notificationName}`
+            `${this.constructor.name}.${
+                this.addHandler.name
+            }, adding handler to notification. notificationName=${
+                this.notificationName
+            }`
         );
         this.sender.on(this.notificationName, handler);
     }

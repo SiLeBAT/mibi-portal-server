@@ -173,7 +173,11 @@ function nonUniqueEntry(
                     if (n.length === 1) return null;
                 }
                 const newMessage: ValidationError = { ...options.message };
-                newMessage.message += ` Entweder '${entries[0].Kodiersystem}' für '${entries[0].Text}' oder '${entries[1].Kodiersystem}' für '${entries[1].Text}'.`;
+                newMessage.message += ` Entweder '${
+                    entries[0].Kodiersystem
+                }' für '${entries[0].Text}' oder '${
+                    entries[1].Kodiersystem
+                }' für '${entries[1].Text}'.`;
                 return newMessage;
             }
         }

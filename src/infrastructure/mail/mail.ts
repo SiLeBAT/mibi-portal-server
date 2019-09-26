@@ -33,7 +33,9 @@ export class DefaultMailService implements MailService {
         return async (data: EmailData) => {
             let templateFile;
             logger.info(
-                `${this.constructor.name}, handling notification type. data.type=${data.type}`
+                `${
+                    this.constructor.name
+                }, handling notification type. data.type=${data.type}`
             );
             switch (data.type) {
                 case NotificationType.RESET_SUCCESS:
@@ -137,7 +139,9 @@ export class DefaultMailService implements MailService {
             transporter.sendMail(mailOptions, (error, info) => {
                 if (error) {
                     logger.error(
-                        `Error sending mail. error=${error} mailSubject="${mailOptions.subject}"`
+                        `Error sending mail. error=${error} mailSubject="${
+                            mailOptions.subject
+                        }"`
                     );
                     return error;
                 } else {
@@ -150,7 +154,9 @@ export class DefaultMailService implements MailService {
             });
         } catch (error) {
             logger.error(
-                `Error sending mail. error=${error} mailSubject="${mailOptions.subject}"`
+                `Error sending mail. error=${error} mailSubject="${
+                    mailOptions.subject
+                }"`
             );
             throw error;
         }

@@ -2,7 +2,7 @@ export const sampleSheetPDFConfig = {
     scale: 10 / 14, // guess from printed excel
     table: {
         thinBorder: 0.5,
-        thickBorder: 1.5
+        thickBorder: 1.0
     },
     meta: {
         superScriptGap: 1,

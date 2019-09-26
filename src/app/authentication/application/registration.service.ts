@@ -57,7 +57,9 @@ export class DefaultRegistrationService implements RegistrationService {
         await this.tokenService.deleteTokenForUser(user);
         await this.prepareUserForAdminActivation(user);
         logger.info(
-            `${this.constructor.name}.${this.verifyUser.name}, User verification successful. token=${token}`
+            `${this.constructor.name}.${
+                this.verifyUser.name
+            }, User verification successful. token=${token}`
         );
         return user.email;
     }
@@ -78,7 +80,9 @@ export class DefaultRegistrationService implements RegistrationService {
         this.notificationService.sendNotification(adminActivationNotification);
         const userName = user.firstName + ' ' + user.lastName;
         logger.verbose(
-            `${this.constructor.name}.${this.activateUser.name}, User activation successful.`
+            `${this.constructor.name}.${
+                this.activateUser.name
+            }, User activation successful.`
         );
         return userName;
     }
@@ -313,7 +317,9 @@ export class DefaultRegistrationService implements RegistrationService {
             },
             meta: this.notificationService.createEmailNotificationMetaData(
                 this.supportContact,
-                `Erinnerung: Bitte aktivieren Sie das ${this.appName} Konto für ${fullName}`
+                `Erinnerung: Bitte aktivieren Sie das ${
+                    this.appName
+                } Konto für ${fullName}`
             )
         };
     }

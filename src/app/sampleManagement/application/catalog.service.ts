@@ -31,7 +31,9 @@ export class DefaultCatalogService implements CatalogService {
                 .value();
         } catch (error) {
             logger.warn(
-                `${this.constructor.name}.${this.getCatalogSearchAliases.name}, no SearchAlias configuration found in configuration, error=${error}`
+                `${this.constructor.name}.${
+                    this.getCatalogSearchAliases.name
+                }, no SearchAlias configuration found in configuration, error=${error}`
             );
         }
         return searchAlias;

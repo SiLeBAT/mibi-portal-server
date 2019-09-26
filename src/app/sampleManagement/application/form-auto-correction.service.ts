@@ -35,7 +35,9 @@ export class DefaultFormAutoCorrectionService
 
     async applyAutoCorrection(sampleCollection: Sample[]): Promise<Sample[]> {
         logger.verbose(
-            `${this.constructor.name}.${this.applyAutoCorrection.name}, starting Sample autoCorrection`
+            `${this.constructor.name}.${
+                this.applyAutoCorrection.name
+            }, starting Sample autoCorrection`
         );
 
         let results = sampleCollection.map(sample => {
@@ -60,7 +62,9 @@ export class DefaultFormAutoCorrectionService
             return newSample;
         });
         logger.info(
-            `${this.constructor.name}.${this.applyAutoCorrection.name}, finishing Sample autoCorrection`
+            `${this.constructor.name}.${
+                this.applyAutoCorrection.name
+            }, finishing Sample autoCorrection`
         );
         return results;
     }

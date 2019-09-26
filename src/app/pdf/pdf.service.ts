@@ -1,5 +1,5 @@
 import { injectable } from 'inversify';
-import { WritableBufferStream } from '../core/writableBufferStream';
+import { WritableBufferStream } from '../core/writable-buffer-stream';
 import { PDFService } from './pdf.model';
 
 let PdfPrinter = require('pdfmake');

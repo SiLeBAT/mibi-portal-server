@@ -51,12 +51,16 @@ export class DefaultTokensController extends AbstractController
                 token: token
             };
             logger.info(
-                `${this.constructor.name}.${this.postTokens.name}, Response sent`
+                `${this.constructor.name}.${
+                    this.postTokens.name
+                }, Response sent`
             );
             this.ok(res, dto);
         } catch (error) {
             logger.info(
-                `${this.constructor.name}.${this.postTokens.name} has thrown an error. ${error}`
+                `${this.constructor.name}.${
+                    this.postTokens.name
+                } has thrown an error. ${error}`
             );
             this.handleError(res, error);
         }

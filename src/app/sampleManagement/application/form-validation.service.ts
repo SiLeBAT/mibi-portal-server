@@ -51,7 +51,9 @@ export class DefaultFormValidatorService implements FormValidatorService {
         validationOptions: ValidationOptions
     ): Promise<Sample[]> {
         logger.verbose(
-            `${this.constructor.name}.${this.validateSamples.name}, starting Sample validation`
+            `${this.constructor.name}.${
+                this.validateSamples.name
+            }, starting Sample validation`
         );
 
         let results = this.validateIndividualSamples(
@@ -63,7 +65,9 @@ export class DefaultFormValidatorService implements FormValidatorService {
         }
 
         logger.info(
-            `${this.constructor.name}.${this.validateSamples.name}, finishing Sample validation`
+            `${this.constructor.name}.${
+                this.validateSamples.name
+            }, finishing Sample validation`
         );
         sampleCollection = results;
         return sampleCollection;
