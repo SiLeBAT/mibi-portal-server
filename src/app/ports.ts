@@ -104,7 +104,7 @@ export {
 export { createCatalog } from './sampleManagement/domain/catalog.entity';
 
 export { createSample } from './sampleManagement/domain/sample.entity';
-export { Urgency, NRL } from './sampleManagement/domain/enums';
+export { Urgency, NRL, ReceiveAs } from './sampleManagement/domain/enums';
 
 export {
     ValidationErrorRepository,
