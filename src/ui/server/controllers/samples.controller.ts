@@ -533,7 +533,7 @@ export class DefaultSamplesController extends AbstractController
                 break;
             case ReceiveAs.EXCEL.toString():
             default:
-                receiveAs = ReceiveAs.EXCEL;
+                receiveAs = ReceiveAs.PDF;
                 break;
         }
 
