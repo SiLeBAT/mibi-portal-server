@@ -49,6 +49,7 @@ Thumbs.db
 !/config/generic.config.json
 !/config/default.json
 /data
+/assets
 /playground
 server-patch.patch
 /tmp
