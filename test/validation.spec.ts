@@ -1,22 +1,27 @@
+
+import { PutValidatedResponseDTO } from './../src/ui/server/model/response.model';
+import { PutValidatedRequestDTO } from './../src/ui/server/model/request.model';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as _ from 'lodash';
 import * as config from 'config';
-import axios from 'axios';
+import axios from 'axios-https-proxy-fix';
 import { logger } from '../src/aspects';
 import { SampleSet } from '../src/app/ports';
-import { SampleSetMetaData, Sample } from '../src/app/sampleManagement/model/sample.model';
-import { SampleDataContainerDTO } from '../src/ui/server/model/shared-dto.model';
+import { SampleSetMetaData, Sample, SampleMetaData } from '../src/app/sampleManagement/model/sample.model';
 import { DefaultExcelUnmarshalService } from '../src/app/sampleManagement/application/excel-unmarshal.service';
+import { SampleDTO, SampleMetaDTO } from '../src/ui/server/model/shared-dto.model';
+
+interface SampleValidationErrorDTO {
+    code: number;
+    level: number;
+    message: string;
+}
+
 // tslint:disable: no-console
-// tslint:disable: no-any
 const ENDPOINT = '/v1/samples/validated';
 const API_URL = config.get('application.apiUrl');
-const DATA_DIR: string = 'testData';
-
-
-type TestData = any;
-type ServerResponse = any;
+const DATA_DIR: string = 'testData/validation';
 
 const testUrl = API_URL + ENDPOINT;
 
@@ -28,7 +33,7 @@ const axiosconfig = {
 };
 
 describe('Test verification endpoint: ' + testUrl, () => {
-    let queryArray: TestData[];
+    let queryArray: PutValidatedRequestDTO[];
     beforeAll(async () => {
         queryArray = await getDataFromFiles();
         const waitTill = new Date(new Date().getTime() + 5 * 1000);
@@ -38,7 +43,7 @@ describe('Test verification endpoint: ' + testUrl, () => {
 
     it('should give response', async () => {
 
-        const responseArray: ServerResponse[] = [];
+        const responseArray: Promise<PutValidatedResponseDTO>[] = [];
         queryArray.forEach(
             q => {
                 responseArray.push(axios.put(testUrl, q, axiosconfig)
@@ -55,17 +60,17 @@ describe('Test verification endpoint: ' + testUrl, () => {
             dataArray => {
                 dataArray.forEach(
                     d => {
-                        d.order.samples.forEach((element: SampleDataContainerDTO) => {
+                        d.order.sampleSet.samples.forEach((element: SampleDTO) => {
                             const receivedCodes: number[] = [];
-                            for (let key of Object.keys(element.sample)) {
-                                const ary = element.sample[key].errors || [];
-                                receivedCodes.push(...ary.map(e => e.code));
+                            for (let key of Object.keys(element.sampleData)) {
+                                const ary = element.sampleData[key].errors || [];
+                                receivedCodes.push(...ary.map((e: SampleValidationErrorDTO) => e.code));
 
                             }
                             let expectedCodes: number[] = [];
 
-                            if (element.sample.comment.value) {
-                                expectedCodes = element.sample.comment.value.split(',').map((str: string) => parseInt(str.trim(), 10));
+                            if (element.sampleData.comment.value) {
+                                expectedCodes = element.sampleData.comment.value.split(',').map((str: string) => parseInt(str.trim(), 10));
                             }
 
                             logger.info('Expected Codes: ' + expectedCodes);
@@ -83,7 +88,7 @@ describe('Test verification endpoint: ' + testUrl, () => {
 });
 
 
-async function getDataFromFiles(): Promise<TestData[]> {
+async function getDataFromFiles(): Promise<PutValidatedRequestDTO[]> {
     const filenames: string[] = [];
     fs.readdirSync(path.join('.', DATA_DIR)).forEach(function (file) {
 
@@ -101,22 +106,28 @@ async function getDataFromFiles(): Promise<TestData[]> {
     }));
     return result.map(r => ({
         order: {
-            samples: fromSampleCollectionToDTO(r.samples).map(
-                dto => ({ sample: dto })
-            ),
-            meta: fromSampleSetMetaDataToDTO(r.meta)
+            sampleSet: {
+                samples: fromSampleCollectionToSampleDTO(r.samples),
+                meta: fromSampleSetMetaDataToDTO(r.meta)
+            }
         }
     }));
 }
 
-function fromSampleCollectionToDTO(
+function fromSampleCollectionToSampleDTO(
     sampleCollection: Sample[]
-) {
-    return sampleCollection.map((sample: Sample) =>
-        sample.getAnnotatedData()
-    );
+): SampleDTO[] {
+    return sampleCollection.map((sample: Sample) => ({
+        sampleData: sample.getAnnotatedData(),
+        sampleMeta: fromSampleMetaToDTO(sample.getSampleMetaData())
+    }));
 }
 
+function fromSampleMetaToDTO(meta: SampleMetaData): SampleMetaDTO {
+    return {
+        nrl: meta.nrl.toString()
+    };
+}
 function fromSampleSetMetaDataToDTO(
     data: SampleSetMetaData
 ) {

@@ -47,6 +47,7 @@
   "dependencies": {
     "app-root-dir": "^1.0.2",
     "argon2": "^0.19.3",
+    "axios-https-proxy-fix": "^0.17.1",
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.1",
     "compression": "^1.7.3",
@@ -60,7 +61,7 @@
     "fs-extra": "^6.0.1",
     "fs-readfile-promise": "^3.0.1",
     "fuse.js": "^3.2.1",
-    "handlebars": "^4.1.2",
+    "handlebars": "^4.3.3",
     "helmet": "^3.15.0",
     "html5-history-api": "^4.2.8",
     "inversify": "^5.0.1",
