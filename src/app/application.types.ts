@@ -7,6 +7,13 @@ export const APPLICATION_TYPES = {
     InstituteService: Symbol.for('InstituteService'),
     UserService: Symbol.for('UserService'),
     JSONMarshalService: Symbol.for('JSONMarshalService'),
+
+    SampleSheetConstants: Symbol.for('SampleSheetConstants'),
+    PDFService: Symbol.for('PDFService'),
+    PDFConstants: Symbol.for('PDFConstants'),
+    PDFCreatorService: Symbol.for('PDFCreatorService'),
+    PDFConfigProviderService: Symbol.for('PDFConfigProviderService'),
+
     TokenService: Symbol.for('TokenService'),
     SampleService: Symbol.for('SampleService'),
     CatalogService: Symbol.for('CatalogService'),
@@ -15,6 +22,7 @@ export const APPLICATION_TYPES = {
     RegistrationService: Symbol.for('RegistrationService'),
     PasswordService: Symbol.for('PasswordService'),
     LoginService: Symbol.for('LoginService'),
+    NRLConstants: Symbol.for('NRLConstants'),
     NRLService: Symbol.for('NRLService'),
     FormAutoCorrectionService: Symbol.for('FormAutoCorrectionService'),
     FormValidatorService: Symbol.for('FormValidatorService'),

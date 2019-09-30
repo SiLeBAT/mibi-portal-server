@@ -22,7 +22,8 @@ import {
     NRLPort,
     Urgency,
     User,
-    DefaultNRLService
+    DefaultNRLService,
+    ReceiveAs
 } from '../../../app/ports';
 import { SamplesController } from '../model/controller.model';
 import {
@@ -525,9 +526,21 @@ export class DefaultSamplesController extends AbstractController
         requestDTO: PostSubmittedRequestDTO,
         user: User
     ): ApplicantMetaData {
+        let receiveAs: ReceiveAs;
+        switch (requestDTO.receiveAs) {
+            case ReceiveAs.PDF.toString():
+                receiveAs = ReceiveAs.PDF;
+                break;
+            case ReceiveAs.EXCEL.toString():
+            default:
+                receiveAs = ReceiveAs.EXCEL;
+                break;
+        }
+
         return {
             user,
-            comment: requestDTO.comment || ''
+            comment: requestDTO.comment || '',
+            receiveAs: receiveAs
         };
     }
 

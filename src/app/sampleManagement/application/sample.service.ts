@@ -25,13 +25,27 @@ import { ConfigurationService } from '../../core/model/configuration.model';
 import { injectable, inject } from 'inversify';
 import { APPLICATION_TYPES } from './../../application.types';
 import moment = require('moment');
-import { NRL } from '../domain/enums';
+import { NRL, ReceiveAs } from '../domain/enums';
 import { NRLService } from '../model/nrl.model';
+import { FileBuffer } from '../../core/model/file.model';
+import { PDFCreatorService } from '../model/pdf.model';
+
+interface SampleSheet {
+    buffer: Buffer;
+    fileName: string;
+    mime: string;
+    nrl: NRL;
+}
 
 @injectable()
 export class DefaultSampleService implements SampleService {
     private appName: string;
     private overrideRecipient: string;
+
+    private readonly ENCODING = 'base64';
+    private readonly DEFAULT_FILE_NAME = 'Einsendebogen';
+    private readonly IMPORTED_FILE_EXTENSION = '.xlsx';
+
     constructor(
         @inject(APPLICATION_TYPES.NotificationService)
         private notificationService: NotificationService,
@@ -43,6 +57,8 @@ export class DefaultSampleService implements SampleService {
         private configurationService: ConfigurationService,
         @inject(APPLICATION_TYPES.JSONMarshalService)
         private jsonMarshalService: JSONMarshalService,
+        @inject(APPLICATION_TYPES.PDFCreatorService)
+        private pdfCreatorService: PDFCreatorService,
         @inject(APPLICATION_TYPES.NRLService)
         private nrlService: NRLService
     ) {
@@ -54,41 +70,29 @@ export class DefaultSampleService implements SampleService {
         sampleSet: SampleSet,
         applicantMetaData: ApplicantMetaData
     ): Promise<void> {
-        const nrlSampleSets: SampleSet[] = this.splitSampleSet(sampleSet);
+        const splittedSampleSets = this.splitSampleSet(sampleSet);
 
-        const attachments: Attachment[] = await Promise.all(
-            nrlSampleSets.map(async nrlSampleSet => {
-                const fileInfo: ExcelFileInfo = await this.jsonMarshalService.convertJSONToExcel(
-                    nrlSampleSet
-                );
-                fileInfo.fileName = this.amendXLSXFileName(
-                    fileInfo.fileName,
-                    '_' + nrlSampleSet.meta.nrl + '_validated'
-                );
-                const attachment: Attachment = this.createNotificationAttachment(
-                    fileInfo
-                );
-
-                const orderNotificationMetaData = this.resolveOrderNotificationMetaData(
-                    applicantMetaData,
-                    nrlSampleSet.meta.nrl
-                );
-
-                const newOrderNotification = this.createNewOrderNotification(
-                    attachment,
-                    orderNotificationMetaData
-                );
-                this.notificationService.sendNotification(newOrderNotification);
-
-                return attachment;
-            })
+        const nrlSampleSheets = await this.createSampleSheets(
+            splittedSampleSets,
+            sampleSet => this.jsonMarshalService.convertJSONToExcel(sampleSet)
         );
 
-        const newOrderCopyNotification = this.createNewOrderCopyNotification(
-            attachments,
-            applicantMetaData
-        );
-        this.notificationService.sendNotification(newOrderCopyNotification);
+        let userSampleSheets: SampleSheet[];
+        switch (applicantMetaData.receiveAs) {
+            case ReceiveAs.PDF:
+                userSampleSheets = await this.createSampleSheets(
+                    splittedSampleSets,
+                    sampleSet => this.pdfCreatorService.createPDF(sampleSet)
+                );
+                break;
+            case ReceiveAs.EXCEL:
+            default:
+                userSampleSheets = nrlSampleSheets;
+                break;
+        }
+
+        this.sendSamplesToNRLs(nrlSampleSheets, applicantMetaData);
+        this.sendSamplesToUser(userSampleSheets, applicantMetaData);
     }
 
     async convertToJson(
@@ -120,31 +124,114 @@ export class DefaultSampleService implements SampleService {
     }
 
     async convertToExcel(sampleSet: SampleSet): Promise<ExcelFileInfo> {
-        const result: ExcelFileInfo = await this.jsonMarshalService.convertJSONToExcel(
+        const fileBuffer: FileBuffer = await this.jsonMarshalService.convertJSONToExcel(
             sampleSet
         );
-        result.fileName = this.amendXLSXFileName(
-            result.fileName,
-            '.MP_' + moment().unix()
+
+        const fileName = this.amendFileName(
+            sampleSet.meta.fileName || this.DEFAULT_FILE_NAME,
+            '.MP_' + moment().unix(),
+            fileBuffer.extension
         );
-        return result;
+
+        return {
+            data: fileBuffer.buffer.toString(this.ENCODING),
+            fileName: fileName,
+            type: fileBuffer.mimeType
+        };
     }
 
     private splitSampleSet(sampleSet: SampleSet): SampleSet[] {
-        let sampleSetMap = new Map<string, SampleSet>();
+        let splittedSampleSetMap = new Map<string, SampleSet>();
         sampleSet.samples.forEach(sample => {
             const nrl = sample.getSampleMetaData().nrl;
-            let nrlSampleSet = sampleSetMap.get(nrl);
-            if (!nrlSampleSet) {
-                nrlSampleSet = {
+            let splittedSampleSet = splittedSampleSetMap.get(nrl);
+            if (!splittedSampleSet) {
+                splittedSampleSet = {
                     samples: [],
                     meta: { ...sampleSet.meta, nrl: nrl }
                 };
-                sampleSetMap.set(nrl, nrlSampleSet);
+                splittedSampleSetMap.set(nrl, splittedSampleSet);
             }
-            nrlSampleSet.samples.push(sample);
+            splittedSampleSet.samples.push(sample);
         });
-        return Array.from(sampleSetMap.values());
+        return Array.from(splittedSampleSetMap.values());
+    }
+
+    private async createSampleSheets(
+        sampleSets: SampleSet[],
+        creatorFunc: (sampleSet: SampleSet) => Promise<FileBuffer>
+    ): Promise<SampleSheet[]> {
+        return Promise.all(
+            sampleSets.map(async sampleSet =>
+                this.createSampleSheet(sampleSet, creatorFunc)
+            )
+        );
+    }
+
+    private async createSampleSheet(
+        sampleSet: SampleSet,
+        creatorFunc: (sampleSet: SampleSet) => Promise<FileBuffer>
+    ): Promise<SampleSheet> {
+        const fileBuffer = await creatorFunc(sampleSet);
+
+        const nrl = sampleSet.meta.nrl;
+
+        const fileName = this.amendFileName(
+            sampleSet.meta.fileName || this.DEFAULT_FILE_NAME,
+            '_' + nrl + '_validated',
+            fileBuffer.extension
+        );
+
+        return {
+            buffer: fileBuffer.buffer,
+            fileName: fileName,
+            mime: fileBuffer.mimeType,
+            nrl: nrl
+        };
+    }
+
+    private sendSamplesToNRLs(
+        sampleSheets: SampleSheet[],
+        applicantMetaData: ApplicantMetaData
+    ): void {
+        sampleSheets.forEach(sampleSheet => {
+            const orderNotificationMetaData = this.resolveOrderNotificationMetaData(
+                applicantMetaData,
+                sampleSheet.nrl
+            );
+
+            const newOrderNotification = this.createNewOrderNotification(
+                this.createNotificationAttachment(sampleSheet),
+                orderNotificationMetaData
+            );
+
+            this.notificationService.sendNotification(newOrderNotification);
+        });
+    }
+
+    private sendSamplesToUser(
+        sampleSheets: SampleSheet[],
+        applicantMetaData: ApplicantMetaData
+    ): void {
+        const attachments = sampleSheets.map(sampleSheet =>
+            this.createNotificationAttachment(sampleSheet)
+        );
+
+        const newOrderCopyNotification = this.createNewOrderCopyNotification(
+            attachments,
+            applicantMetaData
+        );
+
+        this.notificationService.sendNotification(newOrderCopyNotification);
+    }
+
+    private createNotificationAttachment(sampleSheet: SampleSheet): Attachment {
+        return {
+            filename: sampleSheet.fileName,
+            content: sampleSheet.buffer,
+            contentType: sampleSheet.mime
+        };
     }
 
     private resolveOrderNotificationMetaData(
@@ -152,20 +239,11 @@ export class DefaultSampleService implements SampleService {
         nrl: NRL
     ): OrderNotificationMetaData {
         return {
-            user: applicantMetaData.user,
-            comment: applicantMetaData.comment,
+            ...applicantMetaData,
             recipient: {
                 email: this.nrlService.getEmailForNRL(nrl),
                 name: nrl.toString()
             }
-        };
-    }
-
-    private createNotificationAttachment(excelInfo: ExcelFileInfo): Attachment {
-        return {
-            filename: excelInfo.fileName,
-            contentType: excelInfo.type,
-            content: Buffer.from(excelInfo.data, 'base64')
         };
     }
 
@@ -218,16 +296,19 @@ export class DefaultSampleService implements SampleService {
         };
     }
 
-    private amendXLSXFileName(
+    private amendFileName(
         originalFileName: string,
-        fileNameAddon: string
+        fileNameAddon: string,
+        fileExtension: string
     ): string {
-        const entries: string[] = originalFileName.split('.xlsx');
+        const entries: string[] = originalFileName.split(
+            this.IMPORTED_FILE_EXTENSION
+        );
         let fileName: string = '';
         if (entries.length > 0) {
             fileName += entries[0];
         }
-        fileName += fileNameAddon + '.xlsx';
+        fileName += fileNameAddon + fileExtension;
         fileName = fileName.replace(' ', '_');
         return fileName;
     }

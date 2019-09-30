@@ -22,6 +22,7 @@ export interface PutSamplesJSONRequestDTO {
 export interface PostSubmittedRequestDTO {
     readonly order: OrderDTO;
     readonly comment?: string;
+    readonly receiveAs?: string;
 }
 
 export interface PutValidatedRequestDTO {
