@@ -1,6 +1,6 @@
 export const sampleSheetConfig = {
     version: 14,
-    svgLogoPath: './lib/assets/bfr-logo-half.svg',
+    svgLogoPath: './assets/bfr-logo-half.svg',
     page: {
         size: 'A4',
         orientation: 'landscape',

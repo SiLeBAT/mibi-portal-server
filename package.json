@@ -11,7 +11,7 @@
     "cp:view": "npx copyfiles -u 1 ./src/**/views/**/* ./lib",
     "cp:json": "npx copyfiles -u 1 ./src/**/*.json ./lib",
     "cp:scripts": "npx copyfiles -u 1 ./src/**/*.sh ./lib",
-    "cp:assets": "npx copyfiles -u 1 ./src/assets/*.* ./lib",
+    "cp:assets": "npx copyfiles -u 1 ./src/assets/*.* ./",
     "cp:all": "npm run cp:view && npm run cp:scripts && npm run cp:json && npm run cp:assets",
     "tsc": "tsc",
     "build": "npm run tsc && npm run cp:all",
