@@ -5,12 +5,12 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as _ from 'lodash';
 import * as config from 'config';
-import axios from 'axios-https-proxy-fix';
 import { logger } from '../src/aspects';
 import { SampleSet } from '../src/app/ports';
 import { SampleSetMetaData, Sample, SampleMetaData } from '../src/app/sampleManagement/model/sample.model';
 import { DefaultExcelUnmarshalService } from '../src/app/sampleManagement/application/excel-unmarshal.service';
 import { SampleDTO, SampleMetaDTO } from '../src/ui/server/model/shared-dto.model';
+import * as rp from 'request-promise-native';
 
 interface SampleValidationErrorDTO {
     code: number;
@@ -27,11 +27,15 @@ const testUrl = API_URL + ENDPOINT;
 
 const parser = new DefaultExcelUnmarshalService();
 
-const axiosconfig = {
-    proxy:
-        { host: 'webproxy.bfr.bund.de', port: 8080 }
-};
+const options = {
+    url: testUrl,
+    json: true,
+    // proxy: 'http://localhost:3000'
+    proxy: 'webproxy.bfr.bund.de:8080',
+    tunnel: false
+}
 
+console.log(options);
 describe('Test verification endpoint: ' + testUrl, () => {
     let queryArray: PutValidatedRequestDTO[];
     beforeAll(async () => {
@@ -42,15 +46,14 @@ describe('Test verification endpoint: ' + testUrl, () => {
     });
 
     it('should give response', async () => {
-
         const responseArray: Promise<PutValidatedResponseDTO>[] = [];
         queryArray.forEach(
             q => {
-                responseArray.push(axios.put(testUrl, q, axiosconfig)
-                    .then(function (response) {
-                        return response.data;
+                responseArray.push(rp.put({...options, body: q})
+                    .then((response:any) => {
+                        return response;
                     })
-                    .catch(function (error) {
+                    .catch((error:any) => {
                         throw error;
                     }));
             }
@@ -89,7 +92,7 @@ describe('Test verification endpoint: ' + testUrl, () => {
 
 
 async function getDataFromFiles(): Promise<PutValidatedRequestDTO[]> {
-    const filenames: string[] = [];
+    let filenames: string[] = [];
     fs.readdirSync(path.join('.', DATA_DIR)).forEach(function (file) {
 
         file = path.join('.', DATA_DIR, file);
@@ -99,6 +102,7 @@ async function getDataFromFiles(): Promise<PutValidatedRequestDTO[]> {
         }
 
     });
+    filenames = [filenames[0]];
     logger.info(`Found ${filenames.length} datafiles in directory ${DATA_DIR}`);
     const result: SampleSet[] = await Promise.all(filenames.map(file => {
         const buffer = fs.readFileSync(file);
