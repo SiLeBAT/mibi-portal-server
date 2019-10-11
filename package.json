@@ -46,6 +46,8 @@
   },
   "private": true,
   "dependencies": {
+    "@types/request": "^2.48.3",
+    "@types/request-promise-native": "^1.0.17",
     "app-root-dir": "^1.0.2",
     "argon2": "^0.19.3",
     "axios-https-proxy-fix": "^0.17.1",
@@ -83,6 +85,8 @@
     "pdfmake": "^0.1.59",
     "processenv": "^1.1.0",
     "reflect-metadata": "^0.1.13",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.7",
     "rxjs": "^6.2.1",
     "swagger-ui-express": "^4.0.2",
     "validate.js": "^0.12.0",
