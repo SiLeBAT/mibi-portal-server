@@ -31,8 +31,8 @@ const options = {
     url: testUrl,
     json: true,
     // proxy: 'http://localhost:3000'
-    proxy: 'webproxy.bfr.bund.de:8080',
-    tunnel: false
+    proxy: 'http://webproxy.bfr.bund.de:8080',
+    // tunnel: false
 }
 
 console.log(options);
