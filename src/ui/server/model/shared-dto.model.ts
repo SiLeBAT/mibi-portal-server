@@ -30,7 +30,7 @@ export interface SampleSetMetaDTO {
     fileName?: string;
 }
 
-interface SampleValidationErrorDTO {
+export interface SampleValidationErrorDTO {
     code: number;
     level: number;
     message: string;

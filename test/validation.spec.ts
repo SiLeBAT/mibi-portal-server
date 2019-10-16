@@ -1,117 +1,74 @@
 
-import { PutValidatedResponseDTO } from './../src/ui/server/model/response.model';
 import { PutValidatedRequestDTO } from './../src/ui/server/model/request.model';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as _ from 'lodash';
-import * as config from 'config';
-import axios from 'axios-https-proxy-fix';
 import { logger } from '../src/aspects';
 import { SampleSet } from '../src/app/ports';
 import { SampleSetMetaData, Sample, SampleMetaData } from '../src/app/sampleManagement/model/sample.model';
 import { DefaultExcelUnmarshalService } from '../src/app/sampleManagement/application/excel-unmarshal.service';
-import { SampleDTO, SampleMetaDTO } from '../src/ui/server/model/shared-dto.model';
+import { SampleDTO, SampleMetaDTO, SampleValidationErrorDTO } from '../src/ui/server/model/shared-dto.model';
+import { Api } from './api';
+import { promisify } from 'util';
 
-interface SampleValidationErrorDTO {
-    code: number;
-    level: number;
-    message: string;
-}
-
-// tslint:disable: no-console
-const ENDPOINT = '/v1/samples/validated';
-const API_URL = config.get('application.apiUrl');
 const DATA_DIR: string = 'testData/validation';
-
-const testUrl = API_URL + ENDPOINT;
 
 const parser = new DefaultExcelUnmarshalService();
 
-const axiosconfig = {
-    proxy:
-        { host: 'webproxy.bfr.bund.de', port: 8080 }
-};
-
-describe('Test verification endpoint: ' + testUrl, () => {
-    let queryArray: PutValidatedRequestDTO[];
-    beforeAll(async () => {
-        queryArray = await getDataFromFiles();
-        const waitTill = new Date(new Date().getTime() + 5 * 1000);
-        // tslint:disable-next-line: no-empty
-        while (waitTill > new Date()) { }
-    });
-
+describe('Test validation endpoint: ' + 'samples/validated', () => {
     it('should give response', async () => {
+        const fileNames = await getFilesToTest();
+        const requests = await Promise.all(fileNames.map((fileName)=>getRequestDTOFromFile(fileName)));
 
-        const responseArray: Promise<PutValidatedResponseDTO>[] = [];
-        queryArray.forEach(
-            q => {
-                responseArray.push(axios.put(testUrl, q, axiosconfig)
-                    .then(function (response) {
-                        return response.data;
-                    })
-                    .catch(function (error) {
-                        throw error;
-                    }));
-            }
-        );
+        let count = 0;
+        requests.map(req=>count+=req.order.sampleSet.samples.length);
+        expect.assertions(count);
 
-        await Promise.all(responseArray).then(
-            dataArray => {
-                dataArray.forEach(
-                    d => {
-                        d.order.sampleSet.samples.forEach((element: SampleDTO) => {
-                            const receivedCodes: number[] = [];
-                            for (let key of Object.keys(element.sampleData)) {
-                                const ary = element.sampleData[key].errors || [];
-                                receivedCodes.push(...ary.map((e: SampleValidationErrorDTO) => e.code));
+        return Promise.all(requests.map(async (request) => {
+            const response = await Api.putValidated(request);
 
-                            }
-                            let expectedCodes: number[] = [];
+            response.order.sampleSet.samples.forEach((sample: SampleDTO, index) => {
+                const receivedCodes = getReceivedCodes(sample).sort((a, b) => a - b);
+                const expectedCodes = getExpectedCodes(sample).sort((a, b) => a - b);
 
-                            if (element.sampleData.comment.value) {
-                                expectedCodes = element.sampleData.comment.value.split(',').map((str: string) => parseInt(str.trim(), 10));
-                            }
+                const meta = {
+                    sample: index + 1,
+                    file: request.order.sampleSet.meta.fileName
+                }
 
-                            logger.info('Expected Codes: ' + expectedCodes);
-                            logger.info('Received Codes: ' + receivedCodes);
-                            console.log('Expected Codes: ' + expectedCodes);
-                            console.log('Received Codes: ' + receivedCodes);
-                            expect(receivedCodes.length).toBe(expectedCodes.length);
-                            expect(receivedCodes).toEqual(expect.arrayContaining(expectedCodes));
-                        });
-                    }
-                );
-            }
-        );
-    });
+                expect({...meta, codes: receivedCodes}).toEqual({...meta, codes: expectedCodes});
+            });
+        }))
+    }, 1000 * 120);
 });
 
-
-async function getDataFromFiles(): Promise<PutValidatedRequestDTO[]> {
-    const filenames: string[] = [];
+async function getFilesToTest(): Promise<string[]> {
+    let fileNames: string[] = [];
     fs.readdirSync(path.join('.', DATA_DIR)).forEach(function (file) {
 
         file = path.join('.', DATA_DIR, file);
 
         if (path.extname(file) === '.xlsx') {
-            filenames.push(file);
+            fileNames.push(file);
         }
 
     });
-    logger.info(`Found ${filenames.length} datafiles in directory ${DATA_DIR}`);
-    const result: SampleSet[] = await Promise.all(filenames.map(file => {
-        const buffer = fs.readFileSync(file);
-        return parser.convertExcelToJSJson(buffer, file);
-    }));
-    return result.map(r => ({
+    logger.info(`Found ${fileNames.length} datafiles in directory ${DATA_DIR}`);
+    return fileNames;
+}
+
+async function getRequestDTOFromFile(fileName: string): Promise<PutValidatedRequestDTO> {
+    const file: Buffer = await promisify(fs.readFile)(fileName);
+    const sampleSet: SampleSet = await parser.convertExcelToJSJson(file, fileName);
+
+    return {
         order: {
             sampleSet: {
-                samples: fromSampleCollectionToSampleDTO(r.samples),
-                meta: fromSampleSetMetaDataToDTO(r.meta)
+                samples: fromSampleCollectionToSampleDTO(sampleSet.samples),
+                meta: fromSampleSetMetaDataToDTO(sampleSet.meta)
             }
         }
-    }));
+    };
 }
 
 function fromSampleCollectionToSampleDTO(
@@ -135,6 +92,24 @@ function fromSampleSetMetaDataToDTO(
         nrl: data.nrl,
         analysis: data.analysis,
         sender: data.sender,
-        urgency: data.urgency.toString()
+        urgency: data.urgency.toString(),
+        fileName: data.fileName
     };
+}
+
+function getReceivedCodes(sample: SampleDTO): number[] {
+    const receivedCodes: number[] = [];
+    for (let key of Object.keys(sample.sampleData)) {
+        const ary = sample.sampleData[key].errors || [];
+        receivedCodes.push(...ary.map((e: SampleValidationErrorDTO) => e.code));
+    }
+    return receivedCodes;
+}
+
+function getExpectedCodes(sample: SampleDTO): number[] {
+    let expectedCodes: number[] = [];
+    if (sample.sampleData.comment.value) {
+        expectedCodes = sample.sampleData.comment.value.split(',').map((str: string) => parseInt(str.trim(), 10));
+    }
+    return expectedCodes;
 }
