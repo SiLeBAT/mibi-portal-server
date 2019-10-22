@@ -1,6 +1,6 @@
-import { NRL } from './enums';
+import { NRL_ID } from './enums';
 
-export const nrlLongNames: Record<NRL, string> = {
+export const nrlLongNames: Record<NRL_ID, string> = {
     'NRL-AR': 'NRL Antibiotikaresistenz',
     'NRL-Campy': 'NRL Campylobacter',
     'NRL-VTEC': 'NRL Escherichia coli einschließlich verotoxinbildende E. coli',

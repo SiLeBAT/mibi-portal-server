@@ -65,7 +65,9 @@ export {
     AnnotatedSampleDataEntry,
     SampleData,
     SampleProperty,
-    SampleSetMetaData
+    SampleSetMetaData,
+    SampleMetaData,
+    SampleFactory
 } from './sampleManagement/model/sample.model';
 
 export {
@@ -74,7 +76,7 @@ export {
     FormAutoCorrectionPort
 } from './sampleManagement/model/autocorrection.model';
 
-export { NRLPort } from './sampleManagement/model/nrl.model';
+export { NRLPort, NRL } from './sampleManagement/model/nrl.model';
 export { DefaultNRLService } from './sampleManagement/application/nrl.service';
 
 export {
@@ -92,7 +94,6 @@ export {
 
 export {
     ValidationError,
-    NRLConfig,
     FormValidatorPort,
     ValidationOptions,
     SearchAlias,
@@ -103,8 +104,7 @@ export {
 
 export { createCatalog } from './sampleManagement/domain/catalog.entity';
 
-export { createSample } from './sampleManagement/domain/sample.entity';
-export { Urgency, NRL, ReceiveAs } from './sampleManagement/domain/enums';
+export { Urgency, NRL_ID, ReceiveAs } from './sampleManagement/domain/enums';
 
 export {
     ValidationErrorRepository,

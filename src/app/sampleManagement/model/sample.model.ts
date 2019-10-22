@@ -3,7 +3,7 @@ import { ValidationError, ValidationErrorCollection } from './validation.model';
 import { User } from '../../authentication/model/user.model';
 import { Institute } from '../../authentication/model/institute.model';
 import { ExcelFileInfo } from './excel.model';
-import { Urgency, NRL, ReceiveAs } from '../domain/enums';
+import { Urgency, NRL_ID, ReceiveAs } from '../domain/enums';
 
 export type SamplePropertyValues = Record<SampleProperty, string>;
 export type SampleProperty = keyof SampleData;
@@ -41,7 +41,9 @@ export interface SampleData {
 }
 
 export interface SampleMetaData {
-    nrl: NRL;
+    nrl: NRL_ID;
+    urgency: Urgency;
+    analysis: Partial<Analysis>;
 }
 export interface Address {
     instituteName: string;
@@ -57,21 +59,20 @@ export interface Address {
 export interface Analysis {
     species: boolean;
     serological: boolean;
-    phageTyping: boolean;
     resistance: boolean;
     vaccination: boolean;
     molecularTyping: boolean;
     toxin: boolean;
-    zoonosenIsolate: boolean;
     esblAmpCCarbapenemasen: boolean;
+    sample: boolean;
     other: string;
-    compareHuman: boolean;
+    compareHuman: {
+        value: string;
+        active: boolean;
+    };
 }
 export interface SampleSetMetaData {
-    nrl: NRL;
     sender: Address;
-    analysis: Analysis;
-    urgency: Urgency;
     fileName: string;
 }
 
@@ -89,7 +90,13 @@ export interface SampleValidationError {
 export interface Sample {
     readonly pathogenIdAVV?: string;
     readonly pathogenId?: string;
-    nrl: NRL;
+    readonly meta: SampleMetaData;
+    getUrgency(): Urgency;
+    setUrgency(urgency: Urgency): void;
+    setNRL(nrl: NRL_ID): void;
+    getNRL(): NRL_ID;
+    getAnalysis(): Partial<Analysis>;
+    setAnalysis(analysis: Partial<Analysis>): void;
     getValueFor(property: SampleProperty): string;
     getEntryFor(property: SampleProperty): AnnotatedSampleDataEntry;
     getOldValues(): Record<string, EditValue>;
@@ -103,7 +110,6 @@ export interface Sample {
     isZoMo(): boolean;
     getErrorCount(level: number): number;
     clearSingleCorrectionSuggestions(): void;
-    getSampleMetaData(): SampleMetaData;
 }
 
 interface RecipientInfo {
@@ -150,4 +156,8 @@ export interface NewDatasetNotificationPayload
 export interface NewDatasetCopyNotificationPayload
     extends BaseDatasetNotificationPayload {
     name: string;
+}
+
+export interface SampleFactory {
+    createSample(data: SampleData): Sample;
 }

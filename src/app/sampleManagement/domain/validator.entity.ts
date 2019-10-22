@@ -1,4 +1,4 @@
-import { SampleMetaData, SampleDataValues } from './../model/sample.model';
+import { SampleDataValues } from './../model/sample.model';
 import * as validate from 'validate.js';
 import * as moment from 'moment';
 import * as _ from 'lodash';
@@ -28,7 +28,7 @@ import {
     ValidationConstraints
 } from '../model/validation.model';
 import { CatalogService } from '../model/catalog.model';
-import { NRL } from './enums';
+import { NRL_ID } from './enums';
 
 moment.locale('de');
 
@@ -65,13 +65,12 @@ class SampleValidator implements Validator {
         constraintSet: ValidationConstraints
     ): ValidationErrorCollection {
         const data: SampleDataValues = sample.getDataValues();
-        const meta: SampleMetaData = sample.getSampleMetaData();
-        let dataValuesOnly: Record<string, string | NRL> = {};
+        let dataValuesOnly: Record<string, string | NRL_ID> = {};
         dataValuesOnly = Object.keys(data).reduce((accumulator, property) => {
             accumulator[property] = data[property].value;
             return accumulator;
         }, dataValuesOnly);
-        dataValuesOnly = { ...meta, ...dataValuesOnly };
+        dataValuesOnly = { ...{ nrl: sample.getNRL() }, ...dataValuesOnly };
         return validate(dataValuesOnly, constraintSet);
     }
 

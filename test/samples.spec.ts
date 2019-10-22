@@ -34,6 +34,7 @@ describe('Test samples endpoint', () => {
         expect(response.type).toEqual('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 
         const buf = Buffer.from(response.data, 'base64');
+
         const mps155ValidatedXLSX = await promisify(fs.readFile)(
             'testData/mps155_timezone_bug_validated.xlsx'
         );

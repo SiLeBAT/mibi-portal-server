@@ -41,6 +41,14 @@ export class MongooseRepositoryBase<T extends Document> {
         return this._model.find({}).exec();
     }
 
+    protected _retrievePopulatedWith(populate: string[]) {
+        let query = this._model.find({});
+        populate.forEach(p => {
+            query = query.populate(p);
+        });
+        return query.exec();
+    }
+
     protected _update(
         _id: string,
         attr: ModelAttributes

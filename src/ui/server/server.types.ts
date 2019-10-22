@@ -2,6 +2,7 @@ const SERVER_TYPES = {
     AppServerConfiguration: Symbol.for('AppServerConfiguration'),
     InfoController: Symbol.for('InfoController'),
     InstitutesController: Symbol.for('InstitutesController'),
+    NRLsController: Symbol.for('NRLsController'),
     UsersController: Symbol.for('UsersController'),
     SamplesController: Symbol.for('SamplesController'),
     TokensController: Symbol.for('TokensController'),

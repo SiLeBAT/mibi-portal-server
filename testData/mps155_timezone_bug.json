@@ -2,20 +2,6 @@
   "order": {
     "sampleSet": {
       "meta": {
-        "nrl": "NRL-AR",
-        "analysis": {
-          "species": false,
-          "serological": false,
-          "phageTyping": false,
-          "resistance": false,
-          "vaccination": false,
-          "molecularTyping": false,
-          "toxin": false,
-          "zoonosenIsolate": false,
-          "esblAmpCCarbapenemasen": false,
-          "other": "",
-          "compareHuman": false
-        },
         "sender": {
           "instituteName": "",
           "department": "",
@@ -26,7 +12,6 @@
           "telephone": "",
           "email": ""
         },
-        "urgency": "NORMAL",
         "fileName": "mps155_timezone_bug.xlsx"
       },
       "samples": [
@@ -89,6 +74,25 @@
             "comment": {
               "value": ""
             }
+          },
+          "sampleMeta": {
+            "analysis": {
+              "compareHuman": {
+                "active": false,
+                "value": ""
+              },
+              "esblAmpCCarbapenemasen": true,
+              "molecularTyping": false,
+              "other": "",
+              "resistance": true,
+              "sample": false,
+              "serological": false,
+              "species": false,
+              "toxin": false,
+              "vaccination": false
+            },
+            "nrl": "NRL-AR",
+            "urgency": "NORMAL"
           }
         },
         {
@@ -150,6 +154,25 @@
             "comment": {
               "value": ""
             }
+          },
+          "sampleMeta": {
+            "analysis": {
+              "compareHuman": {
+                "active": false,
+                "value": ""
+              },
+              "esblAmpCCarbapenemasen": true,
+              "molecularTyping": false,
+              "other": "",
+              "resistance": true,
+              "sample": false,
+              "serological": false,
+              "species": false,
+              "toxin": false,
+              "vaccination": false
+            },
+            "nrl": "NRL-AR",
+            "urgency": "NORMAL"
           }
         },
         {
@@ -211,6 +234,25 @@
             "comment": {
               "value": "EB4"
             }
+          },
+          "sampleMeta": {
+            "analysis": {
+              "compareHuman": {
+                "active": false,
+                "value": ""
+              },
+              "esblAmpCCarbapenemasen": false,
+              "molecularTyping": false,
+              "other": "",
+              "resistance": false,
+              "sample": false,
+              "serological": false,
+              "species": false,
+              "toxin": false,
+              "vaccination": false
+            },
+            "nrl": "Labor nicht erkannt",
+            "urgency": "NORMAL"
           }
         },
         {
@@ -272,6 +314,25 @@
             "comment": {
               "value": "EH13"
             }
+          },
+          "sampleMeta": {
+            "analysis": {
+              "compareHuman": {
+                "active": false,
+                "value": ""
+              },
+              "esblAmpCCarbapenemasen": false,
+              "molecularTyping": false,
+              "other": "",
+              "resistance": false,
+              "sample": false,
+              "serological": false,
+              "species": false,
+              "toxin": false,
+              "vaccination": false
+            },
+            "nrl": "Labor nicht erkannt",
+            "urgency": "NORMAL"
           }
         },
         {
@@ -333,6 +394,25 @@
             "comment": {
               "value": "EB4"
             }
+          },
+          "sampleMeta": {
+            "analysis": {
+              "compareHuman": {
+                "active": false,
+                "value": ""
+              },
+              "esblAmpCCarbapenemasen": false,
+              "molecularTyping": false,
+              "other": "",
+              "resistance": false,
+              "sample": false,
+              "serological": false,
+              "species": false,
+              "toxin": false,
+              "vaccination": false
+            },
+            "nrl": "Labor nicht erkannt",
+            "urgency": "NORMAL"
           }
         },
         {
@@ -394,6 +474,25 @@
             "comment": {
               "value": "EB4"
             }
+          },
+          "sampleMeta": {
+            "analysis": {
+              "compareHuman": {
+                "active": false,
+                "value": ""
+              },
+              "esblAmpCCarbapenemasen": false,
+              "molecularTyping": false,
+              "other": "",
+              "resistance": false,
+              "sample": false,
+              "serological": false,
+              "species": false,
+              "toxin": false,
+              "vaccination": false
+            },
+            "nrl": "Labor nicht erkannt",
+            "urgency": "NORMAL"
           }
         },
         {
@@ -455,6 +554,25 @@
             "comment": {
               "value": ""
             }
+          },
+          "sampleMeta": {
+            "analysis": {
+              "compareHuman": {
+                "active": false,
+                "value": ""
+              },
+              "esblAmpCCarbapenemasen": false,
+              "molecularTyping": false,
+              "other": "",
+              "resistance": true,
+              "sample": false,
+              "serological": true,
+              "species": false,
+              "toxin": false,
+              "vaccination": true
+            },
+            "nrl": "NRL-Salm",
+            "urgency": "NORMAL"
           }
         }
       ]

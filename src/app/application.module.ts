@@ -17,7 +17,10 @@ import { InstituteService } from './authentication/model/institute.model';
 import { DefaultInstituteService } from './authentication/application/institute.service';
 import { TokenService } from './authentication/model/token.model';
 import { DefaultTokenService } from './authentication/application/token.service';
-import { SampleService } from './sampleManagement/model/sample.model';
+import {
+    SampleService,
+    SampleFactory
+} from './sampleManagement/model/sample.model';
 import { DefaultSampleService } from './sampleManagement/application/sample.service';
 import { CatalogService } from './sampleManagement/model/catalog.model';
 import { DefaultCatalogService } from './sampleManagement/application/catalog.service';
@@ -64,6 +67,7 @@ import { sampleSheetPDFStyles } from './sampleManagement/domain/sample-sheet/sam
 import { nrlLongNames } from './sampleManagement/domain/nrl';
 import { SampleSheetConstants } from './sampleManagement/model/sample-sheet.model';
 import { DefaultPDFService } from './pdf/pdf.service';
+import { DefaultSampleFactory } from './sampleManagement/domain/sample.factory';
 
 export function getApplicationContainerModule(
     appConfiguration: ApplicationConfiguration
@@ -168,6 +172,10 @@ export function getApplicationContainerModule(
 
             bind<NRLService>(APPLICATION_TYPES.NRLService).to(
                 DefaultNRLService
+            );
+
+            bind<SampleFactory>(APPLICATION_TYPES.SampleFactory).to(
+                DefaultSampleFactory
             );
         }
     );

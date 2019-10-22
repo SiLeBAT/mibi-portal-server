@@ -1,7 +1,6 @@
-import { Urgency, NRL } from '../../domain/enums';
+import { Urgency, NRL_ID } from '../../domain/enums';
 import { getContainer } from '../../../../aspects/container/container';
-import { createSample } from '../../domain/sample.entity';
-import { Sample, SampleData } from '../../../ports';
+import { Sample, SampleData, SampleFactory } from '../../../ports';
 import { Container } from 'inversify';
 import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
 import { APPLICATION_TYPES } from '../../../application.types';
@@ -18,6 +17,7 @@ describe('NRL Assignment Service', () => {
     let testSampleData: SampleData;
     let genericTestSample: Sample;
     let container: Container | null;
+    let factory: SampleFactory;
     beforeEach(() => {
         container = getContainer();
         container.load(
@@ -35,6 +35,7 @@ describe('NRL Assignment Service', () => {
             mockPersistenceContainerModule
         );
         service = container.get<NRLService>(APPLICATION_TYPES.NRLService);
+        factory = container.get<SampleFactory>(APPLICATION_TYPES.SampleFactory);
 
         testSampleData = {
             sample_id: { value: '1', errors: [], correctionOffer: [] },
@@ -106,7 +107,6 @@ describe('NRL Assignment Service', () => {
             comment: { value: '', errors: [], correctionOffer: [] }
         };
         meta = {
-            nrl: NRL.NRL_AR,
             sender: {
                 instituteName: '',
                 department: '',
@@ -117,23 +117,9 @@ describe('NRL Assignment Service', () => {
                 telephone: '',
                 email: ''
             },
-            fileName: '',
-            urgency: Urgency.NORMAL,
-            analysis: {
-                species: false,
-                serological: false,
-                phageTyping: false,
-                resistance: false,
-                vaccination: false,
-                molecularTyping: false,
-                toxin: false,
-                zoonosenIsolate: false,
-                esblAmpCCarbapenemasen: false,
-                other: '',
-                compareHuman: false
-            }
+            fileName: ''
         };
-        genericTestSample = createSample(testSampleData);
+        genericTestSample = factory.createSample(testSampleData);
         genericTestSampleCollection = [genericTestSample];
     });
     afterEach(() => {
@@ -151,10 +137,10 @@ describe('NRL Assignment Service', () => {
         const mockRepo = container!.get<NRLRepository>(
             APPLICATION_TYPES.NRLRepository
         );
-        mockRepo.getAllNRLs = jest.fn(() =>
+        mockRepo.retrieve = jest.fn(() =>
             Promise.resolve([
                 {
-                    name: NRL.NRL_AR,
+                    id: NRL_ID.NRL_AR,
                     selectors: [
                         '^.*enterococ.*$',
                         '^Escherichia coli$',
@@ -164,12 +150,14 @@ describe('NRL Assignment Service', () => {
                         '^Escherichia coli ESBL/AmpC-bildend$',
                         '^Enterobacteriaceae Carbapenemase-bildend$'
                     ],
-                    email: 'fakeNRL@nrl.com'
+                    email: 'fakeNRL@nrl.com',
+                    standardProcedures: [],
+                    optionalProcedures: []
                 }
             ])
         );
         const result = service.assignNRLsToSamples(genericTestSampleCollection);
-        expect(result[0].nrl).toEqual(NRL.NRL_AR);
+        expect(result[0].getNRL()).toEqual(NRL_ID.NRL_AR);
     });
 
     it('should assign sample to unknown NRL', () => {
@@ -177,10 +165,10 @@ describe('NRL Assignment Service', () => {
         const mockRepo = container!.get<NRLRepository>(
             APPLICATION_TYPES.NRLRepository
         );
-        mockRepo.getAllNRLs = jest.fn(() =>
+        mockRepo.retrieve = jest.fn(() =>
             Promise.resolve([
                 {
-                    name: NRL.NRL_AR,
+                    id: NRL_ID.NRL_AR,
                     selectors: [
                         '^.*enterococ.*$',
                         '^Escherichia coli$',
@@ -190,7 +178,9 @@ describe('NRL Assignment Service', () => {
                         '^Escherichia coli ESBL/AmpC-bildend$',
                         '^Enterobacteriaceae Carbapenemase-bildend$'
                     ],
-                    email: 'fakeNRL@nrl.com'
+                    email: 'fakeNRL@nrl.com',
+                    standardProcedures: [],
+                    optionalProcedures: []
                 }
             ])
         );
@@ -200,8 +190,8 @@ describe('NRL Assignment Service', () => {
             errors: [],
             correctionOffer: []
         };
-        genericTestSampleCollection = [createSample(specificTestData)];
+        genericTestSampleCollection = [factory.createSample(specificTestData)];
         const result = service.assignNRLsToSamples(genericTestSampleCollection);
-        expect(result[0].nrl).toEqual(NRL.UNKNOWN);
+        expect(result[0].getNRL()).toEqual(NRL_ID.UNKNOWN);
     });
 });

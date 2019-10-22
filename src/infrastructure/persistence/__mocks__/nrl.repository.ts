@@ -1,11 +1,11 @@
-import { NRLRepository, NRL } from '../../../app/ports';
+import { NRLRepository, NRL_ID } from '../../../app/ports';
 
 export function getMockNRLRepository(): NRLRepository {
     return {
-        getAllNRLs: jest.fn(() =>
+        retrieve: jest.fn(() =>
             Promise.resolve([
                 {
-                    name: NRL.NRL_AR,
+                    id: NRL_ID.NRL_AR,
                     selectors: [
                         '^.*enterococ.*$',
                         '^Escherichia coli$',
@@ -15,7 +15,9 @@ export function getMockNRLRepository(): NRLRepository {
                         '^Escherichia coli ESBL/AmpC-bildend$',
                         '^Enterobacteriaceae Carbapenemase-bildend$'
                     ],
-                    email: 'fakeNRL@nrl.com'
+                    email: 'fakeNRL@nrl.com',
+                    standardProcedures: [],
+                    optionalProcedures: []
                 }
             ])
         )

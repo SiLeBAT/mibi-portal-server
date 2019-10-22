@@ -1,10 +1,9 @@
 import { getContainer } from './../../../../aspects/container/container';
-import { createSample } from '../../domain/sample.entity';
 import {
     FormValidatorService,
     ValidationError
 } from '../../model/validation.model';
-import { Sample, SampleData } from '../../../ports';
+import { Sample, SampleData, SampleFactory } from '../../../ports';
 import { genericValidationErrors } from '../../../../infrastructure/persistence/__mocks__/validation-error.repository';
 import { Container } from 'inversify';
 import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
@@ -25,6 +24,7 @@ describe('Validate Sample Use Case', () => {
     let genericTestSample: Sample;
     let validationErrors: ValidationError[];
     let container: Container | null;
+    let factory: SampleFactory;
     beforeEach(() => {
         container = getContainer();
         container.load(
@@ -44,7 +44,7 @@ describe('Validate Sample Use Case', () => {
         service = container.get<FormValidatorService>(
             APPLICATION_TYPES.FormValidatorService
         );
-
+        factory = container.get<SampleFactory>(APPLICATION_TYPES.SampleFactory);
         validationErrors = [...genericValidationErrors];
         testSampleData = {
             sample_id: { value: '1', errors: [], correctionOffer: [] },
@@ -115,7 +115,7 @@ describe('Validate Sample Use Case', () => {
             vvvo: { value: '', errors: [], correctionOffer: [] },
             comment: { value: '', errors: [], correctionOffer: [] }
         };
-        genericTestSample = createSample(testSampleData);
+        genericTestSample = factory.createSample(testSampleData);
         genericTestSampleCollection = [];
     });
     afterEach(() => {
@@ -153,7 +153,7 @@ describe('Validate Sample Use Case', () => {
             errors: [],
             correctionOffer: []
         };
-        const secondSample = createSample(specificSample);
+        const secondSample = factory.createSample(specificSample);
         const specificTestSampleCollection = [genericTestSample, secondSample];
 
         expect.assertions(2);
@@ -175,7 +175,7 @@ describe('Validate Sample Use Case', () => {
             errors: [],
             correctionOffer: []
         };
-        const secondSample = createSample(specificSample);
+        const secondSample = factory.createSample(specificSample);
         const specificTestSampleCollection = [genericTestSample, secondSample];
 
         expect.assertions(2);
@@ -196,8 +196,8 @@ describe('Validate Sample Use Case', () => {
         sampleOne.sample_id = { value: '', errors: [], correctionOffer: [] };
         sampleTwo.sample_id = { value: '', errors: [], correctionOffer: [] };
 
-        const firstSample = createSample(sampleOne);
-        const secondSample = createSample(sampleTwo);
+        const firstSample = factory.createSample(sampleOne);
+        const secondSample = factory.createSample(sampleTwo);
 
         const specificTestSampleCollection = [firstSample, secondSample];
 
@@ -219,8 +219,8 @@ describe('Validate Sample Use Case', () => {
         sampleOne.sample_id = { value: '5', errors: [], correctionOffer: [] };
         sampleTwo.sample_id = { value: '5', errors: [], correctionOffer: [] };
 
-        const firstSample = createSample(sampleOne);
-        const secondSample = createSample(sampleTwo);
+        const firstSample = factory.createSample(sampleOne);
+        const secondSample = factory.createSample(sampleTwo);
 
         const specificTestSampleCollection = [firstSample, secondSample];
 
@@ -244,8 +244,8 @@ describe('Validate Sample Use Case', () => {
         sampleOne.sample_id = { value: '5', errors: [], correctionOffer: [] };
         sampleTwo.sample_id = { value: '4', errors: [], correctionOffer: [] };
 
-        const firstSample = createSample(sampleOne);
-        const secondSample = createSample(sampleTwo);
+        const firstSample = factory.createSample(sampleOne);
+        const secondSample = factory.createSample(sampleTwo);
 
         const specificTestSampleCollection = [firstSample, secondSample];
 
@@ -275,8 +275,8 @@ describe('Validate Sample Use Case', () => {
             correctionOffer: []
         };
 
-        const firstSample = createSample(sampleOne);
-        const secondSample = createSample(sampleTwo);
+        const firstSample = factory.createSample(sampleOne);
+        const secondSample = factory.createSample(sampleTwo);
 
         const specificTestSampleCollection = [firstSample, secondSample];
 
@@ -295,7 +295,7 @@ describe('Validate Sample Use Case', () => {
     });
 
     it('should flag an identical ID error with two entry sample collection', async () => {
-        const identicalSample = createSample(testSampleData);
+        const identicalSample = factory.createSample(testSampleData);
         const specificTestSampleCollection = [
             genericTestSample,
             identicalSample

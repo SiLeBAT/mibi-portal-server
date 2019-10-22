@@ -11,8 +11,8 @@ export class Api {
         json: true,
     };
 
-    static readonly SAMPLES_ENDPOINT = '/v1/samples';
-    static readonly SAMPLES_VALIDATED_ENDPOINT = '/v1/samples/validated';
+    static readonly SAMPLES_ENDPOINT = '/v2/samples';
+    static readonly SAMPLES_VALIDATED_ENDPOINT = '/v2/samples/validated';
 
     static putSamplesXLSX(file: Buffer, fileName: string): Promise<PutSamplesJSONResponseDTO> {
         const formData = {
@@ -23,15 +23,15 @@ export class Api {
                 }
             }
         }
-        return rp.put(API_URL + this.SAMPLES_ENDPOINT, {...this.requestOptions, formData: formData, headers: {...this.requestOptions.headers,  'accept': 'application/json'}});
+        return rp.put(API_URL + this.SAMPLES_ENDPOINT, { ...this.requestOptions, formData: formData, headers: { ...this.requestOptions.headers, 'accept': 'application/json' } });
     }
 
     static putSamplesJSON(body: PutSamplesJSONRequestDTO): Promise<PutSamplesXLSXResponseDTO> {
-        return rp.put(API_URL + this.SAMPLES_ENDPOINT, {...this.requestOptions, body: body, headers: {...this.requestOptions.headers,  'accept': 'multipart/form-data'}});
+        return rp.put(API_URL + this.SAMPLES_ENDPOINT, { ...this.requestOptions, body: body, headers: { ...this.requestOptions.headers, 'accept': 'multipart/form-data' } });
     }
 
-    static putValidated(body: PutValidatedRequestDTO): Promise<PutValidatedResponseDTO>{
-        return rp.put(API_URL + this.SAMPLES_VALIDATED_ENDPOINT, {...this.requestOptions, body: body});
+    static putValidated(body: PutValidatedRequestDTO): Promise<PutValidatedResponseDTO> {
+        return rp.put(API_URL + this.SAMPLES_VALIDATED_ENDPOINT, { ...this.requestOptions, body: body });
     }
 
     static freeRequest(endpoint: string, method: string, headers: request.Headers, body: any): Promise<rp.FullResponse> {

@@ -1,3 +1,7 @@
+import {
+    EinsendebogenMetaData,
+    EinsendebogenAnalysis
+} from './../model/excel.model';
 import { injectable, inject } from 'inversify';
 import {
     PDFCreatorService,
@@ -5,19 +9,19 @@ import {
 } from '../model/pdf.model';
 import {
     SampleSet,
-    SampleSetMetaData,
     Address,
-    Analysis,
     Sample,
-    SampleData
+    SampleData,
+    Analysis
 } from '../model/sample.model';
 import { APPLICATION_TYPES } from '../../application.types';
 import * as _ from 'lodash';
 import * as fs from 'fs';
-import { NRL, Urgency } from '../domain/enums';
+import { NRL_ID, Urgency } from '../domain/enums';
 import { NRLConstants } from '../model/nrl.model';
 import { FileBuffer } from '../../core/model/file.model';
 import { PDFService } from '../../pdf/pdf.model';
+import { EMPTY_META } from '../domain/constants';
 
 @injectable()
 export class DefaultPDFCreatorService implements PDFCreatorService {
@@ -93,16 +97,61 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
     private createContent(sampleSet: SampleSet): {}[] {
         return [
             {
-                ...this.createMeta(sampleSet.meta),
+                ...this.createMeta(this.getEinsendebogenMetaData(sampleSet)),
                 pageBreak: 'after'
             },
             this.createSamples(sampleSet.samples)
         ];
     }
 
+    private getEinsendebogenMetaData(
+        sampleSet: SampleSet
+    ): EinsendebogenMetaData {
+        let nrl = EMPTY_META.nrl;
+        let analysis = this.fromSampleAnalysisToEinsendebogenAnalysis(
+            EMPTY_META.analysis
+        );
+        let urgency = Urgency.NORMAL;
+        if (_.uniq(sampleSet.samples.map(s => s.getNRL())).length === 1) {
+            nrl = sampleSet.samples[0].getNRL();
+            analysis = this.fromSampleAnalysisToEinsendebogenAnalysis(
+                sampleSet.samples[0].getAnalysis()
+            );
+            urgency = sampleSet.samples[0].getUrgency();
+        }
+
+        return {
+            nrl,
+            analysis,
+            sender: sampleSet.meta.sender,
+            urgency,
+            fileName: sampleSet.meta.fileName
+        };
+    }
+
+    private fromSampleAnalysisToEinsendebogenAnalysis(
+        analysis: Partial<Analysis>
+    ): EinsendebogenAnalysis {
+        return {
+            species: analysis.species || false,
+            phageTyping: false,
+            zoonosenIsolate: false,
+            serological: analysis.serological || false,
+            resistance: analysis.resistance || false,
+            vaccination: analysis.vaccination || false,
+            molecularTyping: analysis.molecularTyping || false,
+            toxin: analysis.toxin || false,
+            esblAmpCCarbapenemasen: analysis.esblAmpCCarbapenemasen || false,
+            other: analysis.other || '',
+            compareHuman: _.cloneDeep(analysis.compareHuman) || {
+                active: false,
+                value: ''
+            }
+        };
+    }
     // Meta content
 
-    private createMeta(metaData: SampleSetMetaData): {} {
+    private createMeta(metaData: EinsendebogenMetaData): {} {
         return {
             stack: [
                 this.createMetaMainRow(
@@ -172,7 +221,7 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
         };
     }
 
-    private createMetaRecipient(nrl: NRL): {} {
+    private createMetaRecipient(nrl: NRL_ID): {} {
         const strings = this.strings.meta.recipient;
         const nrlString = this.nrlConstants.longNames[nrl];
         return {
@@ -281,7 +330,7 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
         };
     }
 
-    private createMetaAnalysis(analysis: Analysis): {} {
+    private createMetaAnalysis(analysis: EinsendebogenAnalysis): {} {
         const strings = this.strings.meta.analysis;
         const clean = (v: boolean | string): string =>
             v ? strings.marked : ' ';
@@ -394,14 +443,16 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                                 ['markedCell']
                             ),
                             {
-                                text: clean(analysis.compareHuman),
+                                text: clean(analysis.compareHuman.active),
                                 style: 'markedCell',
                                 alignment: 'center'
                             }
                         ],
                         [
                             {
-                                text: ' ',
+                                text: analysis.compareHuman.value
+                                    ? analysis.compareHuman.value
+                                    : ' ',
                                 colSpan: 2,
                                 style: ['markedCell', 'userComment']
                             }
