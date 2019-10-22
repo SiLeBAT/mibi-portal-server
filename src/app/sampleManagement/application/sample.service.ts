@@ -25,7 +25,7 @@ import { ConfigurationService } from '../../core/model/configuration.model';
 import { injectable, inject } from 'inversify';
 import { APPLICATION_TYPES } from './../../application.types';
 import moment = require('moment');
-import { NRL, ReceiveAs } from '../domain/enums';
+import { NRL_ID, ReceiveAs } from '../domain/enums';
 import { NRLService } from '../model/nrl.model';
 import { FileBuffer } from '../../core/model/file.model';
 import { PDFCreatorService } from '../model/pdf.model';
@@ -34,7 +34,7 @@ interface SampleSheet {
     buffer: Buffer;
     fileName: string;
     mime: string;
-    nrl: NRL;
+    nrl: NRL_ID;
 }
 
 @injectable()
@@ -144,12 +144,12 @@ export class DefaultSampleService implements SampleService {
     private splitSampleSet(sampleSet: SampleSet): SampleSet[] {
         let splittedSampleSetMap = new Map<string, SampleSet>();
         sampleSet.samples.forEach(sample => {
-            const nrl = sample.getSampleMetaData().nrl;
+            const nrl = sample.getNRL();
             let splittedSampleSet = splittedSampleSetMap.get(nrl);
             if (!splittedSampleSet) {
                 splittedSampleSet = {
                     samples: [],
-                    meta: { ...sampleSet.meta, nrl: nrl }
+                    meta: { ...sampleSet.meta }
                 };
                 splittedSampleSetMap.set(nrl, splittedSampleSet);
             }
@@ -175,7 +175,7 @@ export class DefaultSampleService implements SampleService {
     ): Promise<SampleSheet> {
         const fileBuffer = await creatorFunc(sampleSet);
 
-        const nrl = sampleSet.meta.nrl;
+        const nrl = sampleSet.samples[0].getNRL();
 
         const fileName = this.amendFileName(
             sampleSet.meta.fileName || this.DEFAULT_FILE_NAME,
@@ -236,7 +236,7 @@ export class DefaultSampleService implements SampleService {
 
     private resolveOrderNotificationMetaData(
         applicantMetaData: ApplicantMetaData,
-        nrl: NRL
+        nrl: NRL_ID
     ): OrderNotificationMetaData {
         return {
             ...applicantMetaData,

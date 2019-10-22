@@ -8,7 +8,7 @@ export enum ReceiveAs {
     PDF
 }
 
-export enum NRL {
+export enum NRL_ID {
     UNKNOWN = 'Labor nicht erkannt',
     NRL_Vibrio = 'NRL-Vibrio',
     NRL_VTEC = 'NRL-VTEC',

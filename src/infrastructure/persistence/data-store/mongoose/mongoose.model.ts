@@ -1,3 +1,7 @@
+import {
+    AnalysisProcedureModel,
+    analysisProcedureSchema
+} from './schemas/analysisProdecure.schema';
 import * as mongoose from 'mongoose';
 
 import {
@@ -37,3 +41,7 @@ export const MongooseNRLModel: mongoose.Model<NRLModel> = mongoose.model<
 export const MongooseValidationErrorModel = mongoose.model<
     ValidationErrorModel
 >('ValidationError', validationErrorSchema);
+
+export const MongooseAnalysisProcedureModel = mongoose.model<
+    AnalysisProcedureModel
+>('AnalysisProcedure', analysisProcedureSchema);

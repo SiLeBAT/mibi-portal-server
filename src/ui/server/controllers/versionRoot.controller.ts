@@ -8,7 +8,7 @@ import { AppServerConfiguration } from '../model/server.model';
 import { controller, response, httpGet } from 'inversify-express-utils';
 import { inject } from 'inversify';
 import SERVER_TYPES from '../server.types';
-const openAPI = require('./../doc/openapi_v1.json');
+const openAPI = require('./../doc/openapi_v2.json');
 
 // tslint:disable-next-line: no-any
 declare type APIDefinition = any;

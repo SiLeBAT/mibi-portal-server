@@ -20,7 +20,7 @@ import {
 import { CatalogService } from '../model/catalog.model';
 import { SampleProperty, SamplePropertyValues } from '../model/sample.model';
 import { MalformedValidationOptionsError } from './domain.error';
-import { NRL } from './enums';
+import { NRL_ID } from './enums';
 
 moment.locale('de');
 
@@ -30,7 +30,7 @@ function nrlExists(
     key: SampleProperty,
     attributes: Record<string, string>
 ) {
-    if (attributes.nrl === NRL.UNKNOWN) {
+    if (attributes.nrl === NRL_ID.UNKNOWN) {
         return { ...options.message };
     }
     return null;
@@ -43,7 +43,7 @@ function noPlanprobeForNRL_AR(
     attributes: Record<string, string>
 ) {
     const disallowed = [10, '10', 'Planprobe'];
-    return attributes.nrl === NRL.NRL_AR && _.includes(disallowed, value)
+    return attributes.nrl === NRL_ID.NRL_AR && _.includes(disallowed, value)
         ? { ...options.message }
         : null;
 }

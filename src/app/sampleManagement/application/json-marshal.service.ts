@@ -1,9 +1,16 @@
+import { NRL_ID } from './../domain/enums';
+import { Analysis } from './../model/sample.model';
+import { EinsendebogenAnalysis } from './../model/excel.model';
+import { EMPTY_META } from './../domain/constants';
 import * as _ from 'lodash';
 // @ts-ignore
 import * as XlsxPopulate from 'xlsx-populate';
-import { JSONMarshalService } from '../model/excel.model';
+import {
+    JSONMarshalService,
+    EinsendebogenMetaData
+} from '../model/excel.model';
 import { FileRepository } from '../model/repository.model';
-import { SampleSet, Sample, SampleSetMetaData } from '../model/sample.model';
+import { SampleSet, Sample } from '../model/sample.model';
 import { ApplicationDomainError } from '../../core/domain/domain.error';
 import { ApplicationSystemError } from '../../core/domain/technical.error';
 import { Urgency } from '../domain/enums';
@@ -22,16 +29,15 @@ import {
     META_SENDER_TELEPHONE_CELL,
     META_SENDER_EMAIL_CELL,
     META_ANALYSIS_SPECIES_CELL,
-    META_ANALYSIS_PHAGETYPING_CELL,
     META_ANALYSIS_SEROLOGICAL_CELL,
     META_ANALYSIS_RESISTANCE_CELL,
     META_ANALYSIS_VACCINATION_CELL,
     META_ANALYSIS_MOLECULARTYPING_CELL,
     META_ANALYSIS_TOXIN_CELL,
-    META_ANALYSIS_ZOONOSENISOLATE_CELL,
     META_ANALYSIS_ESBLAMPCCARBAPENEMASEN_CELL,
     META_ANALYSIS_OTHER_CELL,
-    META_ANALYSIS_COMPAREHUMAN_CELL
+    META_ANALYSIS_COMPAREHUMAN_BOOL_CELL,
+    META_ANALYSIS_COMPAREHUMAN_TEXT_CELL
 } from '../domain/constants';
 import { NRLConstants } from '../model/nrl.model';
 import { FileBuffer } from '../../core/model/file.model';
@@ -70,7 +76,10 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
             dataToSave,
             highlights
         );
-        workbook = this.addMetaDataToWorkbook(workbook, sampleSet.meta);
+        const meta: EinsendebogenMetaData = this.getEinsendebogenMetaData(
+            sampleSet
+        );
+        workbook = this.addMetaDataToWorkbook(workbook, meta);
 
         const workbookBuffer = await workbook.outputAsync();
 
@@ -81,6 +90,52 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
         };
     }
 
+    private getEinsendebogenMetaData(
+        sampleSet: SampleSet
+    ): EinsendebogenMetaData {
+        let nrl = NRL_ID.NRL_AR;
+        let analysis = this.fromSampleAnalysisToEinsendebogenAnalysis(
+            EMPTY_META.analysis
+        );
+        let urgency = Urgency.NORMAL;
+
+        if (_.uniq(sampleSet.samples.map(s => s.getNRL())).length === 1) {
+            nrl = sampleSet.samples[0].getNRL();
+            analysis = this.fromSampleAnalysisToEinsendebogenAnalysis(
+                sampleSet.samples[0].getAnalysis()
+            );
+            urgency = sampleSet.samples[0].getUrgency();
+        }
+
+        return {
+            nrl,
+            analysis,
+            sender: sampleSet.meta.sender,
+            urgency,
+            fileName: sampleSet.meta.fileName
+        };
+    }
+
+    private fromSampleAnalysisToEinsendebogenAnalysis(
+        analysis: Partial<Analysis>
+    ): EinsendebogenAnalysis {
+        return {
+            species: analysis.species || false,
+            phageTyping: false,
+            zoonosenIsolate: false,
+            serological: analysis.serological || false,
+            resistance: analysis.resistance || false,
+            vaccination: analysis.vaccination || false,
+            molecularTyping: analysis.molecularTyping || false,
+            toxin: analysis.toxin || false,
+            esblAmpCCarbapenemasen: analysis.esblAmpCCarbapenemasen || false,
+            other: analysis.other || '',
+            compareHuman: _.cloneDeep(analysis.compareHuman) || {
+                active: false,
+                value: ''
+            }
+        };
+    }
     private async fromFileToWorkbook(buffer: Buffer) {
         const workbook = await XlsxPopulate.fromDataAsync(buffer);
         return workbook;
@@ -103,7 +158,7 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
     private addMetaDataToWorkbook(
         // tslint:disable-next-line: no-any
         workbook: any,
-        meta: SampleSetMetaData
+        meta: EinsendebogenMetaData
     ) {
         const sheet = workbook.sheet(VALID_SHEET_NAME);
         if (sheet) {
@@ -135,11 +190,6 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
                 .cell(META_ANALYSIS_SPECIES_CELL)
                 .value(this.mapAnalysisBooleanToString(meta.analysis.species));
             sheet
-                .cell(META_ANALYSIS_PHAGETYPING_CELL)
-                .value(
-                    this.mapAnalysisBooleanToString(meta.analysis.phageTyping)
-                );
-            sheet
                 .cell(META_ANALYSIS_SEROLOGICAL_CELL)
                 .value(
                     this.mapAnalysisBooleanToString(meta.analysis.serological)
@@ -165,13 +215,6 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
                 .cell(META_ANALYSIS_TOXIN_CELL)
                 .value(this.mapAnalysisBooleanToString(meta.analysis.toxin));
             sheet
-                .cell(META_ANALYSIS_ZOONOSENISOLATE_CELL)
-                .value(
-                    this.mapAnalysisBooleanToString(
-                        meta.analysis.zoonosenIsolate
-                    )
-                );
-            sheet
                 .cell(META_ANALYSIS_ESBLAMPCCARBAPENEMASEN_CELL)
                 .value(
                     this.mapAnalysisBooleanToString(
@@ -180,10 +223,15 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
                 );
             sheet.cell(META_ANALYSIS_OTHER_CELL).value(meta.analysis.other);
             sheet
-                .cell(META_ANALYSIS_COMPAREHUMAN_CELL)
+                .cell(META_ANALYSIS_COMPAREHUMAN_BOOL_CELL)
                 .value(
-                    this.mapAnalysisBooleanToString(meta.analysis.compareHuman)
+                    this.mapAnalysisBooleanToString(
+                        meta.analysis.compareHuman.active
+                    )
                 );
+            sheet
+                .cell(META_ANALYSIS_COMPAREHUMAN_TEXT_CELL)
+                .value(meta.analysis.compareHuman.value);
         }
 
         return workbook;

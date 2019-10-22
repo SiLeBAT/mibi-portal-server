@@ -1,4 +1,6 @@
-
+import { DefaultSample } from './../src/app/sampleManagement/domain/sample.entity';
+import { Urgency, NRL_ID } from './../src/app/sampleManagement/domain/enums';
+import { SampleData } from './../src/app/sampleManagement/model/sample.model';
 import { PutValidatedRequestDTO } from '../src/ui/server/model/request.model';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -10,18 +12,34 @@ import { DefaultExcelUnmarshalService } from '../src/app/sampleManagement/applic
 import { SampleDTO, SampleMetaDTO, SampleValidationErrorDTO } from '../src/ui/server/model/shared-dto.model';
 import { Api } from './api';
 import { promisify } from 'util';
+import { EMPTY_META } from '../src/app/sampleManagement/domain/constants';
+import { getMockNRLService } from '../src/app/sampleManagement/application/__mocks__/nrl.service';
 
 const DATA_DIR: string = 'testData/validation';
 
-const parser = new DefaultExcelUnmarshalService();
+
+const factory = {
+    createSample(data: SampleData): Sample {
+        return DefaultSample.create(
+            data,
+            {
+                nrl: NRL_ID.NRL_AR,
+                analysis: {},
+                urgency: Urgency.NORMAL
+            },
+            getMockNRLService()
+        );
+    }
+}
+const parser = new DefaultExcelUnmarshalService(factory);
 
 describe('Test validation errors', () => {
     it('should give correct error codes', async () => {
         const fileNames = await getFilesToTest();
-        const requests = await Promise.all(fileNames.map((fileName)=>getRequestDTOFromFile(fileName)));
+        const requests = await Promise.all(fileNames.map((fileName) => getRequestDTOFromFile(fileName)));
 
         let count = 0;
-        requests.map(req=>count+=req.order.sampleSet.samples.length);
+        requests.map(req => count += req.order.sampleSet.samples.length);
         expect.assertions(count);
 
         return Promise.all(requests.map(async (request) => {
@@ -36,7 +54,7 @@ describe('Test validation errors', () => {
                     file: request.order.sampleSet.meta.fileName
                 }
 
-                expect({...meta, codes: receivedCodes}).toEqual({...meta, codes: expectedCodes});
+                expect({ ...meta, codes: receivedCodes }).toEqual({ ...meta, codes: expectedCodes });
             });
         }))
     }, 1000 * 120);
@@ -76,23 +94,26 @@ function fromSampleCollectionToSampleDTO(
 ): SampleDTO[] {
     return sampleCollection.map((sample: Sample) => ({
         sampleData: sample.getAnnotatedData(),
-        sampleMeta: fromSampleMetaToDTO(sample.getSampleMetaData())
+        sampleMeta: fromSampleMetaToDTO({
+            nrl: sample.getNRL(),
+            urgency: sample.getUrgency(),
+            analysis: sample.getAnalysis()
+        })
     }));
 }
 
 function fromSampleMetaToDTO(meta: SampleMetaData): SampleMetaDTO {
     return {
-        nrl: meta.nrl.toString()
+        nrl: meta.nrl.toString(),
+        urgency: meta.urgency.toString(),
+        analysis: { ...EMPTY_META.analysis, ...meta.analysis }
     };
 }
 function fromSampleSetMetaDataToDTO(
     data: SampleSetMetaData
 ) {
     return {
-        nrl: data.nrl,
-        analysis: data.analysis,
         sender: data.sender,
-        urgency: data.urgency.toString(),
         fileName: data.fileName
     };
 }

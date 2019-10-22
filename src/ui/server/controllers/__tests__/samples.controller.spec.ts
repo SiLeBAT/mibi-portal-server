@@ -1,3 +1,4 @@
+import { Urgency } from './../../../../app/sampleManagement/domain/enums';
 /// <reference types='jest' />
 
 var mockReq = require('mock-express-request');
@@ -125,11 +126,29 @@ describe('Sample controller', () => {
                             value: 'string',
                             oldValue: 'string'
                         }
+                    },
+                    sampleMeta: {
+                        analysis: {
+                            compareHuman: {
+                                active: false,
+                                value: ''
+                            },
+                            esblAmpCCarbapenemasen: false,
+                            molecularTyping: false,
+                            other: '',
+                            resistance: false,
+                            sample: false,
+                            serological: false,
+                            species: false,
+                            toxin: false,
+                            vaccination: false
+                        },
+                        nrl: 'NRL-AR',
+                        urgency: 'NORMAL'
                     }
                 }
             ],
             meta: {
-                nrl: 'string',
                 sender: {
                     instituteName: '',
                     department: '',
@@ -139,20 +158,6 @@ describe('Sample controller', () => {
                     contactPerson: '',
                     telephone: '',
                     email: ''
-                },
-                urgency: 'NORMAL',
-                analysis: {
-                    species: false,
-                    serological: false,
-                    phageTyping: false,
-                    resistance: false,
-                    vaccination: false,
-                    molecularTyping: false,
-                    toxin: false,
-                    zoonosenIsolate: false,
-                    esblAmpCCarbapenemasen: false,
-                    other: '',
-                    compareHuman: false
                 }
             }
         };
@@ -264,7 +269,6 @@ describe('Sample controller', () => {
                                 }
                             ],
                             meta: {
-                                nrl: 'Labor nicht erkannt',
                                 sender: {
                                     instituteName: '',
                                     department: '',
@@ -274,20 +278,6 @@ describe('Sample controller', () => {
                                     contactPerson: '',
                                     telephone: '',
                                     email: ''
-                                },
-                                urgency: 'NORMAL',
-                                analysis: {
-                                    species: false,
-                                    serological: false,
-                                    phageTyping: false,
-                                    resistance: false,
-                                    vaccination: false,
-                                    molecularTyping: false,
-                                    toxin: false,
-                                    zoonosenIsolate: false,
-                                    esblAmpCCarbapenemasen: false,
-                                    other: '',
-                                    compareHuman: false
                                 }
                             }
                         }
@@ -387,11 +377,29 @@ describe('Sample controller', () => {
                                         comment: {
                                             value: 'string'
                                         }
+                                    },
+                                    sampleMeta: {
+                                        analysis: {
+                                            compareHuman: {
+                                                active: false,
+                                                value: ''
+                                            },
+                                            esblAmpCCarbapenemasen: false,
+                                            molecularTyping: false,
+                                            other: '',
+                                            resistance: false,
+                                            sample: false,
+                                            serological: false,
+                                            species: false,
+                                            toxin: false,
+                                            vaccination: false
+                                        },
+                                        nrl: 'Labor nicht erkannt',
+                                        urgency: 'NORMAL'
                                     }
                                 }
                             ],
                             meta: {
-                                nrl: 'string',
                                 sender: {
                                     instituteName: '',
                                     department: '',
@@ -401,20 +409,6 @@ describe('Sample controller', () => {
                                     contactPerson: '',
                                     telephone: '',
                                     email: ''
-                                },
-                                urgency: 'NORMAL',
-                                analysis: {
-                                    species: false,
-                                    serological: false,
-                                    phageTyping: false,
-                                    resistance: false,
-                                    vaccination: false,
-                                    molecularTyping: false,
-                                    toxin: false,
-                                    zoonosenIsolate: false,
-                                    esblAmpCCarbapenemasen: false,
-                                    other: '',
-                                    compareHuman: false
                                 }
                             }
                         }
@@ -491,12 +485,12 @@ describe('Sample controller', () => {
                                         }
                                     },
                                     sampleMeta: {
-                                        nrl: 'Labor nicht erkannt'
+                                        nrl: 'Labor nicht erkannt',
+                                        urgency: 'NORMAL'
                                     }
                                 }
                             ],
                             meta: {
-                                nrl: 'Labor nicht erkannt',
                                 sender: {
                                     instituteName: '',
                                     department: '',
@@ -506,20 +500,6 @@ describe('Sample controller', () => {
                                     contactPerson: '',
                                     telephone: '',
                                     email: ''
-                                },
-                                urgency: 'NORMAL',
-                                analysis: {
-                                    species: false,
-                                    serological: false,
-                                    phageTyping: false,
-                                    resistance: false,
-                                    vaccination: false,
-                                    molecularTyping: false,
-                                    toxin: false,
-                                    zoonosenIsolate: false,
-                                    esblAmpCCarbapenemasen: false,
-                                    other: '',
-                                    compareHuman: false
                                 }
                             }
                         }

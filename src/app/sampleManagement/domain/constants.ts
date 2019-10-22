@@ -1,3 +1,5 @@
+import { NRL_ID } from './enums';
+
 export const VALID_SHEET_NAME: string = 'Einsendeformular';
 
 export const FORM_PROPERTIES: string[] = [
@@ -41,4 +43,24 @@ export const META_ANALYSIS_TOXIN_CELL = 'P18';
 export const META_ANALYSIS_ZOONOSENISOLATE_CELL = 'P19';
 export const META_ANALYSIS_ESBLAMPCCARBAPENEMASEN_CELL = 'P20';
 export const META_ANALYSIS_OTHER_CELL = 'J22';
-export const META_ANALYSIS_COMPAREHUMAN_CELL = 'P23';
+export const META_ANALYSIS_COMPAREHUMAN_BOOL_CELL = 'P23';
+export const META_ANALYSIS_COMPAREHUMAN_TEXT_CELL = 'J24';
+
+export const EMPTY_META = {
+    nrl: NRL_ID.UNKNOWN,
+    analysis: {
+        species: false,
+        serological: false,
+        resistance: false,
+        vaccination: false,
+        molecularTyping: false,
+        toxin: false,
+        esblAmpCCarbapenemasen: false,
+        sample: false,
+        other: '',
+        compareHuman: {
+            value: '',
+            active: false
+        }
+    }
+};

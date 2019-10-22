@@ -64,6 +64,10 @@ import { sampleSheetPDFStyles } from './sampleManagement/domain/sample-sheet/sam
 import { nrlLongNames } from './sampleManagement/domain/nrl';
 import { SampleSheetConstants } from './sampleManagement/model/sample-sheet.model';
 import { DefaultPDFService } from './pdf/pdf.service';
+import {
+    SampleFactory,
+    DefaultSampleFactory
+} from './sampleManagement/domain/sample.factory';
 
 export function getApplicationContainerModule(
     appConfiguration: ApplicationConfiguration
@@ -168,6 +172,10 @@ export function getApplicationContainerModule(
 
             bind<NRLService>(APPLICATION_TYPES.NRLService).to(
                 DefaultNRLService
+            );
+
+            bind<SampleFactory>(APPLICATION_TYPES.SampleFactory).to(
+                DefaultSampleFactory
             );
         }
     );

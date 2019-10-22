@@ -6,7 +6,8 @@ import {
     UsersController,
     SamplesController,
     VersionRootController,
-    TokensController
+    TokensController,
+    NRLsController
 } from './model/controller.model';
 import SERVER_TYPES from './server.types';
 import { DefaultSystemInfoController } from './controllers/info.controller';
@@ -17,6 +18,7 @@ import { RequestHandler } from 'express';
 import { uploadToMemory } from './middleware/file-upload.middleware';
 import { DefaultVersionRootController } from './controllers/versionRoot.controller';
 import { AppServerConfiguration } from './model/server.model';
+import { DefaultNRLsController } from './controllers/nrls.controller';
 
 export function getServerContainerModule(
     serverCongfiguration: AppServerConfiguration
@@ -41,6 +43,9 @@ export function getServerContainerModule(
             );
             bind<TokensController>(SERVER_TYPES.TokensController).to(
                 DefaultTokensController
+            );
+            bind<NRLsController>(SERVER_TYPES.NRLsController).to(
+                DefaultNRLsController
             );
             bind<VersionRootController>(SERVER_TYPES.VersionRootController).to(
                 DefaultVersionRootController

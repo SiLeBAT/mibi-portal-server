@@ -1,4 +1,4 @@
-import { NRLRepository, NRLConfig } from '../../../app/ports';
+import { NRLRepository, NRL } from '../../../app/ports';
 import { mapModelToNRL } from './data-mappers';
 import { NRLModel } from '../data-store/mongoose/schemas/nrl.schema';
 import { MongooseRepositoryBase } from '../data-store/mongoose/mongoose.repository';
@@ -13,8 +13,12 @@ export class MongooseNRLRepository extends MongooseRepositoryBase<NRLModel>
         super(model);
     }
 
-    getAllNRLs(): Promise<NRLConfig[]> {
-        return this._retrieve()
+    retrieve(): Promise<NRL[]> {
+        return this._retrievePopulatedWith([
+            'standardProcedures',
+            'optionalProcedures'
+        ])
+
             .then(modelArray => {
                 return modelArray.map(m => mapModelToNRL(m));
             })

@@ -26,6 +26,7 @@ export const APPLICATION_TYPES = {
     NRLService: Symbol.for('NRLService'),
     FormAutoCorrectionService: Symbol.for('FormAutoCorrectionService'),
     FormValidatorService: Symbol.for('FormValidatorService'),
+    SampleFactory: Symbol.for('SampleFactory'),
 
     CatalogRepository: Symbol.for('CatalogRepository'),
     NRLRepository: Symbol.for('NRLRepository'),

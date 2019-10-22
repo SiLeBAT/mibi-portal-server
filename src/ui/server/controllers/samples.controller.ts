@@ -1,5 +1,5 @@
-import { SampleMetaDTO } from './../model/shared-dto.model';
-import { SampleMetaData } from './../../../app/sampleManagement/model/sample.model';
+import { SampleFactory } from './../../../app/sampleManagement/domain/sample.factory';
+import { SampleMetaDTO, AnalysisDTO } from './../model/shared-dto.model';
 import * as moment from 'moment';
 import * as _ from 'lodash';
 import { Request, Response } from 'express';
@@ -8,12 +8,9 @@ import {
     FormValidatorPort,
     FormAutoCorrectionPort,
     Sample,
-    createSample,
     ValidationOptions,
     SamplePort,
     ApplicantMetaData,
-    AnnotatedSampleDataEntry,
-    SampleData,
     SampleSet,
     SampleSetMetaData,
     TokenPayload,
@@ -22,8 +19,10 @@ import {
     NRLPort,
     Urgency,
     User,
-    DefaultNRLService,
-    ReceiveAs
+    ReceiveAs,
+    SampleData,
+    AnnotatedSampleDataEntry,
+    SampleMetaData
 } from '../../../app/ports';
 import { SamplesController } from '../model/controller.model';
 import {
@@ -65,6 +64,7 @@ import { inject } from 'inversify';
 
 import { APPLICATION_TYPES } from './../../../app/application.types';
 import SERVER_TYPES from '../server.types';
+import { Analysis } from 'src/app/sampleManagement/model/sample.model';
 moment.locale('de');
 
 enum RESOURCE_VIEW_TYPE {
@@ -89,7 +89,8 @@ export class DefaultSamplesController extends AbstractController
         private sampleService: SamplePort,
         @inject(APPLICATION_TYPES.TokenService) private tokenService: TokenPort,
         @inject(APPLICATION_TYPES.UserService) private userService: UserPort,
-        @inject(APPLICATION_TYPES.NRLService) private nrlService: NRLPort
+        @inject(APPLICATION_TYPES.NRLService) private nrlService: NRLPort,
+        @inject(APPLICATION_TYPES.SampleFactory) private factory: SampleFactory
     ) {
         super();
     }
@@ -136,7 +137,9 @@ export class DefaultSamplesController extends AbstractController
             );
             const validatedSampleSet: SampleSet = {
                 samples: validationResult,
-                meta: sampleSet.meta
+                meta: {
+                    ...sampleSet.meta
+                }
             };
             const validatedOrderDTO: OrderDTO = this.fromSampleSetToOrderDTO(
                 validatedSampleSet
@@ -411,7 +414,7 @@ export class DefaultSamplesController extends AbstractController
         const annotatedSampleSet: SampleSet = {
             meta: this.fromDTOToSampleSetMetaData(dto.meta),
             samples: dto.samples.map(container => {
-                return this.fromSampleDataDTOToSample(container.sampleData);
+                return this.fromDTOToSample(container);
             })
         };
         return annotatedSampleSet;
@@ -421,10 +424,7 @@ export class DefaultSamplesController extends AbstractController
         dto: SampleSetMetaDTO
     ): SampleSetMetaData {
         return {
-            nrl: DefaultNRLService.mapNRLStringToEnum(dto.nrl),
-            analysis: dto.analysis,
             sender: dto.sender,
-            urgency: this.fromUrgencyStringToEnum(dto.urgency),
             fileName: dto.fileName ? dto.fileName : ''
         };
     }
@@ -443,17 +443,17 @@ export class DefaultSamplesController extends AbstractController
         data: SampleSetMetaData
     ): SampleSetMetaDTO {
         return {
-            nrl: data.nrl,
-            analysis: data.analysis,
             sender: data.sender,
-            urgency: data.urgency.toString(),
             fileName: data.fileName
         };
     }
 
-    private fromSampleDataDTOToSample(dto: SampleDataDTO): Sample {
-        const annotatedSample = this.fromDTOToAnnotatedSampleData(dto);
-        return createSample({ ...annotatedSample });
+    private fromDTOToSample({ sampleData, sampleMeta }: SampleDTO): Sample {
+        const annotatedSample = this.fromDTOToAnnotatedSampleData(sampleData);
+        const sample = this.factory.createSample({ ...annotatedSample });
+        sample.setAnalysis(sampleMeta.analysis);
+        sample.setUrgency(this.fromUrgencyStringToEnum(sampleMeta.urgency));
+        return sample;
     }
 
     private fromDTOToAnnotatedSampleData(dto: SampleDataDTO): SampleData {
@@ -490,7 +490,12 @@ export class DefaultSamplesController extends AbstractController
             sampleSet: {
                 meta: this.fromSampleSetMetaDataToDTO(sampleSet.meta),
                 samples: sampleSet.samples.map(sample => ({
-                    sampleData: sample.getDataValues()
+                    sampleData: sample.getDataValues(),
+                    sampleMeta: {
+                        nrl: sample.getNRL().toString(),
+                        analysis: this.fromAnalysisToDTO(sample.getAnalysis()),
+                        urgency: sample.getUrgency().toString()
+                    }
                 }))
             }
         };
@@ -512,16 +517,39 @@ export class DefaultSamplesController extends AbstractController
     ): SampleDTO[] {
         return sampleCollection.map((sample: Sample) => ({
             sampleData: sample.getAnnotatedData(),
-            sampleMeta: this.fromSampleMetaToDTO(sample.getSampleMetaData())
+            sampleMeta: this.fromSampleMetaToDTO({
+                analysis: sample.getAnalysis(),
+                nrl: sample.getNRL(),
+                urgency: sample.getUrgency()
+            })
         }));
     }
 
     private fromSampleMetaToDTO(meta: SampleMetaData): SampleMetaDTO {
         return {
-            nrl: meta.nrl.toString()
+            nrl: meta.nrl.toString(),
+            analysis: this.fromAnalysisToDTO(meta.analysis),
+            urgency: meta.urgency.toString()
         };
     }
 
+    private fromAnalysisToDTO(analysis: Partial<Analysis>): AnalysisDTO {
+        return {
+            species: analysis.species || false,
+            serological: analysis.serological || false,
+            resistance: analysis.resistance || false,
+            vaccination: analysis.vaccination || false,
+            molecularTyping: analysis.molecularTyping || false,
+            toxin: analysis.toxin || false,
+            esblAmpCCarbapenemasen: analysis.esblAmpCCarbapenemasen || false,
+            sample: analysis.sample || false,
+            other: analysis.other || '',
+            compareHuman: analysis.compareHuman || {
+                value: '',
+                active: false
+            }
+        };
+    }
     private fromPostSubmittedRequestDTOToApplicantMetaData(
         requestDTO: PostSubmittedRequestDTO,
         user: User

@@ -4,7 +4,6 @@ import {
     ADVCatalogEntry,
     ZSPCatalogEntry
 } from './catalog.model';
-import { NRL } from '../domain/enums';
 
 export interface ValidationError {
     code: number;
@@ -13,11 +12,6 @@ export interface ValidationError {
     correctionOffer?: string[];
 }
 
-export interface NRLConfig {
-    selectors: string[];
-    name: NRL;
-    email: string;
-}
 export interface ValidationRule {
     error: number;
     // tslint:disable-next-line

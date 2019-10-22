@@ -72,6 +72,19 @@ export interface SystemInformationDTO {
     supportContact: string;
 }
 
+export interface NRLCollectionDTO {
+    nrls: NRLDTO[];
+}
+export interface NRLDTO {
+    id: string;
+    standardProcedures: AnalysisProcedureDTO[];
+    optionalProcedures: AnalysisProcedureDTO[];
+}
+
+interface AnalysisProcedureDTO {
+    value: string;
+    key: number;
+}
 export interface InstituteCollectionDTO {
     institutes: InstituteDTO[];
 }

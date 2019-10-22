@@ -1,3 +1,6 @@
+import { SampleFactory } from './../domain/sample.factory';
+import { APPLICATION_TYPES } from './../../application.types';
+import { Analysis } from './../model/sample.model';
 import { WorkBook, WorkSheet, read, utils, CellObject } from 'xlsx';
 import * as _ from 'lodash';
 import * as moment from 'moment';
@@ -7,15 +10,16 @@ import {
     AnnotatedSampleDataEntry,
     Sample,
     SampleData,
-    SampleSetMetaData,
-    Address,
-    Analysis
+    Address
 } from '../model/sample.model';
 
-import { ExcelUnmarshalService } from '../model/excel.model';
-import { createSample } from '../domain/sample.entity';
-import { Urgency, NRL } from '../domain/enums';
-import { injectable } from 'inversify';
+import {
+    ExcelUnmarshalService,
+    EinsendebogenMetaData,
+    EinsendebogenAnalysis
+} from '../model/excel.model';
+import { Urgency, NRL_ID } from '../domain/enums';
+import { injectable, inject } from 'inversify';
 import {
     VALID_SHEET_NAME,
     META_ANALYSIS_SPECIES_CELL,
@@ -29,21 +33,27 @@ import {
     META_URGENCY_CELL,
     META_NRL_CELL,
     FORM_PROPERTIES,
-    META_ANALYSIS_PHAGETYPING_CELL,
     META_ANALYSIS_RESISTANCE_CELL,
     META_ANALYSIS_VACCINATION_CELL,
     META_ANALYSIS_MOLECULARTYPING_CELL,
-    META_ANALYSIS_ZOONOSENISOLATE_CELL,
     META_ANALYSIS_ESBLAMPCCARBAPENEMASEN_CELL,
-    META_ANALYSIS_COMPAREHUMAN_CELL,
+    META_ANALYSIS_COMPAREHUMAN_BOOL_CELL,
     META_SENDER_INSTITUTENAME_CELL,
     META_ANALYSIS_SEROLOGICAL_CELL,
-    META_SENDER_CONTACTPERSON_CELL
+    META_SENDER_CONTACTPERSON_CELL,
+    META_ANALYSIS_COMPAREHUMAN_TEXT_CELL,
+    EMPTY_META,
+    META_ANALYSIS_ZOONOSENISOLATE_CELL,
+    META_ANALYSIS_PHAGETYPING_CELL
 } from '../domain/constants';
 import { DefaultNRLService } from './nrl.service';
 
 @injectable()
 export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
+    constructor(
+        @inject(APPLICATION_TYPES.SampleFactory) private factory: SampleFactory
+    ) {}
+
     async convertExcelToJSJson(
         buffer: Buffer,
         fileName: string
@@ -53,14 +63,19 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
                 buffer
             );
             const data: Sample[] = this.fromWorksheetToData(sampleSheet);
-            const meta: SampleSetMetaData = this.getMetaDataFromFileData(
+            const meta: EinsendebogenMetaData = this.getMetaDataFromFileData(
                 sampleSheet,
                 fileName
             );
 
             return {
-                samples: data,
-                meta
+                samples: this.isForSingleSpecifiedNRL(data, meta)
+                    ? this.addCorrectMetaData(data, meta)
+                    : data,
+                meta: {
+                    sender: meta.sender,
+                    fileName: meta.fileName
+                }
             };
         } catch (error) {
             throw error;
@@ -91,8 +106,8 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
     private getMetaDataFromFileData(
         workSheet: WorkSheet,
         fileName: string
-    ): SampleSetMetaData {
-        const meta: SampleSetMetaData = {
+    ): EinsendebogenMetaData {
+        const meta: EinsendebogenMetaData = {
             nrl: this.getNRLFromWorkSheet(workSheet),
             urgency: this.getUrgencyFromWorkSheet(workSheet),
             sender: this.getSenderFromWorkSheet(workSheet),
@@ -103,7 +118,40 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
         return meta;
     }
 
-    private getAnalysisFromWorkSheet(workSheet: WorkSheet): Analysis {
+    private addCorrectMetaData(
+        data: Sample[],
+        meta: EinsendebogenMetaData
+    ): Sample[] {
+        return data.map(sample => {
+            sample.setAnalysis(
+                this.fromEinsendebogenAnalysisToSampleAnalysis(meta.analysis)
+            );
+            sample.setUrgency(meta.urgency);
+            return sample;
+        });
+    }
+
+    private fromEinsendebogenAnalysisToSampleAnalysis(
+        analysis: EinsendebogenAnalysis
+    ): Partial<Analysis> {
+        return {
+            ...EMPTY_META.analysis,
+            ...{
+                species: analysis.species,
+                serological: analysis.serological,
+                resistance: analysis.resistance,
+                vaccination: analysis.vaccination,
+                molecularTyping: analysis.molecularTyping,
+                toxin: analysis.toxin,
+                esblAmpCCarbapenemasen: analysis.esblAmpCCarbapenemasen,
+                other: analysis.other,
+                compareHuman: _.cloneDeep(analysis.compareHuman)
+            }
+        };
+    }
+    private getAnalysisFromWorkSheet(
+        workSheet: WorkSheet
+    ): EinsendebogenAnalysis {
         return {
             species:
                 !!this.getDataFromCell(workSheet[META_ANALYSIS_SPECIES_CELL]) ||
@@ -112,14 +160,20 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
                 !!this.getDataFromCell(
                     workSheet[META_ANALYSIS_SEROLOGICAL_CELL]
                 ) || false,
-            phageTyping:
-                !!this.getDataFromCell(
-                    workSheet[META_ANALYSIS_PHAGETYPING_CELL]
-                ) || false,
             resistance:
                 !!this.getDataFromCell(
                     workSheet[META_ANALYSIS_RESISTANCE_CELL]
                 ) || false,
+            zoonosenIsolate:
+                !!this.getDataFromCell(
+                    workSheet[META_ANALYSIS_ZOONOSENISOLATE_CELL]
+                ) || false,
+
+            phageTyping:
+                !!this.getDataFromCell(
+                    workSheet[META_ANALYSIS_PHAGETYPING_CELL]
+                ) || false,
+
             vaccination:
                 !!this.getDataFromCell(
                     workSheet[META_ANALYSIS_VACCINATION_CELL]
@@ -131,10 +185,6 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
             toxin:
                 !!this.getDataFromCell(workSheet[META_ANALYSIS_TOXIN_CELL]) ||
                 false,
-            zoonosenIsolate:
-                !!this.getDataFromCell(
-                    workSheet[META_ANALYSIS_ZOONOSENISOLATE_CELL]
-                ) || false,
             esblAmpCCarbapenemasen:
                 !!this.getDataFromCell(
                     workSheet[META_ANALYSIS_ESBLAMPCCARBAPENEMASEN_CELL]
@@ -142,10 +192,18 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
             other: (
                 '' + this.getDataFromCell(workSheet[META_ANALYSIS_OTHER_CELL])
             ).trim(),
-            compareHuman:
-                !!this.getDataFromCell(
-                    workSheet[META_ANALYSIS_COMPAREHUMAN_CELL]
-                ) || false
+            compareHuman: {
+                active:
+                    !!this.getDataFromCell(
+                        workSheet[META_ANALYSIS_COMPAREHUMAN_BOOL_CELL]
+                    ) || false,
+                value: (
+                    '' +
+                    this.getDataFromCell(
+                        workSheet[META_ANALYSIS_COMPAREHUMAN_TEXT_CELL]
+                    )
+                ).trim()
+            }
         };
     }
 
@@ -197,7 +255,7 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
                 return Urgency.NORMAL;
         }
     }
-    private getNRLFromWorkSheet(workSheet: WorkSheet): NRL {
+    private getNRLFromWorkSheet(workSheet: WorkSheet): NRL_ID {
         const workSheetNRL: string = workSheet[META_NRL_CELL].v || '';
         return DefaultNRLService.mapNRLStringToEnum(workSheetNRL);
     }
@@ -222,6 +280,17 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
         return formattedData;
     }
 
+    private isForSingleSpecifiedNRL(
+        samples: Sample[],
+        meta: EinsendebogenMetaData
+    ): boolean {
+        return (
+            samples[0].getNRL() === meta.nrl &&
+            samples.length ===
+                samples.filter(s => s.getNRL() === samples[0].getNRL()).length
+        );
+    }
+
     private formatData(data: Record<string, string>[]): Sample[] {
         const formattedData = data.map((sample: Record<string, string>) => {
             const annotatedSampleData: Record<
@@ -236,7 +305,7 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
                     sample[props]
                 );
             }
-            return createSample(annotatedSampleData as SampleData);
+            return this.factory.createSample(annotatedSampleData as SampleData);
         });
         return formattedData;
     }
