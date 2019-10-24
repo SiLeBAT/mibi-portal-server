@@ -17,17 +17,9 @@ export interface ZSPCatalogEntry {
     'ADV3-Kode': string;
     'ADV3-Text1': string;
 }
+
 export interface ADV9CatalogEntry extends ADVCatalogEntry {
     PLZ: string;
-}
-export interface CatalogConfig {
-    filename: string;
-    id: string;
-    uId?: string;
-    filterFunction?: Function;
-    mappingFunction?: Function;
-    delimiter?: string;
-    headers: boolean;
 }
 
 export interface Catalog<T extends CatalogData> {
