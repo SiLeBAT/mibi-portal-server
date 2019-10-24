@@ -1,0 +1,142 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b84f5387_08fcb401",
+        "filename": "src/app/sampleManagement/application/json-marshal.service.ts",
+        "patchSetId": 1
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1015828
+      },
+      "writtenOn": "2019-10-24T14:36:12Z",
+      "side": 1,
+      "message": "duplicated code (see pdf service)",
+      "range": {
+        "startLine": 93,
+        "startChar": 0,
+        "endLine": 139,
+        "endChar": 5
+      },
+      "revId": "7dd6ea613eb380bc4f993fda0cc8d9faa2d0c9a3",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "af6e0a88_4a05a432",
+        "filename": "src/app/sampleManagement/application/nrl.service.ts",
+        "patchSetId": 1
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1015828
+      },
+      "writtenOn": "2019-10-24T14:36:12Z",
+      "side": 1,
+      "message": "This is loaded and cached in the constructor, why is it loaded again?",
+      "range": {
+        "startLine": 76,
+        "startChar": 4,
+        "endLine": 78,
+        "endChar": 5
+      },
+      "revId": "7dd6ea613eb380bc4f993fda0cc8d9faa2d0c9a3",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "22a76a0e_47d51ec8",
+        "filename": "src/app/sampleManagement/application/nrl.service.ts",
+        "patchSetId": 1
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 1015828
+      },
+      "writtenOn": "2019-10-24T14:36:12Z",
+      "side": 1,
+      "message": "duplicated code",
+      "range": {
+        "startLine": 116,
+        "startChar": 0,
+        "endLine": 143,
+        "endChar": 5
+      },
+      "revId": "7dd6ea613eb380bc4f993fda0cc8d9faa2d0c9a3",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "27b69f6a_a0f1331e",
+        "filename": "src/app/sampleManagement/domain/validator.entity.ts",
+        "patchSetId": 1
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1015828
+      },
+      "writtenOn": "2019-10-24T14:36:12Z",
+      "side": 1,
+      "message": "unecessary splice operator",
+      "range": {
+        "startLine": 73,
+        "startChar": 27,
+        "endLine": 73,
+        "endChar": 54
+      },
+      "revId": "7dd6ea613eb380bc4f993fda0cc8d9faa2d0c9a3",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "64298b44_595136b7",
+        "filename": "src/app/sampleManagement/model/excel.model.ts",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1015828
+      },
+      "writtenOn": "2019-10-24T14:36:12Z",
+      "side": 1,
+      "message": "duplicate interface (see sample.model)",
+      "range": {
+        "startLine": 28,
+        "startChar": 0,
+        "endLine": 43,
+        "endChar": 1
+      },
+      "revId": "7dd6ea613eb380bc4f993fda0cc8d9faa2d0c9a3",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c290631e_20b32174",
+        "filename": "src/ui/server/controllers/samples.controller.ts",
+        "patchSetId": 1
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1015828
+      },
+      "writtenOn": "2019-10-24T14:36:12Z",
+      "side": 1,
+      "message": "?",
+      "range": {
+        "startLine": 140,
+        "startChar": 0,
+        "endLine": 142,
+        "endChar": 17
+      },
+      "revId": "7dd6ea613eb380bc4f993fda0cc8d9faa2d0c9a3",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    }
+  ]
+}
