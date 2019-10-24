@@ -40,9 +40,9 @@ class DefaultCatalog<T extends CatalogData> implements Catalog<T> {
         return this.data;
     }
     // tslint:disable-next-line
-    getFuzzyIndex(options: Fuse.FuseOptions, enhamcements: any[] = []): Fuse {
+    getFuzzyIndex(options: Fuse.FuseOptions, enhancements: any[] = []): Fuse {
         const data = this.dump();
-        return new Fuse(data.concat(enhamcements), options);
+        return new Fuse(data.concat(enhancements), options);
     }
 }
 
