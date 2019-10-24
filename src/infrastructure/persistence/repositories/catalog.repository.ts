@@ -4,11 +4,38 @@ import {
     Catalog,
     createCatalog,
     CatalogData,
-    CatalogConfig,
     ADVCatalogEntry,
-    ADV9CatalogEntry
+    ADV9CatalogEntry,
+    ZSPCatalogEntry
 } from '../../../app/ports';
 import { loadCSVFile } from '../data-store/file/file-loader';
+import * as _ from 'lodash';
+import { CSVConfig } from '../model/file-loader.model';
+
+interface CatalogConfig<T extends string, R> {
+    id: string;
+    uId?: string;
+    csvSources: ({ fileName: string } & CSVConfig<T, R>)[];
+}
+
+type GenCatalogConfig = CatalogConfig<string, CatalogData>;
+
+type ADVHeader = keyof ADVCatalogEntry;
+type TextHeader = 'Text1' | 'Text2' | 'Text3' | 'Text4' | 'Text5';
+
+const advHeaders: { [header in ADVHeader]: number } = {
+    Kodiersystem: 1,
+    Kode: 2,
+    Text: 6
+};
+
+const textHeaders: { [header in TextHeader]: number } = {
+    Text1: 7,
+    Text2: 8,
+    Text3: 9,
+    Text4: 10,
+    Text5: 11
+};
 
 class FileCatalogRepository implements CatalogRepository {
     private catalogs: {
@@ -18,147 +45,176 @@ class FileCatalogRepository implements CatalogRepository {
         this.catalogs = {};
     }
 
-    initialise() {
+    async initialise(): Promise<void> {
         logger.verbose(
             `${this.constructor.name}.${
                 this.initialise.name
             }, loading Catalog data from Filesystem.`
         );
 
-        const catalogsConfig: CatalogConfig[] = [
-            {
-                filename: 'ADV2.csv',
-                id: 'adv2',
-                uId: 'Kode',
-                delimiter: '#',
-                headers: false,
-                mappingFunction: (e: string[]): ADVCatalogEntry => ({
-                    Kode: e[2],
-                    Kodiersystem: e[1],
-                    Text: e[6].concat(e[7], e[8], e[9], e[10], e[11])
-                })
-            },
-            {
-                filename: 'ADV3.csv',
-                id: 'adv3',
-                delimiter: '#',
-                headers: false,
-                mappingFunction: (e: string[]): ADVCatalogEntry => ({
-                    Kode: e[2],
-                    Kodiersystem: e[1].replace(/^0/, ''),
-                    Text: e[6].concat(e[7], e[8], e[9], e[10], e[11])
-                })
-            },
-            {
-                filename: 'ADV4.csv',
-                id: 'adv4',
-                uId: 'Kode',
-                headers: false,
-                delimiter: '#',
-                mappingFunction: (e: string[]): ADVCatalogEntry => ({
-                    Kode: e[2],
-                    Kodiersystem: e[1],
-                    Text: e[6]
-                })
-            },
-            {
-                filename: 'ADV8.csv',
-                id: 'adv8',
-                uId: 'Kode',
-                headers: false,
-                delimiter: '#',
-                mappingFunction: (e: string[]): ADVCatalogEntry => ({
-                    Kode: e[2],
-                    Kodiersystem: e[1],
-                    Text: e[6]
-                })
-            },
-            {
-                filename: 'ADV9.csv',
-                id: 'adv9',
-                uId: 'Kode',
-                headers: false,
-                delimiter: '#',
-                mappingFunction: (e: string[]): ADV9CatalogEntry => ({
-                    Kode: e[2],
-                    Kodiersystem: e[1],
-                    Text: e[6],
-                    PLZ: e[8]
-                })
-            },
-            {
-                filename: 'ADV12.csv',
-                id: 'adv12',
-                uId: 'Kode',
-                headers: false,
-                delimiter: '#',
-                mappingFunction: (e: string[]): ADVCatalogEntry => ({
-                    Kode: e[2],
-                    Kodiersystem: e[1],
-                    Text: e[6]
-                })
-            },
-            {
-                filename: 'ADV16.csv',
-                id: 'adv16',
-                uId: 'Kode',
-                headers: false,
-                delimiter: '#',
-                mappingFunction: (e: string[]): ADVCatalogEntry => ({
-                    Kode: e[2],
-                    Kodiersystem: e[1],
-                    Text: e[6]
-                }),
-                filterFunction: (entry: string[]) => {
-                    const code = parseInt(entry[2], 10);
-                    return (
-                        (code >= 302000 && code < 306000) ||
-                        (code >= 500000 && code < 1700000) ||
-                        (code >= 3402000 && code < 3402080) ||
-                        (code >= 5500000 && code < 6000000)
-                    );
+        const catalogsConfig: GenCatalogConfig[] = [];
+
+        const adv2Config: CatalogConfig<
+            ADVHeader | TextHeader,
+            ADVCatalogEntry
+        > = {
+            id: 'adv2',
+            uId: 'Kode',
+            csvSources: [
+                {
+                    fileName: 'ADV2.csv',
+                    delimiter: '#',
+                    headers: { ...advHeaders, ...textHeaders },
+                    mappingFunction: e => ({
+                        Kode: e.Kode,
+                        Kodiersystem: e.Kodiersystem,
+                        Text: e.Text.concat(
+                            e.Text1,
+                            e.Text2,
+                            e.Text3,
+                            e.Text4,
+                            e.Text5
+                        )
+                    })
                 }
-            },
-            {
-                filename: 'PLZ.csv',
-                id: 'plz',
-                uId: 'plz',
-                headers: true
-            }
-        ];
+            ]
+        };
+        catalogsConfig.push(adv2Config);
 
-        this.addZoMoDates(catalogsConfig);
+        const adv3Config: CatalogConfig<
+            ADVHeader | TextHeader,
+            ADVCatalogEntry
+        > = {
+            id: 'adv3',
+            csvSources: [
+                {
+                    fileName: 'ADV3.csv',
+                    delimiter: '#',
+                    headers: { ...advHeaders, ...textHeaders },
+                    mappingFunction: e => ({
+                        Kode: e.Kode,
+                        Kodiersystem: e.Kodiersystem.replace(/^0/, ''),
+                        Text: e.Text.concat(
+                            e.Text1,
+                            e.Text2,
+                            e.Text3,
+                            e.Text4,
+                            e.Text5
+                        )
+                    })
+                }
+            ]
+        };
+        catalogsConfig.push(adv3Config);
 
-        const promiseArray = catalogsConfig.map(catalogConfig => {
-            return loadCSVFile<CatalogData>(catalogConfig, this.dataDir).then(
-                (data: CatalogData[]) =>
-                    (this.catalogs[catalogConfig.id] = createCatalog<
-                        CatalogData
-                    >(data, catalogConfig.uId)),
-                (error: Error) => {
-                    return new Promise((resolve, reject) => {
-                        logger.warn(
-                            `${this.constructor.name}.${
-                                this.initialise.name
-                            }, Catalog missing on Filesystem. catalog=${
-                                catalogConfig.filename
-                            }; error=${error}`
+        const adv4Config: CatalogConfig<ADVHeader, ADVCatalogEntry> = {
+            id: 'adv4',
+            uId: 'Kode',
+            csvSources: [
+                {
+                    fileName: 'ADV4.csv',
+                    delimiter: '#',
+                    headers: advHeaders,
+                    mappingFunction: e => e
+                }
+            ]
+        };
+        catalogsConfig.push(adv4Config);
+
+        const adv8Config: CatalogConfig<ADVHeader, ADVCatalogEntry> = {
+            id: 'adv8',
+            uId: 'Kode',
+            csvSources: [
+                {
+                    fileName: 'ADV8.csv',
+                    delimiter: '#',
+                    headers: advHeaders,
+                    mappingFunction: e => e
+                }
+            ]
+        };
+        catalogsConfig.push(adv8Config);
+
+        const adv9Config: CatalogConfig<ADVHeader | 'PLZ', ADV9CatalogEntry> = {
+            id: 'adv9',
+            uId: 'Kode',
+            csvSources: [
+                {
+                    fileName: 'ADV9.csv',
+                    delimiter: '#',
+                    headers: { ...advHeaders, PLZ: 8 },
+                    mappingFunction: e => e
+                }
+            ]
+        };
+        catalogsConfig.push(adv9Config);
+
+        const adv12Config: CatalogConfig<ADVHeader, ADVCatalogEntry> = {
+            id: 'adv12',
+            uId: 'Kode',
+            csvSources: [
+                {
+                    fileName: 'ADV12.csv',
+                    delimiter: '#',
+                    headers: advHeaders,
+                    mappingFunction: e => e
+                }
+            ]
+        };
+        catalogsConfig.push(adv12Config);
+
+        const adv16Config: CatalogConfig<ADVHeader, ADVCatalogEntry> = {
+            id: 'adv16',
+            uId: 'Kode',
+            csvSources: [
+                {
+                    fileName: 'ADV16.csv',
+                    delimiter: '#',
+                    headers: advHeaders,
+                    mappingFunction: e => e,
+                    filterFunction: e => {
+                        const code = parseInt(e.Kode, 10);
+                        return (
+                            (code >= 302000 && code < 306000) ||
+                            (code >= 500000 && code < 1700000) ||
+                            (code >= 3402000 && code < 3402080) ||
+                            (code >= 5500000 && code < 6000000)
                         );
-                        this.catalogs[catalogConfig.id] = createCatalog<
-                            CatalogData
-                        >([], catalogConfig.uId);
-                        resolve();
-                    });
+                    }
+                },
+                {
+                    fileName: 'ADV16_bfr.csv',
+                    delimiter: '#',
+                    headers: advHeaders,
+                    mappingFunction: e => e
                 }
-            );
-        });
+            ]
+        };
+        catalogsConfig.push(adv16Config);
 
-        return Promise.all(promiseArray).then(() =>
-            logger.info(
-                `${this.constructor.name}.${
-                    this.initialise.name
-                }, finished initialising Catalog Repository from Filesystem.`
-            )
+        const plzConfig: CatalogConfig<string, Record<string, string>> = {
+            id: 'plz',
+            uId: 'plz',
+            csvSources: [
+                {
+                    fileName: 'PLZ.csv',
+                    headers: true,
+                    mappingFunction: e => e
+                }
+            ]
+        };
+        catalogsConfig.push(plzConfig);
+
+        this.addZoMoCatalogs(catalogsConfig);
+
+        await Promise.all(
+            catalogsConfig.map(config => this.addCatalog(config))
+        );
+
+        logger.info(
+            `${this.constructor.name}.${
+                this.initialise.name
+            }, finished initialising Catalog Repository from Filesystem.`
         );
     }
 
@@ -166,32 +222,64 @@ class FileCatalogRepository implements CatalogRepository {
         return this.catalogs[catalogName] as Catalog<T>;
     }
 
-    private addZoMoDates(catalogsConfig: CatalogConfig[]): CatalogConfig[] {
+    private async addCatalog(config: GenCatalogConfig): Promise<void> {
+        const data = _.flatten(
+            await Promise.all(
+                config.csvSources.map(async source => {
+                    try {
+                        return await loadCSVFile(
+                            source.fileName,
+                            this.dataDir,
+                            source
+                        );
+                    } catch (err) {
+                        logger.warn(
+                            `${this.constructor.name}.${
+                                this.initialise.name
+                            }, Catalog missing on Filesystem. catalog=${
+                                source.fileName
+                            }; error=${err}`
+                        );
+                        return [];
+                    }
+                })
+            )
+        );
+        this.catalogs[config.id] = createCatalog(data, config.uId);
+    }
+
+    private addZoMoCatalogs(catalogsConfig: GenCatalogConfig[]): void {
         const currentYear = new Date().getFullYear();
 
-        const currentName: string = 'zsp' + currentYear;
-        const lastName: string = 'zsp' + (currentYear - 1);
-        const futureName: string = 'zsp' + (currentYear + 1);
+        const names = [
+            'zsp' + currentYear,
+            'zsp' + (currentYear - 1),
+            'zsp' + (currentYear + 1)
+        ];
 
-        catalogsConfig.push({
-            filename: currentName.toUpperCase() + '.csv',
-            id: currentName,
-            headers: true
+        names.forEach(name => {
+            catalogsConfig.push(this.createZoMoCatalogConfig(name));
         });
+    }
 
-        catalogsConfig.push({
-            filename: lastName.toUpperCase() + '.csv',
-            id: lastName,
-            headers: true
-        });
-
-        catalogsConfig.push({
-            filename: futureName.toUpperCase() + '.csv',
-            id: futureName,
-            headers: true
-        });
-
-        return catalogsConfig;
+    private createZoMoCatalogConfig(
+        name: string
+    ): CatalogConfig<keyof ZSPCatalogEntry, ZSPCatalogEntry> {
+        return {
+            id: name,
+            csvSources: [
+                {
+                    fileName: name.toUpperCase() + '.csv',
+                    headers: true,
+                    mappingFunction: e => ({
+                        'ADV8-Kode': e['ADV8-Kode'],
+                        'ADV3-Kode': e['ADV3-Kode'],
+                        'ADV3-Text1': e['ADV3-Text1'],
+                        Kodiersystem: e.Kodiersystem
+                    })
+                }
+            ]
+        };
     }
 }
 
