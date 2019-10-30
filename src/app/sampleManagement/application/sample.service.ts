@@ -71,9 +71,12 @@ export class DefaultSampleService implements SampleService {
         applicantMetaData: ApplicantMetaData
     ): Promise<void> {
         const splittedSampleSets = this.splitSampleSet(sampleSet);
+        const nrlSampleSets = splittedSampleSets.map(sampleSet =>
+            this.createNRLSampleSet(sampleSet)
+        );
 
         const nrlSampleSheets = await this.createSampleSheets(
-            splittedSampleSets,
+            nrlSampleSets,
             sampleSet => this.jsonMarshalService.convertJSONToExcel(sampleSet)
         );
 
@@ -311,5 +314,24 @@ export class DefaultSampleService implements SampleService {
         fileName += fileNameAddon + fileExtension;
         fileName = fileName.replace(' ', '_');
         return fileName;
+    }
+
+    private createNRLSampleSet(sampleSet: SampleSet) {
+        const nrlSampleSet: SampleSet = {
+            meta: sampleSet.meta,
+            samples: sampleSet.samples.map(sample => sample.clone())
+        };
+
+        nrlSampleSet.samples.forEach(sample => {
+            const sampleData = sample.getAnnotatedData();
+            const sampleID = sampleData.sample_id.value;
+            const sampleIDAVV = sampleData.sample_id_avv.value;
+            if (!sampleID && sampleIDAVV) {
+                sampleData.sample_id.value = sampleIDAVV;
+                sampleData.sample_id.oldValue = '';
+            }
+        });
+
+        return nrlSampleSet;
     }
 }
