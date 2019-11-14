@@ -28,9 +28,7 @@ async function loadCSVFile<T>(
     dataDir: string
 ): Promise<T[]> {
     logger.verbose(
-        `Loading data from Filesystem. fileName=${
-            catalogConfig.filename
-        } dataDir=${dataDir}`
+        `Loading data from Filesystem. fileName=${catalogConfig.filename} dataDir=${dataDir}`
     );
     const filePath = resolveFilePath(catalogConfig.filename, dataDir);
     return importCSVFile<T>({

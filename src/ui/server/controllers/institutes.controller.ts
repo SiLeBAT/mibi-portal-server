@@ -29,9 +29,7 @@ export class DefaultInstituteController extends AbstractController
     @httpGet('/')
     async getInstitutes(@request() req: Request, @response() res: Response) {
         logger.info(
-            `${this.constructor.name}.${
-                this.getInstitutes.name
-            }, Request received`
+            `${this.constructor.name}.${this.getInstitutes.name}, Request received`
         );
         await this.instiuteService
             .retrieveInstitutes()
@@ -41,17 +39,13 @@ export class DefaultInstituteController extends AbstractController
                 );
                 const dto: InstituteCollectionDTO = { institutes };
                 logger.info(
-                    `${this.constructor.name}.${
-                        this.getInstitutes.name
-                    }, Response sent`
+                    `${this.constructor.name}.${this.getInstitutes.name}, Response sent`
                 );
                 this.ok(res, dto);
             })
             .catch(error => {
                 logger.info(
-                    `${this.constructor.name}.${
-                        this.getInstitutes.name
-                    } has thrown an error. ${error}`
+                    `${this.constructor.name}.${this.getInstitutes.name} has thrown an error. ${error}`
                 );
                 this.handleError(res);
             });

@@ -37,17 +37,13 @@ export class DefaultNRLsController extends AbstractController
                 const nrlDTOs: NRLDTO[] = nrls.map(i => this.fromNRLToDTO(i));
                 const dto: NRLCollectionDTO = { nrls: nrlDTOs };
                 logger.info(
-                    `${this.constructor.name}.${
-                        this.getNRLs.name
-                    }, Response sent`
+                    `${this.constructor.name}.${this.getNRLs.name}, Response sent`
                 );
                 this.ok(res, dto);
             })
             .catch(error => {
                 logger.info(
-                    `${this.constructor.name}.${
-                        this.getNRLs.name
-                    } has thrown an error. ${error}`
+                    `${this.constructor.name}.${this.getNRLs.name} has thrown an error. ${error}`
                 );
                 this.handleError(res);
             });
