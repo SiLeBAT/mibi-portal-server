@@ -1,7 +1,10 @@
 import { NRL_ID } from './../domain/enums';
 import { Analysis } from './../model/sample.model';
 import { EinsendebogenAnalysis } from './../model/excel.model';
-import { EMPTY_META } from './../domain/constants';
+import {
+    EMPTY_META,
+    META_ANAYLSIS_OTHER_BOOL_CELL
+} from './../domain/constants';
 import * as _ from 'lodash';
 // @ts-ignore
 import * as XlsxPopulate from 'xlsx-populate';
@@ -35,7 +38,7 @@ import {
     META_ANALYSIS_MOLECULARTYPING_CELL,
     META_ANALYSIS_TOXIN_CELL,
     META_ANALYSIS_ESBLAMPCCARBAPENEMASEN_CELL,
-    META_ANALYSIS_OTHER_CELL,
+    META_ANALYSIS_OTHER_TEXT_CELL,
     META_ANALYSIS_COMPAREHUMAN_BOOL_CELL,
     META_ANALYSIS_COMPAREHUMAN_TEXT_CELL
 } from '../domain/constants';
@@ -222,7 +225,14 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
                         meta.analysis.esblAmpCCarbapenemasen
                     )
                 );
-            sheet.cell(META_ANALYSIS_OTHER_CELL).value(meta.analysis.other);
+            sheet
+                .cell(META_ANAYLSIS_OTHER_BOOL_CELL)
+                .value(
+                    this.mapAnalysisBooleanToString(meta.analysis.other !== '')
+                );
+            sheet
+                .cell(META_ANALYSIS_OTHER_TEXT_CELL)
+                .value(meta.analysis.other);
             sheet
                 .cell(META_ANALYSIS_COMPAREHUMAN_BOOL_CELL)
                 .value(

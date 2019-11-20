@@ -24,7 +24,7 @@ import {
     VALID_SHEET_NAME,
     META_ANALYSIS_SPECIES_CELL,
     META_ANALYSIS_TOXIN_CELL,
-    META_ANALYSIS_OTHER_CELL,
+    META_ANALYSIS_OTHER_TEXT_CELL,
     META_SENDER_DEPARTMENT_CELL,
     META_SENDER_STREET_CELL,
     META_SENDER_ZIP_CITY_CELL,
@@ -190,7 +190,8 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
                     workSheet[META_ANALYSIS_ESBLAMPCCARBAPENEMASEN_CELL]
                 ) || false,
             other: (
-                '' + this.getDataFromCell(workSheet[META_ANALYSIS_OTHER_CELL])
+                '' +
+                this.getDataFromCell(workSheet[META_ANALYSIS_OTHER_TEXT_CELL])
             ).trim(),
             compareHuman: {
                 active:
