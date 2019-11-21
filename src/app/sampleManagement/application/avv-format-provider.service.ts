@@ -7,7 +7,6 @@ import { APPLICATION_TYPES } from './../../application.types';
 
 moment.locale('de');
 
-// TODO: should these be in the DB?
 @injectable()
 export class DefaultAVVFormatProvider implements AVVFormatProvider {
     private stateFormats: AVVFormatCollection = {};

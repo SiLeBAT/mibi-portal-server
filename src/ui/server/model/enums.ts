@@ -8,5 +8,5 @@ export enum SERVER_ERROR_CODE {
 }
 
 export enum ROUTE {
-    VERSION = '/v1'
+    VERSION = '/v2'
 }

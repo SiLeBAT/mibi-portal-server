@@ -178,7 +178,7 @@ export const zoMoConstraints: ValidationConstraints = {
         }
     },
     process_state_adv: {
-        dependentFieldEntry: {
+        requiredIfOther: {
             error: 39,
             field: 'operations_mode_adv',
             regex: '^4'
@@ -197,6 +197,46 @@ export const standardConstraints: ValidationConstraints = {
         atLeastOneOf: {
             error: 19,
             additionalMembers: ['sampling_date']
+        }
+    },
+    sampling_reason_adv: {
+        shouldBeZoMo: {
+            error: 97,
+            group: [
+                {
+                    attr: 'operations_mode_adv',
+                    code: 'ADV8-Kode'
+                },
+                {
+                    attr: 'matrix_adv',
+                    code: 'ADV3-Kode'
+                },
+                {
+                    attr: 'topic_adv',
+                    code: 'Kodiersystem'
+                }
+            ],
+            year: ['sampling_date', 'isolation_date']
+        }
+    },
+    sampling_reason_text: {
+        shouldBeZoMo: {
+            error: 97,
+            group: [
+                {
+                    attr: 'operations_mode_adv',
+                    code: 'ADV8-Kode'
+                },
+                {
+                    attr: 'matrix_adv',
+                    code: 'ADV3-Kode'
+                },
+                {
+                    attr: 'topic_adv',
+                    code: 'Kodiersystem'
+                }
+            ],
+            year: ['sampling_date', 'isolation_date']
         }
     }
 };
@@ -230,13 +270,10 @@ export const baseConstraints: ValidationConstraints = {
         matchADVNumberOrString: {
             error: 8,
             catalog: 'adv16',
-            alternateKeys: ['Text1']
+            alternateKeys: ['Text']
         },
-        matchesRegexPattern: {
-            caseInsensitive: true,
-            error: 73,
-            regex: [],
-            ignoreNumbers: true
+        nrlExists: {
+            error: 96
         }
     },
     sampling_date: {
@@ -455,12 +492,18 @@ export const baseConstraints: ValidationConstraints = {
         inCatalog: {
             error: 42,
             catalog: 'adv4'
+        },
+        noPlanprobeForNRL_AR: {
+            error: 95
         }
     },
     sampling_reason_text: {
         atLeastOneOf: {
             error: 44,
             additionalMembers: ['sampling_reason_adv']
+        },
+        noPlanprobeForNRL_AR: {
+            error: 95
         }
     },
     operations_mode_adv: {

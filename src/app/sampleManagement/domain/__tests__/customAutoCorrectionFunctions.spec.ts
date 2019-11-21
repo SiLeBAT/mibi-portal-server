@@ -79,22 +79,22 @@ describe('Custom Auto-correction Functions', () => {
                 {
                     Kode: '0801001',
                     'P-Code3': 'Escherichia coli',
-                    Text1: 'Escherichia coli'
+                    Text: 'Escherichia coli'
                 },
                 {
                     Kode: '0803326',
                     'P-Code3': 'S.Colindale',
-                    Text1: 'Salmonella Colindale'
+                    Text: 'Salmonella Colindale'
                 },
                 {
                     Kode: '0803502',
                     'P-Code3': 'S.Dublin',
-                    Text1: 'Salmonella Dublin'
+                    Text: 'Salmonella Dublin'
                 },
                 {
                     Kode: '0801014',
                     'P-Code3': '',
-                    Text1: 'Escherichia coli Carbapenemase-bildend'
+                    Text: 'Escherichia coli Carbapenemase-bildend'
                 }
             ];
 
@@ -692,7 +692,7 @@ describe('Custom Auto-correction Functions', () => {
             let mockADVEntries = [
                 {
                     Kode: '046',
-                    Text1: 'Kaltgeräuchert'
+                    Text: 'Kaltgeräuchert'
                 }
             ];
 

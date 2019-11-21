@@ -5,7 +5,8 @@ import {
     User,
     State,
     ValidationError,
-    NRLConfig
+    NRL,
+    DefaultNRLService
 } from '../../../app/ports';
 import { InstitutionModel } from '../data-store/mongoose/schemas/institution.schema';
 import { UserModel } from '../data-store/mongoose/schemas/user.schema';
@@ -64,10 +65,19 @@ function mapModelToValidationError(
     };
 }
 
-function mapModelToNRL(model: NRLModel): NRLConfig {
+function mapModelToNRL(model: NRLModel): NRL {
     return {
-        name: model.name,
-        selectors: model.selector
+        id: DefaultNRLService.mapNRLStringToEnum(model.name),
+        selectors: model.selector,
+        email: model.email,
+        standardProcedures: model.standardProcedures.map(p => ({
+            value: p.value,
+            key: p.key
+        })),
+        optionalProcedures: model.optionalProcedures.map(p => ({
+            value: p.value,
+            key: p.key
+        }))
     };
 }
 

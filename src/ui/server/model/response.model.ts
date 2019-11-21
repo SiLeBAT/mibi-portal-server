@@ -1,5 +1,5 @@
 import { OrderDTO } from './shared-dto.model';
-import { ExcelFileInfo } from 'src/app/ports';
+import { ExcelFileInfo } from '../../../app/ports';
 
 export interface RegistrationRequestResponseDTO {
     registerRequest: boolean;
@@ -72,6 +72,19 @@ export interface SystemInformationDTO {
     supportContact: string;
 }
 
+export interface NRLCollectionDTO {
+    nrls: NRLDTO[];
+}
+export interface NRLDTO {
+    id: string;
+    standardProcedures: AnalysisProcedureDTO[];
+    optionalProcedures: AnalysisProcedureDTO[];
+}
+
+interface AnalysisProcedureDTO {
+    value: string;
+    key: number;
+}
 export interface InstituteCollectionDTO {
     institutes: InstituteDTO[];
 }

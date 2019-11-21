@@ -20,8 +20,7 @@ export const genericValidationErrors = [
     {
         code: 8,
         level: 2,
-        message:
-            'Erreger nicht erkannt. Der verwendete Text/Code kodiert keinen Erreger, der am BfR untersucht wird.'
+        message: 'Erreger nicht erkannt.'
     },
     {
         code: 10,
@@ -337,6 +336,17 @@ export const genericValidationErrors = [
         level: 1,
         message:
             'Planproben sind normalerweise nicht für das NRL Antibiotikaresistenz bestimmt.'
+    },
+    {
+        code: 96,
+        level: 2,
+        message: 'Dieser Erreger wird von keinem BfR-Labor untersucht.'
+    },
+    {
+        code: 97,
+        level: 1,
+        message:
+            'Ihre Daten passen zum Zoonosen-Stichprobenplan. Bitte prüfen Sie noch einmal, ob Sie nicht als Grund Code 81 bzw. Text "Zoonosen-Monitoring - Planprobe" angeben sollten.'
     }
 ];
 export function getMockValidationErrorRepository(): ValidationErrorRepository {

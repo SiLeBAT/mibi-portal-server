@@ -1,8 +1,9 @@
+import { ADVCatalogEntry, ZSPCatalogEntry } from './../model/catalog.model';
 import * as moment from 'moment';
 import * as _ from 'lodash';
 import {
     ValidationError,
-    DependentFieldEntryOptions,
+    RequiredIfOtherOptions,
     MatchRegexPatternOptions,
     MatchIdToYearOptions,
     ValidatorFunction,
@@ -13,22 +14,48 @@ import {
     AtLeastOneOfOptions,
     DependentFieldsOptions,
     NumbersOnlyOptions,
-    ReferenceDateOptions
+    ReferenceDateOptions,
+    ValidatorFunctionOptions
 } from '../model/validation.model';
 import { CatalogService } from '../model/catalog.model';
 import { SampleProperty, SamplePropertyValues } from '../model/sample.model';
 import { MalformedValidationOptionsError } from './domain.error';
+import { NRL_ID } from './enums';
 
 moment.locale('de');
 
-function dependentFieldEntry(
+function nrlExists(
     value: string,
-    options: DependentFieldEntryOptions,
+    options: ValidatorFunctionOptions,
+    key: SampleProperty,
+    attributes: Record<string, string>
+) {
+    if (attributes.nrl === NRL_ID.UNKNOWN) {
+        return { ...options.message };
+    }
+    return null;
+}
+
+function noPlanprobeForNRL_AR(
+    value: string,
+    options: ValidatorFunctionOptions,
+    key: SampleProperty,
+    attributes: Record<string, string>
+) {
+    const disallowed = [10, '10', 'Planprobe'];
+    return attributes.nrl === NRL_ID.NRL_AR && _.includes(disallowed, value)
+        ? { ...options.message }
+        : null;
+}
+
+function requiredIfOther(
+    value: string,
+    options: RequiredIfOtherOptions,
     key: SampleProperty,
     attributes: Record<string, string>
 ) {
     const re = new RegExp(options.regex);
-    const matchResult = re.test(attributes[options.field]);
+    const matchResult = re.test(attributes[options.field].toString());
     if (matchResult && isEmptyString(attributes[key])) {
         return { ...options.message };
     }
@@ -130,26 +157,27 @@ function nonUniqueEntry(
         attributes: SamplePropertyValues
     ) => {
         if (attributes[key]) {
-            const cat = catalogService.getCatalog(options.catalog);
+            const cat = catalogService.getCatalog<ADVCatalogEntry>(
+                options.catalog
+            );
             if (cat && options.key) {
                 const entries = cat.getEntriesWithKeyValue(options.key, value);
                 if (entries.length < 2) return null;
                 if (attributes[options.differentiator[1]]) {
                     const n = _.filter(
                         entries,
-                        e =>
+                        (e: ADVCatalogEntry) =>
                             e[options.differentiator[0]] ===
                             attributes[options.differentiator[1]]
                     );
                     if (n.length === 1) return null;
                 }
-                // TODO: find better way to do this
                 const newMessage: ValidationError = { ...options.message };
                 newMessage.message += ` Entweder '${
                     entries[0].Kodiersystem
-                }' für '${entries[0].Text1}' oder '${
+                }' für '${entries[0].Text}' oder '${
                     entries[1].Kodiersystem
-                }' für '${entries[1].Text1}'.`;
+                }' für '${entries[1].Text}'.`;
                 return newMessage;
             }
         }
@@ -227,6 +255,41 @@ function matchADVNumberOrString(
     };
 }
 
+function shouldBeZoMo(
+    catalogService: CatalogService
+): ValidatorFunction<RegisteredZoMoOptions> {
+    return (
+        value: string,
+        options: RegisteredZoMoOptions,
+        key: SampleProperty,
+        attributes: SamplePropertyValues
+    ) => {
+        const years = getYears(options.year, attributes);
+
+        let result = null;
+        _.forEach(years, yearToCheck => {
+            const cat = catalogService.getCatalog<ZSPCatalogEntry>(
+                'zsp' + yearToCheck
+            );
+            if (cat) {
+                const groupValues = options.group.map(g => attributes[g.attr]);
+                const entry = cat.getEntriesWithKeyValue(
+                    options.group[0].code,
+                    groupValues[0]
+                );
+                const filtered = _.filter(
+                    entry,
+                    e => e[options.group[2].code] === groupValues[2]
+                ).filter(m => m[options.group[1].code] === groupValues[1]);
+                if (filtered.length >= 1) {
+                    result = { ...options.message };
+                }
+            }
+        });
+        return result;
+    };
+}
+
 function registeredZoMo(
     catalogService: CatalogService
 ): ValidatorFunction<RegisteredZoMoOptions> {
@@ -236,16 +299,12 @@ function registeredZoMo(
         key: SampleProperty,
         attributes: SamplePropertyValues
     ) => {
-        const years = options.year.map((y: SampleProperty) => {
-            const yearValue = attributes[y];
-            const formattedYear = moment
-                .utc(yearValue, 'DD-MM-YYYY')
-                .format('YYYY');
-            return parseInt(formattedYear, 10);
-        });
+        const years = getYears(options.year, attributes);
         if (years.length > 0) {
             const yearToCheck = Math.min(...years);
-            const cat = catalogService.getCatalog('zsp' + yearToCheck);
+            const cat = catalogService.getCatalog<ZSPCatalogEntry>(
+                'zsp' + yearToCheck
+            );
             if (cat) {
                 const groupValues = options.group.map(g => attributes[g.attr]);
                 const entry = cat.getEntriesWithKeyValue(
@@ -267,6 +326,18 @@ function registeredZoMo(
         }
         return null;
     };
+}
+
+function getYears(ary: string[], attributes: SamplePropertyValues): number[] {
+    const tmp = ary.map((y: SampleProperty) => {
+        const yearValue = attributes[y];
+        const formattedYear = moment
+            .utc(yearValue, 'DD-MM-YYYY')
+            .format('YYYY');
+        return parseInt(formattedYear, 10);
+    });
+
+    return Array.from(new Set(tmp));
 }
 
 function atLeastOneOf(
@@ -307,7 +378,6 @@ function dateAllowEmpty(
     } else {
         return { ...options.message };
     }
-    return null;
 }
 
 function dependentFields(
@@ -429,12 +499,15 @@ export {
     atLeastOneOf,
     dateAllowEmpty,
     dependentFields,
-    dependentFieldEntry,
+    requiredIfOther,
     numbersOnly,
     inCatalog,
     registeredZoMo,
+    shouldBeZoMo,
     nonUniqueEntry,
     matchADVNumberOrString,
     matchesRegexPattern,
-    matchesIdToSpecificYear
+    matchesIdToSpecificYear,
+    nrlExists,
+    noPlanprobeForNRL_AR
 };

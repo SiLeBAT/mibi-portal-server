@@ -1,5 +1,9 @@
 import { Sample, SampleProperty, SamplePropertyValues } from './sample.model';
-import { CatalogService } from './catalog.model';
+import {
+    CatalogService,
+    ADVCatalogEntry,
+    ZSPCatalogEntry
+} from './catalog.model';
 
 export interface ValidationError {
     code: number;
@@ -8,10 +12,6 @@ export interface ValidationError {
     correctionOffer?: string[];
 }
 
-export interface NRLConfig {
-    selectors: string[];
-    name: string;
-}
 export interface ValidationRule {
     error: number;
     // tslint:disable-next-line
@@ -64,7 +64,6 @@ export interface AVVFormatProvider {
 
 export interface ValidationOptions {
     state?: string;
-    nrl?: string;
     year?: string;
 }
 export interface FormValidatorPort {
@@ -76,17 +75,13 @@ export interface FormValidatorPort {
 
 export interface FormValidatorService extends FormValidatorPort {}
 
-export interface NRLSelectorProvider {
-    getSelectors(nrl?: string): RegExp[];
-}
-
 export interface ValidationErrorProviderPort {}
 
 export interface ValidationErrorProvider extends ValidationErrorProviderPort {
     getError(id: number): ValidationError;
 }
 
-export interface ValidatorFunction<T extends ValidatiorFunctionOptions> {
+export interface ValidatorFunction<T extends ValidatorFunctionOptions> {
     (
         value: string,
         options: T,
@@ -94,10 +89,10 @@ export interface ValidatorFunction<T extends ValidatiorFunctionOptions> {
         attributes: SamplePropertyValues
     ): ValidationError | null;
 }
-interface ValidatiorFunctionOptions {
+export interface ValidatorFunctionOptions {
     message: ValidationError;
 }
-export interface MatchIdToYearOptions extends ValidatiorFunctionOptions {
+export interface MatchIdToYearOptions extends ValidatorFunctionOptions {
     regex: string[];
 }
 
@@ -106,18 +101,18 @@ export interface MatchRegexPatternOptions extends MatchIdToYearOptions {
     caseInsensitive?: boolean;
 }
 
-export interface DependentFieldEntryOptions extends ValidatiorFunctionOptions {
+export interface RequiredIfOtherOptions extends ValidatorFunctionOptions {
     regex: string;
     field: SampleProperty;
 }
 
-export interface NonUniqueEntryOptions extends ValidatiorFunctionOptions {
+export interface NonUniqueEntryOptions extends ValidatorFunctionOptions {
     catalog: string;
     key: string;
-    differentiator: [string, SampleProperty];
+    differentiator: [keyof ADVCatalogEntry, SampleProperty];
 }
 
-export interface InCatalogOptions extends ValidatiorFunctionOptions {
+export interface InCatalogOptions extends ValidatorFunctionOptions {
     catalog: string;
     key: string;
 }
@@ -127,25 +122,25 @@ export interface MatchADVNumberOrStringOptions extends InCatalogOptions {
 }
 
 interface Group {
-    code: string;
+    code: keyof ZSPCatalogEntry;
     attr: SampleProperty;
 }
-export interface RegisteredZoMoOptions extends ValidatiorFunctionOptions {
+export interface RegisteredZoMoOptions extends ValidatorFunctionOptions {
     year: string[];
     group: Group[];
 }
 
-export interface AtLeastOneOfOptions extends ValidatiorFunctionOptions {
+export interface AtLeastOneOfOptions extends ValidatorFunctionOptions {
     additionalMembers: (SampleProperty)[];
 }
 
-export interface DependentFieldsOptions extends ValidatiorFunctionOptions {
+export interface DependentFieldsOptions extends ValidatorFunctionOptions {
     dependents: (SampleProperty)[];
 }
 
-export interface NumbersOnlyOptions extends ValidatiorFunctionOptions {}
+export interface NumbersOnlyOptions extends ValidatorFunctionOptions {}
 
-export interface ReferenceDateOptions extends ValidatiorFunctionOptions {
+export interface ReferenceDateOptions extends ValidatorFunctionOptions {
     earliest?: (SampleProperty) | string;
     latest?: (SampleProperty) | string;
     modifier?: {

@@ -9,28 +9,27 @@ interface AddressDTO {
     email: string;
 }
 
-interface AnalysisDTO {
+export interface AnalysisDTO {
     species: boolean;
     serological: boolean;
-    phageTyping: boolean;
     resistance: boolean;
     vaccination: boolean;
     molecularTyping: boolean;
     toxin: boolean;
-    zoonosenIsolate: boolean;
     esblAmpCCarbapenemasen: boolean;
+    sample: boolean;
     other: string;
-    compareHuman: boolean;
+    compareHuman: {
+        value: string;
+        active: boolean;
+    };
 }
 export interface SampleSetMetaDTO {
-    nrl: string;
     sender: AddressDTO;
-    analysis: AnalysisDTO;
-    urgency: string;
     fileName?: string;
 }
 
-interface SampleValidationErrorDTO {
+export interface SampleValidationErrorDTO {
     code: number;
     level: number;
     message: string;
@@ -46,8 +45,15 @@ export interface SampleDataDTO {
     [key: string]: SampleDataEntryDTO;
 }
 
+export interface SampleMetaDTO {
+    nrl: string;
+    analysis: AnalysisDTO;
+    urgency: string;
+}
+
 export interface SampleDTO {
     sampleData: SampleDataDTO;
+    sampleMeta: SampleMetaDTO;
 }
 
 export interface SampleSetDTO {

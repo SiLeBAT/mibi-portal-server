@@ -4,7 +4,6 @@ import {
     UserRegistration,
     RequestActivationNotificationPayload,
     RequestAdminActivationNotificationPayload,
-    RequestForUnknownInstituteNotificationPayload,
     AdminActivationNotificationPayload,
     AdminActivationReminderPayload,
     AlreadyRegisteredUserNotificationPayload
@@ -19,7 +18,6 @@ import { createUser } from '../domain/user.entity';
 import { RecoveryData } from '../model/login.model';
 import { User, UserToken, UserService } from '../model/user.model';
 import { TokenType } from '../domain/enums';
-import { createInstitution } from '../domain/institute.entity';
 import { TokenService } from '../model/token.model';
 import { ConfigurationService } from '../../core/model/configuration.model';
 import { InstituteService } from '../model/institute.model';
@@ -90,7 +88,6 @@ export class DefaultRegistrationService implements RegistrationService {
     }
 
     async registerUser(credentials: UserRegistration): Promise<void> {
-        let instituteIsUnknown = false;
         const result = await this.userService.hasUserWithEmail(
             credentials.email
         );
@@ -100,26 +97,9 @@ export class DefaultRegistrationService implements RegistrationService {
                 'Registration failed. User already exists'
             );
         }
-
-        let inst;
-        try {
-            inst = await this.instituteService.getInstituteById(
-                credentials.institution
-            );
-        } catch (error) {
-            logger.error(
-                `${this.constructor.name}.${
-                    this.registerUser.name
-                }, Unable to find instituton: error=${error}.`
-            );
-            logger.info(
-                `${this.constructor.name}.${
-                    this.registerUser.name
-                }, link registered user to dummy institution.`
-            );
-            instituteIsUnknown = true;
-            inst = await this.getDummyInstitution();
-        }
+        const inst = await this.instituteService.getInstituteById(
+            credentials.institution
+        );
 
         const newUser = createUser(
             '0000',
@@ -138,15 +118,6 @@ export class DefaultRegistrationService implements RegistrationService {
             host: credentials.host
         };
 
-        if (instituteIsUnknown) {
-            const requestAdminActivationNotification = this.createRequestForUnknownInstituteNotification(
-                user,
-                credentials.institution
-            );
-            this.notificationService.sendNotification(
-                requestAdminActivationNotification
-            );
-        }
         return this.prepareUserForVerification(user, recoveryData);
     }
 
@@ -231,29 +202,6 @@ export class DefaultRegistrationService implements RegistrationService {
         );
     }
 
-    private async getDummyInstitution() {
-        let inst;
-
-        try {
-            inst = await this.instituteService.getInstituteByName('dummy');
-        } catch (error) {
-            logger.warn(
-                `Dummy institute doesn't exists: Creating! error=${error}`
-            );
-            const newInstitution = createInstitution('0000');
-            newInstitution.stateShort = 'dummy';
-            newInstitution.name = 'dummy';
-            newInstitution.city = 'dummy';
-            newInstitution.zip = 'dummy';
-            newInstitution.phone = 'dummy';
-            newInstitution.fax = 'dummy';
-
-            inst = await this.instituteService.createInstitute(newInstitution);
-        }
-
-        return inst;
-    }
-
     private createRequestActivationNotification(
         user: User,
         recoveryData: RecoveryData,
@@ -307,33 +255,6 @@ export class DefaultRegistrationService implements RegistrationService {
             meta: this.notificationService.createEmailNotificationMetaData(
                 this.supportContact,
                 `Aktivieren Sie das ${this.appName} Konto für ${fullName}`
-            )
-        };
-    }
-
-    private createRequestForUnknownInstituteNotification(
-        user: User,
-        institution: string
-    ): Notification<
-        RequestForUnknownInstituteNotificationPayload,
-        EmailNotificationMeta
-    > {
-        const fullName = user.firstName + ' ' + user.lastName;
-
-        return {
-            type: NotificationType.REQUEST_UNKNOWN_INSTITUTE,
-            payload: {
-                name: fullName,
-                api_url: this.apiUrl,
-                email: user.email,
-                institution: institution,
-                appName: this.appName
-            },
-            meta: this.notificationService.createEmailNotificationMetaData(
-                this.supportContact,
-                `Aktivierungsanfrage für das ${
-                    this.appName
-                } Konto von ${fullName} mit nicht registriertem Institut`
             )
         };
     }

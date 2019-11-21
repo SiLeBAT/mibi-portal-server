@@ -5,7 +5,6 @@ import {
     Validator,
     AVVFormatProvider,
     ValidationErrorProvider,
-    NRLSelectorProvider,
     ValidationOptions,
     ValidationConstraints,
     ValidationRuleSet,
@@ -38,9 +37,7 @@ export class DefaultFormValidatorService implements FormValidatorService {
         @inject(APPLICATION_TYPES.AVVFormatProvider)
         private avvFormatProvider: AVVFormatProvider,
         @inject(APPLICATION_TYPES.ValidationErrorProvider)
-        private validationErrorProvider: ValidationErrorProvider,
-        @inject(APPLICATION_TYPES.NRLSelectorProvider)
-        private nrlSelectorProvider: NRLSelectorProvider
+        private validationErrorProvider: ValidationErrorProvider
     ) {
         this.validator = createValidator({
             dateFormat: 'DD-MM-YYYY',
@@ -189,7 +186,6 @@ export class DefaultFormValidatorService implements FormValidatorService {
             newConstraints,
             options
         );
-        newConstraints = this.setNRLConstraints(newConstraints, options);
 
         _.forEach(newConstraints, (v: ValidationRuleSet, k) => {
             _.forEach(v, (v2: ValidationRule, k2) => {
@@ -213,39 +209,6 @@ export class DefaultFormValidatorService implements FormValidatorService {
             newConstraints['sample_id_avv'][
                 'matchesIdToSpecificYear'
             ].regex = this.avvFormatProvider.getFormat(options.state);
-        }
-        return { ...newConstraints };
-    }
-
-    private setNRLConstraints(
-        newConstraints: ValidationConstraints,
-        options: ValidationOptions
-    ): ValidationConstraints {
-        if (
-            newConstraints['pathogen_adv'] &&
-            newConstraints['pathogen_adv']['matchesRegexPattern']
-        ) {
-            // Necessary because of Ticket #54
-            newConstraints['pathogen_adv'][
-                'matchesRegexPattern'
-            ].regex = this.nrlSelectorProvider.getSelectors(options.nrl);
-        }
-        switch (options.nrl) {
-            case 'NRL-AR':
-                newConstraints['sampling_reason_adv'] =
-                    newConstraints['sampling_reason_adv'] || {};
-                newConstraints['sampling_reason_adv']['exclusion'] = {
-                    error: 95,
-                    within: [10, '10', 'Planprobe']
-                };
-                newConstraints['sampling_reason_text'] =
-                    newConstraints['sampling_reason_text'] || {};
-                newConstraints['sampling_reason_text']['exclusion'] = {
-                    error: 95,
-                    within: [10, 'Planprobe', '10']
-                };
-                break;
-            default:
         }
         return { ...newConstraints };
     }

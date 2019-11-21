@@ -68,11 +68,6 @@ export class DefaultMailService implements MailService {
                         this.viewsDir + 'adminactivation.html'
                     );
                     break;
-                case NotificationType.REQUEST_UNKNOWN_INSTITUTE:
-                    templateFile = await readFilePromise(
-                        this.viewsDir + 'adminactivationUnknownInst.html'
-                    );
-                    break;
                 case NotificationType.NOTIFICATION_ADMIN_ACTIVATION:
                     templateFile = await readFilePromise(
                         this.viewsDir + 'adminactivationNotification.html'

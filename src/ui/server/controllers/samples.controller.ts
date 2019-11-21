@@ -1,3 +1,4 @@
+import { SampleMetaDTO, AnalysisDTO } from './../model/shared-dto.model';
 import * as moment from 'moment';
 import * as _ from 'lodash';
 import { Request, Response } from 'express';
@@ -6,21 +7,22 @@ import {
     FormValidatorPort,
     FormAutoCorrectionPort,
     Sample,
-    createSample,
     ValidationOptions,
     SamplePort,
-    SenderInfo,
-    ExcelFileInfo,
-    Attachment,
-    AnnotatedSampleDataEntry,
-    SampleData,
+    ApplicantMetaData,
     SampleSet,
     SampleSetMetaData,
     TokenPayload,
     TokenPort,
     UserPort,
+    NRLPort,
     Urgency,
-    User
+    User,
+    ReceiveAs,
+    SampleData,
+    AnnotatedSampleDataEntry,
+    SampleMetaData,
+    SampleFactory
 } from '../../../app/ports';
 import { SamplesController } from '../model/controller.model';
 import {
@@ -62,6 +64,7 @@ import { inject } from 'inversify';
 
 import { APPLICATION_TYPES } from './../../../app/application.types';
 import SERVER_TYPES from '../server.types';
+import { Analysis } from 'src/app/sampleManagement/model/sample.model';
 moment.locale('de');
 
 enum RESOURCE_VIEW_TYPE {
@@ -85,7 +88,9 @@ export class DefaultSamplesController extends AbstractController
         @inject(APPLICATION_TYPES.SampleService)
         private sampleService: SamplePort,
         @inject(APPLICATION_TYPES.TokenService) private tokenService: TokenPort,
-        @inject(APPLICATION_TYPES.UserService) private userService: UserPort
+        @inject(APPLICATION_TYPES.UserService) private userService: UserPort,
+        @inject(APPLICATION_TYPES.NRLService) private nrlService: NRLPort,
+        @inject(APPLICATION_TYPES.SampleFactory) private factory: SampleFactory
     ) {
         super();
     }
@@ -96,9 +101,12 @@ export class DefaultSamplesController extends AbstractController
             `${this.constructor.name}.${this.putSamples.name}, Request received`
         );
         try {
-            const sampleSet: SampleSet = await this.transformInput(req, res);
+            const sampleSet: SampleSet = await this.putSamplesTransformInput(
+                req,
+                res
+            );
 
-            await this.sendResponse(req, res, sampleSet);
+            await this.putSamplesSendResponse(req, res, sampleSet);
         } catch (error) {
             logger.info(
                 `${this.constructor.name}.${
@@ -117,22 +125,24 @@ export class DefaultSamplesController extends AbstractController
         );
         try {
             const requestDTO: PutValidatedRequestDTO = req.body;
-            const sampleSet: SampleSet = this.tryParseInputDTO(() => {
+            const sampleSet: SampleSet = this.parseInputDTO(() => {
                 return this.fromDTOToUnannotatedSampleSet(
                     requestDTO.order.sampleSet
                 );
             });
-            const validationOptions = await this.getValidationOptions(
-                sampleSet.meta,
-                req
-            );
+            const validationOptions = await this.getValidationOptions(req);
             const validationResult: Sample[] = await this.validateSamples(
                 sampleSet.samples,
                 validationOptions
             );
-            const validatedOrderDTO: OrderDTO = this.fromSampleCollectionToOrderDTO(
-                validationResult,
-                sampleSet.meta
+            const validatedSampleSet: SampleSet = {
+                samples: validationResult,
+                meta: {
+                    ...sampleSet.meta
+                }
+            };
+            const validatedOrderDTO: OrderDTO = this.fromSampleSetToOrderDTO(
+                validatedSampleSet
             );
             const responseDTO: PutValidatedResponseDTO = {
                 order: validatedOrderDTO
@@ -162,11 +172,10 @@ export class DefaultSamplesController extends AbstractController
         );
         try {
             const requestDTO: PostSubmittedRequestDTO = req.body;
-            const annotatedSampleSet: SampleSet = this.tryParseInputDTO(() => {
+            const annotatedSampleSet: SampleSet = this.parseInputDTO(() => {
                 return this.fromDTOToSampleSet(requestDTO.order.sampleSet);
             });
             const validationOptions: ValidationOptions = await this.getValidationOptions(
-                annotatedSampleSet.meta,
                 req
             );
             const validatedSamples: Sample[] = await this.validateSamples(
@@ -174,9 +183,13 @@ export class DefaultSamplesController extends AbstractController
                 validationOptions
             );
 
-            const orderDTO: OrderDTO = this.fromSampleCollectionToOrderDTO(
-                validatedSamples,
-                annotatedSampleSet.meta
+            const validatedSampleSet: SampleSet = {
+                samples: validatedSamples,
+                meta: annotatedSampleSet.meta
+            };
+
+            const orderDTO: OrderDTO = this.fromSampleSetToOrderDTO(
+                validatedSampleSet
             );
 
             if (this.hasSampleError(validatedSamples)) {
@@ -202,31 +215,24 @@ export class DefaultSamplesController extends AbstractController
                 order: orderDTO
             };
 
-            const sampleFile: ExcelFileInfo = await this.sampleService.convertToExcel(
-                {
-                    samples: validatedSamples,
-                    meta: annotatedSampleSet.meta
-                }
-            );
-            sampleFile.fileName = this.amendXLSXFileName(
-                sampleFile.fileName,
-                '_validated'
-            );
-            const attachment: Attachment = this.fromExcelFileInfoToAttachment(
-                sampleFile
-            );
             const token = getTokenFromHeader(req);
             if (!token) {
                 throw new TokenNotFoundError('Invalid user.');
             }
             const user: User = await this.getUserFromToken(token);
-            const senderInfo = this.tryParseInputDTO(() => {
-                return this.fromPostSubmittedRequestDTOToSenderInfo(
-                    requestDTO,
-                    user
-                );
-            });
-            this.sampleService.sendSampleFile(attachment, senderInfo);
+            const applicantMetaData: ApplicantMetaData = this.parseInputDTO(
+                () => {
+                    return this.fromPostSubmittedRequestDTOToApplicantMetaData(
+                        requestDTO,
+                        user
+                    );
+                }
+            );
+
+            await this.sampleService.sendSamples(
+                validatedSampleSet,
+                applicantMetaData
+            );
 
             logger.info(
                 `${this.constructor.name}.${
@@ -245,7 +251,7 @@ export class DefaultSamplesController extends AbstractController
         }
     }
 
-    private async transformInput(
+    private async putSamplesTransformInput(
         req: Request,
         res: Response
     ): Promise<SampleSet> {
@@ -254,7 +260,7 @@ export class DefaultSamplesController extends AbstractController
         const token: string | null = getTokenFromHeader(req);
         switch (type) {
             case RESOURCE_VIEW_TYPE.XLSX:
-                const file = this.tryParseInputDTO(() => {
+                const file = this.parseInputDTO(() => {
                     return {
                         buffer: req.file.buffer,
                         name: req.file.originalname
@@ -268,13 +274,13 @@ export class DefaultSamplesController extends AbstractController
             case RESOURCE_VIEW_TYPE.JSON:
             default:
                 const dto: PutSamplesJSONRequestDTO = req.body;
-                return this.tryParseInputDTO(() => {
+                return this.parseInputDTO(() => {
                     return this.fromDTOToSampleSet(dto.order.sampleSet);
                 });
         }
     }
 
-    private async sendResponse(
+    private async putSamplesSendResponse(
         req: Request,
         res: Response,
         sampleSet: SampleSet
@@ -287,10 +293,6 @@ export class DefaultSamplesController extends AbstractController
                 const result: PutSamplesXLSXResponseDTO = await this.sampleService.convertToExcel(
                     sampleSet
                 );
-                result.fileName = this.amendXLSXFileName(
-                    result.fileName,
-                    '.MP_' + moment().unix()
-                );
                 logger.info(
                     `${this.constructor.name}.${
                         this.putSamples.name
@@ -301,7 +303,7 @@ export class DefaultSamplesController extends AbstractController
             case RESOURCE_VIEW_TYPE.JSON:
             default:
                 const successResponse: PutSamplesJSONResponseDTO = {
-                    order: this.fromAnnotatedSampleSetToOrderDTO(sampleSet)
+                    order: this.fromSampleSetToUnannotatedOrderDTO(sampleSet)
                 };
                 logger.info(
                     `${this.constructor.name}.${
@@ -312,19 +314,6 @@ export class DefaultSamplesController extends AbstractController
         }
     }
 
-    private amendXLSXFileName(
-        originalFileName: string,
-        fileNameAddon: string
-    ): string {
-        const entries: string[] = originalFileName.split('.xlsx');
-        let fileName: string = '';
-        if (entries.length > 0) {
-            fileName += entries[0];
-        }
-
-        fileName += fileNameAddon + '.xlsx';
-        return fileName;
-    }
     private getResourceViewType(
         typeString: string = 'application/json'
     ): RESOURCE_VIEW_TYPE {
@@ -355,12 +344,19 @@ export class DefaultSamplesController extends AbstractController
         samples: Sample[],
         options: ValidationOptions
     ): Promise<Sample[]> {
-        // Auto-correction needs to happen before validation.
+        // 1) Auto-correction needs to happen before validation.
+        // 2) Assign NRL
+        // 3) Validate Samples
         const autocorrectedSamples = await this.formAutoCorrectionService.applyAutoCorrection(
             samples
         );
+
+        const assignedSamples = this.nrlService.assignNRLsToSamples(
+            autocorrectedSamples
+        );
+
         const validationResult = await this.formValidationService.validateSamples(
-            autocorrectedSamples,
+            assignedSamples,
             options
         );
 
@@ -368,12 +364,9 @@ export class DefaultSamplesController extends AbstractController
     }
 
     private async getValidationOptions(
-        meta: SampleSetMetaData,
         req: Request
     ): Promise<ValidationOptions> {
-        const validationOptions: ValidationOptions = {
-            nrl: meta.nrl
-        };
+        const validationOptions: ValidationOptions = {};
 
         const token = getTokenFromHeader(req);
         let stateShort = '';
@@ -421,7 +414,7 @@ export class DefaultSamplesController extends AbstractController
         const annotatedSampleSet: SampleSet = {
             meta: this.fromDTOToSampleSetMetaData(dto.meta),
             samples: dto.samples.map(container => {
-                return this.fromSampleDataDTOToSample(container.sampleData);
+                return this.fromDTOToSample(container);
             })
         };
         return annotatedSampleSet;
@@ -431,10 +424,7 @@ export class DefaultSamplesController extends AbstractController
         dto: SampleSetMetaDTO
     ): SampleSetMetaData {
         return {
-            nrl: dto.nrl,
-            analysis: dto.analysis,
             sender: dto.sender,
-            urgency: this.fromUrgencyStringToEnum(dto.urgency),
             fileName: dto.fileName ? dto.fileName : ''
         };
     }
@@ -453,17 +443,17 @@ export class DefaultSamplesController extends AbstractController
         data: SampleSetMetaData
     ): SampleSetMetaDTO {
         return {
-            nrl: data.nrl,
-            analysis: data.analysis,
             sender: data.sender,
-            urgency: data.urgency.toString(),
             fileName: data.fileName
         };
     }
 
-    private fromSampleDataDTOToSample(dto: SampleDataDTO): Sample {
-        const annotatedSample = this.fromDTOToAnnotatedSampleData(dto);
-        return createSample({ ...annotatedSample });
+    private fromDTOToSample({ sampleData, sampleMeta }: SampleDTO): Sample {
+        const annotatedSample = this.fromDTOToAnnotatedSampleData(sampleData);
+        const sample = this.factory.createSample({ ...annotatedSample });
+        sample.setAnalysis(sampleMeta.analysis);
+        sample.setUrgency(this.fromUrgencyStringToEnum(sampleMeta.urgency));
+        return sample;
     }
 
     private fromDTOToAnnotatedSampleData(dto: SampleDataDTO): SampleData {
@@ -495,66 +485,86 @@ export class DefaultSamplesController extends AbstractController
         return annotatedSampleDataEntry;
     }
 
-    private fromExcelFileInfoToAttachment(
-        excelInfo: ExcelFileInfo
-    ): Attachment {
-        return {
-            filename: excelInfo.fileName,
-            contentType: excelInfo.type,
-            content: Buffer.from(excelInfo.data, 'base64')
-        };
-    }
-
-    private fromAnnotatedSampleSetToOrderDTO(
-        annotatedSampleSet: SampleSet
-    ): OrderDTO {
+    private fromSampleSetToUnannotatedOrderDTO(sampleSet: SampleSet): OrderDTO {
         return {
             sampleSet: {
-                meta: this.fromSampleSetMetaDataToDTO(annotatedSampleSet.meta),
-                samples: annotatedSampleSet.samples.map(sample => ({
-                    sampleData: sample.getDataValues()
+                meta: this.fromSampleSetMetaDataToDTO(sampleSet.meta),
+                samples: sampleSet.samples.map(sample => ({
+                    sampleData: sample.getDataValues(),
+                    sampleMeta: {
+                        nrl: sample.getNRL().toString(),
+                        analysis: this.fromAnalysisToDTO(sample.getAnalysis()),
+                        urgency: sample.getUrgency().toString()
+                    }
                 }))
             }
         };
     }
 
-    private fromSampleCollectionToOrderDTO(
-        sampleCollection: Sample[],
-        meta: SampleSetMetaData
-    ): OrderDTO {
+    private fromSampleSetToOrderDTO(sampleSet: SampleSet): OrderDTO {
         return {
-            sampleSet: this.fromSampleCollectionToSampleSetDTO(
-                sampleCollection,
-                meta
-            )
+            sampleSet: {
+                samples: this.fromSampleCollectionToSampleDTO(
+                    sampleSet.samples
+                ),
+                meta: this.fromSampleSetMetaDataToDTO(sampleSet.meta)
+            }
         };
     }
 
-    private fromSampleCollectionToSampleSetDTO(
-        sampleCollection: Sample[],
-        meta: SampleSetMetaData
-    ): SampleSetDTO {
-        return {
-            samples: this.fromSampleCollectionToSampleDTO(sampleCollection),
-            meta: this.fromSampleSetMetaDataToDTO(meta)
-        };
-    }
     private fromSampleCollectionToSampleDTO(
         sampleCollection: Sample[]
     ): SampleDTO[] {
         return sampleCollection.map((sample: Sample) => ({
-            sampleData: sample.getAnnotatedData()
+            sampleData: sample.getAnnotatedData(),
+            sampleMeta: this.fromSampleMetaToDTO(sample.meta)
         }));
     }
 
-    private fromPostSubmittedRequestDTOToSenderInfo(
+    private fromSampleMetaToDTO(meta: SampleMetaData): SampleMetaDTO {
+        return {
+            nrl: meta.nrl.toString(),
+            analysis: this.fromAnalysisToDTO(meta.analysis),
+            urgency: meta.urgency.toString()
+        };
+    }
+
+    private fromAnalysisToDTO(analysis: Partial<Analysis>): AnalysisDTO {
+        return {
+            species: analysis.species || false,
+            serological: analysis.serological || false,
+            resistance: analysis.resistance || false,
+            vaccination: analysis.vaccination || false,
+            molecularTyping: analysis.molecularTyping || false,
+            toxin: analysis.toxin || false,
+            esblAmpCCarbapenemasen: analysis.esblAmpCCarbapenemasen || false,
+            sample: analysis.sample || false,
+            other: analysis.other || '',
+            compareHuman: analysis.compareHuman || {
+                value: '',
+                active: false
+            }
+        };
+    }
+    private fromPostSubmittedRequestDTOToApplicantMetaData(
         requestDTO: PostSubmittedRequestDTO,
         user: User
-    ): SenderInfo {
+    ): ApplicantMetaData {
+        let receiveAs: ReceiveAs;
+        switch (requestDTO.receiveAs) {
+            case ReceiveAs.PDF.toString():
+                receiveAs = ReceiveAs.PDF;
+                break;
+            case ReceiveAs.EXCEL.toString():
+            default:
+                receiveAs = ReceiveAs.EXCEL;
+                break;
+        }
+
         return {
             user,
             comment: requestDTO.comment || '',
-            recipient: requestDTO.order.sampleSet.meta.nrl || ''
+            receiveAs: receiveAs
         };
     }
 

@@ -1,3 +1,5 @@
+import { NRL_ID } from './enums';
+
 export const VALID_SHEET_NAME: string = 'Einsendeformular';
 
 export const FORM_PROPERTIES: string[] = [
@@ -23,7 +25,7 @@ export const FORM_PROPERTIES: string[] = [
 ];
 
 export const META_NRL_CELL = 'B7';
-export const META_UREGENCY_CELL = 'L27';
+export const META_URGENCY_CELL = 'L27';
 export const META_SENDER_INSTITUTENAME_CELL = 'C12';
 export const META_SENDER_DEPARTMENT_CELL = 'C15';
 export const META_SENDER_STREET_CELL = 'C17';
@@ -40,5 +42,26 @@ export const META_ANALYSIS_MOLECULARTYPING_CELL = 'P17';
 export const META_ANALYSIS_TOXIN_CELL = 'P18';
 export const META_ANALYSIS_ZOONOSENISOLATE_CELL = 'P19';
 export const META_ANALYSIS_ESBLAMPCCARBAPENEMASEN_CELL = 'P20';
-export const META_ANALYSIS_OTHER_CELL = 'J22';
-export const META_ANALYSIS_COMPAREHUMAN_CELL = 'P23';
+export const META_ANAYLSIS_OTHER_BOOL_CELL = 'P21';
+export const META_ANALYSIS_OTHER_TEXT_CELL = 'J22';
+export const META_ANALYSIS_COMPAREHUMAN_BOOL_CELL = 'P23';
+export const META_ANALYSIS_COMPAREHUMAN_TEXT_CELL = 'J24';
+
+export const EMPTY_META = {
+    nrl: NRL_ID.UNKNOWN,
+    analysis: {
+        species: false,
+        serological: false,
+        resistance: false,
+        vaccination: false,
+        molecularTyping: false,
+        toxin: false,
+        esblAmpCCarbapenemasen: false,
+        sample: false,
+        other: '',
+        compareHuman: {
+            value: '',
+            active: false
+        }
+    }
+};

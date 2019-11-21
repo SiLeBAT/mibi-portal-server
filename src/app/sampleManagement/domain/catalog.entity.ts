@@ -1,9 +1,9 @@
 import * as _ from 'lodash';
 import * as Fuse from 'fuse.js';
 import { ApplicationDomainError } from '../../core/domain/domain.error';
-import { Catalog } from '../model/catalog.model';
+import { Catalog, CatalogData } from '../model/catalog.model';
 
-class DefaultCatalog<T> implements Catalog<T> {
+class DefaultCatalog<T extends CatalogData> implements Catalog<T> {
     constructor(private data: T[], private uId: string = '') {}
 
     containsUniqueEntryWithId(id: string): boolean {
@@ -46,7 +46,10 @@ class DefaultCatalog<T> implements Catalog<T> {
     }
 }
 
-function createCatalog<T>(data: T[], uId: string = ''): Catalog<T> {
+function createCatalog<T extends CatalogData>(
+    data: T[],
+    uId: string = ''
+): Catalog<T> {
     return new DefaultCatalog(data, uId);
 }
 

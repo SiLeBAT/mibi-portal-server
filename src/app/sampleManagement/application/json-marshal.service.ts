@@ -1,19 +1,29 @@
+import { NRL_ID } from './../domain/enums';
+import { Analysis } from './../model/sample.model';
+import { EinsendebogenAnalysis } from './../model/excel.model';
+import {
+    EMPTY_META,
+    META_ANAYLSIS_OTHER_BOOL_CELL
+} from './../domain/constants';
 import * as _ from 'lodash';
 // @ts-ignore
 import * as XlsxPopulate from 'xlsx-populate';
-import { JSONMarshalService, ExcelFileInfo } from '../model/excel.model';
+import {
+    JSONMarshalService,
+    EinsendebogenMetaData
+} from '../model/excel.model';
 import { FileRepository } from '../model/repository.model';
-import { SampleSet, Sample, SampleSetMetaData } from '../model/sample.model';
-import { ApplicationDomainError } from './../../core/domain/domain.error';
-import { ApplicationSystemError } from './../../core/domain/technical.error';
+import { SampleSet, Sample } from '../model/sample.model';
+import { ApplicationDomainError } from '../../core/domain/domain.error';
+import { ApplicationSystemError } from '../../core/domain/technical.error';
 import { Urgency } from '../domain/enums';
 import { injectable, inject } from 'inversify';
-import { APPLICATION_TYPES } from './../../application.types';
+import { APPLICATION_TYPES } from '../../application.types';
 import {
     FORM_PROPERTIES,
     VALID_SHEET_NAME,
     META_NRL_CELL,
-    META_UREGENCY_CELL,
+    META_URGENCY_CELL,
     META_SENDER_INSTITUTENAME_CELL,
     META_SENDER_DEPARTMENT_CELL,
     META_SENDER_STREET_CELL,
@@ -22,58 +32,114 @@ import {
     META_SENDER_TELEPHONE_CELL,
     META_SENDER_EMAIL_CELL,
     META_ANALYSIS_SPECIES_CELL,
-    META_ANALYSIS_PHAGETYPING_CELL,
     META_ANALYSIS_SEROLOGICAL_CELL,
     META_ANALYSIS_RESISTANCE_CELL,
     META_ANALYSIS_VACCINATION_CELL,
     META_ANALYSIS_MOLECULARTYPING_CELL,
     META_ANALYSIS_TOXIN_CELL,
-    META_ANALYSIS_ZOONOSENISOLATE_CELL,
     META_ANALYSIS_ESBLAMPCCARBAPENEMASEN_CELL,
-    META_ANALYSIS_OTHER_CELL,
-    META_ANALYSIS_COMPAREHUMAN_CELL
+    META_ANALYSIS_OTHER_TEXT_CELL,
+    META_ANALYSIS_COMPAREHUMAN_BOOL_CELL,
+    META_ANALYSIS_COMPAREHUMAN_TEXT_CELL
 } from '../domain/constants';
+import { NRLConstants } from '../model/nrl.model';
+import { FileBuffer } from '../../core/model/file.model';
 
 type ChangedValueCollection = Record<string, string>;
 
 @injectable()
 export class DefaultJSONMarshalService implements JSONMarshalService {
-    private fileName = 'Einsendebogen.xlsx';
+    private readonly TEMPLATE_FILE_NAME = 'Einsendebogen.xlsx';
+    private readonly FILE_EXTENSION = '.xlsx';
 
     constructor(
         @inject(APPLICATION_TYPES.FileRepository)
-        private fileRepository: FileRepository
+        private fileRepository: FileRepository,
+        @inject(APPLICATION_TYPES.NRLConstants)
+        private nrlConstants: NRLConstants
     ) {}
 
-    async convertJSONToExcel(data: SampleSet): Promise<ExcelFileInfo> {
-        const buffer = await this.fileRepository.getFileBuffer(this.fileName);
+    async convertJSONToExcel(sampleSet: SampleSet): Promise<FileBuffer> {
+        const buffer = await this.fileRepository.getFileBuffer(
+            this.TEMPLATE_FILE_NAME
+        );
 
         if (!buffer) {
             throw new ApplicationSystemError('No Excel data available.');
         }
 
         const highlights: Record<string, string>[] = [];
-        data.samples.forEach((sample: Sample) => {
+        sampleSet.samples.forEach((sample: Sample) => {
             highlights.push(sample.getOldValues());
         });
-        const dataToSave = this.fromDataObjToAOO(data.samples);
+        const dataToSave = this.fromDataObjToAOO(sampleSet.samples);
         let workbook = await this.fromFileToWorkbook(buffer);
         workbook = this.addValidatedDataToWorkbook(
             workbook,
             dataToSave,
             highlights
         );
-        workbook = this.addMetaDataToWorkbook(workbook, data.meta);
+        const meta: EinsendebogenMetaData = this.getEinsendebogenMetaData(
+            sampleSet
+        );
+        workbook = this.addMetaDataToWorkbook(workbook, meta);
 
-        const workbookBuffer = await workbook.outputAsync('base64');
+        const workbookBuffer = await workbook.outputAsync();
 
         return {
-            data: workbookBuffer,
-            fileName: data.meta.fileName || this.fileName,
-            type: XlsxPopulate.MIME_TYPE
+            buffer: workbookBuffer,
+            extension: this.FILE_EXTENSION,
+            mimeType: XlsxPopulate.MIME_TYPE
         };
     }
 
+    private getEinsendebogenMetaData(
+        sampleSet: SampleSet
+    ): EinsendebogenMetaData {
+        // The Einsendebogen xlsx does not accept NRL_ID.UNKNOWN - one NRL has to be set!  AR is the first in the list.
+        let nrl = NRL_ID.NRL_AR;
+        let analysis = this.fromSampleAnalysisToEinsendebogenAnalysis(
+            EMPTY_META.analysis
+        );
+        let urgency = Urgency.NORMAL;
+
+        if (_.uniq(sampleSet.samples.map(s => s.getNRL())).length === 1) {
+            nrl = sampleSet.samples[0].getNRL();
+            analysis = this.fromSampleAnalysisToEinsendebogenAnalysis(
+                sampleSet.samples[0].getAnalysis()
+            );
+            urgency = sampleSet.samples[0].getUrgency();
+        }
+
+        return {
+            nrl,
+            analysis,
+            sender: sampleSet.meta.sender,
+            urgency,
+            fileName: sampleSet.meta.fileName
+        };
+    }
+
+    private fromSampleAnalysisToEinsendebogenAnalysis(
+        analysis: Partial<Analysis>
+    ): EinsendebogenAnalysis {
+        return {
+            species: analysis.species || false,
+            phageTyping: false,
+            zoonosenIsolate: false,
+            serological: analysis.serological || false,
+            resistance: analysis.resistance || false,
+            vaccination: analysis.vaccination || false,
+            molecularTyping: analysis.molecularTyping || false,
+            toxin: analysis.toxin || false,
+            esblAmpCCarbapenemasen: analysis.esblAmpCCarbapenemasen || false,
+            other: analysis.other || '',
+            compareHuman: _.cloneDeep(analysis.compareHuman) || {
+                active: false,
+                value: ''
+            }
+        };
+    }
     private async fromFileToWorkbook(buffer: Buffer) {
         const workbook = await XlsxPopulate.fromDataAsync(buffer);
         return workbook;
@@ -96,14 +162,16 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
     private addMetaDataToWorkbook(
         // tslint:disable-next-line: no-any
         workbook: any,
-        meta: SampleSetMetaData
+        meta: EinsendebogenMetaData
     ) {
         const sheet = workbook.sheet(VALID_SHEET_NAME);
         if (sheet) {
-            sheet.cell(META_NRL_CELL).value(this.mapNRLToString(meta.nrl));
+            sheet
+                .cell(META_NRL_CELL)
+                .value(this.nrlConstants.longNames[meta.nrl]);
 
             sheet
-                .cell(META_UREGENCY_CELL)
+                .cell(META_URGENCY_CELL)
                 .value(this.mapUregencyEnumToString(meta.urgency));
 
             sheet
@@ -125,11 +193,6 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
             sheet
                 .cell(META_ANALYSIS_SPECIES_CELL)
                 .value(this.mapAnalysisBooleanToString(meta.analysis.species));
-            sheet
-                .cell(META_ANALYSIS_PHAGETYPING_CELL)
-                .value(
-                    this.mapAnalysisBooleanToString(meta.analysis.phageTyping)
-                );
             sheet
                 .cell(META_ANALYSIS_SEROLOGICAL_CELL)
                 .value(
@@ -156,25 +219,30 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
                 .cell(META_ANALYSIS_TOXIN_CELL)
                 .value(this.mapAnalysisBooleanToString(meta.analysis.toxin));
             sheet
-                .cell(META_ANALYSIS_ZOONOSENISOLATE_CELL)
-                .value(
-                    this.mapAnalysisBooleanToString(
-                        meta.analysis.zoonosenIsolate
-                    )
-                );
-            sheet
                 .cell(META_ANALYSIS_ESBLAMPCCARBAPENEMASEN_CELL)
                 .value(
                     this.mapAnalysisBooleanToString(
                         meta.analysis.esblAmpCCarbapenemasen
                     )
                 );
-            sheet.cell(META_ANALYSIS_OTHER_CELL).value(meta.analysis.other);
             sheet
-                .cell(META_ANALYSIS_COMPAREHUMAN_CELL)
+                .cell(META_ANAYLSIS_OTHER_BOOL_CELL)
                 .value(
-                    this.mapAnalysisBooleanToString(meta.analysis.compareHuman)
+                    this.mapAnalysisBooleanToString(meta.analysis.other !== '')
                 );
+            sheet
+                .cell(META_ANALYSIS_OTHER_TEXT_CELL)
+                .value(meta.analysis.other);
+            sheet
+                .cell(META_ANALYSIS_COMPAREHUMAN_BOOL_CELL)
+                .value(
+                    this.mapAnalysisBooleanToString(
+                        meta.analysis.compareHuman.active
+                    )
+                );
+            sheet
+                .cell(META_ANALYSIS_COMPAREHUMAN_TEXT_CELL)
+                .value(meta.analysis.compareHuman.value);
         }
 
         return workbook;
@@ -191,40 +259,6 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
             default:
                 return 'NORMAL';
         }
-    }
-    private mapNRLToString(nrl: string): string {
-        switch (nrl) {
-            case 'NRL-Vibrio':
-                return 'NRL Überwachung von Bakterien in zweischaligen Weichtieren';
-            case 'NRL-VTEC':
-                return 'NRL Escherichia coli einschließlich verotoxinbildende E. coli';
-
-            case 'Sporenbildner':
-                return 'Sporenbildner';
-            case 'NRL-Staph':
-                return 'NRL koagulasepositive Staphylokokken einschließlich Staphylococcus aureus';
-
-            case 'NRL-Salm':
-                return 'NRL Salmonellen (Durchführung von Analysen und Tests auf Zoonosen)';
-
-            case 'NRL-Listeria':
-                return 'NRL Listeria monocytogenes';
-            case 'NRL-Campy':
-                return 'NRL Campylobacter';
-            case 'NRL-AR':
-                return 'NRL Antibiotikaresistenz';
-            case 'KL-Yersinia':
-                return 'Yersinia';
-            case 'NRL-Trichinella':
-                return 'NRL Trichinella';
-            case 'NRL-Virus':
-                return 'NRL Überwachung von Viren in zweischaligen Weichtieren';
-            case 'KL-Leptospira':
-                return 'Leptospira';
-            default:
-        }
-
-        return nrl;
     }
 
     private addValidatedDataToWorkbook(

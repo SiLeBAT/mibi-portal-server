@@ -1,8 +1,8 @@
 import { logger } from '../../../aspects';
 import {
     SampleService,
-    ResolvedSenderInfo,
-    SenderInfo,
+    OrderNotificationMetaData,
+    ApplicantMetaData,
     NewDatasetNotificationPayload,
     NewDatasetCopyNotificationPayload,
     SampleSet
@@ -13,8 +13,6 @@ import {
     EmailNotificationMeta,
     Attachment
 } from '../../core/model/notification.model';
-import { User } from '../../authentication/model/user.model';
-import { Institute } from '../../authentication/model/institute.model';
 import { NotificationType } from '../../core/domain/enums';
 import {
     ExcelUnmarshalPort,
@@ -26,11 +24,28 @@ import { UnauthorizedError } from 'express-jwt';
 import { ConfigurationService } from '../../core/model/configuration.model';
 import { injectable, inject } from 'inversify';
 import { APPLICATION_TYPES } from './../../application.types';
+import moment = require('moment');
+import { NRL_ID, ReceiveAs } from '../domain/enums';
+import { NRLService } from '../model/nrl.model';
+import { FileBuffer } from '../../core/model/file.model';
+import { PDFCreatorService } from '../model/pdf.model';
+
+interface SampleSheet {
+    buffer: Buffer;
+    fileName: string;
+    mime: string;
+    nrl: NRL_ID;
+}
 
 @injectable()
 export class DefaultSampleService implements SampleService {
     private appName: string;
-    private jobRecipient: string;
+    private overrideRecipient: string;
+
+    private readonly ENCODING = 'base64';
+    private readonly DEFAULT_FILE_NAME = 'Einsendebogen';
+    private readonly IMPORTED_FILE_EXTENSION = '.xlsx';
+
     constructor(
         @inject(APPLICATION_TYPES.NotificationService)
         private notificationService: NotificationService,
@@ -41,42 +56,43 @@ export class DefaultSampleService implements SampleService {
         @inject(APPLICATION_TYPES.ConfigurationService)
         private configurationService: ConfigurationService,
         @inject(APPLICATION_TYPES.JSONMarshalService)
-        private jsonMarshalService: JSONMarshalService
+        private jsonMarshalService: JSONMarshalService,
+        @inject(APPLICATION_TYPES.PDFCreatorService)
+        private pdfCreatorService: PDFCreatorService,
+        @inject(APPLICATION_TYPES.NRLService)
+        private nrlService: NRLService
     ) {
         this.appName = this.configurationService.getApplicationConfiguration().appName;
-        this.jobRecipient = this.configurationService.getApplicationConfiguration().jobRecipient;
+        this.overrideRecipient = this.configurationService.getApplicationConfiguration().jobRecipient;
     }
 
-    async sendSampleFile(
-        attachment: Attachment,
-        senderInfo: SenderInfo
+    async sendSamples(
+        sampleSet: SampleSet,
+        applicantMetaData: ApplicantMetaData
     ): Promise<void> {
-        const sender: User = senderInfo.user;
-        const institution: Institute = sender.institution;
-        if (institution.name === 'dummy') {
-            logger.warn(
-                `${this.constructor.name}.${
-                    this.sendSampleFile.name
-                }, user assigned to dummy institute. User=${sender.uniqueId}`
-            );
-        }
-        const resolvedSenderInfo: ResolvedSenderInfo = {
-            user: sender,
-            institute: institution,
-            comment: senderInfo.comment,
-            recipient: senderInfo.recipient
-        };
-        const newSampleCopyNotification = this.createNewSampleCopyNotification(
-            attachment,
-            resolvedSenderInfo
-        );
-        this.notificationService.sendNotification(newSampleCopyNotification);
+        const splittedSampleSets = this.splitSampleSet(sampleSet);
 
-        const newSampleNotification = this.createNewSampleNotification(
-            attachment,
-            resolvedSenderInfo
+        const nrlSampleSheets = await this.createSampleSheets(
+            splittedSampleSets,
+            sampleSet => this.jsonMarshalService.convertJSONToExcel(sampleSet)
         );
-        return this.notificationService.sendNotification(newSampleNotification);
+
+        let userSampleSheets: SampleSheet[];
+        switch (applicantMetaData.receiveAs) {
+            case ReceiveAs.PDF:
+                userSampleSheets = await this.createSampleSheets(
+                    splittedSampleSets,
+                    sampleSet => this.pdfCreatorService.createPDF(sampleSet)
+                );
+                break;
+            case ReceiveAs.EXCEL:
+            default:
+                userSampleSheets = nrlSampleSheets;
+                break;
+        }
+
+        this.sendSamplesToNRLs(nrlSampleSheets, applicantMetaData);
+        this.sendSamplesToUser(userSampleSheets, applicantMetaData);
     }
 
     async convertToJson(
@@ -108,52 +124,192 @@ export class DefaultSampleService implements SampleService {
     }
 
     async convertToExcel(sampleSet: SampleSet): Promise<ExcelFileInfo> {
-        return this.jsonMarshalService.convertJSONToExcel(sampleSet);
+        const fileBuffer: FileBuffer = await this.jsonMarshalService.convertJSONToExcel(
+            sampleSet
+        );
+
+        const fileName = this.amendFileName(
+            sampleSet.meta.fileName || this.DEFAULT_FILE_NAME,
+            '.MP_' + moment().unix(),
+            fileBuffer.extension
+        );
+
+        return {
+            data: fileBuffer.buffer.toString(this.ENCODING),
+            fileName: fileName,
+            type: fileBuffer.mimeType
+        };
     }
 
-    private createNewSampleCopyNotification(
-        dataset: Attachment,
-        senderInfo: ResolvedSenderInfo
+    private splitSampleSet(sampleSet: SampleSet): SampleSet[] {
+        let splittedSampleSetMap = new Map<string, SampleSet>();
+        sampleSet.samples.forEach(sample => {
+            const nrl = sample.getNRL();
+            let splittedSampleSet = splittedSampleSetMap.get(nrl);
+            if (!splittedSampleSet) {
+                splittedSampleSet = {
+                    samples: [],
+                    meta: { ...sampleSet.meta }
+                };
+                splittedSampleSetMap.set(nrl, splittedSampleSet);
+            }
+            splittedSampleSet.samples.push(sample);
+        });
+        return Array.from(splittedSampleSetMap.values());
+    }
+
+    private async createSampleSheets(
+        sampleSets: SampleSet[],
+        creatorFunc: (sampleSet: SampleSet) => Promise<FileBuffer>
+    ): Promise<SampleSheet[]> {
+        return Promise.all(
+            sampleSets.map(async sampleSet =>
+                this.createSampleSheet(sampleSet, creatorFunc)
+            )
+        );
+    }
+
+    private async createSampleSheet(
+        sampleSet: SampleSet,
+        creatorFunc: (sampleSet: SampleSet) => Promise<FileBuffer>
+    ): Promise<SampleSheet> {
+        const fileBuffer = await creatorFunc(sampleSet);
+
+        const nrl = sampleSet.samples[0].getNRL();
+
+        const fileName = this.amendFileName(
+            sampleSet.meta.fileName || this.DEFAULT_FILE_NAME,
+            '_' + nrl + '_validated',
+            fileBuffer.extension
+        );
+
+        return {
+            buffer: fileBuffer.buffer,
+            fileName: fileName,
+            mime: fileBuffer.mimeType,
+            nrl: nrl
+        };
+    }
+
+    private sendSamplesToNRLs(
+        sampleSheets: SampleSheet[],
+        applicantMetaData: ApplicantMetaData
+    ): void {
+        sampleSheets.forEach(sampleSheet => {
+            const orderNotificationMetaData = this.resolveOrderNotificationMetaData(
+                applicantMetaData,
+                sampleSheet.nrl
+            );
+
+            const newOrderNotification = this.createNewOrderNotification(
+                this.createNotificationAttachment(sampleSheet),
+                orderNotificationMetaData
+            );
+
+            this.notificationService.sendNotification(newOrderNotification);
+        });
+    }
+
+    private sendSamplesToUser(
+        sampleSheets: SampleSheet[],
+        applicantMetaData: ApplicantMetaData
+    ): void {
+        const attachments = sampleSheets.map(sampleSheet =>
+            this.createNotificationAttachment(sampleSheet)
+        );
+
+        const newOrderCopyNotification = this.createNewOrderCopyNotification(
+            attachments,
+            applicantMetaData
+        );
+
+        this.notificationService.sendNotification(newOrderCopyNotification);
+    }
+
+    private createNotificationAttachment(sampleSheet: SampleSheet): Attachment {
+        return {
+            filename: sampleSheet.fileName,
+            content: sampleSheet.buffer,
+            contentType: sampleSheet.mime
+        };
+    }
+
+    private resolveOrderNotificationMetaData(
+        applicantMetaData: ApplicantMetaData,
+        nrl: NRL_ID
+    ): OrderNotificationMetaData {
+        return {
+            ...applicantMetaData,
+            recipient: {
+                email: this.nrlService.getEmailForNRL(nrl),
+                name: nrl.toString()
+            }
+        };
+    }
+
+    private createNewOrderCopyNotification(
+        datasets: Attachment[],
+        applicantMetaData: ApplicantMetaData
     ): Notification<NewDatasetCopyNotificationPayload, EmailNotificationMeta> {
-        const fullName = senderInfo.user.getFullName();
+        const fullName = applicantMetaData.user.getFullName();
         return {
             type: NotificationType.NOTIFICATION_SENT,
             payload: {
                 appName: this.appName,
                 name: fullName,
-                comment: senderInfo.comment
+                comment: applicantMetaData.comment
             },
             meta: this.notificationService.createEmailNotificationMetaData(
-                senderInfo.user.email,
+                applicantMetaData.user.email,
                 `Neuer Auftrag an das BfR`,
                 [],
-                [dataset]
+                datasets
             )
         };
     }
 
-    private createNewSampleNotification(
+    private createNewOrderNotification(
         dataset: Attachment,
-        senderInfo: ResolvedSenderInfo
+        orderNotificationMetaData: OrderNotificationMetaData
     ): Notification<NewDatasetNotificationPayload, EmailNotificationMeta> {
         return {
             type: NotificationType.REQUEST_JOB,
 
             payload: {
                 appName: this.appName,
-                firstName: senderInfo.user.firstName,
-                lastName: senderInfo.user.lastName,
-                email: senderInfo.user.email,
-                institution: senderInfo.user.institution,
-                comment: senderInfo.comment
+                firstName: orderNotificationMetaData.user.firstName,
+                lastName: orderNotificationMetaData.user.lastName,
+                email: orderNotificationMetaData.user.email,
+                institution: orderNotificationMetaData.user.institution,
+                comment: orderNotificationMetaData.comment
             },
             meta: this.notificationService.createEmailNotificationMetaData(
-                this.jobRecipient,
-                `Neuer Auftrag von ${senderInfo.institute.city ||
-                    '<unbekannt>'} an ${senderInfo.recipient || '<unbekannt>'}`,
+                this.overrideRecipient
+                    ? this.overrideRecipient
+                    : orderNotificationMetaData.recipient.email,
+                `Neuer Auftrag von ${orderNotificationMetaData.user.institution
+                    .city || '<unbekannt>'} an ${orderNotificationMetaData
+                    .recipient.name || '<unbekannt>'}`,
                 [],
                 [dataset]
             )
         };
+    }
+
+    private amendFileName(
+        originalFileName: string,
+        fileNameAddon: string,
+        fileExtension: string
+    ): string {
+        const entries: string[] = originalFileName.split(
+            this.IMPORTED_FILE_EXTENSION
+        );
+        let fileName: string = '';
+        if (entries.length > 0) {
+            fileName += entries[0];
+        }
+        fileName += fileNameAddon + fileExtension;
+        fileName = fileName.replace(' ', '_');
+        return fileName;
     }
 }

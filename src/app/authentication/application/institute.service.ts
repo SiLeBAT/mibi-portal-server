@@ -14,11 +14,7 @@ export class DefaultInstituteService implements InstituteService {
     ) {}
 
     retrieveInstitutes(): Promise<Institute[]> {
-        return this.instituteRepository.retrieve().then(institutes => {
-            return institutes.filter(
-                (institute: Institute) => institute.name !== 'dummy'
-            );
-        });
+        return this.instituteRepository.retrieve();
     }
 
     getInstituteById(instituteId: string): Promise<Institute> {
