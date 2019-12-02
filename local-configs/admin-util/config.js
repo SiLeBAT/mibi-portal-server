@@ -98,8 +98,8 @@ module.exports = {
   useBasicAuth: process.env.ME_CONFIG_BASICAUTH_USERNAME !== '',
 
   basicAuth: {
-    username: process.env.ME_CONFIG_BASICAUTH_USERNAME || 'mibiportaladmin',
-    password: process.env.ME_CONFIG_BASICAUTH_PASSWORD || 'localAdmin',
+    username: process.env.ME_CONFIG_BASICAUTH_USERNAME || 'mibiUserManager',
+    password: process.env.ME_CONFIG_BASICAUTH_PASSWORD || 'localManager',
   },
 
   options: {
