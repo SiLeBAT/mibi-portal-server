@@ -52,4 +52,4 @@ Thumbs.db
 /playground
 server-patch.patch
 /tmp
-local-*
+!/local-configs/

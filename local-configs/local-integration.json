@@ -1,0 +1,9 @@
+{
+  "dataStore": {
+      "dataBase": "epitest",
+      "dataDir": "./data"
+  },
+  "general": {
+      "logLevel": "info"
+  }
+}
