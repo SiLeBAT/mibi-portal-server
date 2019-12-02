@@ -15,7 +15,11 @@
         }
     },
     "dataStore": {
-        "connectionString": "",
+        "host": "",
+        "dataBase": "",
+        "username": "",
+        "password": "",
+        "authDatabase": "",
         "dataDir": ""
     },
     "mail": {

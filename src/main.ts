@@ -102,6 +102,8 @@ async function init() {
     const appConfiguration: AppConfiguration = configurationService.getApplicationConfiguration();
     const mailConfiguration: MailConfiguration = configurationService.getMailConfiguration();
 
+    logger.info(`Starting MiBi-Portal. appName=${appConfiguration.appName}`);
+
     const catalogRepository = await initialiseCatalogRepository(
         dataStoreConfig.dataDir
     ).catch((error: Error) => {
@@ -118,7 +120,13 @@ async function init() {
         throw error;
     });
 
-    createDataStore(dataStoreConfig.connectionString);
+    createDataStore({
+        host: dataStoreConfig.host,
+        database: dataStoreConfig.dataBase,
+        username: dataStoreConfig.username,
+        password: dataStoreConfig.password,
+        authDatabase: dataStoreConfig.authDatabase
+    });
 
     const container = getContainer({ defaultScope: 'Singleton' });
 

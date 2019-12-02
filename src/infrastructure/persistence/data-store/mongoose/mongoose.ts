@@ -16,21 +16,52 @@ import {
 // tslint:disable-next-line
 (mongoose as any).Promise = Promise;
 
+export interface ConnectionInfo {
+    host: string;
+    database: string;
+    username: string;
+    password: string;
+    authDatabase: string;
+}
+
 class MongooseDataStore implements DataStore {
-    constructor(connecionString: string) {
-        mongoose.connect(connecionString).then(
-            db => {
-                logger.info('Connected to DB', {
-                    connectionString: connecionString
-                });
-                return db;
-            },
-            error => {
-                throw new Error(
-                    `Unable to connect to DB. connectionString=${connecionString} error=${error}`
-                );
-            }
-        );
+    constructor(connectionInfo: ConnectionInfo) {
+        const connectionString =
+            'mongodb://' +
+            connectionInfo.username +
+            ':' +
+            connectionInfo.password +
+            '@' +
+            connectionInfo.host +
+            '/' +
+            connectionInfo.authDatabase;
+        const logString =
+            '{ "host":"' +
+            connectionInfo.host +
+            '", "user":"' +
+            connectionInfo.username +
+            '", "authDB":"' +
+            connectionInfo.authDatabase +
+            '", "db":"' +
+            connectionInfo.database +
+            '" }';
+        mongoose
+            .connect(connectionString, {
+                dbName: connectionInfo.database,
+                useCreateIndex: true,
+                useNewUrlParser: true
+            })
+            .then(
+                db => {
+                    logger.info('Connected to DB', logString);
+                    return db;
+                },
+                error => {
+                    throw new Error(
+                        `Unable to connect to DB. ${logString} error=${error}`
+                    );
+                }
+            );
     }
 
     close() {
@@ -54,9 +85,9 @@ class MongooseDataStore implements DataStore {
     }
 }
 
-export function createDataStore(connectionString: string): DataStore {
+export function createDataStore(connectionInfo: ConnectionInfo): DataStore {
     logger.info('Creating datastore');
-    return new MongooseDataStore(connectionString);
+    return new MongooseDataStore(connectionInfo);
 }
 
 export function mapCollectionToRepository(collection: string) {
