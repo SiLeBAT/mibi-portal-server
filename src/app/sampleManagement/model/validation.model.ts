@@ -131,18 +131,18 @@ export interface RegisteredZoMoOptions extends ValidatorFunctionOptions {
 }
 
 export interface AtLeastOneOfOptions extends ValidatorFunctionOptions {
-    additionalMembers: (SampleProperty)[];
+    additionalMembers: SampleProperty[];
 }
 
 export interface DependentFieldsOptions extends ValidatorFunctionOptions {
-    dependents: (SampleProperty)[];
+    dependents: SampleProperty[];
 }
 
 export interface NumbersOnlyOptions extends ValidatorFunctionOptions {}
 
 export interface ReferenceDateOptions extends ValidatorFunctionOptions {
-    earliest?: (SampleProperty) | string;
-    latest?: (SampleProperty) | string;
+    earliest?: SampleProperty | string;
+    latest?: SampleProperty | string;
     modifier?: {
         value: number;
         unit: string;
