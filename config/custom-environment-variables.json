@@ -9,6 +9,7 @@
     },
     "dataStore": {
         "connectionString": "MIBI_DB_CONNECTION",
+        "dataBase": "MIBI_DB_DATABASE",
         "dataDir": "MIBI_DATA_DIR"
     },
     "general": {

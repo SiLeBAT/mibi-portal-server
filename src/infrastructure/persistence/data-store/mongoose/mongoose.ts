@@ -17,20 +17,26 @@ import {
 (mongoose as any).Promise = Promise;
 
 class MongooseDataStore implements DataStore {
-    constructor(connecionString: string) {
-        mongoose.connect(connecionString).then(
-            db => {
-                logger.info('Connected to DB', {
-                    connectionString: connecionString
-                });
-                return db;
-            },
-            error => {
-                throw new Error(
-                    `Unable to connect to DB. connectionString=${connecionString} error=${error}`
-                );
-            }
-        );
+    constructor(connectionString: string, dataBase: string) {
+        mongoose
+            .connect(connectionString, {
+                dbName: dataBase,
+                useCreateIndex: true,
+                useNewUrlParser: true
+            })
+            .then(
+                db => {
+                    logger.info('Connected to DB', {
+                        connectionString: connectionString
+                    });
+                    return db;
+                },
+                error => {
+                    throw new Error(
+                        `Unable to connect to DB. connectionString=${connectionString} error=${error}`
+                    );
+                }
+            );
     }
 
     close() {
@@ -54,9 +60,12 @@ class MongooseDataStore implements DataStore {
     }
 }
 
-export function createDataStore(connectionString: string): DataStore {
+export function createDataStore(
+    connectionString: string,
+    dataBase: string
+): DataStore {
     logger.info('Creating datastore');
-    return new MongooseDataStore(connectionString);
+    return new MongooseDataStore(connectionString, dataBase);
 }
 
 export function mapCollectionToRepository(collection: string) {

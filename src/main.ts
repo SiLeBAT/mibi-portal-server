@@ -118,7 +118,7 @@ async function init() {
         throw error;
     });
 
-    createDataStore(dataStoreConfig.connectionString);
+    createDataStore(dataStoreConfig.connectionString, dataStoreConfig.dataBase);
 
     const container = getContainer({ defaultScope: 'Singleton' });
 

@@ -1,0 +1,36 @@
+{
+  "application": {
+    "appName": "MiBi-Portal",
+    "jobRecipient": "",
+    "login": {
+      "threshold": 5,
+      "secondsDelay": 600
+    },
+    "apiUrl": "http://localhost:3000"
+  },
+  "server": {
+    "port": 3000,
+    "publicAPIDoc": {
+        "/info": ["get"],
+        "/samples/submitted": ["post"],
+        "/samples/validated": ["put"],
+        "/samples": ["put"],
+        "/users/login": ["post"],
+        "/tokens": ["post"]
+    }
+  },
+  "dataStore": {
+    "connectionString": "mongodb://mibiPortal:localPortal@localhost:27017/epilab",
+    "dataBase": "epilab",
+    "dataDir": "./data"
+  },
+  "mail": {
+    "fromAddress": "",
+    "replyToAddress": ""
+  },
+  "general": {
+    "supportContact": "",
+    "logLevel": "trace",
+    "jwtSecret": "localSecret"
+  }
+}
