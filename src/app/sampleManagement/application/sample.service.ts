@@ -55,9 +55,7 @@ export class DefaultSampleService implements SampleService {
         const institution: Institute = sender.institution;
         if (institution.name === 'dummy') {
             logger.warn(
-                `${this.constructor.name}.${
-                    this.sendSampleFile.name
-                }, user assigned to dummy institute. User=${sender.uniqueId}`
+                `${this.constructor.name}.${this.sendSampleFile.name}, user assigned to dummy institute. User=${sender.uniqueId}`
             );
         }
         const resolvedSenderInfo: ResolvedSenderInfo = {
@@ -95,9 +93,7 @@ export class DefaultSampleService implements SampleService {
             } catch (error) {
                 if (error instanceof UnauthorizedError) {
                     logger.info(
-                        `${this.constructor.name}.${
-                            this.convertToJson.name
-                        }, unable to determine user origin because of invalid token. error=${error}`
+                        `${this.constructor.name}.${this.convertToJson.name}, unable to determine user origin because of invalid token. error=${error}`
                     );
                 } else {
                     throw error;

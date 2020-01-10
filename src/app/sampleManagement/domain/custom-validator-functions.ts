@@ -145,11 +145,7 @@ function nonUniqueEntry(
                 }
                 // TODO: find better way to do this
                 const newMessage: ValidationError = { ...options.message };
-                newMessage.message += ` Entweder '${
-                    entries[0].Kodiersystem
-                }' für '${entries[0].Text1}' oder '${
-                    entries[1].Kodiersystem
-                }' für '${entries[1].Text1}'.`;
+                newMessage.message += ` Entweder '${entries[0].Kodiersystem}' für '${entries[0].Text1}' oder '${entries[1].Kodiersystem}' für '${entries[1].Text1}'.`;
                 return newMessage;
             }
         }

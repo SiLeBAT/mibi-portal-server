@@ -59,9 +59,7 @@ export class DefaultRegistrationService implements RegistrationService {
         await this.tokenService.deleteTokenForUser(user);
         await this.prepareUserForAdminActivation(user);
         logger.info(
-            `${this.constructor.name}.${
-                this.verifyUser.name
-            }, User verification successful. token=${token}`
+            `${this.constructor.name}.${this.verifyUser.name}, User verification successful. token=${token}`
         );
         return user.email;
     }
@@ -82,9 +80,7 @@ export class DefaultRegistrationService implements RegistrationService {
         this.notificationService.sendNotification(adminActivationNotification);
         const userName = user.firstName + ' ' + user.lastName;
         logger.verbose(
-            `${this.constructor.name}.${
-                this.activateUser.name
-            }, User activation successful.`
+            `${this.constructor.name}.${this.activateUser.name}, User activation successful.`
         );
         return userName;
     }
@@ -108,14 +104,10 @@ export class DefaultRegistrationService implements RegistrationService {
             );
         } catch (error) {
             logger.error(
-                `${this.constructor.name}.${
-                    this.registerUser.name
-                }, Unable to find instituton: error=${error}.`
+                `${this.constructor.name}.${this.registerUser.name}, Unable to find instituton: error=${error}.`
             );
             logger.info(
-                `${this.constructor.name}.${
-                    this.registerUser.name
-                }, link registered user to dummy institution.`
+                `${this.constructor.name}.${this.registerUser.name}, link registered user to dummy institution.`
             );
             instituteIsUnknown = true;
             inst = await this.getDummyInstitution();
@@ -331,9 +323,7 @@ export class DefaultRegistrationService implements RegistrationService {
             },
             meta: this.notificationService.createEmailNotificationMetaData(
                 this.supportContact,
-                `Aktivierungsanfrage für das ${
-                    this.appName
-                } Konto von ${fullName} mit nicht registriertem Institut`
+                `Aktivierungsanfrage für das ${this.appName} Konto von ${fullName} mit nicht registriertem Institut`
             )
         };
     }
@@ -391,9 +381,7 @@ export class DefaultRegistrationService implements RegistrationService {
             },
             meta: this.notificationService.createEmailNotificationMetaData(
                 this.supportContact,
-                `Erinnerung: Bitte aktivieren Sie das ${
-                    this.appName
-                } Konto für ${fullName}`
+                `Erinnerung: Bitte aktivieren Sie das ${this.appName} Konto für ${fullName}`
             )
         };
     }

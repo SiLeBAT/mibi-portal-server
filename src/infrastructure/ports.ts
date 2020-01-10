@@ -1,12 +1,8 @@
 export { MAIL_TYPES } from './mail/mail.types';
 
-export {
-    getPersistenceContainerModule
-} from './persistence/persistence.module';
+export { getPersistenceContainerModule } from './persistence/persistence.module';
 export { UserNotFoundError } from './persistence/model/domain.error';
-export {
-    createRepository
-} from './persistence/data-store/mongoose/mongoose.repository';
+export { createRepository } from './persistence/data-store/mongoose/mongoose.repository';
 export {
     createDataStore,
     mapCollectionToRepository
@@ -17,9 +13,5 @@ export { MailService } from './mail/mail.model';
 
 export { getMailContainerModule } from './mail/mail.module';
 
-export {
-    initialiseRepository as initialiseCatalogRepository
-} from './persistence/repositories/catalog.repository';
-export {
-    initialiseRepository as initialiseSearchAliasRepository
-} from './persistence/repositories/search-alias.repository';
+export { initialiseRepository as initialiseCatalogRepository } from './persistence/repositories/catalog.repository';
+export { initialiseRepository as initialiseSearchAliasRepository } from './persistence/repositories/search-alias.repository';

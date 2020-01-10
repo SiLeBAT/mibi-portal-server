@@ -66,9 +66,7 @@ export class DefaultUsersController extends AbstractController
         @response() res: Response
     ) {
         logger.info(
-            `${this.constructor.name}.${
-                this.putResetPasswordRequest.name
-            }, Request received`
+            `${this.constructor.name}.${this.putResetPasswordRequest.name}, Request received`
         );
         try {
             const resetRequest: ResetRequestDTO = req.body;
@@ -87,16 +85,12 @@ export class DefaultUsersController extends AbstractController
                 email: resetRequest.email
             };
             logger.info(
-                `${this.constructor.name}.${
-                    this.putResetPasswordRequest.name
-                }, Response sent`
+                `${this.constructor.name}.${this.putResetPasswordRequest.name}, Response sent`
             );
             this.ok(res, dto);
         } catch (error) {
             logger.info(
-                `${this.constructor.name}.${
-                    this.putResetPasswordRequest.name
-                } has thrown an error. ${error}`
+                `${this.constructor.name}.${this.putResetPasswordRequest.name} has thrown an error. ${error}`
             );
             this.handleError(res, error);
         }
@@ -108,9 +102,7 @@ export class DefaultUsersController extends AbstractController
         @response() res: Response
     ) {
         logger.info(
-            `${this.constructor.name}.${
-                this.patchResetPassword.name
-            }, Request received`
+            `${this.constructor.name}.${this.patchResetPassword.name}, Request received`
         );
         try {
             const newPasswordRequest: NewPasswordRequestDTO = req.body;
@@ -127,16 +119,12 @@ export class DefaultUsersController extends AbstractController
                 passwordReset: true
             };
             logger.info(
-                `${this.constructor.name}.${
-                    this.patchResetPassword.name
-                }, Response sent`
+                `${this.constructor.name}.${this.patchResetPassword.name}, Response sent`
             );
             this.ok(res, dto);
         } catch (error) {
             logger.info(
-                `${this.constructor.name}.${
-                    this.patchResetPassword.name
-                } has thrown an error. ${error}`
+                `${this.constructor.name}.${this.patchResetPassword.name} has thrown an error. ${error}`
             );
             this.handleError(res, error);
         }
@@ -163,9 +151,7 @@ export class DefaultUsersController extends AbstractController
             this.ok(res, dto);
         } catch (error) {
             logger.info(
-                `${this.constructor.name}.${
-                    this.postLogin.name
-                } has thrown an error. ${error}`
+                `${this.constructor.name}.${this.postLogin.name} has thrown an error. ${error}`
             );
             this.handleError(res, error);
         }
@@ -177,9 +163,7 @@ export class DefaultUsersController extends AbstractController
         @response() res: Response
     ) {
         logger.info(
-            `${this.constructor.name}.${
-                this.patchVerification.name
-            }, Request received`
+            `${this.constructor.name}.${this.patchVerification.name}, Request received`
         );
         try {
             const username = await this.registrationService.verifyUser(token);
@@ -188,16 +172,12 @@ export class DefaultUsersController extends AbstractController
                 username
             };
             logger.info(
-                `${this.constructor.name}.${
-                    this.patchVerification.name
-                }, Response sent`
+                `${this.constructor.name}.${this.patchVerification.name}, Response sent`
             );
             this.ok(res, dto);
         } catch (error) {
             logger.info(
-                `${this.constructor.name}.${
-                    this.patchVerification.name
-                } has thrown an error. ${error}`
+                `${this.constructor.name}.${this.patchVerification.name} has thrown an error. ${error}`
             );
             this.handleError(res, error);
         }
@@ -208,9 +188,7 @@ export class DefaultUsersController extends AbstractController
         @response() res: Response
     ) {
         logger.info(
-            `${this.constructor.name}.${
-                this.patchActivation.name
-            }, Request received`
+            `${this.constructor.name}.${this.patchActivation.name}, Request received`
         );
         try {
             const username = await this.registrationService.activateUser(token);
@@ -219,16 +197,12 @@ export class DefaultUsersController extends AbstractController
                 username
             };
             logger.info(
-                `${this.constructor.name}.${
-                    this.patchActivation.name
-                }, Response sent`
+                `${this.constructor.name}.${this.patchActivation.name}, Response sent`
             );
             this.ok(res, dto);
         } catch (error) {
             logger.info(
-                `${this.constructor.name}.${
-                    this.patchActivation.name
-                } has thrown an error. ${error}`
+                `${this.constructor.name}.${this.patchActivation.name} has thrown an error. ${error}`
             );
             this.handleError(res, error);
         }
@@ -236,9 +210,7 @@ export class DefaultUsersController extends AbstractController
     @httpPost(USERS_ROUTE.REGISTRATION)
     async postRegistration(@request() req: Request, @response() res: Response) {
         logger.info(
-            `${this.constructor.name}.${
-                this.postRegistration.name
-            }, Request received`
+            `${this.constructor.name}.${this.postRegistration.name}, Request received`
         );
         try {
             const credentials: UserRegistration = this.fromRequestToUserRegistration(
@@ -251,16 +223,12 @@ export class DefaultUsersController extends AbstractController
             };
 
             logger.info(
-                `${this.constructor.name}.${
-                    this.postRegistration.name
-                }, Response sent`
+                `${this.constructor.name}.${this.postRegistration.name}, Response sent`
             );
             return this.ok(res, dto);
         } catch (error) {
             logger.info(
-                `${this.constructor.name}.${
-                    this.postRegistration.name
-                } has thrown an error. ${error}`
+                `${this.constructor.name}.${this.postRegistration.name} has thrown an error. ${error}`
             );
             this.handleError(res, error);
         }
@@ -320,9 +288,7 @@ export class DefaultUsersController extends AbstractController
             return credentials;
         } catch (error) {
             logger.error(
-                `${this.constructor.name}.${
-                    this.fromRequestToUserRegistration.name
-                }, unable to verify credentials during registration. error=${error}`
+                `${this.constructor.name}.${this.fromRequestToUserRegistration.name}, unable to verify credentials during registration. error=${error}`
             );
             throw new MalformedRequestError('Registration details invalid');
         }
