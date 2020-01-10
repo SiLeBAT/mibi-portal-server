@@ -72,7 +72,7 @@ describe('Login controller', () => {
     });
     it('should be return a 500 response', () => {
         const mockLoginService = getMockLoginService();
-        controller = rebindMocks<RegistrationService>(
+        controller = rebindMocks<UsersController>(
             container,
             SERVER_TYPES.UsersController,
             [
@@ -100,7 +100,7 @@ describe('Login controller', () => {
 
     it('should be return a 401 response', () => {
         const mockLoginService = getMockLoginService();
-        controller = rebindMocks<RegistrationService>(
+        controller = rebindMocks<UsersController>(
             container,
             SERVER_TYPES.UsersController,
             [
@@ -128,7 +128,7 @@ describe('Login controller', () => {
 
     it('should be return a 200 response', () => {
         const mockLoginService = getMockLoginService();
-        controller = rebindMocks<RegistrationService>(
+        controller = rebindMocks<UsersController>(
             container,
             SERVER_TYPES.UsersController,
             [
