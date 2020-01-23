@@ -1,27 +1,21 @@
-import {
-    EinsendebogenMetaData,
-    EinsendebogenAnalysis
-} from './../model/excel.model';
 import { injectable, inject } from 'inversify';
 import {
     PDFCreatorService,
     PDFConfigProviderService
 } from '../model/pdf.model';
-import {
-    SampleSet,
-    Address,
-    Sample,
-    SampleData,
-    Analysis
-} from '../model/sample.model';
+import { Address, SampleData, Sample } from '../model/sample.model';
 import { APPLICATION_TYPES } from '../../application.types';
 import * as _ from 'lodash';
 import * as fs from 'fs';
 import { NRL_ID, Urgency } from '../domain/enums';
-import { NRLConstants } from '../model/nrl.model';
 import { FileBuffer } from '../../core/model/file.model';
 import { PDFService } from '../../pdf/pdf.model';
-import { EMPTY_META } from '../domain/constants';
+import {
+    SampleSheet,
+    SampleSheetMetaData,
+    SampleSheetAnalysis,
+    SampleSheetAnalysisOption
+} from '../model/sample-sheet.model';
 
 @injectable()
 export class DefaultPDFCreatorService implements PDFCreatorService {
@@ -41,15 +35,13 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
         @inject(APPLICATION_TYPES.PDFService)
         private pdfService: PDFService,
         @inject(APPLICATION_TYPES.PDFConfigProviderService)
-        private configProvider: PDFConfigProviderService,
-        @inject(APPLICATION_TYPES.NRLConstants)
-        private nrlConstants: NRLConstants
+        private configProvider: PDFConfigProviderService
     ) {
         this.loadLogo();
     }
 
-    async createPDF(sampleSet: SampleSet): Promise<FileBuffer> {
-        const docDefinition = this.createDocDefinition(sampleSet);
+    async createPDF(sampleSheet: SampleSheet): Promise<FileBuffer> {
+        const docDefinition = this.createDocDefinition(sampleSheet);
 
         const buffer = await this.pdfService.createPDF(
             docDefinition,
@@ -67,13 +59,13 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
         this.logo = fs.readFileSync(this.config.svgLogoPath, 'utf8').toString();
     }
 
-    private createDocDefinition(sampleSet: SampleSet): {} {
+    private createDocDefinition(sampleSheet: SampleSheet): {} {
         return {
             info: { ...this.config.fileInfo },
             ...this.createPageConfig(),
             defaultStyle: this.configProvider.defaultStyle,
             styles: this.configProvider.styles,
-            content: this.createContent(sampleSet),
+            content: this.createContent(sampleSheet),
             footer: (currentPage: number, pageCount: number) =>
                 this.createFooter(currentPage, pageCount)
         };
@@ -94,64 +86,19 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
         };
     }
 
-    private createContent(sampleSet: SampleSet): {}[] {
+    private createContent(sampleSheet: SampleSheet): {}[] {
         return [
             {
-                ...this.createMeta(this.getEinsendebogenMetaData(sampleSet)),
+                ...this.createMeta(sampleSheet.meta),
                 pageBreak: 'after'
             },
-            this.createSamples(sampleSet.samples)
+            this.createSamples(sampleSheet.samples)
         ];
     }
 
-    private getEinsendebogenMetaData(
-        sampleSet: SampleSet
-    ): EinsendebogenMetaData {
-        let nrl = EMPTY_META.nrl;
-        let analysis = this.fromSampleAnalysisToEinsendebogenAnalysis(
-            EMPTY_META.analysis
-        );
-        let urgency = Urgency.NORMAL;
-        if (_.uniq(sampleSet.samples.map(s => s.getNRL())).length === 1) {
-            nrl = sampleSet.samples[0].getNRL();
-            analysis = this.fromSampleAnalysisToEinsendebogenAnalysis(
-                sampleSet.samples[0].getAnalysis()
-            );
-            urgency = sampleSet.samples[0].getUrgency();
-        }
-
-        return {
-            nrl,
-            analysis,
-            sender: sampleSet.meta.sender,
-            urgency,
-            fileName: sampleSet.meta.fileName
-        };
-    }
-
-    private fromSampleAnalysisToEinsendebogenAnalysis(
-        analysis: Partial<Analysis>
-    ): EinsendebogenAnalysis {
-        return {
-            species: analysis.species || false,
-            phageTyping: false,
-            zoonosenIsolate: false,
-            serological: analysis.serological || false,
-            resistance: analysis.resistance || false,
-            vaccination: analysis.vaccination || false,
-            molecularTyping: analysis.molecularTyping || false,
-            toxin: analysis.toxin || false,
-            esblAmpCCarbapenemasen: analysis.esblAmpCCarbapenemasen || false,
-            other: analysis.other || '',
-            compareHuman: _.cloneDeep(analysis.compareHuman) || {
-                active: false,
-                value: ''
-            }
-        };
-    }
     // Meta content
 
-    private createMeta(metaData: EinsendebogenMetaData): {} {
+    private createMeta(metaData: SampleSheetMetaData): {} {
         return {
             stack: [
                 this.createMetaMainRow(
@@ -223,7 +170,7 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
 
     private createMetaRecipient(nrl: NRL_ID): {} {
         const strings = this.strings.meta.recipient;
-        const nrlString = this.nrlConstants.longNames[nrl];
+        const nrlString = this.strings.nrl[nrl];
         return {
             stack: [
                 { text: strings.title, style: 'heading1' },
@@ -330,10 +277,21 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
         };
     }
 
-    private createMetaAnalysis(analysis: EinsendebogenAnalysis): {} {
+    private createMetaAnalysis(analysis: SampleSheetAnalysis): {} {
         const strings = this.strings.meta.analysis;
-        const clean = (v: boolean | string): string =>
-            v ? strings.marked : ' ';
+        const getStringFromOption = (
+            option: SampleSheetAnalysisOption
+        ): string => {
+            switch (option) {
+                case SampleSheetAnalysisOption.OMIT:
+                    return ' ';
+                case SampleSheetAnalysisOption.STANDARD:
+                    return strings.options.standard;
+                case SampleSheetAnalysisOption.ACTIVE:
+                    return strings.options.active;
+            }
+        };
+        const getStringFromText = (text: string): string => (text ? text : ' ');
         return {
             stack: [
                 this.createSuperScriptedText(
@@ -348,7 +306,7 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                         [
                             { text: strings.species },
                             {
-                                text: clean(analysis.species),
+                                text: getStringFromOption(analysis.species),
                                 style: 'markedCell',
                                 alignment: 'center'
                             }
@@ -356,7 +314,7 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                         [
                             { text: strings.serological },
                             {
-                                text: clean(analysis.serological),
+                                text: getStringFromOption(analysis.serological),
                                 style: 'markedCell',
                                 alignment: 'center'
                             }
@@ -364,7 +322,7 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                         [
                             { text: strings.phageTyping },
                             {
-                                text: clean(analysis.phageTyping),
+                                text: getStringFromOption(analysis.phageTyping),
                                 style: 'markedCell',
                                 alignment: 'center'
                             }
@@ -372,7 +330,7 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                         [
                             { text: strings.resistance },
                             {
-                                text: clean(analysis.resistance),
+                                text: getStringFromOption(analysis.resistance),
                                 style: 'markedCell',
                                 alignment: 'center'
                             }
@@ -380,7 +338,7 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                         [
                             { text: strings.vaccination },
                             {
-                                text: clean(analysis.vaccination),
+                                text: getStringFromOption(analysis.vaccination),
                                 style: 'markedCell',
                                 alignment: 'center'
                             }
@@ -392,7 +350,9 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                                 []
                             ),
                             {
-                                text: clean(analysis.molecularTyping),
+                                text: getStringFromOption(
+                                    analysis.molecularTyping
+                                ),
                                 style: 'markedCell',
                                 alignment: 'center'
                             }
@@ -400,7 +360,7 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                         [
                             { text: strings.toxin },
                             {
-                                text: clean(analysis.toxin),
+                                text: getStringFromOption(analysis.toxin),
                                 style: 'markedCell',
                                 alignment: 'center'
                             }
@@ -408,7 +368,9 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                         [
                             { text: strings.zoonosenIsolate },
                             {
-                                text: clean(analysis.zoonosenIsolate),
+                                text: getStringFromOption(
+                                    analysis.zoonosenIsolate
+                                ),
                                 style: 'markedCell',
                                 alignment: 'center'
                             }
@@ -416,7 +378,9 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                         [
                             { text: strings.esblAmpCCarbapenemasen },
                             {
-                                text: clean(analysis.esblAmpCCarbapenemasen),
+                                text: getStringFromOption(
+                                    analysis.esblAmpCCarbapenemasen
+                                ),
                                 style: 'markedCell',
                                 alignment: 'center'
                             }
@@ -424,14 +388,14 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                         [
                             { text: strings.other },
                             {
-                                text: clean(analysis.other),
+                                text: getStringFromOption(analysis.other),
                                 style: 'markedCell',
                                 alignment: 'center'
                             }
                         ],
                         [
                             {
-                                text: analysis.other ? analysis.other : ' ',
+                                text: getStringFromText(analysis.otherText),
                                 colSpan: 2,
                                 style: ['markedCell', 'userComment']
                             }
@@ -443,16 +407,18 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                                 ['markedCell']
                             ),
                             {
-                                text: clean(analysis.compareHuman.active),
+                                text: getStringFromOption(
+                                    analysis.compareHuman
+                                ),
                                 style: 'markedCell',
                                 alignment: 'center'
                             }
                         ],
                         [
                             {
-                                text: analysis.compareHuman.value
-                                    ? analysis.compareHuman.value
-                                    : ' ',
+                                text: getStringFromText(
+                                    analysis.compareHumanText
+                                ),
                                 colSpan: 2,
                                 style: ['markedCell', 'userComment']
                             }

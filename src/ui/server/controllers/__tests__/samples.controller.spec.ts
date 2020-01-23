@@ -1,4 +1,3 @@
-import { Urgency } from './../../../../app/sampleManagement/domain/enums';
 /// <reference types='jest' />
 
 var mockReq = require('mock-express-request');

@@ -15,7 +15,6 @@ import {
     TokenPayload,
     TokenPort,
     UserPort,
-    NRLPort,
     Urgency,
     User,
     ReceiveAs,
@@ -65,6 +64,7 @@ import { inject } from 'inversify';
 import { APPLICATION_TYPES } from './../../../app/application.types';
 import SERVER_TYPES from '../server.types';
 import { Analysis } from 'src/app/sampleManagement/model/sample.model';
+import { NRLService } from '../../../app/sampleManagement/model/nrl.model';
 moment.locale('de');
 
 enum RESOURCE_VIEW_TYPE {
@@ -89,7 +89,8 @@ export class DefaultSamplesController extends AbstractController
         private sampleService: SamplePort,
         @inject(APPLICATION_TYPES.TokenService) private tokenService: TokenPort,
         @inject(APPLICATION_TYPES.UserService) private userService: UserPort,
-        @inject(APPLICATION_TYPES.NRLService) private nrlService: NRLPort,
+        // dirty fix: Use of NRLService instead of NRLPort
+        @inject(APPLICATION_TYPES.NRLService) private nrlService: NRLService,
         @inject(APPLICATION_TYPES.SampleFactory) private factory: SampleFactory
     ) {
         super();
@@ -451,7 +452,7 @@ export class DefaultSamplesController extends AbstractController
     private fromDTOToSample({ sampleData, sampleMeta }: SampleDTO): Sample {
         const annotatedSample = this.fromDTOToAnnotatedSampleData(sampleData);
         const sample = this.factory.createSample({ ...annotatedSample });
-        sample.setAnalysis(sampleMeta.analysis);
+        sample.setAnalysis(this.nrlService, sampleMeta.analysis);
         sample.setUrgency(this.fromUrgencyStringToEnum(sampleMeta.urgency));
         return sample;
     }
@@ -490,7 +491,7 @@ export class DefaultSamplesController extends AbstractController
             sampleSet: {
                 meta: this.fromSampleSetMetaDataToDTO(sampleSet.meta),
                 samples: sampleSet.samples.map(sample => ({
-                    sampleData: sample.getDataValues(),
+                    sampleData: sample.getDataEntries(),
                     sampleMeta: {
                         nrl: sample.getNRL().toString(),
                         analysis: this.fromAnalysisToDTO(sample.getAnalysis()),

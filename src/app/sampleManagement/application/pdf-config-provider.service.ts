@@ -10,7 +10,8 @@ import {
     SampleSheetConfig,
     SampleSheetMetaStrings,
     SampleSheetSamplesStrings,
-    SampleSheetConstants
+    SampleSheetConstants,
+    SampleSheetNRLStrings
 } from '../model/sample-sheet.model';
 
 @injectable()
@@ -49,10 +50,12 @@ export class DefaultPDFConfigProviderService
     get strings(): {
         meta: SampleSheetMetaStrings;
         samples: SampleSheetSamplesStrings;
+        nrl: SampleSheetNRLStrings;
     } {
         return {
             meta: this.constants.metaStrings,
-            samples: this.constants.samplesStrings
+            samples: this.constants.samplesStrings,
+            nrl: this.constants.nrlStrings
         };
     }
 

@@ -1,4 +1,4 @@
-import { NRL_ID } from './enums';
+import { Analysis } from '../model/sample.model';
 
 export const VALID_SHEET_NAME: string = 'Einsendeformular';
 
@@ -47,21 +47,23 @@ export const META_ANALYSIS_OTHER_TEXT_CELL = 'J22';
 export const META_ANALYSIS_COMPAREHUMAN_BOOL_CELL = 'P23';
 export const META_ANALYSIS_COMPAREHUMAN_TEXT_CELL = 'J24';
 
-export const EMPTY_META = {
-    nrl: NRL_ID.UNKNOWN,
-    analysis: {
-        species: false,
-        serological: false,
-        resistance: false,
-        vaccination: false,
-        molecularTyping: false,
-        toxin: false,
-        esblAmpCCarbapenemasen: false,
-        sample: false,
-        other: '',
-        compareHuman: {
-            value: '',
-            active: false
-        }
+export const EMPTY_ANALYSIS: Analysis = {
+    species: false,
+    serological: false,
+    resistance: false,
+    vaccination: false,
+    molecularTyping: false,
+    toxin: false,
+    esblAmpCCarbapenemasen: false,
+    sample: false,
+    other: '',
+    compareHuman: {
+        value: '',
+        active: false
     }
+};
+
+export const ZOMO_ID = {
+    code: 81,
+    string: 'Zoonosen-Monitoring - Planprobe'
 };

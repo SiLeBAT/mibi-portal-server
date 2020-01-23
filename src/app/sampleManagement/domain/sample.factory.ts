@@ -23,14 +23,10 @@ export class DefaultSampleFactory implements SampleFactory {
             ...this.nrlService.getStandardAnalysisFor(nrl),
             ...this.nrlService.getOptionalAnalysisFor(nrl)
         };
-        return DefaultSample.create(
-            data,
-            {
-                nrl,
-                analysis: defaultAnalysis,
-                urgency: Urgency.NORMAL
-            },
-            this.nrlService
-        );
+        return DefaultSample.create(data, {
+            nrl,
+            analysis: defaultAnalysis,
+            urgency: Urgency.NORMAL
+        });
     }
 }

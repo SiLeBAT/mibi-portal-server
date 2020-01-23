@@ -9,6 +9,7 @@ export const APPLICATION_TYPES = {
     JSONMarshalService: Symbol.for('JSONMarshalService'),
 
     SampleSheetConstants: Symbol.for('SampleSheetConstants'),
+    SampleSheetService: Symbol.for('SampleSheetService'),
     PDFService: Symbol.for('PDFService'),
     PDFConstants: Symbol.for('PDFConstants'),
     PDFCreatorService: Symbol.for('PDFCreatorService'),
@@ -22,7 +23,6 @@ export const APPLICATION_TYPES = {
     RegistrationService: Symbol.for('RegistrationService'),
     PasswordService: Symbol.for('PasswordService'),
     LoginService: Symbol.for('LoginService'),
-    NRLConstants: Symbol.for('NRLConstants'),
     NRLService: Symbol.for('NRLService'),
     FormAutoCorrectionService: Symbol.for('FormAutoCorrectionService'),
     FormValidatorService: Symbol.for('FormValidatorService'),

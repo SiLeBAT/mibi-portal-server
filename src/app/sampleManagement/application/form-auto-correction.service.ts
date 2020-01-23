@@ -46,17 +46,18 @@ export class DefaultFormAutoCorrectionService
             this.correctionFunctions.forEach(fn => {
                 const correction: CorrectionSuggestions | null = fn(sampleData);
                 if (correction) {
+                    const targetField = '' + correction.field;
                     newSample.addCorrectionTo(
-                        '' + correction.field,
+                        targetField,
                         correction.correctionOffer
                     );
                     if (correction.code) {
                         const err = this.validationErrorProvider.getError(
                             correction.code
                         );
-                        newSample.addErrorTo('' + correction.field, err);
+                        newSample.addErrorTo(targetField, err);
                     }
-                    newSample.clearSingleCorrectionSuggestions();
+                    newSample.applySingleCorrectionSuggestions();
                 }
             });
             return newSample;

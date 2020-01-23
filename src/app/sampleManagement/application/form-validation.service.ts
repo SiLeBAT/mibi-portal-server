@@ -12,7 +12,7 @@ import {
 } from '../model/validation.model';
 import { CatalogService } from '../model/catalog.model';
 import { createValidator } from '../domain/validator.entity';
-import { Sample } from '../model/sample.model';
+import { Sample, SampleProperty } from '../model/sample.model';
 import {
     baseConstraints,
     zoMoConstraints,
@@ -20,12 +20,29 @@ import {
 } from '../domain/validation-constraints';
 import { injectable, inject } from 'inversify';
 import { APPLICATION_TYPES } from './../../application.types';
-import { NotValidatedIdError } from '../domain/domain.error';
 
 enum ConstraintSet {
     STANDARD = 'standard',
     ZOMO = 'ZoMo'
 }
+
+interface DuplicateIdConfig {
+    sampleId: SampleProperty;
+    error: number;
+    uniqueIdSelector: (sample: Sample) => string | undefined;
+}
+
+const duplicatePathogenIdConfig: DuplicateIdConfig = {
+    sampleId: 'sample_id',
+    error: 3,
+    uniqueIdSelector: (sample: Sample) => sample.pathogenId
+};
+
+const duplicatePathogenIdAVVConfig: DuplicateIdConfig = {
+    sampleId: 'sample_id_avv',
+    error: 6,
+    uniqueIdSelector: (sample: Sample) => sample.pathogenIdAVV
+};
 
 @injectable()
 export class DefaultFormValidatorService implements FormValidatorService {
@@ -96,63 +113,43 @@ export class DefaultFormValidatorService implements FormValidatorService {
     private validateSamplesBatch(samples: Sample[]): Sample[] {
         const checkedForDuplicateIds = this.checkForDuplicateIdEntries(
             samples,
-            'pathogenId'
+            duplicatePathogenIdConfig
         );
         return this.checkForDuplicateIdEntries(
             checkedForDuplicateIds,
-            'pathogenIdAVV'
+            duplicatePathogenIdAVVConfig
         );
     }
 
     private checkForDuplicateIdEntries(
         samples: Sample[],
-        uniqueId: keyof Sample
+        config: DuplicateIdConfig
     ): Sample[] {
-        const config = this.getUniqueIdErrorConfig(uniqueId);
-
         const pathogenArrayIdDuplicates = this.getDuplicateEntries(
             samples,
-            uniqueId
+            config
         );
 
         _.filter(samples, sample =>
-            _.includes(pathogenArrayIdDuplicates, sample[uniqueId])
-        ).forEach(e => {
-            e.addErrorTo(
-                config.sampleId,
-                this.validationErrorProvider.getError(config.error)
-            );
+            _.includes(
+                pathogenArrayIdDuplicates,
+                config.uniqueIdSelector(sample)
+            )
+        ).forEach(filteredSample => {
+            const err = this.validationErrorProvider.getError(config.error);
+            filteredSample.addErrorTo(config.sampleId, err);
         });
 
         return [...samples];
     }
 
-    private getDuplicateEntries(samples: Sample[], uniqueId: keyof Sample) {
+    private getDuplicateEntries(samples: Sample[], config: DuplicateIdConfig) {
         const pathogenArrayId = samples
-            .map(sample => sample[uniqueId])
+            .map(sample => config.uniqueIdSelector(sample))
             .filter(x => x);
-        return _.filter(pathogenArrayId, function(value, index, iteratee) {
+        return _.filter(pathogenArrayId, (value, index, iteratee) => {
             return _.includes(iteratee, value, index + 1);
         });
-    }
-
-    private getUniqueIdErrorConfig(uniqueId: string) {
-        switch (uniqueId) {
-            case 'pathogenId':
-                return {
-                    sampleId: 'sample_id',
-                    error: 3
-                };
-            case 'pathogenIdAVV':
-                return {
-                    sampleId: 'sample_id_avv',
-                    error: 6
-                };
-            default:
-                throw new NotValidatedIdError(
-                    `Invalid Input: This unique ID is not validated uniqueId=${uniqueId}`
-                );
-        }
     }
 
     private getConstraints(set: ConstraintSet, options: ValidationOptions) {

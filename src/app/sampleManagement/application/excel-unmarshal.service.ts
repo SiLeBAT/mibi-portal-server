@@ -1,11 +1,9 @@
 import { APPLICATION_TYPES } from './../../application.types';
-import { Analysis } from './../model/sample.model';
 import { WorkBook, WorkSheet, read, utils, CellObject } from 'xlsx';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import 'moment/locale/de';
 import {
-    SampleSet,
     AnnotatedSampleDataEntry,
     Sample,
     SampleData,
@@ -13,11 +11,7 @@ import {
     SampleFactory
 } from '../model/sample.model';
 
-import {
-    ExcelUnmarshalService,
-    EinsendebogenMetaData,
-    EinsendebogenAnalysis
-} from '../model/excel.model';
+import { ExcelUnmarshalService } from '../model/excel.model';
 import { Urgency, NRL_ID } from '../domain/enums';
 import { injectable, inject } from 'inversify';
 import {
@@ -42,11 +36,17 @@ import {
     META_ANALYSIS_SEROLOGICAL_CELL,
     META_SENDER_CONTACTPERSON_CELL,
     META_ANALYSIS_COMPAREHUMAN_TEXT_CELL,
-    EMPTY_META,
     META_ANALYSIS_ZOONOSENISOLATE_CELL,
-    META_ANALYSIS_PHAGETYPING_CELL
+    META_ANALYSIS_PHAGETYPING_CELL,
+    META_ANAYLSIS_OTHER_BOOL_CELL
 } from '../domain/constants';
 import { DefaultNRLService } from './nrl.service';
+import {
+    SampleSheet,
+    SampleSheetMetaData,
+    SampleSheetAnalysis,
+    SampleSheetAnalysisOption
+} from '../model/sample-sheet.model';
 
 @injectable()
 export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
@@ -57,29 +57,13 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
     async convertExcelToJSJson(
         buffer: Buffer,
         fileName: string
-    ): Promise<SampleSet> {
-        try {
-            const sampleSheet: WorkSheet = await this.fromFileToWorkSheet(
-                buffer
-            );
-            const data: Sample[] = this.fromWorksheetToData(sampleSheet);
-            const meta: EinsendebogenMetaData = this.getMetaDataFromFileData(
-                sampleSheet,
-                fileName
-            );
+    ): Promise<SampleSheet> {
+        const workSheet: WorkSheet = await this.fromFileToWorkSheet(buffer);
 
-            return {
-                samples: this.isForSingleSpecifiedNRL(data, meta)
-                    ? this.addCorrectMetaData(data, meta)
-                    : data,
-                meta: {
-                    sender: meta.sender,
-                    fileName: meta.fileName
-                }
-            };
-        } catch (error) {
-            throw error;
-        }
+        return {
+            samples: this.fromWorksheetToData(workSheet),
+            meta: this.getMetaDataFromFileData(workSheet, fileName)
+        };
     }
 
     private async fromFileToWorkSheet(buffer: Buffer): Promise<WorkSheet> {
@@ -92,9 +76,9 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
                 cellNF: true
             });
             const worksheetName: string = workbook.SheetNames[0];
-            const sampleSheet: WorkSheet = workbook.Sheets[worksheetName];
+            const workSheet: WorkSheet = workbook.Sheets[worksheetName];
             if (worksheetName === VALID_SHEET_NAME) {
-                resolve(sampleSheet);
+                resolve(workSheet);
             } else {
                 reject(
                     `Not a valid excel sheet, name of first sheet must be ${VALID_SHEET_NAME}`
@@ -106,105 +90,61 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
     private getMetaDataFromFileData(
         workSheet: WorkSheet,
         fileName: string
-    ): EinsendebogenMetaData {
-        const meta: EinsendebogenMetaData = {
+    ): SampleSheetMetaData {
+        return {
             nrl: this.getNRLFromWorkSheet(workSheet),
             urgency: this.getUrgencyFromWorkSheet(workSheet),
             sender: this.getSenderFromWorkSheet(workSheet),
             analysis: this.getAnalysisFromWorkSheet(workSheet),
             fileName
         };
-
-        return meta;
     }
 
-    private addCorrectMetaData(
-        data: Sample[],
-        meta: EinsendebogenMetaData
-    ): Sample[] {
-        return data.map(sample => {
-            sample.setAnalysis(
-                this.fromEinsendebogenAnalysisToSampleAnalysis(meta.analysis)
-            );
-            sample.setUrgency(meta.urgency);
-            return sample;
-        });
-    }
-
-    private fromEinsendebogenAnalysisToSampleAnalysis(
-        analysis: EinsendebogenAnalysis
-    ): Partial<Analysis> {
-        return {
-            ...EMPTY_META.analysis,
-            ...{
-                species: analysis.species,
-                serological: analysis.serological,
-                resistance: analysis.resistance,
-                vaccination: analysis.vaccination,
-                molecularTyping: analysis.molecularTyping,
-                toxin: analysis.toxin,
-                esblAmpCCarbapenemasen: analysis.esblAmpCCarbapenemasen,
-                other: analysis.other,
-                compareHuman: _.cloneDeep(analysis.compareHuman)
-            }
-        };
-    }
     private getAnalysisFromWorkSheet(
         workSheet: WorkSheet
-    ): EinsendebogenAnalysis {
+    ): SampleSheetAnalysis {
+        const mapCellToOption = (
+            cell: CellObject
+        ): SampleSheetAnalysisOption => {
+            return this.getDataFromCell(cell)
+                ? SampleSheetAnalysisOption.ACTIVE
+                : SampleSheetAnalysisOption.OMIT;
+        };
+        const mapCellToText = (cell: CellObject): string =>
+            ('' + this.getDataFromCell(cell)).trim();
+
         return {
-            species:
-                !!this.getDataFromCell(workSheet[META_ANALYSIS_SPECIES_CELL]) ||
-                false,
-            serological:
-                !!this.getDataFromCell(
-                    workSheet[META_ANALYSIS_SEROLOGICAL_CELL]
-                ) || false,
-            resistance:
-                !!this.getDataFromCell(
-                    workSheet[META_ANALYSIS_RESISTANCE_CELL]
-                ) || false,
-            zoonosenIsolate:
-                !!this.getDataFromCell(
-                    workSheet[META_ANALYSIS_ZOONOSENISOLATE_CELL]
-                ) || false,
-
-            phageTyping:
-                !!this.getDataFromCell(
-                    workSheet[META_ANALYSIS_PHAGETYPING_CELL]
-                ) || false,
-
-            vaccination:
-                !!this.getDataFromCell(
-                    workSheet[META_ANALYSIS_VACCINATION_CELL]
-                ) || false,
-            molecularTyping:
-                !!this.getDataFromCell(
-                    workSheet[META_ANALYSIS_MOLECULARTYPING_CELL]
-                ) || false,
-            toxin:
-                !!this.getDataFromCell(workSheet[META_ANALYSIS_TOXIN_CELL]) ||
-                false,
-            esblAmpCCarbapenemasen:
-                !!this.getDataFromCell(
-                    workSheet[META_ANALYSIS_ESBLAMPCCARBAPENEMASEN_CELL]
-                ) || false,
-            other: (
-                '' +
-                this.getDataFromCell(workSheet[META_ANALYSIS_OTHER_TEXT_CELL])
-            ).trim(),
-            compareHuman: {
-                active:
-                    !!this.getDataFromCell(
-                        workSheet[META_ANALYSIS_COMPAREHUMAN_BOOL_CELL]
-                    ) || false,
-                value: (
-                    '' +
-                    this.getDataFromCell(
-                        workSheet[META_ANALYSIS_COMPAREHUMAN_TEXT_CELL]
-                    )
-                ).trim()
-            }
+            species: mapCellToOption(workSheet[META_ANALYSIS_SPECIES_CELL]),
+            serological: mapCellToOption(
+                workSheet[META_ANALYSIS_SEROLOGICAL_CELL]
+            ),
+            resistance: mapCellToOption(
+                workSheet[META_ANALYSIS_RESISTANCE_CELL]
+            ),
+            zoonosenIsolate: mapCellToOption(
+                workSheet[META_ANALYSIS_ZOONOSENISOLATE_CELL]
+            ),
+            phageTyping: mapCellToOption(
+                workSheet[META_ANALYSIS_PHAGETYPING_CELL]
+            ),
+            vaccination: mapCellToOption(
+                workSheet[META_ANALYSIS_VACCINATION_CELL]
+            ),
+            molecularTyping: mapCellToOption(
+                workSheet[META_ANALYSIS_MOLECULARTYPING_CELL]
+            ),
+            toxin: mapCellToOption(workSheet[META_ANALYSIS_TOXIN_CELL]),
+            esblAmpCCarbapenemasen: mapCellToOption(
+                workSheet[META_ANALYSIS_ESBLAMPCCARBAPENEMASEN_CELL]
+            ),
+            other: mapCellToOption(workSheet[META_ANAYLSIS_OTHER_BOOL_CELL]),
+            otherText: mapCellToText(workSheet[META_ANALYSIS_OTHER_TEXT_CELL]),
+            compareHuman: mapCellToOption(
+                workSheet[META_ANALYSIS_COMPAREHUMAN_BOOL_CELL]
+            ),
+            compareHumanText: mapCellToText(
+                workSheet[META_ANALYSIS_COMPAREHUMAN_TEXT_CELL]
+            )
         };
     }
 
@@ -279,17 +219,6 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
         const cleanedData = this.fromDataToCleanedSamples(data);
         const formattedData: Sample[] = this.formatData(cleanedData);
         return formattedData;
-    }
-
-    private isForSingleSpecifiedNRL(
-        samples: Sample[],
-        meta: EinsendebogenMetaData
-    ): boolean {
-        return (
-            samples[0].getNRL() === meta.nrl &&
-            samples.length ===
-                samples.filter(s => s.getNRL() === samples[0].getNRL()).length
-        );
     }
 
     private formatData(data: Record<string, string>[]): Sample[] {

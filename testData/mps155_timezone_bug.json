@@ -564,12 +564,12 @@
               "esblAmpCCarbapenemasen": false,
               "molecularTyping": false,
               "other": "",
-              "resistance": true,
+              "resistance": false,
               "sample": false,
               "serological": true,
               "species": false,
               "toxin": false,
-              "vaccination": true
+              "vaccination": false
             },
             "nrl": "NRL-Salm",
             "urgency": "NORMAL"

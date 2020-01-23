@@ -1,3 +1,5 @@
+import { NRL_ID } from '../enums';
+
 export const sampleSheetMetaStrings = {
     header: {
         title: 'Untersuchungsauftrag für Isolate/Proben',
@@ -37,7 +39,10 @@ export const sampleSheetMetaStrings = {
     analysis: {
         title: 'Bitte führen Sie folgende Untersuchungen der Isolate durch',
         titleSup: 'c',
-        marked: 'X',
+        options: {
+            standard: 'Standard',
+            active: 'X'
+        },
         species:
             'Speziesbestimmung/-differenzierung (bzw. Bestätigung der Differenzierung)',
         serological: 'Serologische Differenzierung',
@@ -115,4 +120,23 @@ export const sampleSheetSamplesStrings = {
         vvvo: '',
         comment: '(u.a. Untersuchungs-programm)'
     }
+};
+
+export const sampleSheetNRLStrings: Record<NRL_ID, string> = {
+    'NRL-AR': 'NRL Antibiotikaresistenz',
+    'NRL-Campy': 'NRL Campylobacter',
+    'NRL-VTEC': 'NRL Escherichia coli einschließlich verotoxinbildende E. coli',
+    'NRL-Staph':
+        'NRL koagulasepositive Staphylokokken einschließlich Staphylococcus aureus',
+    'NRL-Listeria': 'NRL Listeria monocytogenes',
+    'NRL-Salm':
+        'NRL Salmonellen (Durchführung von Analysen und Tests auf Zoonosen)',
+    'NRL-Trichinella': 'NRL Trichinella',
+    'NRL-Virus': 'NRL Überwachung von Viren in zweischaligen Weichtieren',
+    'NRL-Vibrio': 'NRL Überwachung von Bakterien in zweischaligen Weichtieren',
+    'L-Bacillus': 'Bacillus spp. ',
+    'L-Clostridium': 'Clostridium spp. (C. difficile)',
+    'KL-Leptospira': 'Leptospira',
+    'KL-Yersinia': 'Yersinia',
+    'Labor nicht erkannt': ''
 };

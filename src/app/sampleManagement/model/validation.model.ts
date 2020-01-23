@@ -1,4 +1,4 @@
-import { Sample, SampleProperty, SamplePropertyValues } from './sample.model';
+import { Sample, SampleProperty, SampleDataValues } from './sample.model';
 import {
     CatalogService,
     ADVCatalogEntry,
@@ -86,7 +86,7 @@ export interface ValidatorFunction<T extends ValidatorFunctionOptions> {
         value: string,
         options: T,
         key: SampleProperty,
-        attributes: SamplePropertyValues
+        attributes: SampleDataValues
     ): ValidationError | null;
 }
 export interface ValidatorFunctionOptions {

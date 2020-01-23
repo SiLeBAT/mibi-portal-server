@@ -1,4 +1,3 @@
-import { SampleDataValues } from './../model/sample.model';
 import * as validate from 'validate.js';
 import * as moment from 'moment';
 import * as _ from 'lodash';
@@ -64,7 +63,7 @@ class SampleValidator implements Validator {
         sample: Sample,
         constraintSet: ValidationConstraints
     ): ValidationErrorCollection {
-        const data: SampleDataValues = sample.getDataValues();
+        const data = sample.getDataEntries();
         let dataValuesOnly: Record<string, string | NRL_ID> = {};
         dataValuesOnly = Object.keys(data).reduce((accumulator, property) => {
             accumulator[property] = data[property].value;

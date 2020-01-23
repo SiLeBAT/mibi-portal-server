@@ -43,7 +43,7 @@ import { FormAutoCorrectionService } from './sampleManagement/model/autocorrecti
 import { DefaultFormAutoCorrectionService } from './sampleManagement/application/form-auto-correction.service';
 import { DefaultFormValidatorService } from './sampleManagement/application/form-validation.service';
 import { APPLICATION_TYPES } from './application.types';
-import { NRLService, NRLConstants } from './sampleManagement/model/nrl.model';
+import { NRLService } from './sampleManagement/model/nrl.model';
 import { DefaultNRLService } from './sampleManagement/application/nrl.service';
 import {
     PDFCreatorService,
@@ -57,17 +57,18 @@ import { sampleSheetConfig } from './sampleManagement/domain/sample-sheet/sample
 import { sampleSheetPDFConfig } from './sampleManagement/domain/sample-sheet/sample-sheet-pdf.config';
 import {
     sampleSheetMetaStrings,
-    sampleSheetSamplesStrings
+    sampleSheetSamplesStrings,
+    sampleSheetNRLStrings
 } from './sampleManagement/domain/sample-sheet/sample-sheet.strings';
 import {
     sampleSheetDefaultStyle,
     sampleSheetStyles
 } from './sampleManagement/domain/sample-sheet/sample-sheet.styles';
 import { sampleSheetPDFStyles } from './sampleManagement/domain/sample-sheet/sample-sheet-pdf.styles';
-import { nrlLongNames } from './sampleManagement/domain/nrl';
 import { SampleSheetConstants } from './sampleManagement/model/sample-sheet.model';
 import { DefaultPDFService } from './pdf/pdf.service';
 import { DefaultSampleFactory } from './sampleManagement/domain/sample.factory';
+import { DefaultSampleSheetService } from './sampleManagement/application/sample-sheet.service';
 
 export function getApplicationContainerModule(
     appConfiguration: ApplicationConfiguration
@@ -109,8 +110,13 @@ export function getApplicationContainerModule(
                 defaultStyle: sampleSheetDefaultStyle,
                 styles: sampleSheetStyles,
                 metaStrings: sampleSheetMetaStrings,
-                samplesStrings: sampleSheetSamplesStrings
+                samplesStrings: sampleSheetSamplesStrings,
+                nrlStrings: sampleSheetNRLStrings
             });
+
+            bind(APPLICATION_TYPES.SampleSheetService).to(
+                DefaultSampleSheetService
+            );
 
             bind(APPLICATION_TYPES.PDFService).to(DefaultPDFService);
 
@@ -165,10 +171,6 @@ export function getApplicationContainerModule(
             bind<FormValidatorService>(
                 APPLICATION_TYPES.FormValidatorService
             ).to(DefaultFormValidatorService);
-
-            bind<NRLConstants>(APPLICATION_TYPES.NRLConstants).toConstantValue({
-                longNames: nrlLongNames
-            });
 
             bind<NRLService>(APPLICATION_TYPES.NRLService).to(
                 DefaultNRLService

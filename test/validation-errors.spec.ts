@@ -12,11 +12,17 @@ import { DefaultExcelUnmarshalService } from '../src/app/sampleManagement/applic
 import { SampleDTO, SampleMetaDTO, SampleValidationErrorDTO } from '../src/ui/server/model/shared-dto.model';
 import { Api } from './api';
 import { promisify } from 'util';
-import { EMPTY_META } from '../src/app/sampleManagement/domain/constants';
-import { getMockNRLService } from '../src/app/sampleManagement/application/__mocks__/nrl.service';
+import { EMPTY_ANALYSIS } from '../src/app/sampleManagement/domain/constants';
 
 const DATA_DIR: string = 'testData/validation';
 
+const deactivatedFiles = [
+    // ZSP is not valid in 2020 anymore
+    'MiBi-TEST_Error-Codes_A.xlsx',
+    'MiBi-TEST_Error-Codes_B.xlsx',
+    'MiBi-TEST_NRL-AR_Error-73.xlsx',
+    'MiBi-TEST_Probenummer-AVVData-Erreger_mps67_Error-3-5-6-10-49-68,69,73,95.xlsx'
+]
 
 const factory = {
     createSample(data: SampleData): Sample {
@@ -26,8 +32,7 @@ const factory = {
                 nrl: NRL_ID.NRL_AR,
                 analysis: {},
                 urgency: Urgency.NORMAL
-            },
-            getMockNRLService()
+            }
         );
     }
 }
@@ -57,12 +62,17 @@ describe('Test validation errors', () => {
                 expect({ ...meta, codes: receivedCodes }).toEqual({ ...meta, codes: expectedCodes });
             });
         }))
-    }, 1000 * 120);
+    }, 1000 * 300);
 });
 
 async function getFilesToTest(): Promise<string[]> {
     let fileNames: string[] = [];
-    fs.readdirSync(path.join('.', DATA_DIR)).forEach(function (file) {
+    fs.readdirSync(path.join('.', DATA_DIR)).forEach(file => {
+
+        if(deactivatedFiles.find(f => f === file)) {
+            logger.info(`Deactivated ${file}`);
+            return;
+        }
 
         file = path.join('.', DATA_DIR, file);
 
@@ -71,7 +81,7 @@ async function getFilesToTest(): Promise<string[]> {
         }
 
     });
-    logger.info(`Found ${fileNames.length} datafiles in directory ${DATA_DIR}`);
+    logger.info(`${fileNames.length} datafiles in directory ${DATA_DIR} will be tested`);
     return fileNames;
 }
 
@@ -106,7 +116,7 @@ function fromSampleMetaToDTO(meta: SampleMetaData): SampleMetaDTO {
     return {
         nrl: meta.nrl.toString(),
         urgency: meta.urgency.toString(),
-        analysis: { ...EMPTY_META.analysis, ...meta.analysis }
+        analysis: { ...EMPTY_ANALYSIS, ...meta.analysis }
     };
 }
 function fromSampleSetMetaDataToDTO(

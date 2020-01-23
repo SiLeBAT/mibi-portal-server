@@ -82,7 +82,7 @@ export class DefaultNRLService implements NRLService {
             const newSample = sample.clone();
             const pathogen = newSample.getValueFor('pathogen_adv');
             const nrl = this.getNRLForPathogen(pathogen);
-            newSample.setNRL(nrl);
+            newSample.setNRL(this, nrl);
             return newSample;
         });
     }
@@ -146,26 +146,32 @@ export class DefaultNRLService implements NRLService {
         key: string,
         analysis: Partial<Analysis>,
         value: boolean
-    ) {
+    ): void {
         switch (key) {
             case '0':
-                return (analysis.species = value);
+                analysis.species = value;
+                break;
             case '1':
-                return (analysis.serological = value);
+                analysis.serological = value;
+                break;
             case '2':
-                return (analysis.resistance = value);
+                analysis.resistance = value;
+                break;
             case '3':
-                return (analysis.vaccination = value);
+                analysis.vaccination = value;
+                break;
             case '4':
-                return (analysis.molecularTyping = value);
+                analysis.molecularTyping = value;
+                break;
             case '5':
-                return (analysis.toxin = value);
+                analysis.toxin = value;
+                break;
             case '6':
-                return (analysis.esblAmpCCarbapenemasen = value);
+                analysis.esblAmpCCarbapenemasen = value;
+                break;
             case '7':
-                return (analysis.sample = value);
-            default:
-                return false;
+                analysis.sample = value;
+                break;
         }
     }
 }

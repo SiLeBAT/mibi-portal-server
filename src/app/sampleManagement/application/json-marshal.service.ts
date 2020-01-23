@@ -1,19 +1,10 @@
-import { NRL_ID } from './../domain/enums';
-import { Analysis } from './../model/sample.model';
-import { EinsendebogenAnalysis } from './../model/excel.model';
-import {
-    EMPTY_META,
-    META_ANAYLSIS_OTHER_BOOL_CELL
-} from './../domain/constants';
+import { META_ANAYLSIS_OTHER_BOOL_CELL } from './../domain/constants';
 import * as _ from 'lodash';
 // @ts-ignore
 import * as XlsxPopulate from 'xlsx-populate';
-import {
-    JSONMarshalService,
-    EinsendebogenMetaData
-} from '../model/excel.model';
+import { JSONMarshalService } from '../model/excel.model';
 import { FileRepository } from '../model/repository.model';
-import { SampleSet, Sample } from '../model/sample.model';
+import { Sample } from '../model/sample.model';
 import { ApplicationDomainError } from '../../core/domain/domain.error';
 import { ApplicationSystemError } from '../../core/domain/technical.error';
 import { Urgency } from '../domain/enums';
@@ -42,8 +33,13 @@ import {
     META_ANALYSIS_COMPAREHUMAN_BOOL_CELL,
     META_ANALYSIS_COMPAREHUMAN_TEXT_CELL
 } from '../domain/constants';
-import { NRLConstants } from '../model/nrl.model';
 import { FileBuffer } from '../../core/model/file.model';
+import {
+    SampleSheet,
+    SampleSheetMetaData,
+    SampleSheetConstants,
+    SampleSheetAnalysisOption
+} from '../model/sample-sheet.model';
 
 type ChangedValueCollection = Record<string, string>;
 
@@ -55,11 +51,11 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
     constructor(
         @inject(APPLICATION_TYPES.FileRepository)
         private fileRepository: FileRepository,
-        @inject(APPLICATION_TYPES.NRLConstants)
-        private nrlConstants: NRLConstants
+        @inject(APPLICATION_TYPES.SampleSheetConstants)
+        private sampleSheetConstants: SampleSheetConstants
     ) {}
 
-    async convertJSONToExcel(sampleSet: SampleSet): Promise<FileBuffer> {
+    async createExcel(sampleSheet: SampleSheet): Promise<FileBuffer> {
         const buffer = await this.fileRepository.getFileBuffer(
             this.TEMPLATE_FILE_NAME
         );
@@ -69,20 +65,18 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
         }
 
         const highlights: Record<string, string>[] = [];
-        sampleSet.samples.forEach((sample: Sample) => {
+        sampleSheet.samples.forEach((sample: Sample) => {
             highlights.push(sample.getOldValues());
         });
-        const dataToSave = this.fromDataObjToAOO(sampleSet.samples);
+        const dataToSave = this.fromDataObjToAOO(sampleSheet.samples);
         let workbook = await this.fromFileToWorkbook(buffer);
         workbook = this.addValidatedDataToWorkbook(
             workbook,
             dataToSave,
             highlights
         );
-        const meta: EinsendebogenMetaData = this.getEinsendebogenMetaData(
-            sampleSet
-        );
-        workbook = this.addMetaDataToWorkbook(workbook, meta);
+
+        workbook = this.addMetaDataToWorkbook(workbook, sampleSheet.meta);
 
         const workbookBuffer = await workbook.outputAsync();
 
@@ -93,53 +87,6 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
         };
     }
 
-    private getEinsendebogenMetaData(
-        sampleSet: SampleSet
-    ): EinsendebogenMetaData {
-        // The Einsendebogen xlsx does not accept NRL_ID.UNKNOWN - one NRL has to be set!  AR is the first in the list.
-        let nrl = NRL_ID.NRL_AR;
-        let analysis = this.fromSampleAnalysisToEinsendebogenAnalysis(
-            EMPTY_META.analysis
-        );
-        let urgency = Urgency.NORMAL;
-
-        if (_.uniq(sampleSet.samples.map(s => s.getNRL())).length === 1) {
-            nrl = sampleSet.samples[0].getNRL();
-            analysis = this.fromSampleAnalysisToEinsendebogenAnalysis(
-                sampleSet.samples[0].getAnalysis()
-            );
-            urgency = sampleSet.samples[0].getUrgency();
-        }
-
-        return {
-            nrl,
-            analysis,
-            sender: sampleSet.meta.sender,
-            urgency,
-            fileName: sampleSet.meta.fileName
-        };
-    }
-
-    private fromSampleAnalysisToEinsendebogenAnalysis(
-        analysis: Partial<Analysis>
-    ): EinsendebogenAnalysis {
-        return {
-            species: analysis.species || false,
-            phageTyping: false,
-            zoonosenIsolate: false,
-            serological: analysis.serological || false,
-            resistance: analysis.resistance || false,
-            vaccination: analysis.vaccination || false,
-            molecularTyping: analysis.molecularTyping || false,
-            toxin: analysis.toxin || false,
-            esblAmpCCarbapenemasen: analysis.esblAmpCCarbapenemasen || false,
-            other: analysis.other || '',
-            compareHuman: _.cloneDeep(analysis.compareHuman) || {
-                active: false,
-                value: ''
-            }
-        };
-    }
     private async fromFileToWorkbook(buffer: Buffer) {
         const workbook = await XlsxPopulate.fromDataAsync(buffer);
         return workbook;
@@ -162,17 +109,23 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
     private addMetaDataToWorkbook(
         // tslint:disable-next-line: no-any
         workbook: any,
-        meta: EinsendebogenMetaData
+        meta: SampleSheetMetaData
     ) {
+        const mapAnalysisOptionToString = (
+            option: SampleSheetAnalysisOption
+        ): string => {
+            return option === SampleSheetAnalysisOption.OMIT ? '' : 'x';
+        };
+
         const sheet = workbook.sheet(VALID_SHEET_NAME);
         if (sheet) {
             sheet
                 .cell(META_NRL_CELL)
-                .value(this.nrlConstants.longNames[meta.nrl]);
+                .value(this.sampleSheetConstants.nrlStrings[meta.nrl]);
 
             sheet
                 .cell(META_URGENCY_CELL)
-                .value(this.mapUregencyEnumToString(meta.urgency));
+                .value(this.mapUrgencyEnumToString(meta.urgency));
 
             sheet
                 .cell(META_SENDER_INSTITUTENAME_CELL)
@@ -192,66 +145,49 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
 
             sheet
                 .cell(META_ANALYSIS_SPECIES_CELL)
-                .value(this.mapAnalysisBooleanToString(meta.analysis.species));
+                .value(mapAnalysisOptionToString(meta.analysis.species));
             sheet
                 .cell(META_ANALYSIS_SEROLOGICAL_CELL)
-                .value(
-                    this.mapAnalysisBooleanToString(meta.analysis.serological)
-                );
+                .value(mapAnalysisOptionToString(meta.analysis.serological));
             sheet
                 .cell(META_ANALYSIS_RESISTANCE_CELL)
-                .value(
-                    this.mapAnalysisBooleanToString(meta.analysis.resistance)
-                );
+                .value(mapAnalysisOptionToString(meta.analysis.resistance));
             sheet
                 .cell(META_ANALYSIS_VACCINATION_CELL)
-                .value(
-                    this.mapAnalysisBooleanToString(meta.analysis.vaccination)
-                );
+                .value(mapAnalysisOptionToString(meta.analysis.vaccination));
             sheet
                 .cell(META_ANALYSIS_MOLECULARTYPING_CELL)
                 .value(
-                    this.mapAnalysisBooleanToString(
-                        meta.analysis.molecularTyping
-                    )
+                    mapAnalysisOptionToString(meta.analysis.molecularTyping)
                 );
             sheet
                 .cell(META_ANALYSIS_TOXIN_CELL)
-                .value(this.mapAnalysisBooleanToString(meta.analysis.toxin));
+                .value(mapAnalysisOptionToString(meta.analysis.toxin));
             sheet
                 .cell(META_ANALYSIS_ESBLAMPCCARBAPENEMASEN_CELL)
                 .value(
-                    this.mapAnalysisBooleanToString(
+                    mapAnalysisOptionToString(
                         meta.analysis.esblAmpCCarbapenemasen
                     )
                 );
             sheet
                 .cell(META_ANAYLSIS_OTHER_BOOL_CELL)
-                .value(
-                    this.mapAnalysisBooleanToString(meta.analysis.other !== '')
-                );
+                .value(mapAnalysisOptionToString(meta.analysis.other));
             sheet
                 .cell(META_ANALYSIS_OTHER_TEXT_CELL)
-                .value(meta.analysis.other);
+                .value(meta.analysis.otherText);
             sheet
                 .cell(META_ANALYSIS_COMPAREHUMAN_BOOL_CELL)
-                .value(
-                    this.mapAnalysisBooleanToString(
-                        meta.analysis.compareHuman.active
-                    )
-                );
+                .value(mapAnalysisOptionToString(meta.analysis.compareHuman));
             sheet
                 .cell(META_ANALYSIS_COMPAREHUMAN_TEXT_CELL)
-                .value(meta.analysis.compareHuman.value);
+                .value(meta.analysis.compareHumanText);
         }
 
         return workbook;
     }
 
-    private mapAnalysisBooleanToString(analysis: boolean): string {
-        return analysis ? 'x' : '';
-    }
-    private mapUregencyEnumToString(urgency: Urgency): string {
+    private mapUrgencyEnumToString(urgency: Urgency): string {
         switch (urgency) {
             case Urgency.URGENT:
                 return 'EILT';

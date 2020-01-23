@@ -5,7 +5,8 @@ import {
     ApplicantMetaData,
     NewDatasetNotificationPayload,
     NewDatasetCopyNotificationPayload,
-    SampleSet
+    SampleSet,
+    Sample
 } from '../model/sample.model';
 import {
     NotificationService,
@@ -29,8 +30,9 @@ import { NRL_ID, ReceiveAs } from '../domain/enums';
 import { NRLService } from '../model/nrl.model';
 import { FileBuffer } from '../../core/model/file.model';
 import { PDFCreatorService } from '../model/pdf.model';
+import { SampleSheetService, SampleSheet } from '../model/sample-sheet.model';
 
-interface SampleSheet {
+interface Payload {
     buffer: Buffer;
     fileName: string;
     mime: string;
@@ -60,7 +62,9 @@ export class DefaultSampleService implements SampleService {
         @inject(APPLICATION_TYPES.PDFCreatorService)
         private pdfCreatorService: PDFCreatorService,
         @inject(APPLICATION_TYPES.NRLService)
-        private nrlService: NRLService
+        private nrlService: NRLService,
+        @inject(APPLICATION_TYPES.SampleSheetService)
+        private sampleSheetService: SampleSheetService
     ) {
         this.appName = this.configurationService.getApplicationConfiguration().appName;
         this.overrideRecipient = this.configurationService.getApplicationConfiguration().jobRecipient;
@@ -75,27 +79,27 @@ export class DefaultSampleService implements SampleService {
             this.createNRLSampleSet(sampleSet)
         );
 
-        const nrlSampleSheets = await this.createSampleSheets(
+        const nrlPayloads = await this.createPayloads(
             nrlSampleSets,
-            sampleSet => this.jsonMarshalService.convertJSONToExcel(sampleSet)
+            sampleSheet => this.jsonMarshalService.createExcel(sampleSheet)
         );
 
-        let userSampleSheets: SampleSheet[];
+        let userPayloads: Payload[];
         switch (applicantMetaData.receiveAs) {
             case ReceiveAs.PDF:
-                userSampleSheets = await this.createSampleSheets(
+                userPayloads = await this.createPayloads(
                     splittedSampleSets,
-                    sampleSet => this.pdfCreatorService.createPDF(sampleSet)
+                    sampleSheet => this.pdfCreatorService.createPDF(sampleSheet)
                 );
                 break;
             case ReceiveAs.EXCEL:
             default:
-                userSampleSheets = nrlSampleSheets;
+                userPayloads = nrlPayloads;
                 break;
         }
 
-        this.sendSamplesToNRLs(nrlSampleSheets, applicantMetaData);
-        this.sendSamplesToUser(userSampleSheets, applicantMetaData);
+        this.sendToNRLs(nrlPayloads, applicantMetaData);
+        this.sendToUser(userPayloads, applicantMetaData);
     }
 
     async convertToJson(
@@ -103,7 +107,7 @@ export class DefaultSampleService implements SampleService {
         fileName: string,
         token: string | null
     ): Promise<SampleSet> {
-        const sampleSet: SampleSet = await this.excelUnmarshalService.convertExcelToJSJson(
+        const sampleSheet = await this.excelUnmarshalService.convertExcelToJSJson(
             buffer,
             fileName
         );
@@ -123,12 +127,16 @@ export class DefaultSampleService implements SampleService {
                 }
             }
         }
-        return sampleSet;
+        return this.sampleSheetService.fromSampleSheetToSampleSet(sampleSheet);
     }
 
     async convertToExcel(sampleSet: SampleSet): Promise<ExcelFileInfo> {
-        const fileBuffer: FileBuffer = await this.jsonMarshalService.convertJSONToExcel(
+        const sampleSheet = this.sampleSheetService.fromSampleSetToSampleSheet(
             sampleSet
+        );
+
+        const fileBuffer = await this.jsonMarshalService.createExcel(
+            sampleSheet
         );
 
         const fileName = this.amendFileName(
@@ -161,22 +169,26 @@ export class DefaultSampleService implements SampleService {
         return Array.from(splittedSampleSetMap.values());
     }
 
-    private async createSampleSheets(
+    private async createPayloads(
         sampleSets: SampleSet[],
-        creatorFunc: (sampleSet: SampleSet) => Promise<FileBuffer>
-    ): Promise<SampleSheet[]> {
+        creatorFunc: (sampleSheet: SampleSheet) => Promise<FileBuffer>
+    ): Promise<Payload[]> {
         return Promise.all(
             sampleSets.map(async sampleSet =>
-                this.createSampleSheet(sampleSet, creatorFunc)
+                this.createPayload(sampleSet, creatorFunc)
             )
         );
     }
 
-    private async createSampleSheet(
+    private async createPayload(
         sampleSet: SampleSet,
-        creatorFunc: (sampleSet: SampleSet) => Promise<FileBuffer>
-    ): Promise<SampleSheet> {
-        const fileBuffer = await creatorFunc(sampleSet);
+        creatorFunc: (sampleSheet: SampleSheet) => Promise<FileBuffer>
+    ): Promise<Payload> {
+        const sampleSheet = this.sampleSheetService.fromSampleSetToSampleSheet(
+            sampleSet
+        );
+
+        const fileBuffer = await creatorFunc(sampleSheet);
 
         const nrl = sampleSet.samples[0].getNRL();
 
@@ -194,18 +206,18 @@ export class DefaultSampleService implements SampleService {
         };
     }
 
-    private sendSamplesToNRLs(
-        sampleSheets: SampleSheet[],
+    private sendToNRLs(
+        payloads: Payload[],
         applicantMetaData: ApplicantMetaData
     ): void {
-        sampleSheets.forEach(sampleSheet => {
+        payloads.forEach(payload => {
             const orderNotificationMetaData = this.resolveOrderNotificationMetaData(
                 applicantMetaData,
-                sampleSheet.nrl
+                payload.nrl
             );
 
             const newOrderNotification = this.createNewOrderNotification(
-                this.createNotificationAttachment(sampleSheet),
+                this.createNotificationAttachment(payload),
                 orderNotificationMetaData
             );
 
@@ -213,12 +225,12 @@ export class DefaultSampleService implements SampleService {
         });
     }
 
-    private sendSamplesToUser(
-        sampleSheets: SampleSheet[],
+    private sendToUser(
+        payloads: Payload[],
         applicantMetaData: ApplicantMetaData
     ): void {
-        const attachments = sampleSheets.map(sampleSheet =>
-            this.createNotificationAttachment(sampleSheet)
+        const attachments = payloads.map(file =>
+            this.createNotificationAttachment(file)
         );
 
         const newOrderCopyNotification = this.createNewOrderCopyNotification(
@@ -229,11 +241,11 @@ export class DefaultSampleService implements SampleService {
         this.notificationService.sendNotification(newOrderCopyNotification);
     }
 
-    private createNotificationAttachment(sampleSheet: SampleSheet): Attachment {
+    private createNotificationAttachment(payload: Payload): Attachment {
         return {
-            filename: sampleSheet.fileName,
-            content: sampleSheet.buffer,
-            contentType: sampleSheet.mime
+            filename: payload.fileName,
+            content: payload.buffer,
+            contentType: payload.mime
         };
     }
 
@@ -316,22 +328,26 @@ export class DefaultSampleService implements SampleService {
         return fileName;
     }
 
-    private createNRLSampleSet(sampleSet: SampleSet) {
+    private createNRLSampleSet(sampleSet: SampleSet): SampleSet {
         const nrlSampleSet: SampleSet = {
             meta: sampleSet.meta,
             samples: sampleSet.samples.map(sample => sample.clone())
         };
 
-        nrlSampleSet.samples.forEach(sample => {
-            const sampleData = sample.getAnnotatedData();
-            const sampleID = sampleData.sample_id.value;
-            const sampleIDAVV = sampleData.sample_id_avv.value;
-            if (!sampleID && sampleIDAVV) {
-                sampleData.sample_id.value = sampleIDAVV;
-                sampleData.sample_id.oldValue = '';
-            }
-        });
+        nrlSampleSet.samples.forEach(sample =>
+            this.replaceEmptySampleIDWithSampleIDAVV(sample)
+        );
 
         return nrlSampleSet;
+    }
+
+    private replaceEmptySampleIDWithSampleIDAVV(sample: Sample) {
+        const sampleData = sample.getAnnotatedData();
+        const sampleID = sampleData.sample_id.value;
+        const sampleIDAVV = sampleData.sample_id_avv.value;
+        if (!sampleID && sampleIDAVV) {
+            sampleData.sample_id.value = sampleIDAVV;
+            sampleData.sample_id.oldValue = '';
+        }
     }
 }

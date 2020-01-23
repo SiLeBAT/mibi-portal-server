@@ -82,6 +82,11 @@
                   "code": 95,
                   "level": 1,
                   "message": "Planproben sind normalerweise nicht für das NRL Antibiotikaresistenz bestimmt."
+                },
+                {
+                  "code": 97,
+                  "level": 1,
+                  "message": "Ihre Daten passen zum Zoonosen-Stichprobenplan. Bitte prüfen Sie noch einmal, ob Sie nicht als Grund Code 81 bzw. Text \"Zoonosen-Monitoring - Planprobe\" angeben sollten."
                 }
               ],
               "correctionOffer": []
@@ -93,6 +98,11 @@
                   "code": 95,
                   "level": 1,
                   "message": "Planproben sind normalerweise nicht für das NRL Antibiotikaresistenz bestimmt."
+                },
+                {
+                  "code": 97,
+                  "level": 1,
+                  "message": "Ihre Daten passen zum Zoonosen-Stichprobenplan. Bitte prüfen Sie noch einmal, ob Sie nicht als Grund Code 81 bzw. Text \"Zoonosen-Monitoring - Planprobe\" angeben sollten."
                 }
               ],
               "correctionOffer": []
@@ -119,22 +129,22 @@
             }
           },
           "sampleMeta": {
-            "analysis": {
-              "compareHuman": {
-                "active": false,
-                "value": ""
-              },
-              "esblAmpCCarbapenemasen": true,
-              "molecularTyping": false,
-              "other": "",
-              "resistance": true,
-              "sample": false,
-              "serological": false,
-              "species": false,
-              "toxin": false,
-              "vaccination": false
-            },
             "nrl": "NRL-AR",
+            "analysis": {
+              "species": false,
+              "serological": false,
+              "resistance": true,
+              "vaccination": false,
+              "molecularTyping": false,
+              "toxin": false,
+              "esblAmpCCarbapenemasen": true,
+              "sample": false,
+              "other": "",
+              "compareHuman": {
+                "value": "",
+                "active": false
+              }
+            },
             "urgency": "NORMAL"
           }
         },
@@ -236,6 +246,11 @@
                   "code": 95,
                   "level": 1,
                   "message": "Planproben sind normalerweise nicht für das NRL Antibiotikaresistenz bestimmt."
+                },
+                {
+                  "code": 97,
+                  "level": 1,
+                  "message": "Ihre Daten passen zum Zoonosen-Stichprobenplan. Bitte prüfen Sie noch einmal, ob Sie nicht als Grund Code 81 bzw. Text \"Zoonosen-Monitoring - Planprobe\" angeben sollten."
                 }
               ],
               "correctionOffer": []
@@ -247,6 +262,11 @@
                   "code": 95,
                   "level": 1,
                   "message": "Planproben sind normalerweise nicht für das NRL Antibiotikaresistenz bestimmt."
+                },
+                {
+                  "code": 97,
+                  "level": 1,
+                  "message": "Ihre Daten passen zum Zoonosen-Stichprobenplan. Bitte prüfen Sie noch einmal, ob Sie nicht als Grund Code 81 bzw. Text \"Zoonosen-Monitoring - Planprobe\" angeben sollten."
                 }
               ],
               "correctionOffer": []
@@ -273,22 +293,22 @@
             }
           },
           "sampleMeta": {
-            "analysis": {
-              "compareHuman": {
-                "active": false,
-                "value": ""
-              },
-              "esblAmpCCarbapenemasen": true,
-              "molecularTyping": false,
-              "other": "",
-              "resistance": true,
-              "sample": false,
-              "serological": false,
-              "species": false,
-              "toxin": false,
-              "vaccination": false
-            },
             "nrl": "NRL-AR",
+            "analysis": {
+              "species": false,
+              "serological": false,
+              "resistance": true,
+              "vaccination": false,
+              "molecularTyping": false,
+              "toxin": false,
+              "esblAmpCCarbapenemasen": true,
+              "sample": false,
+              "other": "",
+              "compareHuman": {
+                "value": "",
+                "active": false
+              }
+            },
             "urgency": "NORMAL"
           }
         },
@@ -326,7 +346,8 @@
               ],
               "correctionOffer": [
                 "Escherichia coli AmpC-bildend",
-                "Escherichia coli ESBL/AmpC-bildend"
+                "Escherichia coli ESBL/AmpC-bildend",
+                "AmpC-verdächtiger Escherichia coli"
               ]
             },
             "pathogen_text": {
@@ -418,22 +439,22 @@
             }
           },
           "sampleMeta": {
-            "analysis": {
-              "compareHuman": {
-                "active": false,
-                "value": ""
-              },
-              "esblAmpCCarbapenemasen": true,
-              "molecularTyping": false,
-              "other": "",
-              "resistance": true,
-              "sample": false,
-              "serological": false,
-              "species": false,
-              "toxin": false,
-              "vaccination": false
-            },
             "nrl": "Labor nicht erkannt",
+            "analysis": {
+              "species": false,
+              "serological": false,
+              "resistance": false,
+              "vaccination": false,
+              "molecularTyping": false,
+              "toxin": false,
+              "esblAmpCCarbapenemasen": false,
+              "sample": false,
+              "other": "",
+              "compareHuman": {
+                "value": "",
+                "active": false
+              }
+            },
             "urgency": "NORMAL"
           }
         },
@@ -573,22 +594,22 @@
             }
           },
           "sampleMeta": {
-            "analysis": {
-              "compareHuman": {
-                "active": false,
-                "value": ""
-              },
-              "esblAmpCCarbapenemasen": true,
-              "molecularTyping": false,
-              "other": "",
-              "resistance": true,
-              "sample": false,
-              "serological": false,
-              "species": false,
-              "toxin": false,
-              "vaccination": false
-            },
             "nrl": "NRL-AR",
+            "analysis": {
+              "species": false,
+              "serological": false,
+              "resistance": true,
+              "vaccination": false,
+              "molecularTyping": false,
+              "toxin": false,
+              "esblAmpCCarbapenemasen": true,
+              "sample": false,
+              "other": "",
+              "compareHuman": {
+                "value": "",
+                "active": false
+              }
+            },
             "urgency": "NORMAL"
           }
         },
@@ -740,22 +761,22 @@
             }
           },
           "sampleMeta": {
-            "analysis": {
-              "compareHuman": {
-                "active": false,
-                "value": ""
-              },
-              "esblAmpCCarbapenemasen": true,
-              "molecularTyping": false,
-              "other": "",
-              "resistance": true,
-              "sample": false,
-              "serological": false,
-              "species": false,
-              "toxin": false,
-              "vaccination": false
-            },
             "nrl": "NRL-AR",
+            "analysis": {
+              "species": false,
+              "serological": false,
+              "resistance": true,
+              "vaccination": false,
+              "molecularTyping": false,
+              "toxin": false,
+              "esblAmpCCarbapenemasen": true,
+              "sample": false,
+              "other": "",
+              "compareHuman": {
+                "value": "",
+                "active": false
+              }
+            },
             "urgency": "NORMAL"
           }
         },
@@ -907,22 +928,22 @@
             }
           },
           "sampleMeta": {
-            "analysis": {
-              "compareHuman": {
-                "active": false,
-                "value": ""
-              },
-              "esblAmpCCarbapenemasen": true,
-              "molecularTyping": false,
-              "other": "",
-              "resistance": true,
-              "sample": false,
-              "serological": false,
-              "species": false,
-              "toxin": false,
-              "vaccination": false
-            },
             "nrl": "NRL-AR",
+            "analysis": {
+              "species": false,
+              "serological": false,
+              "resistance": true,
+              "vaccination": false,
+              "molecularTyping": false,
+              "toxin": false,
+              "esblAmpCCarbapenemasen": true,
+              "sample": false,
+              "other": "",
+              "compareHuman": {
+                "value": "",
+                "active": false
+              }
+            },
             "urgency": "NORMAL"
           }
         },
@@ -956,12 +977,24 @@
             },
             "sampling_date": {
               "value": "31.12.2018",
-              "errors": [],
+              "errors": [
+                {
+                  "code": 49,
+                  "level": 1,
+                  "message": "Kombination aus ADV2-Code, ADV3-Code, ADV8-Code und Jahr passt zu keinem Zoonosen-Monitoring-Programm."
+                }
+              ],
               "correctionOffer": []
             },
             "isolation_date": {
               "value": "01.01.2019",
-              "errors": [],
+              "errors": [
+                {
+                  "code": 49,
+                  "level": 1,
+                  "message": "Kombination aus ADV2-Code, ADV3-Code, ADV8-Code und Jahr passt zu keinem Zoonosen-Monitoring-Programm."
+                }
+              ],
               "correctionOffer": []
             },
             "sampling_location_adv": {
@@ -986,7 +1019,13 @@
             },
             "matrix_adv": {
               "value": "010300",
-              "errors": [],
+              "errors": [
+                {
+                  "code": 49,
+                  "level": 1,
+                  "message": "Kombination aus ADV2-Code, ADV3-Code, ADV8-Code und Jahr passt zu keinem Zoonosen-Monitoring-Programm."
+                }
+              ],
               "correctionOffer": []
             },
             "matrix_text": {
@@ -1001,17 +1040,35 @@
             },
             "sampling_reason_adv": {
               "value": "81",
-              "errors": [],
+              "errors": [
+                {
+                  "code": 49,
+                  "level": 1,
+                  "message": "Kombination aus ADV2-Code, ADV3-Code, ADV8-Code und Jahr passt zu keinem Zoonosen-Monitoring-Programm."
+                }
+              ],
               "correctionOffer": []
             },
             "sampling_reason_text": {
               "value": "",
-              "errors": [],
+              "errors": [
+                {
+                  "code": 49,
+                  "level": 1,
+                  "message": "Kombination aus ADV2-Code, ADV3-Code, ADV8-Code und Jahr passt zu keinem Zoonosen-Monitoring-Programm."
+                }
+              ],
               "correctionOffer": []
             },
             "operations_mode_adv": {
               "value": "8000000",
-              "errors": [],
+              "errors": [
+                {
+                  "code": 49,
+                  "level": 1,
+                  "message": "Kombination aus ADV2-Code, ADV3-Code, ADV8-Code und Jahr passt zu keinem Zoonosen-Monitoring-Programm."
+                }
+              ],
               "correctionOffer": []
             },
             "operations_mode_text": {
@@ -1031,22 +1088,22 @@
             }
           },
           "sampleMeta": {
-            "analysis": {
-              "compareHuman": {
-                "active": false,
-                "value": ""
-              },
-              "esblAmpCCarbapenemasen": true,
-              "molecularTyping": false,
-              "other": "",
-              "resistance": true,
-              "sample": false,
-              "serological": false,
-              "species": false,
-              "toxin": false,
-              "vaccination": false
-            },
             "nrl": "NRL-Salm",
+            "analysis": {
+              "species": false,
+              "serological": true,
+              "resistance": false,
+              "vaccination": false,
+              "molecularTyping": false,
+              "toxin": false,
+              "esblAmpCCarbapenemasen": false,
+              "sample": false,
+              "other": "",
+              "compareHuman": {
+                "value": "",
+                "active": false
+              }
+            },
             "urgency": "NORMAL"
           }
         }
