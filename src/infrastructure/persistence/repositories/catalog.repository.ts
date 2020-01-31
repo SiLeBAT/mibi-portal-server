@@ -47,9 +47,7 @@ class FileCatalogRepository implements CatalogRepository {
 
     async initialise(): Promise<void> {
         logger.verbose(
-            `${this.constructor.name}.${
-                this.initialise.name
-            }, loading Catalog data from Filesystem.`
+            `${this.constructor.name}.${this.initialise.name}, loading Catalog data from Filesystem.`
         );
 
         const catalogsConfig: GenCatalogConfig[] = [];
@@ -212,9 +210,7 @@ class FileCatalogRepository implements CatalogRepository {
         );
 
         logger.info(
-            `${this.constructor.name}.${
-                this.initialise.name
-            }, finished initialising Catalog Repository from Filesystem.`
+            `${this.constructor.name}.${this.initialise.name}, finished initialising Catalog Repository from Filesystem.`
         );
     }
 
@@ -234,11 +230,7 @@ class FileCatalogRepository implements CatalogRepository {
                         );
                     } catch (err) {
                         logger.warn(
-                            `${this.constructor.name}.${
-                                this.initialise.name
-                            }, Catalog missing on Filesystem. catalog=${
-                                source.fileName
-                            }; error=${err}`
+                            `${this.constructor.name}.${this.initialise.name}, Catalog missing on Filesystem. catalog=${source.fileName}; error=${err}`
                         );
                         return [];
                     }

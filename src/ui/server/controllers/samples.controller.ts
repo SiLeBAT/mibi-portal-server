@@ -110,9 +110,7 @@ export class DefaultSamplesController extends AbstractController
             await this.putSamplesSendResponse(req, res, sampleSet);
         } catch (error) {
             logger.info(
-                `${this.constructor.name}.${
-                    this.putSamples.name
-                } has thrown an error. ${error}`
+                `${this.constructor.name}.${this.putSamples.name} has thrown an error. ${error}`
             );
             this.handleError(res, error);
         }
@@ -120,9 +118,7 @@ export class DefaultSamplesController extends AbstractController
     @httpPut(SAMPLES_ROUTE.VALIDATED)
     async putValidated(@request() req: Request, @response() res: Response) {
         logger.info(
-            `${this.constructor.name}.${
-                this.putValidated.name
-            }, Request received`
+            `${this.constructor.name}.${this.putValidated.name}, Request received`
         );
         try {
             const requestDTO: PutValidatedRequestDTO = req.body;
@@ -149,17 +145,13 @@ export class DefaultSamplesController extends AbstractController
                 order: validatedOrderDTO
             };
             logger.info(
-                `${this.constructor.name}.${
-                    this.putValidated.name
-                }, Response sent`
+                `${this.constructor.name}.${this.putValidated.name}, Response sent`
             );
             logger.verbose('Response:', responseDTO);
             this.ok(res, responseDTO);
         } catch (error) {
             logger.info(
-                `${this.constructor.name}.${
-                    this.putValidated.name
-                } has thrown an error. ${error}`
+                `${this.constructor.name}.${this.putValidated.name} has thrown an error. ${error}`
             );
             this.handleError(res, error);
         }
@@ -167,9 +159,7 @@ export class DefaultSamplesController extends AbstractController
     @httpPost(SAMPLES_ROUTE.SUBMITTED)
     async postSubmitted(@request() req: Request, @response() res: Response) {
         logger.info(
-            `${this.constructor.name}.${
-                this.postSubmitted.name
-            }, Request received`
+            `${this.constructor.name}.${this.postSubmitted.name}, Request received`
         );
         try {
             const requestDTO: PostSubmittedRequestDTO = req.body;
@@ -236,17 +226,13 @@ export class DefaultSamplesController extends AbstractController
             );
 
             logger.info(
-                `${this.constructor.name}.${
-                    this.postSubmitted.name
-                }, Response sent`
+                `${this.constructor.name}.${this.postSubmitted.name}, Response sent`
             );
             logger.verbose('Response:', responseDTO);
             this.ok(res, responseDTO);
         } catch (error) {
             logger.info(
-                `${this.constructor.name}.${
-                    this.postSubmitted.name
-                } has thrown an error. ${error}`
+                `${this.constructor.name}.${this.postSubmitted.name} has thrown an error. ${error}`
             );
             this.handleError(res, error);
         }
@@ -295,9 +281,7 @@ export class DefaultSamplesController extends AbstractController
                     sampleSet
                 );
                 logger.info(
-                    `${this.constructor.name}.${
-                        this.putSamples.name
-                    }, Response sent`
+                    `${this.constructor.name}.${this.putSamples.name}, Response sent`
                 );
                 this.ok(res, result);
                 break;
@@ -307,9 +291,7 @@ export class DefaultSamplesController extends AbstractController
                     order: this.fromSampleSetToUnannotatedOrderDTO(sampleSet)
                 };
                 logger.info(
-                    `${this.constructor.name}.${
-                        this.putSamples.name
-                    }, Response sent`
+                    `${this.constructor.name}.${this.putSamples.name}, Response sent`
                 );
                 this.ok(res, successResponse);
         }
@@ -378,9 +360,7 @@ export class DefaultSamplesController extends AbstractController
                 stateShort = instute.stateShort;
             } catch (error) {
                 logger.info(
-                    `${this.constructor.name}.${
-                        this.getValidationOptions.name
-                    }, no state found for user. Using default state. error=${error}`
+                    `${this.constructor.name}.${this.getValidationOptions.name}, no state found for user. Using default state. error=${error}`
                 );
             }
         }
