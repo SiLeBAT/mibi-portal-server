@@ -46,7 +46,7 @@
   "private": true,
   "dependencies": {
     "app-root-dir": "^1.0.2",
-    "argon2": "^0.19.3",
+    "argon2": "0.19.3",
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.1",
     "compression": "^1.7.3",
