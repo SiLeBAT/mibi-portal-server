@@ -30,7 +30,12 @@ import { NRL_ID, ReceiveAs } from '../domain/enums';
 import { NRLService } from '../model/nrl.model';
 import { FileBuffer } from '../../core/model/file.model';
 import { PDFCreatorService } from '../model/pdf.model';
-import { SampleSheetService, SampleSheet } from '../model/sample-sheet.model';
+import {
+    SampleSheetService,
+    SampleSheet,
+    SampleSheetAnalysisOption,
+    SampleSheetAnalysis
+} from '../model/sample-sheet.model';
 
 interface Payload {
     buffer: Buffer;
@@ -133,6 +138,8 @@ export class DefaultSampleService implements SampleService {
             sampleSet
         );
 
+        this.prepareSampleSheetForExport(sampleSheet);
+
         const fileBuffer = await this.jsonMarshalService.createExcel(
             sampleSheet
         );
@@ -148,6 +155,32 @@ export class DefaultSampleService implements SampleService {
             fileName: fileName,
             type: fileBuffer.mimeType
         };
+    }
+
+    private prepareSampleSheetForExport(sampleSheet: SampleSheet): void {
+        const keys: Exclude<
+            keyof SampleSheetAnalysis,
+            'compareHumanText' | 'otherText'
+        >[] = [
+            'species',
+            'serological',
+            'phageTyping',
+            'resistance',
+            'vaccination',
+            'molecularTyping',
+            'toxin',
+            'zoonosenIsolate',
+            'esblAmpCCarbapenemasen',
+            'other',
+            'compareHuman'
+        ];
+
+        const analysis = sampleSheet.meta.analysis;
+        keys.forEach(key => {
+            if (analysis[key] === SampleSheetAnalysisOption.STANDARD) {
+                analysis[key] = SampleSheetAnalysisOption.ACTIVE;
+            }
+        });
     }
 
     private splitSampleSet(sampleSet: SampleSet): SampleSet[] {

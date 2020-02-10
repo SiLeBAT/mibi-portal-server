@@ -114,7 +114,16 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
         const mapAnalysisOptionToString = (
             option: SampleSheetAnalysisOption
         ): string => {
-            return option === SampleSheetAnalysisOption.OMIT ? '' : 'x';
+            const strings = this.sampleSheetConstants.metaStrings.analysis
+                .options;
+            switch (option) {
+                case SampleSheetAnalysisOption.OMIT:
+                    return '';
+                case SampleSheetAnalysisOption.ACTIVE:
+                    return ' ' + strings.active;
+                case SampleSheetAnalysisOption.STANDARD:
+                    return ' ' + strings.standard;
+            }
         };
 
         const sheet = workbook.sheet(VALID_SHEET_NAME);
