@@ -45,7 +45,6 @@
       "src/**/__tests__/*.ts"
     ]
   },
-  "private": true,
   "dependencies": {
     "app-root-dir": "^1.0.2",
     "argon2": "0.19.3",
