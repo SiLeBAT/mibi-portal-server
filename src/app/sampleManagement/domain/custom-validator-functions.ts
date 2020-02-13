@@ -374,6 +374,7 @@ function referenceDate(
 
         if (options.earliest) {
             if (options.modifier) {
+                // tslint:disable-next-line: deprecation
                 referenceDate = referenceDate.subtract(
                     // tslint:disable-next-line
                     options.modifier.value as any,
@@ -382,6 +383,7 @@ function referenceDate(
             }
         } else if (options.latest) {
             if (options.modifier) {
+                // tslint:disable-next-line: deprecation
                 referenceDate = referenceDate.add(
                     // tslint:disable-next-line
                     options.modifier.value as any,

@@ -49,8 +49,10 @@ export class DefaultAppServer implements AppServer {
             app.set('port', serverConfig.port);
             app.set('logger', logger);
 
+            // tslint:disable-next-line: deprecation
             app.use(bodyParser.json({ limit: '50mb' }));
             app.use(
+                // tslint:disable-next-line: deprecation
                 bodyParser.urlencoded({
                     extended: false
                 })
