@@ -5,7 +5,4 @@ if [ "$#" -ne 1 ]; then
   LOG_FILE=./fcl_output
 fi
 
-BASE_NAME=`basename $LOG_FILE`
-DIR_NAME=`dirname $LOG_FILE`
-
-forever -l $LOG_FILE.log -a start lib/main.js
+forever -l $LOG_FILE -a start lib/main.js
