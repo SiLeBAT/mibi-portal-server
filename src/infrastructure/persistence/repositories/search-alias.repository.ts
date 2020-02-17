@@ -11,9 +11,7 @@ class FileSearchAliasRepository implements SearchAliasRepository {
 
     initialise() {
         logger.verbose(
-            `${this.constructor.name}.${
-                this.initialise.name
-            }, loading Search Alias data from Filesystem.`
+            `${this.constructor.name}.${this.initialise.name}, loading Search Alias data from Filesystem.`
         );
 
         return loadJSONFile(this.fileName, this.dataDir)
@@ -28,9 +26,7 @@ class FileSearchAliasRepository implements SearchAliasRepository {
             )
             .then(() =>
                 logger.info(
-                    `${this.constructor.name}.${
-                        this.initialise.name
-                    }, finished initialising Search Alias Repository from Filesystem.`
+                    `${this.constructor.name}.${this.initialise.name}, finished initialising Search Alias Repository from Filesystem.`
                 )
             );
     }
