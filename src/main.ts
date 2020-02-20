@@ -102,6 +102,8 @@ async function init() {
     const appConfiguration: AppConfiguration = configurationService.getApplicationConfiguration();
     const mailConfiguration: MailConfiguration = configurationService.getMailConfiguration();
 
+    logger.info(`Starting MiBi-Portal. appName=${appConfiguration.appName}`);
+
     const catalogRepository = await initialiseCatalogRepository(
         dataStoreConfig.dataDir
     ).catch((error: Error) => {
