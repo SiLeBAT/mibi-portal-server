@@ -87,25 +87,27 @@ export class DefaultAppServer implements AppServer {
         });
 
         this.server.setErrorConfig(app => {
-            app.use((
-                // tslint:disable-next-line
-                err: any,
-                req: express.Request,
-                res: express.Response,
-                next: express.NextFunction
-            ) => {
-                if (err.status === 401) {
-                    app.get('logger').warn(
-                        `Log caused error with status 401. error=${err}`
-                    );
-                    res.status(401)
-                        .send({
-                            code: SERVER_ERROR_CODE.AUTHORIZATION_ERROR,
-                            message: err.message
-                        })
-                        .end();
+            app.use(
+                (
+                    // tslint:disable-next-line
+                    err: any,
+                    req: express.Request,
+                    res: express.Response,
+                    next: express.NextFunction
+                ) => {
+                    if (err.status === 401) {
+                        app.get('logger').warn(
+                            `Log caused error with status 401. error=${err}`
+                        );
+                        res.status(401)
+                            .send({
+                                code: SERVER_ERROR_CODE.AUTHORIZATION_ERROR,
+                                message: err.message
+                            })
+                            .end();
+                    }
                 }
-            });
+            );
 
             app.get('*', (req: express.Request, res: express.Response) => {
                 res.sendFile(

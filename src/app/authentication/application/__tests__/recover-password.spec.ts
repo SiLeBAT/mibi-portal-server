@@ -196,15 +196,12 @@ describe('Recover Password Use Case', () => {
             throw new Error();
         });
         expect.assertions(1);
-        return service
-            .requestPasswordReset(credentials)
-            .then(
-                result =>
-                    expect(
-                        mockNotificationService.sendNotification.mock.calls
-                            .length
-                    ).toBe(0),
-                err => expect(err).toBeTruthy()
-            );
+        return service.requestPasswordReset(credentials).then(
+            result =>
+                expect(
+                    mockNotificationService.sendNotification.mock.calls.length
+                ).toBe(0),
+            err => expect(err).toBeTruthy()
+        );
     });
 });
