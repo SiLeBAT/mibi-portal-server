@@ -29,9 +29,7 @@ export class DefaultSystemInfoController extends AbstractController
     @httpGet('/')
     async getSystemInfo(@response() res: Response) {
         logger.info(
-            `${this.constructor.name}.${
-                this.getSystemInfo.name
-            }, Request received`
+            `${this.constructor.name}.${this.getSystemInfo.name}, Request received`
         );
         try {
             if (!(pjson.version && pjson.mibiConfig.lastChange)) {
@@ -45,16 +43,12 @@ export class DefaultSystemInfoController extends AbstractController
                 supportContact: this.supportContact
             };
             logger.info(
-                `${this.constructor.name}.${
-                    this.getSystemInfo.name
-                }, Response sent`
+                `${this.constructor.name}.${this.getSystemInfo.name}, Response sent`
             );
             this.ok(res, dto);
         } catch (error) {
             logger.info(
-                `${this.constructor.name}.${
-                    this.getSystemInfo.name
-                } has thrown an error. ${error}`
+                `${this.constructor.name}.${this.getSystemInfo.name} has thrown an error. ${error}`
             );
             this.handleError(res);
         }
