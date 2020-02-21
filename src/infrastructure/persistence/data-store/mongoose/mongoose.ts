@@ -27,7 +27,8 @@ class MongooseDataStore implements DataStore {
             .then(
                 db => {
                     logger.info('Connected to DB', {
-                        connectionString: connectionString
+                        connectionString: connectionString,
+                        dataBase: dataBase
                     });
                     return db;
                 },

@@ -1,4 +1,7 @@
 {
+  "application": {
+    "appName": "MiBi-Portal-Integration"
+  },
   "dataStore": {
       "dataBase": "epitest",
       "dataDir": "./data"
