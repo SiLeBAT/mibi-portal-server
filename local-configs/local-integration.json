@@ -7,6 +7,6 @@
       "dataDir": "./data"
   },
   "general": {
-      "logLevel": "info"
+      "logLevel": "trace"
   }
 }
