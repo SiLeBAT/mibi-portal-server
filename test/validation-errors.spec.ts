@@ -14,7 +14,7 @@ import { Api } from './api';
 import { promisify } from 'util';
 import { EMPTY_ANALYSIS } from '../src/app/sampleManagement/domain/constants';
 
-const DATA_DIR: string = 'testData/validation';
+const DATA_DIR: string = 'test/data/validation';
 
 const deactivatedFiles = [
     // ZSP is not valid in 2020 anymore
