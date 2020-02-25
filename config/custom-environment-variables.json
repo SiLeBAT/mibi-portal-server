@@ -8,8 +8,11 @@
         "apiUrl": "MIBI_API_URL"
     },
     "dataStore": {
-        "connectionString": "MIBI_DB_CONNECTION",
+        "host": "MIBI_DB_HOST",
         "dataBase": "MIBI_DB_DATABASE",
+        "username": "MIBI_DB_USERNAME",
+        "password": "MIBI_DB_PASSWORD",
+        "authDatabase": "MIBI_DB_AUTH_DATABASE",
         "dataDir": "MIBI_DATA_DIR"
     },
     "general": {

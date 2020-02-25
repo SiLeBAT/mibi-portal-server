@@ -120,7 +120,13 @@ async function init() {
         throw error;
     });
 
-    createDataStore(dataStoreConfig.connectionString, dataStoreConfig.dataBase);
+    createDataStore({
+        host: dataStoreConfig.host,
+        database: dataStoreConfig.dataBase,
+        username: dataStoreConfig.username,
+        password: dataStoreConfig.password,
+        authDatabase: dataStoreConfig.authDatabase
+    });
 
     const container = getContainer({ defaultScope: 'Singleton' });
 

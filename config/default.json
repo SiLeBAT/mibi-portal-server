@@ -20,8 +20,11 @@
         }
     },
     "dataStore": {
-        "connectionString": "mongodb://localhost:27017",
-        "dataBase": "epilab",
+        "host": "localhost:27017",
+        "dataBase": "",
+        "username": "",
+        "password": "",
+        "authDatabase": "",
         "dataDir": "./data"
     },
     "mail": {

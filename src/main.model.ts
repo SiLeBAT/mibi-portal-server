@@ -6,8 +6,11 @@ export interface ServerConfiguration {
 }
 
 export interface DataStoreConfiguration {
-    connectionString: string;
+    host: string;
     dataBase: string;
+    username: string;
+    password: string;
+    authDatabase: string;
     dataDir: string;
 }
 

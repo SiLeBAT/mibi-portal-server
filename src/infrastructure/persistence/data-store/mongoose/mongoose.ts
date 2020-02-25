@@ -16,25 +16,49 @@ import {
 // tslint:disable-next-line
 (mongoose as any).Promise = Promise;
 
+export interface ConnectionInfo {
+    host: string;
+    database: string;
+    username: string;
+    password: string;
+    authDatabase: string;
+}
+
 class MongooseDataStore implements DataStore {
-    constructor(connectionString: string, dataBase: string) {
+    constructor(connectionInfo: ConnectionInfo) {
+        const connectionString =
+            'mongodb://' +
+            connectionInfo.username +
+            ':' +
+            connectionInfo.password +
+            '@' +
+            connectionInfo.host +
+            '/' +
+            connectionInfo.authDatabase;
+        const logString =
+            '{ "host":"' +
+            connectionInfo.host +
+            '", "user":"' +
+            connectionInfo.username +
+            '", "authDB":"' +
+            connectionInfo.authDatabase +
+            '", "db":"' +
+            connectionInfo.database +
+            '" }';
         mongoose
             .connect(connectionString, {
-                dbName: dataBase,
+                dbName: connectionInfo.database,
                 useCreateIndex: true,
                 useNewUrlParser: true
             })
             .then(
                 db => {
-                    logger.info('Connected to DB', {
-                        connectionString: connectionString,
-                        dataBase: dataBase
-                    });
+                    logger.info('Connected to DB', logString);
                     return db;
                 },
                 error => {
                     throw new Error(
-                        `Unable to connect to DB. connectionString=${connectionString} error=${error}`
+                        `Unable to connect to DB. ${logString} error=${error}`
                     );
                 }
             );
@@ -61,12 +85,9 @@ class MongooseDataStore implements DataStore {
     }
 }
 
-export function createDataStore(
-    connectionString: string,
-    dataBase: string
-): DataStore {
+export function createDataStore(connectionInfo: ConnectionInfo): DataStore {
     logger.info('Creating datastore');
-    return new MongooseDataStore(connectionString, dataBase);
+    return new MongooseDataStore(connectionInfo);
 }
 
 export function mapCollectionToRepository(collection: string) {

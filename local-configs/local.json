@@ -20,8 +20,11 @@
     }
   },
   "dataStore": {
-    "connectionString": "mongodb://mibiPortal:localPortal@localhost:27017/epilab",
+    "host": "localhost:27017",
     "dataBase": "epilab",
+    "username": "mibiPortal",
+    "password": "localPortal",
+    "authDatabase": "epilab",
     "dataDir": "./data"
   },
   "mail": {
