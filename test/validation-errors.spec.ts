@@ -16,12 +16,7 @@ import { EMPTY_ANALYSIS } from '../src/app/sampleManagement/domain/constants';
 
 const DATA_DIR: string = 'test/data/validation';
 
-const deactivatedFiles = [
-    // ZSP is not valid in 2020 anymore
-    'MiBi-TEST_Error-Codes_A.xlsx',
-    'MiBi-TEST_Error-Codes_B.xlsx',
-    'MiBi-TEST_NRL-AR_Error-73.xlsx',
-    'MiBi-TEST_Probenummer-AVVData-Erreger_mps67_Error-3-5-6-10-49-68,69,73,95.xlsx'
+const deactivatedFiles: string[] = [
 ]
 
 const factory = {
