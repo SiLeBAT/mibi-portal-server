@@ -10,5 +10,6 @@
       "js",
       "json",
       "node"
-    ]
+    ],
+    "testTimeout": 30000
   }
