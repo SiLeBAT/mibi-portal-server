@@ -37,37 +37,43 @@ export class DefaultUserRepository extends MongooseRepositoryBase<UserModel>
     findByUsername(username: string) {
         const nameRegex = new RegExp(username, 'i');
 
-        return super
-            ._findOne({ email: { $regex: nameRegex } })
-            .then((userModel: UserModel) => {
-                if (!userModel) {
-                    throw new UserNotFoundError(
-                        `User not found. username=${username}`
-                    );
-                }
-                return mapModelToUser(userModel);
-            })
-            .catch(error => {
-                throw error;
-            });
+        return (
+            super
+                ._findOne({ email: { $regex: nameRegex } })
+                .then((userModel: UserModel) => {
+                    if (!userModel) {
+                        throw new UserNotFoundError(
+                            `User not found. username=${username}`
+                        );
+                    }
+                    return mapModelToUser(userModel);
+                })
+                // tslint:disable-next-line:no-any
+                .catch((error: any) => {
+                    throw error;
+                })
+        );
     }
 
     getPasswordForUser(username: string) {
         const nameRegex = new RegExp(username, 'i');
 
-        return super
-            ._findOne({ email: { $regex: nameRegex } })
-            .then((userModel: UserModel) => {
-                if (!userModel) {
-                    throw new UserNotFoundError(
-                        `User not found. username=${username}`
-                    );
-                }
-                return userModel.password;
-            })
-            .catch(error => {
-                throw error;
-            });
+        return (
+            super
+                ._findOne({ email: { $regex: nameRegex } })
+                .then((userModel: UserModel) => {
+                    if (!userModel) {
+                        throw new UserNotFoundError(
+                            `User not found. username=${username}`
+                        );
+                    }
+                    return userModel.password;
+                })
+                // tslint:disable-next-line:no-any
+                .catch((error: any) => {
+                    throw error;
+                })
+        );
     }
 
     hasUserWithEmail(username: string) {
@@ -75,7 +81,7 @@ export class DefaultUserRepository extends MongooseRepositoryBase<UserModel>
 
         return super
             ._findOne({ email: { $regex: nameRegex } })
-            .then(docs => !!docs);
+            .then((docs: UserModel) => !!docs);
     }
 
     createUser(user: User) {

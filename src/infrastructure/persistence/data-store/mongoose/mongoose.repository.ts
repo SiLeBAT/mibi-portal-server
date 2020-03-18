@@ -1,4 +1,4 @@
-import { Document, Model, Types } from 'mongoose';
+import { Document, Model, Types, MongooseFilterQuery } from 'mongoose';
 import { injectable } from 'inversify';
 
 interface UpdateResponse {}
@@ -46,15 +46,17 @@ export class MongooseRepositoryBase<T extends Document> {
         attr: ModelAttributes
     ): Promise<MongooseUpdateResponse> {
         return this._model
-            .update(
-                { _id: this._toObjectId(_id) },
-                { ...attr, ...{ updated: Date.now() } }
-            )
+            .update({ _id: this._toObjectId(_id) } as MongooseFilterQuery<T>, {
+                ...attr,
+                ...{ updated: Date.now() }
+            })
             .exec();
     }
 
     protected _delete(_id: string) {
-        return this._model.remove({ _id: _id }).exec();
+        return this._model
+            .remove({ _id: _id } as MongooseFilterQuery<T>)
+            .exec();
     }
 
     protected _findById(_id: string) {
@@ -62,7 +64,7 @@ export class MongooseRepositoryBase<T extends Document> {
     }
 
     protected _findOne(cond?: Object) {
-        return this._model.findOne(cond).exec();
+        return this._model.findOne(cond as MongooseFilterQuery<T>).exec();
     }
 
     protected _find(
@@ -70,7 +72,7 @@ export class MongooseRepositoryBase<T extends Document> {
         fields?: Object,
         options?: Object
     ): Promise<T[]> {
-        return this._model.find(cond, options).exec();
+        return this._model.find(cond as MongooseFilterQuery<T>, options).exec();
     }
 
     private _toObjectId(_id: string): Types.ObjectId {

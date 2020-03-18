@@ -45,7 +45,7 @@ export class DefaultTokenRepository extends MongooseRepositoryBase<TokenModel>
         return super._create(newToken).then(res => newToken);
     }
     getUserTokenByJWT(token: string): Promise<UserToken> {
-        return super._findOne({ token: token }).then(model => {
+        return super._findOne({ token: token }).then((model: TokenModel) => {
             if (!model) {
                 throw new JsonWebTokenError(
                     `No UserToken for JWT Token. token=${token}`
