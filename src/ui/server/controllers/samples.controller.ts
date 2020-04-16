@@ -382,7 +382,8 @@ export class DefaultSamplesController extends AbstractController
                 const e = entry;
                 for (const prop in e.sampleData) {
                     e.sampleData[prop] = {
-                        value: e.sampleData[prop].value
+                        value: e.sampleData[prop].value,
+                        oldValue: e.sampleData[prop].oldValue
                     };
                 }
                 return e;
