@@ -46,10 +46,14 @@ export class MongooseRepositoryBase<T extends Document> {
         attr: ModelAttributes
     ): Promise<MongooseUpdateResponse> {
         return this._model
-            .update({ _id: this._toObjectId(_id) } as MongooseFilterQuery<T>, {
-                ...attr,
-                ...{ updated: Date.now() }
-            })
+            .update(
+                { _id: this._toObjectId(_id) } as MongooseFilterQuery<T>,
+                {
+                    ...attr,
+                    ...{ updated: Date.now() }
+                    // tslint:disable-next-line:no-any
+                } as any
+            )
             .exec();
     }
 
