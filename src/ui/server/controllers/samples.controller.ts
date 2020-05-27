@@ -460,7 +460,7 @@ export class DefaultSamplesController extends AbstractController
             correctionOffer: dto.correctionOffer ? dto.correctionOffer : []
         };
 
-        if (dto.oldValue) {
+        if (dto.oldValue !== undefined) {
             annotatedSampleDataEntry.oldValue = dto.oldValue;
         }
 
