@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "398d4310_b531449a",
+        "filename": "src/app/sampleManagement/application/excel-unmarshal.service.ts",
+        "patchSetId": 1
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 1015829
+      },
+      "writtenOn": "2020-06-18T23:03:59Z",
+      "side": 0,
+      "message": "Is suppose another mechanism ensures that the city is at position 1 in the array which means:\n- there is a \u0027,\u0027 in the META_SENDER_ZIP_CITY_CELL \n- there is exactly one \u0027,\u0027 (no \u0027,\u0027 in the city)",
+      "revId": "d6d9fa8d27dc64f742aede100b9810887189bae1",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    }
+  ]
+}
