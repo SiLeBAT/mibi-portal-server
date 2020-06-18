@@ -1,4 +1,8 @@
-import { META_ANAYLSIS_OTHER_BOOL_CELL } from './../domain/constants';
+import {
+    META_ANAYLSIS_OTHER_BOOL_CELL,
+    META_CUSTOMER_REF_NUMBER_CELL,
+    META_SIGNATURE_DATE_CELL
+} from './../domain/constants';
 import * as _ from 'lodash';
 // @ts-ignore
 import * as XlsxPopulate from 'xlsx-populate';
@@ -131,11 +135,9 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
             sheet
                 .cell(META_NRL_CELL)
                 .value(this.sampleSheetConstants.nrlStrings[meta.nrl]);
-
             sheet
                 .cell(META_URGENCY_CELL)
                 .value(this.mapUrgencyEnumToString(meta.urgency));
-
             sheet
                 .cell(META_SENDER_INSTITUTENAME_CELL)
                 .value(meta.sender.instituteName);
@@ -151,7 +153,6 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
                 .value(meta.sender.contactPerson);
             sheet.cell(META_SENDER_TELEPHONE_CELL).value(meta.sender.telephone);
             sheet.cell(META_SENDER_EMAIL_CELL).value(meta.sender.email);
-
             sheet
                 .cell(META_ANALYSIS_SPECIES_CELL)
                 .value(mapAnalysisOptionToString(meta.analysis.species));
@@ -191,6 +192,10 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
             sheet
                 .cell(META_ANALYSIS_COMPAREHUMAN_TEXT_CELL)
                 .value(meta.analysis.compareHumanText);
+            sheet
+                .cell(META_CUSTOMER_REF_NUMBER_CELL)
+                .value(meta.customerRefNumber);
+            sheet.cell(META_SIGNATURE_DATE_CELL).value(meta.signatureDate);
         }
 
         return workbook;

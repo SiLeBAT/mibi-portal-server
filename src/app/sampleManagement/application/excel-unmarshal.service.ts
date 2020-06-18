@@ -38,7 +38,9 @@ import {
     META_ANALYSIS_COMPAREHUMAN_TEXT_CELL,
     META_ANALYSIS_ZOONOSENISOLATE_CELL,
     META_ANALYSIS_PHAGETYPING_CELL,
-    META_ANAYLSIS_OTHER_BOOL_CELL
+    META_ANAYLSIS_OTHER_BOOL_CELL,
+    META_CUSTOMER_REF_NUMBER_CELL,
+    META_SIGNATURE_DATE_CELL
 } from '../domain/constants';
 import { DefaultNRLService } from './nrl.service';
 import {
@@ -96,53 +98,59 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
             urgency: this.getUrgencyFromWorkSheet(workSheet),
             sender: this.getSenderFromWorkSheet(workSheet),
             analysis: this.getAnalysisFromWorkSheet(workSheet),
-            fileName
+            fileName,
+            customerRefNumber: this.getStringFromCell(
+                workSheet[META_CUSTOMER_REF_NUMBER_CELL]
+            ),
+            signatureDate: this.getStringFromCell(
+                workSheet[META_SIGNATURE_DATE_CELL]
+            )
         };
     }
 
     private getAnalysisFromWorkSheet(
         workSheet: WorkSheet
     ): SampleSheetAnalysis {
-        const mapCellToOption = (
+        const getOptionFromCell = (
             cell: CellObject
         ): SampleSheetAnalysisOption => {
             return this.getDataFromCell(cell)
                 ? SampleSheetAnalysisOption.ACTIVE
                 : SampleSheetAnalysisOption.OMIT;
         };
-        const mapCellToText = (cell: CellObject): string =>
-            ('' + this.getDataFromCell(cell)).trim();
 
         return {
-            species: mapCellToOption(workSheet[META_ANALYSIS_SPECIES_CELL]),
-            serological: mapCellToOption(
+            species: getOptionFromCell(workSheet[META_ANALYSIS_SPECIES_CELL]),
+            serological: getOptionFromCell(
                 workSheet[META_ANALYSIS_SEROLOGICAL_CELL]
             ),
-            resistance: mapCellToOption(
+            resistance: getOptionFromCell(
                 workSheet[META_ANALYSIS_RESISTANCE_CELL]
             ),
-            zoonosenIsolate: mapCellToOption(
+            zoonosenIsolate: getOptionFromCell(
                 workSheet[META_ANALYSIS_ZOONOSENISOLATE_CELL]
             ),
-            phageTyping: mapCellToOption(
+            phageTyping: getOptionFromCell(
                 workSheet[META_ANALYSIS_PHAGETYPING_CELL]
             ),
-            vaccination: mapCellToOption(
+            vaccination: getOptionFromCell(
                 workSheet[META_ANALYSIS_VACCINATION_CELL]
             ),
-            molecularTyping: mapCellToOption(
+            molecularTyping: getOptionFromCell(
                 workSheet[META_ANALYSIS_MOLECULARTYPING_CELL]
             ),
-            toxin: mapCellToOption(workSheet[META_ANALYSIS_TOXIN_CELL]),
-            esblAmpCCarbapenemasen: mapCellToOption(
+            toxin: getOptionFromCell(workSheet[META_ANALYSIS_TOXIN_CELL]),
+            esblAmpCCarbapenemasen: getOptionFromCell(
                 workSheet[META_ANALYSIS_ESBLAMPCCARBAPENEMASEN_CELL]
             ),
-            other: mapCellToOption(workSheet[META_ANAYLSIS_OTHER_BOOL_CELL]),
-            otherText: mapCellToText(workSheet[META_ANALYSIS_OTHER_TEXT_CELL]),
-            compareHuman: mapCellToOption(
+            other: getOptionFromCell(workSheet[META_ANAYLSIS_OTHER_BOOL_CELL]),
+            otherText: this.getStringFromCell(
+                workSheet[META_ANALYSIS_OTHER_TEXT_CELL]
+            ),
+            compareHuman: getOptionFromCell(
                 workSheet[META_ANALYSIS_COMPAREHUMAN_BOOL_CELL]
             ),
-            compareHumanText: mapCellToText(
+            compareHumanText: this.getStringFromCell(
                 workSheet[META_ANALYSIS_COMPAREHUMAN_TEXT_CELL]
             )
         };
@@ -150,45 +158,36 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
 
     private getSenderFromWorkSheet(workSheet: WorkSheet): Address {
         return {
-            instituteName: (
-                '' +
-                this.getDataFromCell(workSheet[META_SENDER_INSTITUTENAME_CELL])
-            ).trim(),
-            department: (
-                '' +
-                this.getDataFromCell(workSheet[META_SENDER_DEPARTMENT_CELL])
-            ).trim(),
-            street: (
-                '' + this.getDataFromCell(workSheet[META_SENDER_STREET_CELL])
-            ).trim(),
-            zip: (
-                '' + this.getDataFromCell(workSheet[META_SENDER_ZIP_CITY_CELL])
-            )
+            instituteName: this.getStringFromCell(
+                workSheet[META_SENDER_INSTITUTENAME_CELL]
+            ),
+            department: this.getStringFromCell(
+                workSheet[META_SENDER_DEPARTMENT_CELL]
+            ),
+            street: this.getStringFromCell(workSheet[META_SENDER_STREET_CELL]),
+            zip: this.getStringFromCell(workSheet[META_SENDER_ZIP_CITY_CELL])
                 .split(',')[0]
                 .trim(),
             city: (
-                this.getDataFromCell(workSheet[META_SENDER_ZIP_CITY_CELL]) + ','
+                this.getStringFromCell(workSheet[META_SENDER_ZIP_CITY_CELL]) +
+                ','
             )
                 .split(',')[1]
                 .trim(),
-            contactPerson: (
-                '' +
-                this.getDataFromCell(workSheet[META_SENDER_CONTACTPERSON_CELL])
-            ).trim(),
-            telephone: (
-                '' + this.getDataFromCell(workSheet[META_SENDER_TELEPHONE_CELL])
-            ).trim(),
-            email: (
-                '' + this.getDataFromCell(workSheet[META_SENDER_EMAIL_CELL])
-            ).trim()
+            contactPerson: this.getStringFromCell(
+                workSheet[META_SENDER_CONTACTPERSON_CELL]
+            ),
+            telephone: this.getStringFromCell(
+                workSheet[META_SENDER_TELEPHONE_CELL]
+            ),
+            email: this.getStringFromCell(workSheet[META_SENDER_EMAIL_CELL])
         };
     }
 
     private getUrgencyFromWorkSheet(workSheet: WorkSheet): Urgency {
-        const urgency: string =
-            '' + this.getDataFromCell(workSheet[META_URGENCY_CELL]);
+        const urgency = this.getStringFromCell(workSheet[META_URGENCY_CELL]);
 
-        switch (urgency.trim().toLowerCase()) {
+        switch (urgency.toLowerCase()) {
             case 'eilt':
                 return Urgency.URGENT;
             case 'normal':
@@ -201,6 +200,10 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
         return DefaultNRLService.mapNRLStringToEnum(workSheetNRL);
     }
 
+    private getStringFromCell(cell: CellObject): string {
+        return ('' + this.getDataFromCell(cell)).trim();
+    }
+
     private getDataFromCell(
         cell: CellObject
     ): string | number | boolean | Date | undefined {
@@ -209,6 +212,7 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
         }
         return cell.v;
     }
+
     private fromWorksheetToData(workSheet: WorkSheet): Sample[] {
         const lineNumber: number = this.getVersionDependentLine(workSheet);
         const data = utils.sheet_to_json<Record<string, string>>(workSheet, {
