@@ -431,8 +431,12 @@ export class DefaultSamplesController extends AbstractController
         return {
             sender: { ...data.sender },
             fileName: data.fileName,
-            customerRefNumber: data.customerRefNumber || undefined, // non-breaking API change
-            signatureDate: data.signatureDate || undefined // non-breaking API change
+            customerRefNumber:
+                data.customerRefNumber === ''
+                    ? undefined
+                    : data.customerRefNumber, // non-breaking API change
+            signatureDate:
+                data.signatureDate === '' ? undefined : data.signatureDate // non-breaking API change
         };
     }
 
