@@ -49,6 +49,8 @@ export interface SampleSheetMetaData {
     analysis: SampleSheetAnalysis;
     urgency: Urgency;
     fileName: string;
+    customerRefNumber: string;
+    signatureDate: string;
 }
 
 export interface SampleSheet {

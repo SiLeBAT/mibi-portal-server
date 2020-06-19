@@ -1,4 +1,8 @@
-import { META_ANAYLSIS_OTHER_BOOL_CELL } from './../domain/constants';
+import {
+    META_ANAYLSIS_OTHER_BOOL_CELL,
+    META_CUSTOMER_REF_NUMBER_CELL,
+    META_SIGNATURE_DATE_CELL
+} from './../domain/constants';
 import * as _ from 'lodash';
 // @ts-ignore
 import * as XlsxPopulate from 'xlsx-populate';
@@ -131,11 +135,9 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
             sheet
                 .cell(META_NRL_CELL)
                 .value(this.sampleSheetConstants.nrlStrings[meta.nrl]);
-
             sheet
                 .cell(META_URGENCY_CELL)
                 .value(this.mapUrgencyEnumToString(meta.urgency));
-
             sheet
                 .cell(META_SENDER_INSTITUTENAME_CELL)
                 .value(meta.sender.instituteName);
@@ -143,15 +145,24 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
                 .cell(META_SENDER_DEPARTMENT_CELL)
                 .value(meta.sender.department);
             sheet.cell(META_SENDER_STREET_CELL).value(meta.sender.street);
-            sheet
-                .cell(META_SENDER_ZIP_CITY_CELL)
-                .value(meta.sender.zip + ', ' + meta.sender.city);
+
+            let place = '';
+            const zip = meta.sender.zip;
+            const city = meta.sender.city;
+            if (zip !== '' && city !== '') {
+                place = zip + ', ' + city;
+            } else if (zip !== '') {
+                place = zip;
+            } else if (city !== '') {
+                place = city;
+            }
+            sheet.cell(META_SENDER_ZIP_CITY_CELL).value(place);
+
             sheet
                 .cell(META_SENDER_CONTACTPERSON_CELL)
                 .value(meta.sender.contactPerson);
             sheet.cell(META_SENDER_TELEPHONE_CELL).value(meta.sender.telephone);
             sheet.cell(META_SENDER_EMAIL_CELL).value(meta.sender.email);
-
             sheet
                 .cell(META_ANALYSIS_SPECIES_CELL)
                 .value(mapAnalysisOptionToString(meta.analysis.species));
@@ -191,6 +202,10 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
             sheet
                 .cell(META_ANALYSIS_COMPAREHUMAN_TEXT_CELL)
                 .value(meta.analysis.compareHumanText);
+            sheet
+                .cell(META_CUSTOMER_REF_NUMBER_CELL)
+                .value(meta.customerRefNumber);
+            sheet.cell(META_SIGNATURE_DATE_CELL).value(meta.signatureDate);
         }
 
         return workbook;

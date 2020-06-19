@@ -111,7 +111,7 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                 this.createMetaMainRow(
                     this.createMetaRecipient(metaData.nrl),
                     this.EMPTY,
-                    this.createMetaStamp()
+                    this.createMetaStamp(metaData.customerRefNumber)
                 ),
                 this.EMPTY,
                 this.createMetaMainRow(
@@ -122,7 +122,10 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                 this.EMPTY,
                 this.EMPTY,
                 this.createMetaMainRow(
-                    this.createMetaSignature(this.strings.meta.signature.meta),
+                    this.createMetaSignature(
+                        this.strings.meta.signature.date,
+                        metaData.signatureDate
+                    ),
                     this.createMetaUrgency(metaData.urgency),
                     this.EMPTY
                 ),
@@ -197,14 +200,14 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
         };
     }
 
-    private createMetaStamp(): {} {
+    private createMetaStamp(customerRefNumber: string): {} {
         const strings = this.strings.meta.stamp;
         return this.createMetaTable({
-            widths: [0, '*'],
+            widths: [0, '100%'],
             body: [
                 [
                     {
-                        text: strings.entryDate,
+                        text: strings.receiptDate,
                         style: 'heading2',
                         noWrap: true,
                         alignment: 'right',
@@ -214,13 +217,16 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                 ],
                 [
                     {
-                        text: strings.senderFileNumber,
+                        text: strings.customerRefNumber,
                         style: 'heading2',
                         noWrap: true,
                         alignment: 'right',
                         border: [false, false, true, false]
                     },
-                    { text: ' ', style: 'markedCell' }
+                    {
+                        text: customerRefNumber ? customerRefNumber : ' ',
+                        style: 'markedCell'
+                    }
                 ]
             ]
         });
@@ -228,6 +234,16 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
 
     private createMetaSender(address: Address): {} {
         const strings = this.strings.meta.sender;
+        let place = ' ';
+        const zip = address.zip;
+        const city = address.city;
+        if (zip !== '' && city !== '') {
+            place = zip + ', ' + city;
+        } else if (zip !== '') {
+            place = zip;
+        } else if (city !== '') {
+            place = city;
+        }
         return {
             stack: [
                 { text: strings.title, style: 'heading1' },
@@ -252,7 +268,7 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                             ],
                             [
                                 { text: strings.place, style: 'heading3' },
-                                { text: address.zip + ' ' + address.city }
+                                { text: place }
                             ],
                             [
                                 {
@@ -429,12 +445,12 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
         };
     }
 
-    private createMetaSignature(text: string): {} {
+    private createMetaSignature(text: string, value?: string): {} {
         return {
             stack: [
                 this.createMetaTable({
                     widths: [this.config.meta.col11Width],
-                    body: [[{ text: ' ', style: 'markedCell' }]]
+                    body: [[{ text: value ? value : ' ', style: 'markedCell' }]]
                 }),
                 { text: text, style: 'heading2' }
             ]

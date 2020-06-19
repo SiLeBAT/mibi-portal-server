@@ -16,8 +16,8 @@ export const sampleSheetMetaStrings = {
         nrl: 'Labor'
     },
     stamp: {
-        entryDate: 'Eingangsdatum beim BfR',
-        senderFileNumber: 'Aktenzeichen des Einsenders'
+        receiptDate: 'Eingangsdatum beim BfR',
+        customerRefNumber: 'Aktenzeichen des Einsenders'
     },
     sender: {
         title: 'Einsender',
@@ -30,7 +30,7 @@ export const sampleSheetMetaStrings = {
         email: 'Email-Adresse'
     },
     signature: {
-        meta: 'Ort, Datum',
+        date: 'Ort, Datum',
         dataProcessingText: 'Informationen zur Datenverarbeitung: Siehe ',
         dataProcessingLink:
             'https://www.bfr.bund.de/de/datenschutzerklaerung-107546.html',

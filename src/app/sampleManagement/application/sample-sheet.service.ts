@@ -15,7 +15,7 @@ import { NRLService } from '../model/nrl.model';
 
 @injectable()
 export class DefaultSampleSheetService implements SampleSheetService {
-    private readonly EMPTY_SAMPLESHEET_ANALYSIS: SampleSheetAnalysis = {
+    private readonly EMPTY_SAMPLE_SHEET_ANALYSIS: SampleSheetAnalysis = {
         species: SampleSheetAnalysisOption.OMIT,
         phageTyping: SampleSheetAnalysisOption.OMIT,
         zoonosenIsolate: SampleSheetAnalysisOption.OMIT,
@@ -54,7 +54,9 @@ export class DefaultSampleSheetService implements SampleSheetService {
             samples: sampleSheet.samples,
             meta: {
                 sender: sampleSheet.meta.sender,
-                fileName: sampleSheet.meta.fileName
+                fileName: sampleSheet.meta.fileName,
+                customerRefNumber: sampleSheet.meta.customerRefNumber,
+                signatureDate: sampleSheet.meta.signatureDate
             }
         };
     }
@@ -63,7 +65,7 @@ export class DefaultSampleSheetService implements SampleSheetService {
         sampleSet: SampleSet
     ): SampleSheetMetaData {
         let nrl = this.tryGetSingleNRL(sampleSet.samples);
-        let analysis = this.EMPTY_SAMPLESHEET_ANALYSIS;
+        let analysis = this.EMPTY_SAMPLE_SHEET_ANALYSIS;
         let urgency = Urgency.NORMAL;
 
         if (nrl !== NRL_ID.UNKNOWN) {
@@ -81,7 +83,9 @@ export class DefaultSampleSheetService implements SampleSheetService {
             analysis,
             sender: sampleSet.meta.sender,
             urgency,
-            fileName: sampleSet.meta.fileName
+            fileName: sampleSet.meta.fileName,
+            customerRefNumber: sampleSet.meta.customerRefNumber,
+            signatureDate: sampleSet.meta.signatureDate
         };
     }
 

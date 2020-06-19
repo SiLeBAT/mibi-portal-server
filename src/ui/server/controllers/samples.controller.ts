@@ -406,8 +406,12 @@ export class DefaultSamplesController extends AbstractController
         dto: SampleSetMetaDTO
     ): SampleSetMetaData {
         return {
-            sender: dto.sender,
-            fileName: dto.fileName ? dto.fileName : ''
+            sender: { ...dto.sender },
+            fileName: dto.fileName ? dto.fileName : '',
+            customerRefNumber: dto.customerRefNumber
+                ? dto.customerRefNumber
+                : '',
+            signatureDate: dto.signatureDate ? dto.signatureDate : ''
         };
     }
 
@@ -425,8 +429,14 @@ export class DefaultSamplesController extends AbstractController
         data: SampleSetMetaData
     ): SampleSetMetaDTO {
         return {
-            sender: data.sender,
-            fileName: data.fileName
+            sender: { ...data.sender },
+            fileName: data.fileName,
+            customerRefNumber:
+                data.customerRefNumber === ''
+                    ? undefined
+                    : data.customerRefNumber, // non-breaking API change
+            signatureDate:
+                data.signatureDate === '' ? undefined : data.signatureDate // non-breaking API change
         };
     }
 

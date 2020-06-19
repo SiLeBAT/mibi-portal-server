@@ -27,6 +27,8 @@ export interface AnalysisDTO {
 export interface SampleSetMetaDTO {
     sender: AddressDTO;
     fileName?: string;
+    customerRefNumber?: string;
+    signatureDate?: string;
 }
 
 export interface SampleValidationErrorDTO {
