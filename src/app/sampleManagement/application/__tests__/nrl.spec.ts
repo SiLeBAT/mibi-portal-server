@@ -117,7 +117,9 @@ describe('NRL Assignment Service', () => {
                 telephone: '',
                 email: ''
             },
-            fileName: ''
+            fileName: '',
+            customerRefNumber: '',
+            signatureDate: ''
         };
         genericTestSample = factory.createSample(testSampleData);
         genericTestSampleCollection = [genericTestSample];
