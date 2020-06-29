@@ -1,4 +1,4 @@
-import { Urgency, NRL_ID } from '../../domain/enums';
+import { NRL_ID } from '../../domain/enums';
 import { getContainer } from '../../../../aspects/container/container';
 import { Sample, SampleData, SampleFactory } from '../../../ports';
 import { Container } from 'inversify';

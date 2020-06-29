@@ -72,10 +72,10 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
         return new Promise<WorkSheet>((resolve, reject) => {
             const workbook: WorkBook = read(buffer, {
                 type: 'buffer',
-                cellDates: true,
-                cellText: false,
-                cellStyles: true,
-                cellNF: true
+                cellDates: true, // write date as JS-Date to 'v' field, sets 't' field to 'd'
+                cellText: true, // write formatted text to 'w' field
+                cellStyles: false, // write style to 's' field
+                cellNF: false // write number format string to 'z' field
             });
             const worksheetName: string = workbook.SheetNames[0];
             const workSheet: WorkSheet = workbook.Sheets[worksheetName];
@@ -114,7 +114,7 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
         const getOptionFromCell = (
             cell: CellObject
         ): SampleSheetAnalysisOption => {
-            return this.getDataFromCell(cell)
+            return this.getStringFromCell(cell) !== ''
                 ? SampleSheetAnalysisOption.ACTIVE
                 : SampleSheetAnalysisOption.OMIT;
         };
@@ -196,21 +196,87 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
         }
     }
     private getNRLFromWorkSheet(workSheet: WorkSheet): NRL_ID {
-        const workSheetNRL: string = workSheet[META_NRL_CELL].v || '';
+        const workSheetNRL = this.getStringFromCell(workSheet[META_NRL_CELL]);
         return DefaultNRLService.mapNRLStringToEnum(workSheetNRL);
     }
 
     private getStringFromCell(cell: CellObject): string {
-        return ('' + this.getDataFromCell(cell)).trim();
-    }
-
-    private getDataFromCell(
-        cell: CellObject
-    ): string | number | boolean | Date | undefined {
-        if (!cell) {
+        if (!cell || cell.v === undefined) {
             return '';
         }
-        return cell.v;
+        switch (cell.t) {
+            case 'b':
+                return this.getStringFromBooleanCell(cell);
+            case 'e':
+                return this.getStringFromErrorCell(cell);
+            case 'n':
+                return this.getStringFromNumberCell(cell);
+            case 'd':
+                return this.getStringFromDateCell(cell);
+            case 's':
+                return (cell.v as string).trim();
+            case 'z':
+                return '';
+        }
+    }
+
+    private getStringFromBooleanCell(cell: CellObject): string {
+        const v = cell.v as boolean;
+        return v ? 'WAHR' : 'FALSCH';
+    }
+
+    private getStringFromErrorCell(cell: CellObject): string {
+        // returns the english error strings
+        return cell.w!;
+    }
+
+    private getStringFromNumberCell(cell: CellObject): string {
+        const v = cell.v as number;
+        // number cells are formatted with english rules
+        // due to the complexity of convert all the rules to german, all user defined number formats are ignored
+        return v.toString().replace('.', ',');
+    }
+
+    private getStringFromDateCell(cell: CellObject): string {
+        const v = cell.v as Date;
+
+        // date cells are formatted with english rules, so some conversion is necessary to get a german localized string
+        // due to the complexity of this task all user defined date formats are ignored
+
+        const localMoment = this.getLocalizedMomentFromDate(v);
+
+        // to check if cell contains a time or a date reparse the cell to excel's serialized date format
+        const serializedDate = utils.aoa_to_sheet([[v]], { cellDates: false })[
+            'A1'
+        ].v as number;
+
+        // excel uses integer part for dates and fractional part for time
+        const isTime = serializedDate - Math.floor(serializedDate) !== 0;
+        const isDate = serializedDate >= 1;
+
+        // format the date accordingly
+        if (isDate && !isTime) {
+            return localMoment.format('L');
+        } else if (!isDate && isTime) {
+            return localMoment.format('LTS');
+        } else {
+            return localMoment.format('L LTS');
+        }
+    }
+
+    private getLocalizedMomentFromDate(date: Date): moment.Moment {
+        // moment does not interpret timezones so some trickery is necessary
+
+        // create moment with given timezone offset
+        const offMoment = moment(date.toString());
+
+        // get timezone offset of local server timezone
+        const localOffset = moment().utcOffset();
+
+        // convert to utc time with offset to local server timezone
+        const correctMoment = offMoment.utcOffset(localOffset);
+
+        return correctMoment.locale('de');
     }
 
     private fromWorksheetToData(workSheet: WorkSheet): Sample[] {
@@ -254,8 +320,8 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
         };
     }
 
-    private parseDate(date: string) {
-        date = date.toString();
+    private parseDate(stringOrDate: string | Date) {
+        const date = stringOrDate.toString();
         let parseOptions = {
             dateFormat: 'DD.MM.YYYY'
         };
