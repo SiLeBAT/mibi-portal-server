@@ -9,8 +9,6 @@
     "serve:pipe": "npm run build && npm run test && node ./lib/main.js",
     "debug:pipe": "npm run build && node --inspect-brk ./lib/main.js",
     "start:admin-util": "cp ./config/admin-util/config.js ./node_modules/mongo-express/config.js && node ./node_modules/mongo-express/app.js",
-    "dependency-check:production": "npm audit --audit-level=low --production",
-    "dependency-check:qa": "npm audit --audit-level=low",
     "cp:view": "npx copyfiles -u 1 ./src/**/views/**/* ./lib",
     "cp:json": "npx copyfiles -u 1 ./src/**/*.json ./lib",
     "cp:scripts": "npx copyfiles -u 1 ./src/**/*.sh ./lib",
