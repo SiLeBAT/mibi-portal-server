@@ -138,6 +138,7 @@ export class DefaultMailService implements MailService {
                 html: result
             }
         };
+
         try {
             transporter.sendMail(mailOptions, (error, info) => {
                 if (error) {

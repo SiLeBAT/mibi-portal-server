@@ -50,6 +50,7 @@ function mapModelToUser(model: UserModel): User {
             email: []
         },
         model.password,
+        model.dataProtectionAgreed,
         model.enabled,
         model.adminEnabled,
         model.numAttempt,

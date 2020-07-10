@@ -6,6 +6,7 @@ export const genericUser: User = {
     lastName: 'test',
     email: 'test',
     password: 'test',
+    dataProtectionAgreed: false,
     institution: {
         uniqueId: 'test',
         stateShort: 'test',

@@ -13,6 +13,7 @@ export interface User {
     institution: Institute;
     uniqueId: string;
     readonly password: string;
+    dataProtectionAgreed: boolean;
     isAuthorized(credentials: UserCredentials): Promise<boolean>;
     updatePassword(password: string): Promise<string>;
     updateNumberOfFailedAttempts(increment: boolean): void;

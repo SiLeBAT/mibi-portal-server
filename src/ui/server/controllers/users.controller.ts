@@ -212,10 +212,12 @@ export class DefaultUsersController extends AbstractController
         logger.info(
             `${this.constructor.name}.${this.postRegistration.name}, Request received`
         );
+
         try {
             const credentials: UserRegistration = this.fromRequestToUserRegistration(
                 req
             );
+
             await this.registrationService.registerUser(credentials);
             const dto: RegistrationRequestResponseDTO = {
                 registerRequest: true,
@@ -269,7 +271,8 @@ export class DefaultUsersController extends AbstractController
                     registrationDetail.firstName &&
                     registrationDetail.lastName &&
                     registrationDetail.email &&
-                    registrationDetail.password
+                    registrationDetail.password &&
+                    registrationDetail.dataProtectionAgreed
                 )
             ) {
                 throw new MalformedRequestError(
@@ -281,6 +284,7 @@ export class DefaultUsersController extends AbstractController
                 lastName: registrationDetail.lastName,
                 email: registrationDetail.email,
                 password: registrationDetail.password,
+                dataProtectionAgreed: registrationDetail.dataProtectionAgreed,
                 institution: '',
                 userAgent: req.headers['user-agent'] as string,
                 host: req.headers['host'] as string

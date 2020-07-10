@@ -20,6 +20,7 @@ export interface UserRegistration {
     lastName: string;
     email: string;
     password: string;
+    dataProtectionAgreed: boolean;
     institution: string;
     userAgent: string;
     host: string;

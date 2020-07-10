@@ -13,6 +13,8 @@ export interface UserModel extends Document {
     firstName: string;
     lastName: string;
     institution: InstitutionModel;
+    dataProtectionAgreed: boolean;
+    dataProtectionDate: Date;
     enabled: boolean;
     adminEnabled: boolean;
     numAttempt: number;
@@ -63,6 +65,15 @@ export const userSchema = new Schema({
     institution: {
         type: Schema.Types.ObjectId,
         ref: 'Institution'
+    },
+    dataProtectionAgreed: {
+        type: Boolean,
+        required: true
+    },
+    dataProtectionDate: {
+        type: Date,
+        default: Date.now(),
+        required: true
     },
     created: {
         type: Date,

@@ -90,8 +90,10 @@ export class DefaultUserRepository extends MongooseRepositoryBase<UserModel>
             firstName: user.firstName,
             lastName: user.lastName,
             email: user.email,
-            password: user.password
+            password: user.password,
+            dataProtectionAgreed: user.dataProtectionAgreed
         });
+
         return super
             ._create(newUser)
             .then(model =>
@@ -102,6 +104,7 @@ export class DefaultUserRepository extends MongooseRepositoryBase<UserModel>
                     user.lastName,
                     user.institution,
                     user.password,
+                    user.dataProtectionAgreed,
                     model.enabled,
                     model.adminEnabled
                 )

@@ -1,4 +1,10 @@
-import { Document, Model, Types, MongooseFilterQuery } from 'mongoose';
+import {
+    Document,
+    Model,
+    Types,
+    MongooseFilterQuery,
+    CreateQuery
+} from 'mongoose';
 import { injectable } from 'inversify';
 
 interface UpdateResponse {}
@@ -34,7 +40,7 @@ export class MongooseRepositoryBase<T extends Document> {
     }
 
     protected _create(item: T) {
-        return this._model.create(item);
+        return this._model.create(item as CreateQuery<T>);
     }
 
     protected _retrieve() {

@@ -13,6 +13,7 @@ export interface RegistrationDetailsDTO {
     readonly instituteId: string;
     readonly lastName: string;
     readonly password: string;
+    readonly dataProtectionAgreed: boolean;
 }
 
 export interface SampleSubmissionDTO {

@@ -1,3 +1,4 @@
+import { logger } from '../../../aspects';
 import * as argon2 from 'argon2';
 import { User, UserCredentials } from '../model/user.model';
 import { Institute } from '../model/institute.model';
@@ -5,8 +6,6 @@ import { Institute } from '../model/institute.model';
 const defaultHashOptions = {
     hashLength: 128,
     timeCost: 10,
-    // memoryCost: 15,
-    // parallelism: 100,
     memoryCost: 1024,
     parallelism: 4,
     type: argon2.argon2id
@@ -18,6 +17,7 @@ class GenericUser implements User {
     lastName: string;
     email: string;
     institution: Institute;
+    dataProtectionAgreed: boolean;
 
     static create(
         id: string,
@@ -26,6 +26,7 @@ class GenericUser implements User {
         lname: string,
         inst: Institute,
         password: string,
+        dataProtectionAgreed: boolean,
         enabled: boolean = false,
         adminEnabled: boolean = false,
         numAttempt: number = 0,
@@ -38,12 +39,14 @@ class GenericUser implements User {
             lname,
             inst,
             password,
+            dataProtectionAgreed,
             enabled,
             adminEnabled,
             numAttempt,
             lastAttempt
         );
     }
+
     constructor(
         id: string,
         email: string,
@@ -51,6 +54,7 @@ class GenericUser implements User {
         lname: string,
         inst: Institute,
         private _password: string,
+        dataProtectionAgreed: boolean,
         private enabled: boolean,
         private adminEnabled: boolean,
         private numAttempt: number,
@@ -61,6 +65,7 @@ class GenericUser implements User {
         this.firstName = fname;
         this.lastName = lname;
         this.institution = inst;
+        this.dataProtectionAgreed = dataProtectionAgreed;
     }
 
     get password(): string {
@@ -127,6 +132,7 @@ export function createUser(
     lname: string,
     inst: Institute,
     password: string,
+    dataProtectionAgreed: boolean,
     enabled: boolean = false,
     adminEnabled: boolean = false,
     numAttempt: number = 0,
@@ -139,6 +145,7 @@ export function createUser(
         lname,
         inst,
         password,
+        dataProtectionAgreed,
         enabled,
         adminEnabled,
         numAttempt,

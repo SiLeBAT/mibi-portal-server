@@ -119,7 +119,8 @@ export class DefaultRegistrationService implements RegistrationService {
             credentials.firstName,
             credentials.lastName,
             inst,
-            ''
+            '',
+            credentials.dataProtectionAgreed
         );
 
         await newUser.updatePassword(credentials.password);
