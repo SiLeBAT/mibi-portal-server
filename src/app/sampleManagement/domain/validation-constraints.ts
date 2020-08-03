@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import _ from 'lodash';
 import { ValidationConstraints } from '../model/validation.model';
 
 export const zoMoConstraints: ValidationConstraints = {

@@ -1,6 +1,6 @@
 /* istanbul ignore file */
-import * as winston from 'winston';
-import * as config from 'config';
+import winston from 'winston';
+import config from 'config';
 import { TransformableInfo } from 'logform';
 
 interface LogConfiguration {

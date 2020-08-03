@@ -1,6 +1,6 @@
 import { SampleMetaDTO, AnalysisDTO } from './../model/shared-dto.model';
-import * as moment from 'moment';
-import * as _ from 'lodash';
+import moment from 'moment';
+import _ from 'lodash';
 import { Request, Response } from 'express';
 import { logger } from '../../../aspects';
 import {

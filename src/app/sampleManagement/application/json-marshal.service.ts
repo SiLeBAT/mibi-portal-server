@@ -3,9 +3,9 @@ import {
     META_CUSTOMER_REF_NUMBER_CELL,
     META_SIGNATURE_DATE_CELL
 } from './../domain/constants';
-import * as _ from 'lodash';
+import _ from 'lodash';
 // @ts-ignore
-import * as XlsxPopulate from 'xlsx-populate';
+import XlsxPopulate from 'xlsx-populate';
 import { JSONMarshalService } from '../model/excel.model';
 import { FileRepository } from '../model/repository.model';
 import { Sample } from '../model/sample.model';

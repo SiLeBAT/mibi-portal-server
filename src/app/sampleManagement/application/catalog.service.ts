@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import _ from 'lodash';
 import { CatalogRepository, SearchAliasRepository } from '../../ports';
 import { logger } from '../../../aspects';
 import { CatalogService, Catalog, CatalogData } from '../model/catalog.model';

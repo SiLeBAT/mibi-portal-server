@@ -9,7 +9,7 @@ import {
     ZSPCatalogEntry
 } from '../../../app/ports';
 import { loadCSVFile } from '../data-store/file/file-loader';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import { CSVConfig } from '../model/file-loader.model';
 
 interface CatalogConfig<T extends string, R> {

@@ -1,5 +1,5 @@
-import * as _ from 'lodash';
-import * as Fuse from 'fuse.js';
+import _ from 'lodash';
+import Fuse from 'fuse.js';
 import {
     autoCorrectADV16,
     autoCorrectADV8,

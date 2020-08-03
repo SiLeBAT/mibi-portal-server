@@ -3,7 +3,7 @@ import {
     PDFConstants,
     SampleSheetPDFConfig
 } from '../model/pdf.model';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import { injectable, inject } from 'inversify';
 import { APPLICATION_TYPES } from '../../application.types';
 import {

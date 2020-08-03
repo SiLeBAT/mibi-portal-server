@@ -2,9 +2,9 @@ import { DefaultSample } from './../src/app/sampleManagement/domain/sample.entit
 import { Urgency, NRL_ID } from './../src/app/sampleManagement/domain/enums';
 import { SampleData } from './../src/app/sampleManagement/model/sample.model';
 import { PutValidatedRequestDTO } from '../src/ui/server/model/request.model';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as _ from 'lodash';
+import fs from 'fs';
+import path from 'path';
+import _ from 'lodash';
 import { logger } from '../src/aspects';
 import { SampleSet } from '../src/app/ports';
 import { SampleSetMetaData, Sample, SampleMetaData } from '../src/app/sampleManagement/model/sample.model';

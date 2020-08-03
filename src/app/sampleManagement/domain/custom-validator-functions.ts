@@ -1,6 +1,6 @@
 import { ADVCatalogEntry, ZSPCatalogEntry } from './../model/catalog.model';
-import * as moment from 'moment';
-import * as _ from 'lodash';
+import moment from 'moment';
+import _ from 'lodash';
 import {
     ValidationError,
     RequiredIfOtherOptions,

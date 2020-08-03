@@ -1,10 +1,10 @@
-import * as fs from 'fs';
-import * as _ from 'lodash';
+import fs from 'fs';
+import _ from 'lodash';
 import { promisify } from 'util';
 var mps155JSON = require('./data/mps155_timezone_bug.json');
 var mps155ValidatedJSON = require('./data/mps155_timezone_bug_validated.json');
 import { Api } from './api';
-import * as CRC32 from 'crc-32';
+import CRC32 from 'crc-32';
 
 const DATA_DIR: string = 'test/data/';
 

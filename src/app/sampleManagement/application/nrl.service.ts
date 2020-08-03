@@ -3,7 +3,7 @@ import { NRL_ID } from './../domain/enums';
 import { ApplicationDomainError } from './../../core/domain/domain.error';
 import { Sample } from '../model/sample.model';
 import { NRLService, NRL } from '../model/nrl.model';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import { logger } from '../../../aspects';
 import { injectable, inject } from 'inversify';
 import { APPLICATION_TYPES } from '../../application.types';
