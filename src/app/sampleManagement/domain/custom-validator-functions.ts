@@ -445,16 +445,14 @@ function referenceDate(
         if (options.earliest) {
             if (options.modifier) {
                 referenceDate = referenceDate.subtract(
-                    // tslint:disable-next-line
-                    options.modifier.value as any,
+                    options.modifier.value,
                     options.modifier.unit
                 );
             }
         } else if (options.latest) {
             if (options.modifier) {
                 referenceDate = referenceDate.add(
-                    // tslint:disable-next-line
-                    options.modifier.value as any,
+                    options.modifier.value,
                     options.modifier.unit
                 );
             }
