@@ -145,6 +145,6 @@ export interface ReferenceDateOptions extends ValidatorFunctionOptions {
     latest?: SampleProperty | string;
     modifier?: {
         value: number;
-        unit: string;
+        unit: 'year';
     };
 }
