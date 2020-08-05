@@ -1,7 +1,11 @@
-import { CatalogData, Catalog, CatalogRepository } from '../../../app/ports';
-
+import { Catalog, CatalogRepository } from '../../../app/ports';
 const mockFuse = {
-    search: jest.fn(() => [])
+    search: jest.fn(() => []),
+    setCollection: jest.fn(),
+    add: jest.fn(),
+    remove: jest.fn(),
+    removeAt: jest.fn(),
+    getIndex: jest.fn()
 };
 // tslint:disable-next-line: no-any
 const mockCatalog: Catalog<any> = {

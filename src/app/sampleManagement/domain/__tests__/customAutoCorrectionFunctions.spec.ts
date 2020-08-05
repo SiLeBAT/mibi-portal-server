@@ -102,7 +102,7 @@ describe('Custom Auto-correction Functions', () => {
                 getCatalog: jest.fn(() => {
                     return {
                         dump: () => mockADVEntries,
-                        getFuzzyIndex: (options: Fuse.FuseOptions) =>
+                        getFuzzyIndex: (options: Fuse.IFuseOptions<{}>) =>
                             new Fuse(mockADVEntries, options),
                         containsEntryWithKeyValue: (k: string, v: string) =>
                             // @ts-ignore
@@ -233,8 +233,7 @@ describe('Custom Auto-correction Functions', () => {
                 correctionOffer: [
                     'Escherichia coli',
                     'Salmonella Colindale',
-                    'Escherichia coli Carbapenemase-bildend',
-                    'Salmonella Dublin'
+                    'Escherichia coli Carbapenemase-bildend'
                 ],
                 code: 0
             });
@@ -304,7 +303,7 @@ describe('Custom Auto-correction Functions', () => {
                 getCatalog: jest.fn(() => {
                     return {
                         dump: () => mockADVEntries,
-                        getFuzzyIndex: (options: Fuse.FuseOptions) =>
+                        getFuzzyIndex: (options: Fuse.IFuseOptions<{}>) =>
                             new Fuse(mockADVEntries, options),
                         containsEntryWithKeyValue: (k: string, v: string) =>
                             // @ts-ignore
@@ -476,7 +475,7 @@ describe('Custom Auto-correction Functions', () => {
                 getCatalog: jest.fn(() => {
                     return {
                         dump: () => mockADVEntries,
-                        getFuzzyIndex: (options: Fuse.FuseOptions) =>
+                        getFuzzyIndex: (options: Fuse.IFuseOptions<{}>) =>
                             new Fuse(mockADVEntries, options),
                         containsEntryWithKeyValue: (k: string, v: string) =>
                             // @ts-ignore
@@ -612,7 +611,7 @@ describe('Custom Auto-correction Functions', () => {
                 getCatalog: jest.fn(() => {
                     return {
                         dump: () => mockADVEntries,
-                        getFuzzyIndex: (options: Fuse.FuseOptions) =>
+                        getFuzzyIndex: (options: Fuse.IFuseOptions<{}>) =>
                             new Fuse(mockADVEntries, options),
                         containsEntryWithKeyValue: (k: string, v: string) =>
                             // @ts-ignore
@@ -700,7 +699,7 @@ describe('Custom Auto-correction Functions', () => {
                 getCatalog: jest.fn(() => {
                     return {
                         dump: () => mockADVEntries,
-                        getFuzzyIndex: (options: Fuse.FuseOptions) =>
+                        getFuzzyIndex: (options: Fuse.IFuseOptions<{}>) =>
                             new Fuse(mockADVEntries, options),
                         containsEntryWithKeyValue: (k: string, v: string) =>
                             // @ts-ignore
@@ -828,7 +827,7 @@ describe('Custom Auto-correction Functions', () => {
                 getCatalog: jest.fn(() => {
                     return {
                         dump: () => mockADVEntries,
-                        getFuzzyIndex: (options: Fuse.FuseOptions) =>
+                        getFuzzyIndex: (options: Fuse.IFuseOptions<{}>) =>
                             new Fuse(mockADVEntries, options),
                         containsEntryWithKeyValue: (k: string, v: string) =>
                             // @ts-ignore
