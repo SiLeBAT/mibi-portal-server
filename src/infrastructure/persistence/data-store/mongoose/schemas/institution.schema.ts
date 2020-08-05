@@ -1,8 +1,7 @@
-import { Schema, Document } from 'mongoose';
+import { Schema } from 'mongoose';
+import { CommonModel } from '../common.model';
 
-export interface InstitutionModel extends Document {
-    created: Date;
-    updated: Date;
+export interface InstitutionModel extends CommonModel {
     state_short: string;
     name1: string;
     name2: string;

@@ -1,12 +1,9 @@
-import mongoose from 'mongoose';
+import { Schema } from 'mongoose';
 import { UserToken } from '../../../../../app/ports';
+import { CommonModel } from '../common.model';
 
-const Schema = mongoose.Schema;
-
-export interface TokenModel extends mongoose.Document, UserToken {
+export interface TokenModel extends CommonModel, UserToken {
     user: string;
-    created: Date;
-    updated: Date;
 }
 
 export const tokenSchema = new Schema({

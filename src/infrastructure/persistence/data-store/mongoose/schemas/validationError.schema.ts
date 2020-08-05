@@ -1,11 +1,10 @@
-import { Schema, Document } from 'mongoose';
+import { Schema } from 'mongoose';
+import { CommonModel } from '../common.model';
 
-export interface ValidationErrorModel extends Document {
+export interface ValidationErrorModel extends CommonModel {
     code: number;
     level: number;
     message: string;
-    created: Date;
-    updated: Date;
 }
 
 export const validationErrorSchema = new Schema({

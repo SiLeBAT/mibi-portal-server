@@ -1,8 +1,7 @@
-import { Schema, Document } from 'mongoose';
+import { Schema } from 'mongoose';
+import { CommonModel } from '../common.model';
 
-export interface AnalysisProcedureModel extends Document {
-    created: Date;
-    updated: Date;
+export interface AnalysisProcedureModel extends CommonModel {
     value: string;
     key: number;
 }

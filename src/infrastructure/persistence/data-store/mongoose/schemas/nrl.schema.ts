@@ -1,14 +1,13 @@
 import { AnalysisProcedureModel } from './analysisProdecure.schema';
-import { Schema, Document } from 'mongoose';
+import { Schema } from 'mongoose';
+import { CommonModel } from '../common.model';
 
-export interface NRLModel extends Document {
+export interface NRLModel extends CommonModel {
     standardProcedures: AnalysisProcedureModel[];
     optionalProcedures: AnalysisProcedureModel[];
     name: string;
     email: string;
     selector: string[];
-    created: Date;
-    updated: Date;
 }
 
 export const nrlSchema = new Schema({

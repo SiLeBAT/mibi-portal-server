@@ -1,13 +1,9 @@
-import { Schema, Document } from 'mongoose';
-import { ObjectId } from 'bson';
+import { Schema } from 'mongoose';
 import mongooseUniqueValidator from 'mongoose-unique-validator';
-import { MongooseUpdateResponse } from '../mongoose.repository';
 import { InstitutionModel } from './institution.schema';
+import { CommonModel } from '../common.model';
 
-export interface UserModelUpdateResponse extends MongooseUpdateResponse {}
-
-export interface UserModel extends Document {
-    _id: ObjectId;
+export interface UserModel extends CommonModel {
     password: string;
     email: string;
     firstName: string;
@@ -17,8 +13,6 @@ export interface UserModel extends Document {
     adminEnabled: boolean;
     numAttempt: number;
     lastAttempt: number;
-    created: Date;
-    updated: Date;
 }
 
 export const userSchema = new Schema({

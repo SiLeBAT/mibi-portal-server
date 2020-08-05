@@ -49,7 +49,8 @@ class MongooseDataStore implements DataStore {
             .connect(connectionString, {
                 dbName: connectionInfo.database,
                 useCreateIndex: true,
-                useNewUrlParser: true
+                useNewUrlParser: true,
+                useUnifiedTopology: true
             })
             .then(
                 db => {

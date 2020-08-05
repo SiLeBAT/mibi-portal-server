@@ -1,10 +1,7 @@
 import { UserRepository, createUser, User } from '../../../app/ports';
 
 import { mapModelToUser } from './data-mappers';
-import {
-    UserModel,
-    UserModelUpdateResponse
-} from '../data-store/mongoose/schemas/user.schema';
+import { UserModel } from '../data-store/mongoose/schemas/user.schema';
 import { MongooseRepositoryBase } from '../data-store/mongoose/mongoose.repository';
 import { UserNotFoundError, UserUpdateError } from '../model/domain.error';
 import { injectable, inject } from 'inversify';
@@ -125,10 +122,10 @@ export class DefaultUserRepository extends MongooseRepositoryBase<UserModel>
                 numAttempt: user.getNumberOfFailedAttempts(),
                 lastAttempt: user.getLastLoginAttempt()
             })
-            .then((response: UserModelUpdateResponse) => {
-                if (!response.ok) {
+            .then(response => {
+                if (!response) {
                     throw new UserUpdateError(
-                        `Response not OK. Unable to update user. user=${user}`
+                        `Response not OK. Unable to update user.`
                     );
                 }
                 return this.findByUserId(user.uniqueId);

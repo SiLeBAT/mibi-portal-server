@@ -1,11 +1,10 @@
-import { Schema, Document } from 'mongoose';
+import { Schema } from 'mongoose';
+import { CommonModel } from '../common.model';
 
-export interface StateModel extends Document {
+export interface StateModel extends CommonModel {
     name: string;
     short: string;
     AVV: string[];
-    created: Date;
-    updated: Date;
 }
 
 export const stateSchema = new Schema({
