@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import csv from 'fast-csv';
+import { parseFile } from 'fast-csv';
 import { logger } from '../../../../aspects';
 import { FileNotFoundError } from '../../model/domain.error';
 import { CSVConfig } from '../../model/file-loader.model';
@@ -47,7 +47,7 @@ async function importCSVFile<T extends string, R>(
         options.headers === true ? true : prepareCSVHeaders(options.headers);
 
     return new Promise<R[]>(resolve => {
-        csv.fromPath(filePath, {
+        parseFile(filePath, {
             headers: headers,
             delimiter: options.delimiter || ',',
             ignoreEmpty: true,
