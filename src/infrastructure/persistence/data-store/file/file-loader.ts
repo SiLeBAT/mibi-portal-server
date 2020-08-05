@@ -47,7 +47,7 @@ async function importCSVFile<T extends string, R>(
         options.headers === true ? true : prepareCSVHeaders(options.headers);
 
     return new Promise<R[]>(resolve => {
-        csv.fromPath(filePath, {
+        csv.parseFile(filePath, {
             headers: headers,
             delimiter: options.delimiter || ',',
             ignoreEmpty: true,
