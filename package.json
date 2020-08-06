@@ -77,7 +77,7 @@
     "swagger-ui-express": "~4.1.4",
     "validate.js": "0.13.1",
     "winston": "~3.3.3",
-    "xlsx": "0.15.6",
+    "xlsx": "^0.16.0",
     "xlsx-populate": "~1.21.0"
   },
   "devDependencies": {
