@@ -268,15 +268,39 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
         // moment does not interpret timezones so some trickery is necessary
 
         // create moment with given timezone offset
-        const offMoment = moment(date.toString());
+        const offMoment = moment(date);
 
         // get timezone offset of local server timezone
         const localOffset = moment().utcOffset();
 
         // convert to utc time with offset to local server timezone
-        const correctMoment = offMoment.utcOffset(localOffset);
+        let correctMoment = offMoment.utcOffset(localOffset);
+        correctMoment = this.correctMomentForXLSXSummerTimeBug(
+            correctMoment,
+            date
+        );
 
         return correctMoment.locale('de');
+    }
+
+    private correctMomentForXLSXSummerTimeBug(
+        momentDate: moment.Moment,
+        date: Date
+    ): moment.Moment {
+        // since xlsx v0.16.0 date is in summer time if the date itself lies in summer, instead of local server time is in summer
+
+        const localOffset = moment().utcOffset();
+
+        const gmtString = date.toString();
+        const gmtIndex = gmtString.indexOf('GMT');
+        const hours = Number(gmtString.substr(gmtIndex + 4, 2));
+        const minutes = Number(gmtString.substr(gmtIndex + 6, 2));
+        let parsedOffset = hours * 60 + minutes;
+        if (gmtString.substr(gmtIndex + 3, 1) === '-') {
+            parsedOffset = -parsedOffset;
+        }
+
+        return momentDate.add(parsedOffset - localOffset, 'minutes');
     }
 
     private fromWorksheetToData(workSheet: WorkSheet): Sample[] {
@@ -322,36 +346,28 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
 
     private parseDate(stringOrDate: string | Date) {
         const date = stringOrDate.toString();
-        let parseOptions = {
-            dateFormat: 'DD.MM.YYYY'
-        };
-        const americanDF = /\d\d?\/\d\d?\/\d\d\d?\d?/;
-        if (americanDF.test(date)) {
-            parseOptions = {
-                dateFormat: 'MM/DD/YYYY'
-            };
-        }
         try {
-            let parsedDate = 'Invalid date';
+            let parsedMoment: moment.Moment;
+
+            // date was given as Date object
             if (date.includes('GMT')) {
-                const localOffset = moment().utcOffset();
-                // parse as localelized date of input timezone
-                // this is the date as parsed by xlsx
-                parsedDate = moment(date)
-                    // convert to utc time and offset to local server timezone
-                    // this is the date as interpreted by xlsx before parsing
-                    .utcOffset(localOffset)
-                    .locale('de')
-                    .format('DD.MM.YYYY');
+                parsedMoment = this.getLocalizedMomentFromDate(new Date(date));
+                // date was given as string
             } else {
-                parsedDate = moment(date, parseOptions.dateFormat)
-                    .locale('de')
-                    .format('DD.MM.YYYY');
+                const americanDF = /\d\d?\/\d\d?\/\d\d\d?\d?/;
+                let dateFormat: string;
+                if (americanDF.test(date)) {
+                    dateFormat = 'MM/DD/YYYY';
+                } else {
+                    dateFormat = 'DD.MM.YYYY';
+                }
+                parsedMoment = moment(date, dateFormat).locale('de');
             }
-            if (parsedDate === 'Invalid date') {
+
+            if (!parsedMoment.isValid()) {
                 return date;
             }
-            return parsedDate;
+            return parsedMoment.format('DD.MM.YYYY');
         } catch (e) {
             return date;
         }
