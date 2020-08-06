@@ -25,7 +25,7 @@ import { UnauthorizedError } from 'express-jwt';
 import { ConfigurationService } from '../../core/model/configuration.model';
 import { injectable, inject } from 'inversify';
 import { APPLICATION_TYPES } from './../../application.types';
-import moment = require('moment');
+import moment from 'moment';
 import { NRL_ID, ReceiveAs } from '../domain/enums';
 import { NRLService } from '../model/nrl.model';
 import { FileBuffer } from '../../core/model/file.model';
