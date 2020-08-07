@@ -88,7 +88,7 @@ export class DefaultSample implements Sample {
             if (this._data[k].errors) {
                 this._data[k].errors = _.uniqWith(
                     [...this._data[k].errors, ...v],
-                    _.isEqual
+                    (v1, v2) => _.isEqual(v1, v2)
                 );
             } else {
                 this._data[k].errors = [...v];

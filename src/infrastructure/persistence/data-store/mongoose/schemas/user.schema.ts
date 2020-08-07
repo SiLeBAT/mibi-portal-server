@@ -51,7 +51,7 @@ export const userSchema = new Schema({
     },
     lastAttempt: {
         type: Number,
-        default: Date.now(),
+        default: () => Date.now(),
         required: true
     },
     institution: {
@@ -60,12 +60,12 @@ export const userSchema = new Schema({
     },
     created: {
         type: Date,
-        default: Date.now,
+        default: () => Date.now(),
         required: true
     },
     updated: {
         type: Date,
-        default: Date.now,
+        default: () => Date.now(),
         required: true
     }
 }).pre('save', function(next) {

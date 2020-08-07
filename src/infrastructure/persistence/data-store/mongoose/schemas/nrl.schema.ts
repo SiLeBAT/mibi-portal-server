@@ -32,12 +32,12 @@ export const nrlSchema = new Schema({
     ],
     created: {
         type: Date,
-        default: Date.now,
+        default: () => Date.now(),
         required: true
     },
     updated: {
         type: Date,
-        default: Date.now,
+        default: () => Date.now(),
         required: true
     }
 }).pre('save', function(next) {

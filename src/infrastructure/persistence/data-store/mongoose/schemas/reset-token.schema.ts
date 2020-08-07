@@ -17,12 +17,12 @@ export const tokenSchema = new Schema({
     },
     created: {
         type: Date,
-        default: Date.now,
+        default: () => Date.now(),
         required: true
     },
     updated: {
         type: Date,
-        default: Date.now,
+        default: () => Date.now(),
         required: true
     },
     user: {

@@ -21,6 +21,7 @@
         "number-literal-format": true,
         "promise-function-async": true,
         "no-duplicate-imports": true,
+        "no-unbound-method": true,
 
         "strict-boolean-expressions": false,
         "no-magic-numbers": false
