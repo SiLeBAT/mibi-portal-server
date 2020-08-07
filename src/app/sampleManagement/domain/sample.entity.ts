@@ -107,7 +107,7 @@ export class DefaultSample implements Sample {
 
     isZoMo(): boolean {
         return (
-            this._data.sampling_reason_adv.value === '' + ZOMO_ID.code ||
+            this._data.sampling_reason_adv.value === ZOMO_ID.code.toString() ||
             this._data.sampling_reason_text.value === ZOMO_ID.string
         );
     }

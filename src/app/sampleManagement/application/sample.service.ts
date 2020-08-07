@@ -146,7 +146,7 @@ export class DefaultSampleService implements SampleService {
 
         const fileName = this.amendFileName(
             sampleSet.meta.fileName || this.DEFAULT_FILE_NAME,
-            '.MP_' + moment().unix(),
+            '.MP_' + moment().unix().toString(),
             fileBuffer.extension
         );
 

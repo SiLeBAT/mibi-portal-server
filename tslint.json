@@ -25,6 +25,7 @@
         "no-tautology-expression": true,
         "static-this": true,
         "no-void-expression": true,
+        "restrict-plus-operands": true,        
 
         "strict-boolean-expressions": false,
         "no-magic-numbers": false

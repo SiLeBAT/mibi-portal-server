@@ -244,9 +244,9 @@ class FileCatalogRepository implements CatalogRepository {
         const currentYear = new Date().getFullYear();
 
         const names = [
-            'zsp' + currentYear,
-            'zsp' + (currentYear - 1),
-            'zsp' + (currentYear + 1)
+            'zsp' + currentYear.toString(),
+            'zsp' + (currentYear - 1).toString(),
+            'zsp' + (currentYear + 1).toString()
         ];
 
         names.forEach(name => {

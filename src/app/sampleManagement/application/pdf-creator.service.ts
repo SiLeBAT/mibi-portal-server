@@ -158,7 +158,7 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                 ),
                 { text: strings.subtitle, style: 'comment', noWrap: true },
                 {
-                    text: strings.version + ' ' + this.config.version,
+                    text: strings.version + ' ' + this.config.version.toString(),
                     style: 'version'
                 }
             ]
@@ -773,11 +773,11 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                     text:
                         strings.page +
                         ' ' +
-                        currentPage +
+                        currentPage.toString() +
                         ' ' +
                         strings.pageOf +
                         ' ' +
-                        pageCount,
+                        pageCount.toString(),
                     alignment: 'right'
                 }
             ],

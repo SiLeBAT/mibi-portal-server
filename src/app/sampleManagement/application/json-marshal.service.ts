@@ -238,7 +238,7 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
             const result = sheet.find(searchTerm);
             if (result.length > 0) {
                 const cell = result[0];
-                const rowNumber = cell.row().rowNumber();
+                const rowNumber: number = cell.row().rowNumber();
 
                 for (
                     let i = rowNumber + 1;
@@ -252,10 +252,10 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
                 }
 
                 const startRow = rowNumber + 1;
-                const startCell = startCol + startRow;
+                const startCell = startCol + startRow.toString();
                 sheet.cell(startCell).value(dataToSave);
                 try {
-                    const endCell = endCol + (startRow + dataToSave.length);
+                    const endCell = endCol + (startRow + dataToSave.length).toString();
                     const rng = sheet.range(startCell + ':' + endCell);
                     rng.style({ fill: 'ffffff' });
                     this.highlightEdits(sheet, highlights, startCol, startRow);
@@ -286,7 +286,7 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
                             startCol.charCodeAt(0) + col
                         );
                         sheet
-                            .cell(changedCol + (startRow + index))
+                            .cell(changedCol + (startRow + index).toString())
                             .style({ fill: '0de5cf' });
                     }
                 });

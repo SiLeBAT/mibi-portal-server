@@ -265,7 +265,7 @@ function shouldBeZoMo(
         let result = null;
         _.forEach(years, yearToCheck => {
             const cat = catalogService.getCatalog<ZSPCatalogEntry>(
-                'zsp' + yearToCheck
+                'zsp' + yearToCheck.toString()
             );
             if (cat) {
                 const groupValues = options.group.map(g => attributes[g.attr]);
@@ -299,7 +299,7 @@ function registeredZoMo(
         if (years.length > 0) {
             const yearToCheck = Math.min(...years);
             const cat = catalogService.getCatalog<ZSPCatalogEntry>(
-                'zsp' + yearToCheck
+                'zsp' + yearToCheck.toString()
             );
             if (cat) {
                 const groupValues = options.group.map(g => attributes[g.attr]);

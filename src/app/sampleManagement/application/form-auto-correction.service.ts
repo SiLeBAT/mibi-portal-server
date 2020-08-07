@@ -44,7 +44,7 @@ export class DefaultFormAutoCorrectionService
             this.correctionFunctions.forEach(fn => {
                 const correction: CorrectionSuggestions | null = fn(sampleData);
                 if (correction) {
-                    const targetField = '' + correction.field;
+                    const targetField = correction.field.toString();
                     newSample.addCorrectionTo(
                         targetField,
                         correction.correctionOffer
