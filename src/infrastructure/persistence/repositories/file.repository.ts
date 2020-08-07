@@ -6,7 +6,7 @@ import { PERSISTENCE_TYPES } from '../persistence.types';
 @injectable()
 export class DefaultFileRepository implements FileRepository {
     constructor(@inject(PERSISTENCE_TYPES.DataDir) private dataDir: string) {}
-    getFileBuffer(fileName: string) {
+    async getFileBuffer(fileName: string): Promise<Buffer> {
         try {
             return loadBinaryFile(fileName, this.dataDir);
         } catch (error) {

@@ -10,15 +10,15 @@ export class MongooseRepositoryBase<T extends CommonModel> {
         this._model = schemaModel;
     }
 
-    protected _create(item: CreateQuery<T>) {
+    protected async _create(item: CreateQuery<T>): Promise<T> {
         return this._model.create(item);
     }
 
-    protected _retrieve() {
+    protected async _retrieve(): Promise<T[]> {
         return this._model.find({}).exec();
     }
 
-    protected _retrievePopulatedWith(populate: string[]) {
+    protected async _retrievePopulatedWith(populate: string[]): Promise<T[]> {
         let query = this._model.find({});
         populate.forEach(p => {
             query = query.populate(p);
@@ -26,7 +26,7 @@ export class MongooseRepositoryBase<T extends CommonModel> {
         return query.exec();
     }
 
-    protected _update(_id: string, attr: Partial<T>) {
+    protected async _update(_id: string, attr: Partial<T>): Promise<T | null> {
         return this._model
             .findByIdAndUpdate(
                 this._toObjectId(_id),
@@ -36,19 +36,23 @@ export class MongooseRepositoryBase<T extends CommonModel> {
             .exec();
     }
 
-    protected _delete(_id: string) {
+    protected async _delete(_id: string): Promise<T | null> {
         return this._model.findByIdAndRemove(_id).exec();
     }
 
-    protected _findById(_id: string) {
+    protected async _findById(_id: string): Promise<T | null> {
         return this._model.findById(_id).exec();
     }
 
-    protected _findOne(cond: {}) {
+    protected async _findOne(cond: {}): Promise<T | null> {
         return this._model.findOne(cond).exec();
     }
 
-    protected _find(cond: {}, fields?: Object, options?: Object): Promise<T[]> {
+    protected async _find(
+        cond: {},
+        fields?: Object,
+        options?: Object
+    ): Promise<T[]> {
         return this._model.find(cond, options).exec();
     }
 

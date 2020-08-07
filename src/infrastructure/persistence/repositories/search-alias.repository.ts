@@ -9,7 +9,7 @@ class FileSearchAliasRepository implements SearchAliasRepository {
 
     constructor(private dataDir: string) {}
 
-    initialise() {
+    async initialise(): Promise<void> {
         logger.verbose(
             `${this.constructor.name}.${this.initialise.name}, loading Search Alias data from Filesystem.`
         );

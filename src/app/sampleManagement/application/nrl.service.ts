@@ -73,7 +73,7 @@ export class DefaultNRLService implements NRLService {
             });
     }
 
-    retrieveNRLs(): Promise<NRL[]> {
+    async retrieveNRLs(): Promise<NRL[]> {
         return this.nrlRepository.retrieve();
     }
 

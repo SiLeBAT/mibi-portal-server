@@ -19,7 +19,7 @@ export class DefaultTokenRepository extends MongooseRepositoryBase<TokenModel>
     ) {
         super(model);
     }
-    hasTokenForUser(
+    async hasTokenForUser(
         user: User,
         type: TokenType = TokenType.ACTIVATE
     ): Promise<boolean> {
@@ -27,7 +27,7 @@ export class DefaultTokenRepository extends MongooseRepositoryBase<TokenModel>
             return docs.length > 0;
         });
     }
-    deleteTokenForUser(
+    async deleteTokenForUser(
         user: User,
         type: TokenType = TokenType.ACTIVATE
     ): Promise<boolean> {
@@ -36,7 +36,7 @@ export class DefaultTokenRepository extends MongooseRepositoryBase<TokenModel>
             .then((token: TokenModel) => !!super._delete(token._id));
     }
 
-    saveToken(token: UserToken): Promise<UserToken> {
+    async saveToken(token: UserToken): Promise<UserToken> {
         const newToken = new this.model({
             token: token.token,
             type: token.type,
@@ -44,7 +44,7 @@ export class DefaultTokenRepository extends MongooseRepositoryBase<TokenModel>
         });
         return super._create(newToken).then(res => newToken);
     }
-    getUserTokenByJWT(token: string): Promise<UserToken> {
+    async getUserTokenByJWT(token: string): Promise<UserToken> {
         return super._findOne({ token: token }).then(model => {
             if (!model) {
                 throw new JsonWebTokenError(

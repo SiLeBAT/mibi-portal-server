@@ -16,7 +16,7 @@ export class DefaultValidationErrorRepository
         super(model);
     }
 
-    getAllErrors(): Promise<ValidationError[]> {
+    async getAllErrors(): Promise<ValidationError[]> {
         return super
             ._retrieve()
             .then(modelArray => {

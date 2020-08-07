@@ -83,11 +83,11 @@ class GenericUser implements User {
         return this.adminEnabled;
     }
 
-    isAuthorized(credentials: UserCredentials): Promise<boolean> {
+    async isAuthorized(credentials: UserCredentials): Promise<boolean> {
         return this.verifyPassword(this._password, credentials.password);
     }
 
-    updatePassword(password: string): Promise<string> {
+    async updatePassword(password: string): Promise<string> {
         return this.hashPassword(password).then(
             hashed => (this._password = hashed)
         );
@@ -109,11 +109,17 @@ class GenericUser implements User {
         return this.lastAttempt;
     }
 
-    private verifyPassword(hashedPassword: string, password: string) {
+    private async verifyPassword(
+        hashedPassword: string,
+        password: string
+    ): Promise<boolean> {
         return argon2.verify(hashedPassword, password);
     }
 
-    private hashPassword(password: string, options = defaultHashOptions) {
+    private async hashPassword(
+        password: string,
+        options = defaultHashOptions
+    ): Promise<string> {
         return argon2.hash(password, options);
     }
 }

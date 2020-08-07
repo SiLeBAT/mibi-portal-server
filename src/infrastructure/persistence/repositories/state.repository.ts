@@ -19,7 +19,7 @@ export class DefaultStateRepository extends MongooseRepositoryBase<StateModel>
         super(model);
     }
 
-    getAllFormats(): Promise<AVVFormatCollection> {
+    async getAllFormats(): Promise<AVVFormatCollection> {
         return this.retrieve().then(states => {
             const collection: AVVFormatCollection = {};
             states.forEach(entry => (collection[entry.short] = entry.AVV));
@@ -27,7 +27,7 @@ export class DefaultStateRepository extends MongooseRepositoryBase<StateModel>
         });
     }
 
-    private retrieve(): Promise<State[]> {
+    private async retrieve(): Promise<State[]> {
         return super._retrieve().then(modelArray => {
             return modelArray.map(m => mapModelToState(m));
         });

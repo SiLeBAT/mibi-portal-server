@@ -369,7 +369,7 @@ export class DefaultSamplesController extends AbstractController
         return validationOptions;
     }
 
-    private getUserFromToken(token: string): Promise<User> {
+    private async getUserFromToken(token: string): Promise<User> {
         const payload: TokenPayload = this.tokenService.verifyToken(token);
         const userId = payload.sub;
         return this.userService.getUserById(userId);
