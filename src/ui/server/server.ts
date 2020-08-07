@@ -64,7 +64,7 @@ export class DefaultAppServer implements AppServer {
                 res.setHeader('Pragma', 'no-cache');
                 res.setHeader('X-XSS-Protection', '1; mode=block');
                 res.setHeader('X-Content-Type-Options', 'nosniff');
-                return next();
+                next();
             });
 
             app.use(cors());

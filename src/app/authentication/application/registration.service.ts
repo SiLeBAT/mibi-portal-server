@@ -140,7 +140,7 @@ export class DefaultRegistrationService implements RegistrationService {
             activationToken
         );
 
-        return this.notificationService.sendNotification(
+        this.notificationService.sendNotification(
             requestActivationNotification
         );
     }
@@ -157,7 +157,7 @@ export class DefaultRegistrationService implements RegistrationService {
             user
         );
 
-        return this.notificationService.sendNotification(
+        this.notificationService.sendNotification(
             requestAdminActivationReminder
         );
     }
@@ -184,7 +184,7 @@ export class DefaultRegistrationService implements RegistrationService {
             adminActivationToken
         );
 
-        return this.notificationService.sendNotification(
+        this.notificationService.sendNotification(
             requestAdminActivationNotification
         );
     }
@@ -193,7 +193,7 @@ export class DefaultRegistrationService implements RegistrationService {
         const userAlreadyRegisteredNotification = this.createAlreadyRegisteredUserNotification(
             credentials
         );
-        return this.notificationService.sendNotification(
+        this.notificationService.sendNotification(
             userAlreadyRegisteredNotification
         );
     }

@@ -57,9 +57,7 @@ export class DefaultPasswordService implements PasswordService {
             recoveryData,
             resetToken
         );
-        return this.notificationService.sendNotification(
-            requestResetNotification
-        );
+        this.notificationService.sendNotification(requestResetNotification);
     }
 
     async resetPassword(token: string, password: string): Promise<void> {
@@ -73,9 +71,7 @@ export class DefaultPasswordService implements PasswordService {
         const resetSuccessNotification = this.createResetSuccessNotification(
             user
         );
-        return this.notificationService.sendNotification(
-            resetSuccessNotification
-        );
+        this.notificationService.sendNotification(resetSuccessNotification);
     }
 
     private createResetRequestNotification(

@@ -8,7 +8,7 @@ import { InstitutesController } from '../../model/controller.model';
 import { Container } from 'inversify';
 import { getServerContainerModule } from '../../server.module';
 import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
-import SERVER_TYPES from '../../server.types';
+import { SERVER_TYPES } from '../../server.types';
 
 // tslint:disable
 describe('Institution controller', () => {

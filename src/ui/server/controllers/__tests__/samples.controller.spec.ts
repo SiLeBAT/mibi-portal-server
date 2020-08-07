@@ -8,7 +8,7 @@ import { Container } from 'inversify';
 import { getServerContainerModule } from '../../server.module';
 import { getApplicationContainerModule } from '../../../../app/ports';
 import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
-import SERVER_TYPES from '../../server.types';
+import { SERVER_TYPES } from '../../server.types';
 import { rebindMocks } from '../../../../__mocks__/util';
 import { APPLICATION_TYPES } from '../../../../app/application.types';
 import { getContainer } from '../../../../aspects/container/container';

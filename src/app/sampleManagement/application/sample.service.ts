@@ -365,9 +365,9 @@ export class DefaultSampleService implements SampleService {
             samples: sampleSet.samples.map(sample => sample.clone())
         };
 
-        nrlSampleSet.samples.forEach(sample =>
-            this.replaceEmptySampleIDWithSampleIDAVV(sample)
-        );
+        nrlSampleSet.samples.forEach(sample => {
+            this.replaceEmptySampleIDWithSampleIDAVV(sample);
+        });
 
         return nrlSampleSet;
     }

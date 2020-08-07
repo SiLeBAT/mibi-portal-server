@@ -22,6 +22,9 @@
         "promise-function-async": true,
         "no-duplicate-imports": true,
         "no-unbound-method": true,
+        "no-tautology-expression": true,
+        "static-this": true,
+        "no-void-expression": true,
 
         "strict-boolean-expressions": false,
         "no-magic-numbers": false

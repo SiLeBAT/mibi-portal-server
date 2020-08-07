@@ -6,7 +6,7 @@ import { getServerContainerModule } from '../../server.module';
 import { Container } from 'inversify';
 import { getApplicationContainerModule } from '../../../../app/ports';
 import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
-import SERVER_TYPES from '../../server.types';
+import { SERVER_TYPES } from '../../server.types';
 import { getContainer } from '../../../../aspects/container/container';
 
 // tslint:disable

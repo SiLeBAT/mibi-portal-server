@@ -78,7 +78,9 @@ export class DefaultPDFConfigProviderService
 
     private preProcessStyles() {
         this.preProcessStyle(this.defaultStyle);
-        _.forEach(this.styles, v => this.preProcessStyle(v));
+        _.forEach(this.styles, v => {
+            this.preProcessStyle(v);
+        });
     }
 
     private preProcessStyle(style: {}) {
