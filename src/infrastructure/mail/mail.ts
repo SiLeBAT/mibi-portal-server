@@ -137,7 +137,7 @@ export class DefaultMailService implements MailService {
             transporter.sendMail(mailOptions, (error, info) => {
                 if (error) {
                     logger.error(
-                        `Error sending mail. error=${error} mailSubject="${mailOptions.subject}"`
+                        `Error sending mail. error=${String(error)} mailSubject="${mailOptions.subject}"`
                     );
                     return error;
                 } else {

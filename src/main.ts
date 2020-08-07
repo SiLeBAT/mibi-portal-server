@@ -107,7 +107,7 @@ async function init() {
     const catalogRepository = await initialiseCatalogRepository(
         dataStoreConfig.dataDir
     ).catch((error: Error) => {
-        logger.error(`Failed to initialize Catalog Repository. error=${error}`);
+        logger.error(`Failed to initialize Catalog Repository. error=${String(error)}`);
         throw error;
     });
 
@@ -115,7 +115,7 @@ async function init() {
         dataStoreConfig.dataDir
     ).catch((error: Error) => {
         logger.error(
-            `Failed to initialize Search Alias Repository. error=${error}`
+            `Failed to initialize Search Alias Repository. error=${String(error)}`
         );
         throw error;
     });
@@ -161,7 +161,7 @@ async function init() {
     server.startServer();
 
     process.on('uncaughtException', error => {
-        logger.error(`Uncaught Exception. error=${error}`);
+        logger.error(`Uncaught Exception. error=${String(error)}`);
         process.exit(1);
     });
 }

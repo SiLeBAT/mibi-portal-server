@@ -123,7 +123,7 @@ export class DefaultSampleService implements SampleService {
             } catch (error) {
                 if (error instanceof UnauthorizedError) {
                     logger.info(
-                        `${this.constructor.name}.${this.convertToJson.name}, unable to determine user origin because of invalid token. error=${error}`
+                        `${this.constructor.name}.${this.convertToJson.name}, unable to determine user origin because of invalid token. error=${String(error)}`
                     );
                 } else {
                     throw error;
