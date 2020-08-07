@@ -77,12 +77,10 @@ class MongooseDataStore implements DataStore {
     }
 
     drop(collection: string) {
-        const drop = mongoose.connection.collection(collection).drop();
-        if (drop) {
-            drop.catch(error => {
+        mongoose.connection.collection(collection).drop()
+            .catch(error => {
                 throw new Error(`Unable to close DB. error=${error}`);
             });
-        }
     }
 }
 

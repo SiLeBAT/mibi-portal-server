@@ -30,7 +30,9 @@
         "no-async-without-await": true,
         "strict-comparisons": true,
         "strict-string-expressions": true,
-        
+        "no-promise-as-boolean": true,
+        "invalid-void": [true, {"allow-generics": ["Promise"]}],
+
         "no-for-in": false,
         "strict-boolean-expressions": false,
         "no-magic-numbers": false

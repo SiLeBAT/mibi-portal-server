@@ -31,9 +31,12 @@ export class DefaultTokenRepository extends MongooseRepositoryBase<TokenModel>
         user: User,
         type: TokenType = TokenType.ACTIVATE
     ): Promise<boolean> {
-        return super
-            ._findOne({ user: user.uniqueId, type })
-            .then((token: TokenModel) => !!super._delete(token._id));
+        let token = await super._findOne({ user: user.uniqueId, type });
+        if(token === null) {
+            return false;
+        }
+        token = await super._delete(token._id);
+        return token !== null;
     }
 
     async saveToken(token: UserToken): Promise<UserToken> {
