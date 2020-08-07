@@ -11,7 +11,7 @@ import {
 import { InstitutionModel } from '../data-store/mongoose/schemas/institution.schema';
 import { UserModel } from '../data-store/mongoose/schemas/user.schema';
 import { StateModel } from '../data-store/mongoose/schemas/state.schema';
-import { ValidationErrorModel } from '../data-store/mongoose/schemas/validationError.schema';
+import { ValidationErrorModel } from '../data-store/mongoose/schemas/validation-error.schema';
 import { NRLModel } from '../data-store/mongoose/schemas/nrl.schema';
 
 function mapModelToInstitution(i: InstitutionModel): Institute {

@@ -22,7 +22,7 @@
     "test:coverage": "npm test -- --coverage && open coverage/lcov-report/index.html",
     "test:report": "npm test -- --reporters default jest-stare --testResultsProcessor=jest-stare && open jest-stare/index.html",
     "clean": "npx rimraf lib/*",
-    "lint": "tslint --project tsconfig.json --fix -c tslint.json 'src/**/*.ts'",
+    "lint": "tslint --project tsconfig.json --fix -c tslint.json \"src/**/*.ts\"",
     "pretty": "prettier --write \"src/**/*.ts\""
   },
   "husky": {
@@ -111,7 +111,7 @@
     "prettier": "1.19.1",
     "rimraf": "~3.0.2",
     "ts-jest": "~24.3.0",
-    "tslint": "~5.9.1",
+    "tslint": "^5.11.0",
     "tslint-config-prettier": "~1.18.0",
     "tslint-config-standard": "9.0.0",
     "typescript": "3.9.7"

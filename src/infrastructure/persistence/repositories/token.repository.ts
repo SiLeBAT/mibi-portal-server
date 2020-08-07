@@ -1,4 +1,4 @@
-import { TokenModel } from '../data-store/mongoose/schemas/resetToken.schema';
+import { TokenModel } from '../data-store/mongoose/schemas/reset-token.schema';
 import { MongooseRepositoryBase } from '../data-store/mongoose/mongoose.repository';
 import { JsonWebTokenError } from 'jsonwebtoken';
 import {

@@ -1,4 +1,4 @@
-import { AnalysisProcedureModel } from './analysisProdecure.schema';
+import { AnalysisProcedureModel } from './analysis-prodecure.schema';
 import { Schema } from 'mongoose';
 import { CommonModel } from '../common.model';
 

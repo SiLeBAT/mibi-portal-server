@@ -16,7 +16,7 @@ import { DefaultUsersController } from './controllers/users.controller';
 import { DefaultSamplesController } from './controllers/samples.controller';
 import { RequestHandler } from 'express';
 import { uploadToMemory } from './middleware/file-upload.middleware';
-import { DefaultVersionRootController } from './controllers/versionRoot.controller';
+import { DefaultVersionRootController } from './controllers/version-root.controller';
 import { AppServerConfiguration } from './model/server.model';
 import { DefaultNRLsController } from './controllers/nrls.controller';
 

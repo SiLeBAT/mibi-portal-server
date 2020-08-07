@@ -12,6 +12,7 @@
             "no-public"
         ],
         "no-console": [true],
-        "no-debugger": true
+        "no-debugger": true,
+        "file-name-casing": [true, "kebab-case"]
     }
 }
