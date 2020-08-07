@@ -33,7 +33,7 @@ export class DefaultTokensController extends AbstractController
     }
 
     @httpPost('/')
-    async postTokens(@request() req: Request, @response() res: Response) {
+    postTokens(@request() req: Request, @response() res: Response) {
         logger.info(
             `${this.constructor.name}.${this.postTokens.name}, Request received`
         );

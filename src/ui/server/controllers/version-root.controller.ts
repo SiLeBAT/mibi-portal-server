@@ -28,7 +28,7 @@ export class DefaultVersionRootController extends AbstractController
         );
     }
     @httpGet('/')
-    async getAPIDefinition(@response() res: Response) {
+    getAPIDefinition(@response() res: Response) {
         logger.info(
             `${this.constructor.name}.${this.getAPIDefinition.name}, Request received`
         );

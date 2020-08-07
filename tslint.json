@@ -25,7 +25,9 @@
         "no-tautology-expression": true,
         "static-this": true,
         "no-void-expression": true,
-        "restrict-plus-operands": true,        
+        "restrict-plus-operands": true, 
+        "no-object-literal-type-assertion": true,
+        "no-async-without-await": true,
 
         "strict-boolean-expressions": false,
         "no-magic-numbers": false

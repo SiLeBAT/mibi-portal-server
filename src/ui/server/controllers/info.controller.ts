@@ -27,7 +27,7 @@ export class DefaultSystemInfoController extends AbstractController
     }
 
     @httpGet('/')
-    async getSystemInfo(@response() res: Response) {
+    getSystemInfo(@response() res: Response) {
         logger.info(
             `${this.constructor.name}.${this.getSystemInfo.name}, Request received`
         );
