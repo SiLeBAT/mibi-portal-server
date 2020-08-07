@@ -2,7 +2,6 @@ import path from 'path';
 import express from 'express';
 import helmet from 'helmet';
 import compression from 'compression';
-import bodyParser from 'body-parser';
 import cors from 'cors';
 import morgan from 'morgan';
 import swaggerUi from 'swagger-ui-express';
@@ -49,9 +48,9 @@ export class DefaultAppServer implements AppServer {
             app.set('port', serverConfig.port);
             app.set('logger', logger);
 
-            app.use(bodyParser.json({ limit: '50mb' }));
+            app.use(express.json({ limit: '50mb' }));
             app.use(
-                bodyParser.urlencoded({
+                express.urlencoded({
                     extended: false
                 })
             );
