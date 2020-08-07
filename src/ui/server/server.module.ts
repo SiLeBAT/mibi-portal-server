@@ -9,7 +9,7 @@ import {
     TokensController,
     NRLsController
 } from './model/controller.model';
-import SERVER_TYPES from './server.types';
+import { SERVER_TYPES } from './server.types';
 import { DefaultSystemInfoController } from './controllers/info.controller';
 import { DefaultInstituteController } from './controllers/institutes.controller';
 import { DefaultUsersController } from './controllers/users.controller';

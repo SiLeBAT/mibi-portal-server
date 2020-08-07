@@ -62,7 +62,7 @@ import {
 import { inject } from 'inversify';
 
 import { APPLICATION_TYPES } from './../../../app/application.types';
-import SERVER_TYPES from '../server.types';
+import { SERVER_TYPES } from '../server.types';
 import { Analysis } from 'src/app/sampleManagement/model/sample.model';
 import { NRLService } from '../../../app/sampleManagement/model/nrl.model';
 moment.locale('de');

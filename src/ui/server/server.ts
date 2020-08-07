@@ -14,7 +14,7 @@ import { Logger } from '../../aspects/logging';
 import { SERVER_ERROR_CODE, ROUTE } from './model/enums';
 import { AppServerConfiguration } from './model/server.model';
 import { injectable, Container } from 'inversify';
-import SERVER_TYPES from './server.types';
+import { SERVER_TYPES } from './server.types';
 
 export interface AppServer {
     startServer(): void;

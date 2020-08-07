@@ -7,7 +7,7 @@ import { AbstractController } from './abstract.controller';
 import { AppServerConfiguration } from '../model/server.model';
 import { controller, response, httpGet } from 'inversify-express-utils';
 import { inject } from 'inversify';
-import SERVER_TYPES from '../server.types';
+import { SERVER_TYPES } from '../server.types';
 const openAPI = require('./../doc/openapi_v2.json');
 
 // tslint:disable-next-line: no-any

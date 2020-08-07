@@ -6,7 +6,7 @@ import { AbstractController } from './abstract.controller';
 import { controller, httpGet, response } from 'inversify-express-utils';
 import { inject } from 'inversify';
 import { ROUTE } from '../model/enums';
-import SERVER_TYPES from '../server.types';
+import { SERVER_TYPES } from '../server.types';
 import { AppServerConfiguration } from '../model/server.model';
 import { UnknownPackageConfigurationError } from '../model/domain.error';
 const pjson = require('../../../../package.json');
