@@ -1,14 +1,17 @@
-import Promise from 'bluebird';
+// core
+// npm
 import mongoose from 'mongoose';
-import { DataStore } from '../../model/data-store.model';
+import Promise from 'bluebird';
+// local
 import { logger } from './../../../../aspects';
+import { createRepository } from './mongoose.repository';
+import { DataStore } from '../../model/data-store.model';
 import {
+    MongooseStateModel,
     MongooseInstitutionModel,
     MongooseNRLModel,
-    MongooseStateModel,
     MongooseValidationErrorModel
 } from './mongoose.model';
-import { createRepository } from './mongoose.repository';
 
 // tslint:disable-next-line
 (mongoose as any).Promise = Promise;

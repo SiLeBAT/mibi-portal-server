@@ -1,10 +1,10 @@
-import { inject, injectable } from 'inversify';
-import { Model } from 'mongoose';
-import { NRL, NRLRepository } from '../../../app/ports';
-import { MongooseRepositoryBase } from '../data-store/mongoose/mongoose.repository';
-import { NRLModel } from '../data-store/mongoose/schemas/nrl.schema';
-import { PERSISTENCE_TYPES } from '../persistence.types';
+import { NRLRepository, NRL } from '../../../app/ports';
 import { mapModelToNRL } from './data-mappers';
+import { NRLModel } from '../data-store/mongoose/schemas/nrl.schema';
+import { MongooseRepositoryBase } from '../data-store/mongoose/mongoose.repository';
+import { injectable, inject } from 'inversify';
+import { Model } from 'mongoose';
+import { PERSISTENCE_TYPES } from '../persistence.types';
 
 @injectable()
 export class MongooseNRLRepository extends MongooseRepositoryBase<NRLModel>

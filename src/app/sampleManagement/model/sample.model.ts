@@ -1,10 +1,10 @@
-import { Institute } from '../../authentication/model/institute.model';
-import { User } from '../../authentication/model/user.model';
-import { NRL_ID, ReceiveAs, Urgency } from '../domain/enums';
 import { EditValue } from './autocorrection.model';
-import { ExcelFileInfo } from './excel.model';
-import { NRLService } from './nrl.model';
 import { ValidationError, ValidationErrorCollection } from './validation.model';
+import { User } from '../../authentication/model/user.model';
+import { Institute } from '../../authentication/model/institute.model';
+import { ExcelFileInfo } from './excel.model';
+import { Urgency, NRL_ID, ReceiveAs } from '../domain/enums';
+import { NRLService } from './nrl.model';
 
 export type SampleDataValues = Record<SampleProperty, string>;
 export type SampleProperty = keyof SampleData;

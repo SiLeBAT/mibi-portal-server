@@ -1,10 +1,10 @@
-import { Catalog, CatalogData } from './catalog.model';
-import { NRL } from './nrl.model';
 import {
     AVVFormatCollection,
-    SearchAlias,
-    ValidationError
+    ValidationError,
+    SearchAlias
 } from './validation.model';
+import { Catalog, CatalogData } from './catalog.model';
+import { NRL } from './nrl.model';
 
 export interface ValidationErrorRepository {
     getAllErrors(): Promise<ValidationError[]>;

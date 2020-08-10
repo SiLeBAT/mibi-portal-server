@@ -1,12 +1,12 @@
-import { createUser, User, UserRepository } from '../../../app/ports';
+import { UserRepository, createUser, User } from '../../../app/ports';
 
-import { inject, injectable } from 'inversify';
-import { Model } from 'mongoose';
-import { MongooseRepositoryBase } from '../data-store/mongoose/mongoose.repository';
-import { UserModel } from '../data-store/mongoose/schemas/user.schema';
-import { UserNotFoundError, UserUpdateError } from '../model/domain.error';
-import { PERSISTENCE_TYPES } from '../persistence.types';
 import { mapModelToUser } from './data-mappers';
+import { UserModel } from '../data-store/mongoose/schemas/user.schema';
+import { MongooseRepositoryBase } from '../data-store/mongoose/mongoose.repository';
+import { UserNotFoundError, UserUpdateError } from '../model/domain.error';
+import { injectable, inject } from 'inversify';
+import { Model } from 'mongoose';
+import { PERSISTENCE_TYPES } from '../persistence.types';
 
 @injectable()
 export class DefaultUserRepository extends MongooseRepositoryBase<UserModel>

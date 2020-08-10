@@ -1,6 +1,6 @@
 import argon2 from 'argon2';
-import { Institute } from '../model/institute.model';
 import { User, UserCredentials } from '../model/user.model';
+import { Institute } from '../model/institute.model';
 
 const defaultHashOptions = {
     hashLength: 128,

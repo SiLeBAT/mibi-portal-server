@@ -1,54 +1,54 @@
+import { APPLICATION_TYPES } from './../../application.types';
+import { WorkBook, WorkSheet, read, utils, CellObject } from 'xlsx';
 import _ from 'lodash';
 import moment from 'moment';
 import 'moment/locale/de';
-import { CellObject, read, utils, WorkBook, WorkSheet } from 'xlsx';
 import {
-    Address,
     AnnotatedSampleDataEntry,
     Sample,
     SampleData,
+    Address,
     SampleFactory
 } from '../model/sample.model';
-import { APPLICATION_TYPES } from './../../application.types';
 
-import { inject, injectable } from 'inversify';
+import { ExcelUnmarshalService } from '../model/excel.model';
+import { Urgency, NRL_ID } from '../domain/enums';
+import { injectable, inject } from 'inversify';
 import {
-    FORM_PROPERTIES,
-    META_ANALYSIS_COMPAREHUMAN_BOOL_CELL,
-    META_ANALYSIS_COMPAREHUMAN_TEXT_CELL,
-    META_ANALYSIS_ESBLAMPCCARBAPENEMASEN_CELL,
-    META_ANALYSIS_MOLECULARTYPING_CELL,
-    META_ANALYSIS_OTHER_TEXT_CELL,
-    META_ANALYSIS_PHAGETYPING_CELL,
-    META_ANALYSIS_RESISTANCE_CELL,
-    META_ANALYSIS_SEROLOGICAL_CELL,
+    VALID_SHEET_NAME,
     META_ANALYSIS_SPECIES_CELL,
     META_ANALYSIS_TOXIN_CELL,
+    META_ANALYSIS_OTHER_TEXT_CELL,
+    META_SENDER_DEPARTMENT_CELL,
+    META_SENDER_STREET_CELL,
+    META_SENDER_ZIP_CITY_CELL,
+    META_SENDER_TELEPHONE_CELL,
+    META_SENDER_EMAIL_CELL,
+    META_URGENCY_CELL,
+    META_NRL_CELL,
+    FORM_PROPERTIES,
+    META_ANALYSIS_RESISTANCE_CELL,
     META_ANALYSIS_VACCINATION_CELL,
+    META_ANALYSIS_MOLECULARTYPING_CELL,
+    META_ANALYSIS_ESBLAMPCCARBAPENEMASEN_CELL,
+    META_ANALYSIS_COMPAREHUMAN_BOOL_CELL,
+    META_SENDER_INSTITUTENAME_CELL,
+    META_ANALYSIS_SEROLOGICAL_CELL,
+    META_SENDER_CONTACTPERSON_CELL,
+    META_ANALYSIS_COMPAREHUMAN_TEXT_CELL,
     META_ANALYSIS_ZOONOSENISOLATE_CELL,
+    META_ANALYSIS_PHAGETYPING_CELL,
     META_ANAYLSIS_OTHER_BOOL_CELL,
     META_CUSTOMER_REF_NUMBER_CELL,
-    META_NRL_CELL,
-    META_SENDER_CONTACTPERSON_CELL,
-    META_SENDER_DEPARTMENT_CELL,
-    META_SENDER_EMAIL_CELL,
-    META_SENDER_INSTITUTENAME_CELL,
-    META_SENDER_STREET_CELL,
-    META_SENDER_TELEPHONE_CELL,
-    META_SENDER_ZIP_CITY_CELL,
-    META_SIGNATURE_DATE_CELL,
-    META_URGENCY_CELL,
-    VALID_SHEET_NAME
+    META_SIGNATURE_DATE_CELL
 } from '../domain/constants';
-import { NRL_ID, Urgency } from '../domain/enums';
-import { ExcelUnmarshalService } from '../model/excel.model';
+import { DefaultNRLService } from './nrl.service';
 import {
     SampleSheet,
+    SampleSheetMetaData,
     SampleSheetAnalysis,
-    SampleSheetAnalysisOption,
-    SampleSheetMetaData
+    SampleSheetAnalysisOption
 } from '../model/sample-sheet.model';
-import { DefaultNRLService } from './nrl.service';
 
 @injectable()
 export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {

@@ -1,7 +1,7 @@
 /* istanbul ignore file */
+import winston from 'winston';
 import config from 'config';
 import { TransformableInfo } from 'logform';
-import winston from 'winston';
 
 interface LogConfiguration {
     logLevel: string;

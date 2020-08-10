@@ -1,14 +1,19 @@
-import readFilePromise from 'fs-readfile-promise';
+// core
+
+// npm
 import handlebars from 'handlebars';
-import { inject, injectable } from 'inversify';
 import nodemailer from 'nodemailer';
-import { NotificationType } from '../../app/ports';
+import readFilePromise from 'fs-readfile-promise';
+
+// local
 import { logger } from './../../aspects';
+import { NotificationType } from '../../app/ports';
+import { injectable, inject } from 'inversify';
 import {
-    EmailData,
+    MailService,
     MailConfiguration,
-    MailOptions,
-    MailService
+    EmailData,
+    MailOptions
 } from './mail.model';
 import { MAIL_TYPES } from './mail.types';
 

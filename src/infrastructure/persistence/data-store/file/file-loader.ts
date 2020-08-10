@@ -1,10 +1,10 @@
-import { parseFile } from 'fast-csv';
-import fs from 'fs';
-import _ from 'lodash';
 import path from 'path';
+import fs from 'fs';
+import { parseFile } from 'fast-csv';
 import { logger } from '../../../../aspects';
 import { FileNotFoundError } from '../../model/domain.error';
 import { CSVConfig } from '../../model/file-loader.model';
+import _ from 'lodash';
 
 async function loadBinaryFile(
     fileName: string,

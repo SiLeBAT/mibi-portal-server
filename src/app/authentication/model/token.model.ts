@@ -1,5 +1,5 @@
+import { UserToken, User } from './user.model';
 import { TokenType } from '../domain/enums';
-import { User, UserToken } from './user.model';
 
 export interface TokenPayload {
     sub: string;

@@ -1,17 +1,17 @@
-import { inject, injectable } from 'inversify';
-import _ from 'lodash';
-import { APPLICATION_TYPES } from '../../application.types';
 import {
     PDFConfigProviderService,
     PDFConstants,
     SampleSheetPDFConfig
 } from '../model/pdf.model';
+import _ from 'lodash';
+import { injectable, inject } from 'inversify';
+import { APPLICATION_TYPES } from '../../application.types';
 import {
     SampleSheetConfig,
-    SampleSheetConstants,
     SampleSheetMetaStrings,
-    SampleSheetNRLStrings,
-    SampleSheetSamplesStrings
+    SampleSheetSamplesStrings,
+    SampleSheetConstants,
+    SampleSheetNRLStrings
 } from '../model/sample-sheet.model';
 
 @injectable()

@@ -1,74 +1,74 @@
 import { ContainerModule, interfaces } from 'inversify';
-import { APPLICATION_TYPES } from './application.types';
-import { DefaultInstituteService } from './authentication/application/institute.service';
-import { DefaultLoginService } from './authentication/application/login.service';
-import { DefaultPasswordService } from './authentication/application/password.service';
-import { DefaultRegistrationService } from './authentication/application/registration.service';
-import { DefaultTokenService } from './authentication/application/token.service';
-import { DefaultUserService } from './authentication/application/user.service';
-import { InstituteService } from './authentication/model/institute.model';
 import {
-    LoginService,
-    PasswordService
-} from './authentication/model/login.model';
-import { RegistrationService } from './authentication/model/registration.model';
-import { TokenService } from './authentication/model/token.model';
-import { UserService } from './authentication/model/user.model';
+    ConfigurationService,
+    ApplicationConfiguration
+} from './core/model/configuration.model';
 import { DefaultConfigurationService } from './core/application/configuration.service';
+import { NotificationService } from './core/model/notification.model';
 import { DefaultNotificationService } from './core/application/notification.service';
 import {
-    ApplicationConfiguration,
-    ConfigurationService
-} from './core/model/configuration.model';
-import { NotificationService } from './core/model/notification.model';
-import { DefaultPDFService } from './pdf/pdf.service';
-import { DefaultAVVFormatProvider } from './sampleManagement/application/avv-format-provider.service';
-import { DefaultCatalogService } from './sampleManagement/application/catalog.service';
+    ExcelUnmarshalService,
+    JSONMarshalService
+} from './sampleManagement/model/excel.model';
 import { DefaultExcelUnmarshalService } from './sampleManagement/application/excel-unmarshal.service';
+import { UserService } from './authentication/model/user.model';
+import { DefaultUserService } from './authentication/application/user.service';
+import { InstituteService } from './authentication/model/institute.model';
+import { DefaultInstituteService } from './authentication/application/institute.service';
+import { TokenService } from './authentication/model/token.model';
+import { DefaultTokenService } from './authentication/application/token.service';
+import {
+    SampleService,
+    SampleFactory
+} from './sampleManagement/model/sample.model';
+import { DefaultSampleService } from './sampleManagement/application/sample.service';
+import { CatalogService } from './sampleManagement/model/catalog.model';
+import { DefaultCatalogService } from './sampleManagement/application/catalog.service';
+import {
+    AVVFormatProvider,
+    ValidationErrorProvider,
+    FormValidatorService
+} from './sampleManagement/model/validation.model';
+import { DefaultAVVFormatProvider } from './sampleManagement/application/avv-format-provider.service';
+import { DefaultValidationErrorProvider } from './sampleManagement/application/validation-error-provider.service';
+import { RegistrationService } from './authentication/model/registration.model';
+import { DefaultRegistrationService } from './authentication/application/registration.service';
+import {
+    PasswordService,
+    LoginService
+} from './authentication/model/login.model';
+import { DefaultPasswordService } from './authentication/application/password.service';
+import { DefaultLoginService } from './authentication/application/login.service';
+import { FormAutoCorrectionService } from './sampleManagement/model/autocorrection.model';
 import { DefaultFormAutoCorrectionService } from './sampleManagement/application/form-auto-correction.service';
 import { DefaultFormValidatorService } from './sampleManagement/application/form-validation.service';
-import { DefaultJSONMarshalService } from './sampleManagement/application/json-marshal.service';
+import { APPLICATION_TYPES } from './application.types';
+import { NRLService } from './sampleManagement/model/nrl.model';
 import { DefaultNRLService } from './sampleManagement/application/nrl.service';
-import { DefaultPDFConfigProviderService } from './sampleManagement/application/pdf-config-provider.service';
+import {
+    PDFCreatorService,
+    PDFConfigProviderService,
+    PDFConstants
+} from './sampleManagement/model/pdf.model';
 import { DefaultPDFCreatorService } from './sampleManagement/application/pdf-creator.service';
-import { DefaultSampleSheetService } from './sampleManagement/application/sample-sheet.service';
-import { DefaultSampleService } from './sampleManagement/application/sample.service';
-import { DefaultValidationErrorProvider } from './sampleManagement/application/validation-error-provider.service';
-import { sampleSheetPDFConfig } from './sampleManagement/domain/sample-sheet/sample-sheet-pdf.config';
-import { sampleSheetPDFStyles } from './sampleManagement/domain/sample-sheet/sample-sheet-pdf.styles';
+import { DefaultJSONMarshalService } from './sampleManagement/application/json-marshal.service';
+import { DefaultPDFConfigProviderService } from './sampleManagement/application/pdf-config-provider.service';
 import { sampleSheetConfig } from './sampleManagement/domain/sample-sheet/sample-sheet.config';
+import { sampleSheetPDFConfig } from './sampleManagement/domain/sample-sheet/sample-sheet-pdf.config';
 import {
     sampleSheetMetaStrings,
-    sampleSheetNRLStrings,
-    sampleSheetSamplesStrings
+    sampleSheetSamplesStrings,
+    sampleSheetNRLStrings
 } from './sampleManagement/domain/sample-sheet/sample-sheet.strings';
 import {
     sampleSheetDefaultStyle,
     sampleSheetStyles
 } from './sampleManagement/domain/sample-sheet/sample-sheet.styles';
-import { DefaultSampleFactory } from './sampleManagement/domain/sample.factory';
-import { FormAutoCorrectionService } from './sampleManagement/model/autocorrection.model';
-import { CatalogService } from './sampleManagement/model/catalog.model';
-import {
-    ExcelUnmarshalService,
-    JSONMarshalService
-} from './sampleManagement/model/excel.model';
-import { NRLService } from './sampleManagement/model/nrl.model';
-import {
-    PDFConfigProviderService,
-    PDFConstants,
-    PDFCreatorService
-} from './sampleManagement/model/pdf.model';
+import { sampleSheetPDFStyles } from './sampleManagement/domain/sample-sheet/sample-sheet-pdf.styles';
 import { SampleSheetConstants } from './sampleManagement/model/sample-sheet.model';
-import {
-    SampleFactory,
-    SampleService
-} from './sampleManagement/model/sample.model';
-import {
-    AVVFormatProvider,
-    FormValidatorService,
-    ValidationErrorProvider
-} from './sampleManagement/model/validation.model';
+import { DefaultPDFService } from './pdf/pdf.service';
+import { DefaultSampleFactory } from './sampleManagement/domain/sample.factory';
+import { DefaultSampleSheetService } from './sampleManagement/application/sample-sheet.service';
 
 export function getApplicationContainerModule(
     appConfiguration: ApplicationConfiguration

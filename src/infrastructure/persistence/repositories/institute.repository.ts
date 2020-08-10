@@ -1,15 +1,15 @@
-import { inject, injectable } from 'inversify';
-import { Model } from 'mongoose';
 import {
-    createInstitution,
+    InstituteRepository,
     Institute,
-    InstituteRepository
+    createInstitution
 } from '../../../app/ports';
-import { MongooseRepositoryBase } from '../data-store/mongoose/mongoose.repository';
-import { InstitutionModel } from '../data-store/mongoose/schemas/institution.schema';
-import { InstituteNotFoundError } from '../model/domain.error';
-import { PERSISTENCE_TYPES } from '../persistence.types';
 import { mapModelToInstitution } from './data-mappers';
+import { InstitutionModel } from '../data-store/mongoose/schemas/institution.schema';
+import { MongooseRepositoryBase } from '../data-store/mongoose/mongoose.repository';
+import { injectable, inject } from 'inversify';
+import { Model } from 'mongoose';
+import { PERSISTENCE_TYPES } from '../persistence.types';
+import { InstituteNotFoundError } from '../model/domain.error';
 
 @injectable()
 export class MongooseInstituteRepository

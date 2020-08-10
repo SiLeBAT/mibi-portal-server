@@ -1,15 +1,15 @@
-import _ from 'lodash';
+import { logger } from '../../../aspects';
 import {
-    ADV9CatalogEntry,
-    ADVCatalogEntry,
-    Catalog,
-    CatalogData,
     CatalogRepository,
+    Catalog,
     createCatalog,
+    CatalogData,
+    ADVCatalogEntry,
+    ADV9CatalogEntry,
     ZSPCatalogEntry
 } from '../../../app/ports';
-import { logger } from '../../../aspects';
 import { loadCSVFile } from '../data-store/file/file-loader';
+import _ from 'lodash';
 import { CSVConfig } from '../model/file-loader.model';
 
 interface CatalogConfig<T extends string, R> {

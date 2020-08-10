@@ -1,5 +1,5 @@
-import { RecoveryData } from './login.model';
 import { User } from './user.model';
+import { RecoveryData } from './login.model';
 
 export interface RegistrationPort {
     verifyUser(token: string): Promise<string>;

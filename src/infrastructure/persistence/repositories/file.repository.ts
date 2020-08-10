@@ -1,6 +1,6 @@
-import { inject, injectable } from 'inversify';
 import { FileRepository } from '../../../app/ports';
 import { loadBinaryFile } from '../data-store/file/file-loader';
+import { injectable, inject } from 'inversify';
 import { PERSISTENCE_TYPES } from '../persistence.types';
 
 @injectable()

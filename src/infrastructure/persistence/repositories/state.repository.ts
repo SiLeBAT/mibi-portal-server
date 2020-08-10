@@ -1,14 +1,14 @@
-import { inject, injectable } from 'inversify';
-import { Model } from 'mongoose';
-import {
-    AVVFormatCollection,
-    State,
-    StateRepository
-} from '../../../app/ports';
 import { MongooseRepositoryBase } from '../data-store/mongoose/mongoose.repository';
-import { StateModel } from '../data-store/mongoose/schemas/state.schema';
-import { PERSISTENCE_TYPES } from '../persistence.types';
+import {
+    StateRepository,
+    State,
+    AVVFormatCollection
+} from '../../../app/ports';
 import { mapModelToState } from './data-mappers';
+import { StateModel } from '../data-store/mongoose/schemas/state.schema';
+import { injectable, inject } from 'inversify';
+import { Model } from 'mongoose';
+import { PERSISTENCE_TYPES } from '../persistence.types';
 
 @injectable()
 export class DefaultStateRepository extends MongooseRepositoryBase<StateModel>

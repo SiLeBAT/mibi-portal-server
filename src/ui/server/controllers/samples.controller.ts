@@ -1,71 +1,70 @@
-import { Request, Response } from 'express';
-import { inject } from 'inversify';
-import {
-    controller,
-    httpPost,
-    httpPut,
-    request,
-    response
-} from 'inversify-express-utils';
-import _ from 'lodash';
+import { SampleMetaDTO, AnalysisDTO } from './../model/shared-dto.model';
 import moment from 'moment';
+import _ from 'lodash';
+import { Request, Response } from 'express';
+import { logger } from '../../../aspects';
 import {
-    AnnotatedSampleDataEntry,
-    ApplicantMetaData,
-    FormAutoCorrectionPort,
     FormValidatorPort,
-    ReceiveAs,
+    FormAutoCorrectionPort,
     Sample,
-    SampleData,
-    SampleFactory,
-    SampleMetaData,
+    ValidationOptions,
     SamplePort,
+    ApplicantMetaData,
     SampleSet,
     SampleSetMetaData,
     TokenPayload,
     TokenPort,
+    UserPort,
     Urgency,
     User,
-    UserPort,
-    ValidationOptions
+    ReceiveAs,
+    SampleData,
+    AnnotatedSampleDataEntry,
+    SampleMetaData,
+    SampleFactory
 } from '../../../app/ports';
-import { logger } from '../../../aspects';
-import { getTokenFromHeader } from '../middleware/token-validator.middleware';
 import { SamplesController } from '../model/controller.model';
+import {
+    PostSubmittedRequestDTO,
+    PutValidatedRequestDTO,
+    PutSamplesJSONRequestDTO
+} from '../model/request.model';
+import { SERVER_ERROR_CODE, ROUTE } from '../model/enums';
 import {
     MalformedRequestError,
     TokenNotFoundError
 } from '../model/domain.error';
-import { ROUTE, SERVER_ERROR_CODE } from '../model/enums';
+import { getTokenFromHeader } from '../middleware/token-validator.middleware';
+import { AbstractController } from './abstract.controller';
 import {
-    PostSubmittedRequestDTO,
-    PutSamplesJSONRequestDTO,
-    PutValidatedRequestDTO
-} from '../model/request.model';
+    SampleDataDTO,
+    SampleSetDTO,
+    SampleDataEntryDTO,
+    OrderDTO,
+    SampleSetMetaDTO,
+    SampleDTO
+} from '../model/shared-dto.model';
 import {
-    AutoCorrectedInputErrorDTO,
     InvalidInputErrorDTO,
+    AutoCorrectedInputErrorDTO,
+    PutValidatedResponseDTO,
     PostSubmittedResponseDTO,
     PutSamplesJSONResponseDTO,
-    PutSamplesXLSXResponseDTO,
-    PutValidatedResponseDTO
+    PutSamplesXLSXResponseDTO
 } from '../model/response.model';
 import {
-    OrderDTO,
-    SampleDataDTO,
-    SampleDataEntryDTO,
-    SampleDTO,
-    SampleSetDTO,
-    SampleSetMetaDTO
-} from '../model/shared-dto.model';
-import { AnalysisDTO, SampleMetaDTO } from './../model/shared-dto.model';
-import { AbstractController } from './abstract.controller';
+    controller,
+    httpPut,
+    httpPost,
+    request,
+    response
+} from 'inversify-express-utils';
+import { inject } from 'inversify';
 
+import { APPLICATION_TYPES } from './../../../app/application.types';
+import { SERVER_TYPES } from '../server.types';
 import { Analysis } from 'src/app/sampleManagement/model/sample.model';
 import { NRLService } from '../../../app/sampleManagement/model/nrl.model';
-import { SERVER_TYPES } from '../server.types';
-import { APPLICATION_TYPES } from './../../../app/application.types';
-
 moment.locale('de');
 
 enum RESOURCE_VIEW_TYPE {

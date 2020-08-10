@@ -1,8 +1,8 @@
-import { inject, injectable } from 'inversify';
 import _ from 'lodash';
 import moment from 'moment';
-import { AVVFormatCollection, StateRepository } from '../../ports';
 import { AVVFormatProvider } from '../model/validation.model';
+import { AVVFormatCollection, StateRepository } from '../../ports';
+import { injectable, inject } from 'inversify';
 import { APPLICATION_TYPES } from './../../application.types';
 
 moment.locale('de');

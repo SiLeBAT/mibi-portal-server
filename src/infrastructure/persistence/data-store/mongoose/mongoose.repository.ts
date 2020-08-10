@@ -1,5 +1,5 @@
+import { Model, Types, CreateQuery } from 'mongoose';
 import { injectable } from 'inversify';
-import { CreateQuery, Model, Types } from 'mongoose';
 import { CommonModel } from './common.model';
 
 @injectable()

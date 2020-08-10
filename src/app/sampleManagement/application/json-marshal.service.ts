@@ -1,49 +1,49 @@
-import { inject, injectable } from 'inversify';
-import _ from 'lodash';
-// @ts-ignore
-import XlsxPopulate from 'xlsx-populate';
-import { APPLICATION_TYPES } from '../../application.types';
-import { ApplicationDomainError } from '../../core/domain/domain.error';
-import { ApplicationSystemError } from '../../core/domain/technical.error';
-import { FileBuffer } from '../../core/model/file.model';
-import {
-    FORM_PROPERTIES,
-    META_ANALYSIS_COMPAREHUMAN_BOOL_CELL,
-    META_ANALYSIS_COMPAREHUMAN_TEXT_CELL,
-    META_ANALYSIS_ESBLAMPCCARBAPENEMASEN_CELL,
-    META_ANALYSIS_MOLECULARTYPING_CELL,
-    META_ANALYSIS_OTHER_TEXT_CELL,
-    META_ANALYSIS_RESISTANCE_CELL,
-    META_ANALYSIS_SEROLOGICAL_CELL,
-    META_ANALYSIS_SPECIES_CELL,
-    META_ANALYSIS_TOXIN_CELL,
-    META_ANALYSIS_VACCINATION_CELL,
-    META_NRL_CELL,
-    META_SENDER_CONTACTPERSON_CELL,
-    META_SENDER_DEPARTMENT_CELL,
-    META_SENDER_EMAIL_CELL,
-    META_SENDER_INSTITUTENAME_CELL,
-    META_SENDER_STREET_CELL,
-    META_SENDER_TELEPHONE_CELL,
-    META_SENDER_ZIP_CITY_CELL,
-    META_URGENCY_CELL,
-    VALID_SHEET_NAME
-} from '../domain/constants';
-import { Urgency } from '../domain/enums';
-import { JSONMarshalService } from '../model/excel.model';
-import { FileRepository } from '../model/repository.model';
-import {
-    SampleSheet,
-    SampleSheetAnalysisOption,
-    SampleSheetConstants,
-    SampleSheetMetaData
-} from '../model/sample-sheet.model';
-import { Sample } from '../model/sample.model';
 import {
     META_ANAYLSIS_OTHER_BOOL_CELL,
     META_CUSTOMER_REF_NUMBER_CELL,
     META_SIGNATURE_DATE_CELL
 } from './../domain/constants';
+import _ from 'lodash';
+// @ts-ignore
+import XlsxPopulate from 'xlsx-populate';
+import { JSONMarshalService } from '../model/excel.model';
+import { FileRepository } from '../model/repository.model';
+import { Sample } from '../model/sample.model';
+import { ApplicationDomainError } from '../../core/domain/domain.error';
+import { ApplicationSystemError } from '../../core/domain/technical.error';
+import { Urgency } from '../domain/enums';
+import { injectable, inject } from 'inversify';
+import { APPLICATION_TYPES } from '../../application.types';
+import {
+    FORM_PROPERTIES,
+    VALID_SHEET_NAME,
+    META_NRL_CELL,
+    META_URGENCY_CELL,
+    META_SENDER_INSTITUTENAME_CELL,
+    META_SENDER_DEPARTMENT_CELL,
+    META_SENDER_STREET_CELL,
+    META_SENDER_ZIP_CITY_CELL,
+    META_SENDER_CONTACTPERSON_CELL,
+    META_SENDER_TELEPHONE_CELL,
+    META_SENDER_EMAIL_CELL,
+    META_ANALYSIS_SPECIES_CELL,
+    META_ANALYSIS_SEROLOGICAL_CELL,
+    META_ANALYSIS_RESISTANCE_CELL,
+    META_ANALYSIS_VACCINATION_CELL,
+    META_ANALYSIS_MOLECULARTYPING_CELL,
+    META_ANALYSIS_TOXIN_CELL,
+    META_ANALYSIS_ESBLAMPCCARBAPENEMASEN_CELL,
+    META_ANALYSIS_OTHER_TEXT_CELL,
+    META_ANALYSIS_COMPAREHUMAN_BOOL_CELL,
+    META_ANALYSIS_COMPAREHUMAN_TEXT_CELL
+} from '../domain/constants';
+import { FileBuffer } from '../../core/model/file.model';
+import {
+    SampleSheet,
+    SampleSheetMetaData,
+    SampleSheetConstants,
+    SampleSheetAnalysisOption
+} from '../model/sample-sheet.model';
 
 type ChangedValueCollection = Record<string, string>;
 

@@ -1,14 +1,13 @@
 import { Response } from 'express';
-import { inject } from 'inversify';
-import { controller, httpGet, response } from 'inversify-express-utils';
 import _ from 'lodash';
 import { logger } from '../../../aspects';
 import { VersionRootController } from '../model/controller.model';
 import { ROUTE } from '../model/enums';
-import { AppServerConfiguration } from '../model/server.model';
-import { SERVER_TYPES } from '../server.types';
 import { AbstractController } from './abstract.controller';
-
+import { AppServerConfiguration } from '../model/server.model';
+import { controller, response, httpGet } from 'inversify-express-utils';
+import { inject } from 'inversify';
+import { SERVER_TYPES } from '../server.types';
 const openAPI = require('./../doc/openapi_v2.json');
 
 // tslint:disable-next-line: no-any

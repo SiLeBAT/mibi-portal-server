@@ -1,6 +1,6 @@
+import { AnalysisProcedureModel } from './analysis-prodecure.schema';
 import { Schema } from 'mongoose';
 import { CommonModel } from '../common.model';
-import { AnalysisProcedureModel } from './analysis-prodecure.schema';
 
 export interface NRLModel extends CommonModel {
     standardProcedures: AnalysisProcedureModel[];

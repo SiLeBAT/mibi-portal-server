@@ -1,32 +1,32 @@
-import _ from 'lodash';
-import moment from 'moment';
 import validate from 'validate.js';
+import moment from 'moment';
+import _ from 'lodash';
 
-import { CatalogService } from '../model/catalog.model';
-import { Sample } from '../model/sample.model';
 import {
-    ValidationConstraints,
-    ValidationErrorCollection,
-    Validator,
-    ValidatorConfig
-} from '../model/validation.model';
-import {
+    referenceDate,
     atLeastOneOf,
     dateAllowEmpty,
     dependentFields,
-    inCatalog,
-    matchADVNumberOrString,
-    matchesIdToSpecificYear,
-    matchesRegexPattern,
-    nonUniqueEntry,
-    noPlanprobeForNRL_AR,
-    nrlExists,
-    numbersOnly,
-    referenceDate,
-    registeredZoMo,
     requiredIfOther,
+    numbersOnly,
+    inCatalog,
+    registeredZoMo,
+    nonUniqueEntry,
+    matchADVNumberOrString,
+    matchesRegexPattern,
+    matchesIdToSpecificYear,
+    nrlExists,
+    noPlanprobeForNRL_AR,
     shouldBeZoMo
 } from './custom-validator-functions';
+import { Sample } from '../model/sample.model';
+import {
+    Validator,
+    ValidatorConfig,
+    ValidationErrorCollection,
+    ValidationConstraints
+} from '../model/validation.model';
+import { CatalogService } from '../model/catalog.model';
 import { NRL_ID } from './enums';
 
 moment.locale('de');

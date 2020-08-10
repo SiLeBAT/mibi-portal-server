@@ -1,25 +1,25 @@
 import { Request, Response } from 'express';
-import { inject } from 'inversify';
+import { logger } from '../../../aspects';
+import { TokensController } from '../model/controller.model';
+import { TokenRefreshConfirmationResponseDTO } from '../model/response.model';
+import {
+    TokenPort,
+    TokenPayload,
+    AuthorizationError
+} from '../../../app/ports';
+import { AbstractController } from './abstract.controller';
+import { JsonWebTokenError } from 'jsonwebtoken';
+import { getTokenFromHeader } from '../middleware/token-validator.middleware';
 import {
     controller,
-    httpPost,
     request,
-    response
+    response,
+    httpPost
 } from 'inversify-express-utils';
-import { JsonWebTokenError } from 'jsonwebtoken';
-import {
-    AuthorizationError,
-    TokenPayload,
-    TokenPort
-} from '../../../app/ports';
-import { logger } from '../../../aspects';
-import { getTokenFromHeader } from '../middleware/token-validator.middleware';
-import { TokensController } from '../model/controller.model';
-import { ROUTE, SERVER_ERROR_CODE } from '../model/enums';
-import { TokenRefreshConfirmationResponseDTO } from '../model/response.model';
-import { APPLICATION_TYPES } from './../../../app/application.types';
-import { AbstractController } from './abstract.controller';
+import { inject } from 'inversify';
+import { SERVER_ERROR_CODE, ROUTE } from '../model/enums';
 
+import { APPLICATION_TYPES } from './../../../app/application.types';
 enum TOKENS_ROUTE {
     ROOT = '/tokens'
 }

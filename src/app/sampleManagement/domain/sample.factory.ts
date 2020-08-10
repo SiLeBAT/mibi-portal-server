@@ -1,12 +1,12 @@
-import { inject, injectable } from 'inversify';
 import { APPLICATION_TYPES } from './../../application.types';
-import { NRLService } from './../model/nrl.model';
 import {
-    Analysis,
-    Sample,
     SampleData,
+    Sample,
+    Analysis,
     SampleFactory
 } from './../model/sample.model';
+import { NRLService } from './../model/nrl.model';
+import { inject, injectable } from 'inversify';
 import { Urgency } from './enums';
 import { DefaultSample } from './sample.entity';
 

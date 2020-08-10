@@ -1,5 +1,5 @@
-import Fuse from 'fuse.js';
 import _ from 'lodash';
+import Fuse from 'fuse.js';
 import { ApplicationDomainError } from '../../core/domain/domain.error';
 import { Catalog, CatalogData } from '../model/catalog.model';
 
