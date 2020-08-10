@@ -138,8 +138,8 @@ export class DefaultUserRepository extends MongooseRepositoryBase<UserModel>
 
 async function populateWithAuxData(model: UserModel): Promise<UserModel> {
     // For some reason .populate does not return a promise and only works with callback: although the docs promise otherwise.
-    return new Promise(function(resolve, reject) {
-        model.populate({ path: 'institution' }, function(err, data) {
+    return new Promise(function (resolve, reject) {
+        model.populate({ path: 'institution' }, function (err, data) {
             if (err !== null) {
                 reject(err);
             }

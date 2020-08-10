@@ -68,7 +68,7 @@ export const userSchema = new Schema({
         default: () => Date.now(),
         required: true
     }
-}).pre('save', function(next) {
+}).pre('save', function (next) {
     if (this) {
         let doc = this as UserModel;
         let now = new Date();

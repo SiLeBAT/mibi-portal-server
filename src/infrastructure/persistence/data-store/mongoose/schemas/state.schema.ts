@@ -31,7 +31,7 @@ export const stateSchema = new Schema({
         default: () => Date.now(),
         required: true
     }
-}).pre('save', function(next) {
+}).pre('save', function (next) {
     if (this) {
         let doc = this as StateModel;
         let now = new Date();

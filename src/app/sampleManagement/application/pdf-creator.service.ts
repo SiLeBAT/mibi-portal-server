@@ -158,7 +158,8 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                 ),
                 { text: strings.subtitle, style: 'comment', noWrap: true },
                 {
-                    text: strings.version + ' ' + this.config.version.toString(),
+                    text:
+                        strings.version + ' ' + this.config.version.toString(),
                     style: 'version'
                 }
             ]

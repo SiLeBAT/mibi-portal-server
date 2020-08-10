@@ -53,12 +53,12 @@ async function importCSVFile<T extends string, R>(
             ignoreEmpty: true,
             discardUnmappedColumns: true
         })
-            .on('data', function(entry) {
+            .on('data', function (entry) {
                 if (!options.filterFunction || options.filterFunction(entry)) {
                     data.push(options.mappingFunction(entry));
                 }
             })
-            .on('end', function() {
+            .on('end', function () {
                 resolve(data);
             });
     });
@@ -76,8 +76,8 @@ function prepareCSVHeaders(headers: Record<string, number>): string[] {
 }
 
 async function importJSONFile(filePath: string): Promise<{}> {
-    return new Promise(function(resolve, reject) {
-        fs.readFile(filePath, 'utf8', function(err, data) {
+    return new Promise(function (resolve, reject) {
+        fs.readFile(filePath, 'utf8', function (err, data) {
             if (err) {
                 reject(err);
             } else {
@@ -90,8 +90,8 @@ async function importJSONFile(filePath: string): Promise<{}> {
 
 // tslint:disable-next-line: no-any
 async function importBinaryFile(filePath: string): Promise<any> {
-    return new Promise(function(resolve, reject) {
-        fs.readFile(filePath, function(err, data) {
+    return new Promise(function (resolve, reject) {
+        fs.readFile(filePath, function (err, data) {
             if (err) {
                 reject(err);
             } else {

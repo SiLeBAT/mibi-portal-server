@@ -52,7 +52,7 @@ export const institutionSchema = new Schema({
         default: () => Date.now(),
         required: true
     }
-}).pre('save', function(next) {
+}).pre('save', function (next) {
     if (this) {
         let doc = this as InstitutionModel;
         let now = new Date();

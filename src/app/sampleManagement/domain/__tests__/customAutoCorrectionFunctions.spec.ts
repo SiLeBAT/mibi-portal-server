@@ -243,7 +243,11 @@ describe('Custom Auto-correction Functions', () => {
             const specificSampleData = {
                 ...genericSampleData,
                 ...{
-                    pathogen_adv: { value: '', errors: [], correctionOffer: [] }
+                    pathogen_adv: {
+                        value: '',
+                        errors: [],
+                        correctionOffer: []
+                    }
                 }
             };
 

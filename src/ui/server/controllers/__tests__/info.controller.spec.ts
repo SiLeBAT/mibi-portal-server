@@ -45,7 +45,7 @@ describe('Info controller', () => {
         container = null;
     });
 
-    it('should respond with JSON', function() {
+    it('should respond with JSON', function () {
         const res = new mockRes();
         expect.assertions(4);
         return controller.getSystemInfo(res).then(success => {

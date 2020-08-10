@@ -107,7 +107,9 @@ async function init() {
     const catalogRepository = await initialiseCatalogRepository(
         dataStoreConfig.dataDir
     ).catch((error: Error) => {
-        logger.error(`Failed to initialize Catalog Repository. error=${String(error)}`);
+        logger.error(
+            `Failed to initialize Catalog Repository. error=${String(error)}`
+        );
         throw error;
     });
 
@@ -115,7 +117,9 @@ async function init() {
         dataStoreConfig.dataDir
     ).catch((error: Error) => {
         logger.error(
-            `Failed to initialize Search Alias Repository. error=${String(error)}`
+            `Failed to initialize Search Alias Repository. error=${String(
+                error
+            )}`
         );
         throw error;
     });

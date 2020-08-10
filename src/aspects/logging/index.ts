@@ -51,7 +51,7 @@ export class Logger {
                   ' ' +
                   (typeof info.meta === 'object'
                       ? JSON.stringify(info.meta)
-                      : info.meta as string)
+                      : (info.meta as string))
                 : logMsg;
 
         return logMsg;

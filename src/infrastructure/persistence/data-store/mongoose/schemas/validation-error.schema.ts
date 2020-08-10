@@ -28,7 +28,7 @@ export const validationErrorSchema = new Schema({
         default: () => Date.now(),
         required: true
     }
-}).pre('save', function(next) {
+}).pre('save', function (next) {
     if (this) {
         let doc = this as ValidationErrorModel;
         let now = new Date();

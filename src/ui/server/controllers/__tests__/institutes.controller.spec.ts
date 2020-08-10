@@ -46,7 +46,7 @@ describe('Institution controller', () => {
         container = null;
     });
 
-    it('should respond with list of institutes', function() {
+    it('should respond with list of institutes', function () {
         const req = new mockReq({
             method: 'GET',
             headers: {

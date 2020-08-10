@@ -255,7 +255,8 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
                 const startCell = startCol + startRow.toString();
                 sheet.cell(startCell).value(dataToSave);
                 try {
-                    const endCell = endCol + (startRow + dataToSave.length).toString();
+                    const endCell =
+                        endCol + (startRow + dataToSave.length).toString();
                     const rng = sheet.range(startCell + ':' + endCell);
                     rng.style({ fill: 'ffffff' });
                     this.highlightEdits(sheet, highlights, startCol, startRow);

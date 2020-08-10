@@ -123,7 +123,11 @@ export class DefaultSampleService implements SampleService {
             } catch (error) {
                 if (error instanceof UnauthorizedError) {
                     logger.info(
-                        `${this.constructor.name}.${this.convertToJson.name}, unable to determine user origin because of invalid token. error=${String(error)}`
+                        `${this.constructor.name}.${
+                            this.convertToJson.name
+                        }, unable to determine user origin because of invalid token. error=${String(
+                            error
+                        )}`
                     );
                 } else {
                     throw error;
@@ -333,9 +337,12 @@ export class DefaultSampleService implements SampleService {
                 this.overrideRecipient
                     ? this.overrideRecipient
                     : orderNotificationMetaData.recipient.email,
-                `Neuer Auftrag von ${orderNotificationMetaData.user.institution
-                    .city || '<unbekannt>'} an ${orderNotificationMetaData
-                    .recipient.name || '<unbekannt>'}`,
+                `Neuer Auftrag von ${
+                    orderNotificationMetaData.user.institution.city ||
+                    '<unbekannt>'
+                } an ${
+                    orderNotificationMetaData.recipient.name || '<unbekannt>'
+                }`,
                 [],
                 [dataset]
             )

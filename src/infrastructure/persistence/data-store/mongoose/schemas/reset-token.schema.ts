@@ -29,7 +29,7 @@ export const tokenSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'User'
     }
-}).pre('save', function(next) {
+}).pre('save', function (next) {
     if (this) {
         let doc = this as TokenModel;
         let now = new Date();

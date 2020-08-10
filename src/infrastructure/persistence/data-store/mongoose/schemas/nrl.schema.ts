@@ -40,7 +40,7 @@ export const nrlSchema = new Schema({
         default: () => Date.now(),
         required: true
     }
-}).pre('save', function(next) {
+}).pre('save', function (next) {
     if (this) {
         let doc = this as NRLModel;
         let now = new Date();

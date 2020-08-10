@@ -68,7 +68,9 @@ export class DefaultLoginService implements LoginService {
                 .duration(diffToDelay, 'seconds')
                 .asSeconds();
             const error = new AuthorizationError(
-                `Too many failed attempts. user=${String(user)}; timeToWait=${timeToWait}`
+                `Too many failed attempts. user=${String(
+                    user
+                )}; timeToWait=${timeToWait}`
             );
             error.timeToWait = timeToWait;
             throw error;
