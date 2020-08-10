@@ -33,6 +33,7 @@
         "no-promise-as-boolean": true,
         "invalid-void": [true, {"allow-generics": ["Promise"]}],
         "ordered-imports": true,
+        "return-undefined": true,
 
         "no-for-in": false,
         "strict-boolean-expressions": false,

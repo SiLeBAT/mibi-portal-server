@@ -68,14 +68,14 @@ export class DefaultSample implements Sample {
 
     get pathogenId(): string | undefined {
         if (!this._data.sample_id.value || !this._data.pathogen_adv.value) {
-            return;
+            return undefined;
         }
         return this._data.sample_id.value + this._data.pathogen_adv.value;
     }
 
     get pathogenIdAVV(): string | undefined {
         if (!this._data.sample_id_avv.value || !this._data.pathogen_adv.value) {
-            return;
+            return undefined;
         }
         return (
             this._data.sample_id_avv.value +
