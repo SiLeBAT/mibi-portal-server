@@ -32,16 +32,9 @@
     }
   },
   "lint-staged": {
-    "linters": {
-      "src/**/*.ts": [
-        "npm run pretty",
-        "npm run lint",
-        "git add"
-      ]
-    },
-    "ignore": [
-      "src/**/__mocks__/*.ts",
-      "src/**/__tests__/*.ts"
+    "src/**/*.ts": [
+      "npm run pretty",
+      "npm run lint"
     ]
   },
   "private": true,
@@ -104,7 +97,7 @@
     "husky": "~4.2.5",
     "jest": "~25.5.4",
     "jest-stare": "~1.27.0",
-    "lint-staged": "~8.2.1",
+    "lint-staged": "~10.2.11",
     "mock-express-request": "0.2.2",
     "mock-express-response": "0.2.2",
     "nodemon": "~2.0.4",
