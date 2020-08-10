@@ -31,6 +31,7 @@ export class DefaultInstituteController extends AbstractController
         logger.info(
             `${this.constructor.name}.${this.getInstitutes.name}, Request received`
         );
+        let x = 9;
         await this.instiuteService
             .retrieveInstitutes()
             .then((institutions: Institute[]) => {
