@@ -75,7 +75,7 @@ export class DefaultAppServer implements AppServer {
             app.use(
                 '/api-docs' + ROUTE.VERSION,
                 swaggerUi.serve,
-                swaggerUi.setup(null, {
+                swaggerUi.setup(undefined, {
                     swaggerUrl: ROUTE.VERSION
                 })
             );
