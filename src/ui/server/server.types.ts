@@ -1,4 +1,4 @@
-const SERVER_TYPES = {
+export const SERVER_TYPES = {
     AppServerConfiguration: Symbol.for('AppServerConfiguration'),
     InfoController: Symbol.for('InfoController'),
     InstitutesController: Symbol.for('InstitutesController'),
@@ -11,5 +11,3 @@ const SERVER_TYPES = {
     MulterMW: Symbol.for('MulterMW'),
     SwaggerMW: Symbol.for('SwaggerMW')
 };
-
-export default SERVER_TYPES;

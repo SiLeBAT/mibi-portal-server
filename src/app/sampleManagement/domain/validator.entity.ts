@@ -1,6 +1,6 @@
-import * as validate from 'validate.js';
-import * as moment from 'moment';
-import * as _ from 'lodash';
+import validate from 'validate.js';
+import moment from 'moment';
+import _ from 'lodash';
 
 import {
     referenceDate,
@@ -41,13 +41,13 @@ class SampleValidator implements Validator {
             // The value is guaranteed not to be null or undefined but otherwise it
             // could be anything.
             // tslint:disable-next-line
-            parse: function(value: any, options: any) {
+            parse: function (value: any, options: any) {
                 const result = +moment.utc(value, config.dateFormat);
                 return result;
             },
             // Input is a unix timestamp
             // tslint:disable-next-line
-            format: function(value: any, options: any) {
+            format: function (value: any, options: any) {
                 let format = options.dateOnly
                     ? config.dateFormat
                     : config.dateTimeFormat; // "DD-MM-YYYY" : "DD-MM-YYYY hh:mm:ss";

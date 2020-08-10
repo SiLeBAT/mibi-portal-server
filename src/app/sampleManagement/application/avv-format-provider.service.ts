@@ -1,5 +1,5 @@
-import * as _ from 'lodash';
-import * as moment from 'moment';
+import _ from 'lodash';
+import moment from 'moment';
 import { AVVFormatProvider } from '../model/validation.model';
 import { AVVFormatCollection, StateRepository } from '../../ports';
 import { injectable, inject } from 'inversify';

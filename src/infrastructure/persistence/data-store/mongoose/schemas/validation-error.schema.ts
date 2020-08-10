@@ -1,11 +1,10 @@
-import { Schema, Document } from 'mongoose';
+import { Schema } from 'mongoose';
+import { CommonModel } from '../common.model';
 
-export interface ValidationErrorModel extends Document {
+export interface ValidationErrorModel extends CommonModel {
     code: number;
     level: number;
     message: string;
-    created: Date;
-    updated: Date;
 }
 
 export const validationErrorSchema = new Schema({
@@ -21,15 +20,15 @@ export const validationErrorSchema = new Schema({
     },
     created: {
         type: Date,
-        default: Date.now,
+        default: () => Date.now(),
         required: true
     },
     updated: {
         type: Date,
-        default: Date.now,
+        default: () => Date.now(),
         required: true
     }
-}).pre('save', function(next) {
+}).pre('save', function (next) {
     if (this) {
         let doc = this as ValidationErrorModel;
         let now = new Date();

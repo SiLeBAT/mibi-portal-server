@@ -1,4 +1,5 @@
 import { SearchAlias } from './validation.model';
+import Fuse from 'fuse.js';
 
 export type CatalogData =
     | Record<string, string>
@@ -30,7 +31,7 @@ export interface Catalog<T extends CatalogData> {
     hasUniqueId(): boolean;
     getUniqueId(): string;
     // tslint:disable-next-line
-    getFuzzyIndex(options: Fuse.FuseOptions, enhancements?: any[]): Fuse;
+    getFuzzyIndex(options: Fuse.IFuseOptions<T>, enhancements?: T[]): Fuse<T>;
     dump(): T[];
 }
 

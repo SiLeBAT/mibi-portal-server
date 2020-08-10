@@ -1,8 +1,8 @@
 import {
     AnalysisProcedureModel,
     analysisProcedureSchema
-} from './schemas/analysisProdecure.schema';
-import * as mongoose from 'mongoose';
+} from './schemas/analysis-prodecure.schema';
+import mongoose from 'mongoose';
 
 import {
     institutionSchema,
@@ -11,7 +11,7 @@ import {
 
 import { nrlSchema, NRLModel } from './schemas/nrl.schema';
 
-import { tokenSchema, TokenModel } from './schemas/resetToken.schema';
+import { tokenSchema, TokenModel } from './schemas/reset-token.schema';
 
 import { StateModel, stateSchema } from './schemas/state.schema';
 
@@ -20,7 +20,7 @@ import { userSchema, UserModel } from './schemas/user.schema';
 import {
     validationErrorSchema,
     ValidationErrorModel
-} from './schemas/validationError.schema';
+} from './schemas/validation-error.schema';
 
 export const MongooseStateModel = mongoose.model<StateModel>(
     'State',

@@ -1,9 +1,9 @@
 // core
 
 // npm
-import * as handlebars from 'handlebars';
-import * as nodemailer from 'nodemailer';
-import * as readFilePromise from 'fs-readfile-promise';
+import handlebars from 'handlebars';
+import nodemailer from 'nodemailer';
+import readFilePromise from 'fs-readfile-promise';
 
 // local
 import { logger } from './../../aspects';
@@ -137,7 +137,9 @@ export class DefaultMailService implements MailService {
             transporter.sendMail(mailOptions, (error, info) => {
                 if (error) {
                     logger.error(
-                        `Error sending mail. error=${error} mailSubject="${mailOptions.subject}"`
+                        `Error sending mail. error=${String(
+                            error
+                        )} mailSubject="${mailOptions.subject}"`
                     );
                     return error;
                 } else {

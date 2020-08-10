@@ -1,6 +1,6 @@
 import { ADVCatalogEntry, ZSPCatalogEntry } from './../model/catalog.model';
-import * as moment from 'moment';
-import * as _ from 'lodash';
+import moment from 'moment';
+import _ from 'lodash';
 import {
     ValidationError,
     RequiredIfOtherOptions,
@@ -265,7 +265,7 @@ function shouldBeZoMo(
         let result = null;
         _.forEach(years, yearToCheck => {
             const cat = catalogService.getCatalog<ZSPCatalogEntry>(
-                'zsp' + yearToCheck
+                'zsp' + yearToCheck.toString()
             );
             if (cat) {
                 const groupValues = options.group.map(g => attributes[g.attr]);
@@ -299,7 +299,7 @@ function registeredZoMo(
         if (years.length > 0) {
             const yearToCheck = Math.min(...years);
             const cat = catalogService.getCatalog<ZSPCatalogEntry>(
-                'zsp' + yearToCheck
+                'zsp' + yearToCheck.toString()
             );
             if (cat) {
                 const groupValues = options.group.map(g => attributes[g.attr]);
@@ -445,16 +445,14 @@ function referenceDate(
         if (options.earliest) {
             if (options.modifier) {
                 referenceDate = referenceDate.subtract(
-                    // tslint:disable-next-line
-                    options.modifier.value as any,
+                    options.modifier.value,
                     options.modifier.unit
                 );
             }
         } else if (options.latest) {
             if (options.modifier) {
                 referenceDate = referenceDate.add(
-                    // tslint:disable-next-line
-                    options.modifier.value as any,
+                    options.modifier.value,
                     options.modifier.unit
                 );
             }

@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import _ from 'lodash';
 import {
     Sample,
     SampleMetaData,
@@ -67,14 +67,14 @@ export class DefaultSample implements Sample {
 
     get pathogenId(): string | undefined {
         if (!this._data.sample_id.value || !this._data.pathogen_adv.value) {
-            return;
+            return undefined;
         }
         return this._data.sample_id.value + this._data.pathogen_adv.value;
     }
 
     get pathogenIdAVV(): string | undefined {
         if (!this._data.sample_id_avv.value || !this._data.pathogen_adv.value) {
-            return;
+            return undefined;
         }
         return (
             this._data.sample_id_avv.value +
@@ -88,7 +88,7 @@ export class DefaultSample implements Sample {
             if (this._data[k].errors) {
                 this._data[k].errors = _.uniqWith(
                     [...this._data[k].errors, ...v],
-                    _.isEqual
+                    (v1, v2) => _.isEqual(v1, v2)
                 );
             } else {
                 this._data[k].errors = [...v];
@@ -107,7 +107,7 @@ export class DefaultSample implements Sample {
 
     isZoMo(): boolean {
         return (
-            this._data.sampling_reason_adv.value === '' + ZOMO_ID.code ||
+            this._data.sampling_reason_adv.value === ZOMO_ID.code.toString() ||
             this._data.sampling_reason_text.value === ZOMO_ID.string
         );
     }

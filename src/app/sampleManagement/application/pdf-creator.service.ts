@@ -5,8 +5,8 @@ import {
 } from '../model/pdf.model';
 import { Address, SampleData, Sample } from '../model/sample.model';
 import { APPLICATION_TYPES } from '../../application.types';
-import * as _ from 'lodash';
-import * as fs from 'fs';
+import _ from 'lodash';
+import fs from 'fs';
 import { NRL_ID, Urgency } from '../domain/enums';
 import { FileBuffer } from '../../core/model/file.model';
 import { PDFService } from '../../pdf/pdf.model';
@@ -158,7 +158,8 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                 ),
                 { text: strings.subtitle, style: 'comment', noWrap: true },
                 {
-                    text: strings.version + ' ' + this.config.version,
+                    text:
+                        strings.version + ' ' + this.config.version.toString(),
                     style: 'version'
                 }
             ]
@@ -773,11 +774,11 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                     text:
                         strings.page +
                         ' ' +
-                        currentPage +
+                        currentPage.toString() +
                         ' ' +
                         strings.pageOf +
                         ' ' +
-                        pageCount,
+                        pageCount.toString(),
                     alignment: 'right'
                 }
             ],

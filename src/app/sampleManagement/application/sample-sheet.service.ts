@@ -1,7 +1,7 @@
 import { injectable, inject } from 'inversify';
 import { SampleSet, Analysis, Sample } from '../model/sample.model';
 import { EMPTY_ANALYSIS } from '../domain/constants';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import {
     SampleSheetService,
     SampleSheet,

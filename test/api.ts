@@ -1,7 +1,7 @@
-import * as config from 'config';
+import config from 'config';
 import { PutValidatedRequestDTO, PutSamplesJSONRequestDTO } from '../src/ui/server/model/request.model';
 import { PutValidatedResponseDTO, PutSamplesJSONResponseDTO, PutSamplesXLSXResponseDTO } from '../src/ui/server/model/response.model';
-import * as rp from 'request-promise-native';
+import rp from 'request-promise-native';
 import request = require('request');
 import { ROUTE } from '../src/ui/server/model/enums';
 

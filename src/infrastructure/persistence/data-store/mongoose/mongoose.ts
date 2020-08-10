@@ -1,7 +1,7 @@
 // core
 // npm
-import * as mongoose from 'mongoose';
-import * as Promise from 'bluebird';
+import mongoose from 'mongoose';
+import Promise from 'bluebird';
 // local
 import { logger } from './../../../../aspects';
 import { createRepository } from './mongoose.repository';
@@ -49,7 +49,8 @@ class MongooseDataStore implements DataStore {
             .connect(connectionString, {
                 dbName: connectionInfo.database,
                 useCreateIndex: true,
-                useNewUrlParser: true
+                useNewUrlParser: true,
+                useUnifiedTopology: true
             })
             .then(
                 db => {
@@ -76,12 +77,12 @@ class MongooseDataStore implements DataStore {
     }
 
     drop(collection: string) {
-        const drop = mongoose.connection.collection(collection).drop();
-        if (drop) {
-            drop.catch(error => {
+        mongoose.connection
+            .collection(collection)
+            .drop()
+            .catch(error => {
                 throw new Error(`Unable to close DB. error=${error}`);
             });
-        }
     }
 }
 

@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import _ from 'lodash';
 import { logger } from '../../../aspects';
 import {
     autoCorrectADV16,
@@ -44,7 +44,7 @@ export class DefaultFormAutoCorrectionService
             this.correctionFunctions.forEach(fn => {
                 const correction: CorrectionSuggestions | null = fn(sampleData);
                 if (correction) {
-                    const targetField = '' + correction.field;
+                    const targetField = correction.field.toString();
                     newSample.addCorrectionTo(
                         targetField,
                         correction.correctionOffer

@@ -1,4 +1,5 @@
-import * as _ from 'lodash';
+import _ from 'lodash';
+import Fuse from 'fuse.js';
 import { logger } from '../../../aspects';
 import { SampleData, SampleProperty } from '../model/sample.model';
 import {
@@ -6,7 +7,6 @@ import {
     SearchAlias,
     CatalogEnhancement,
     ResultOptions,
-    FuzzySearchResultEntry,
     CorrectionFunction
 } from '../model/autocorrection.model';
 import {
@@ -346,7 +346,9 @@ function autoCorrectADV16(catalogService: CatalogService): CorrectionFunction {
         catalogName
     ) as CatalogEnhancement[];
 
-    const fuse = catalogService.getCatalog(catalogName).getFuzzyIndex(options);
+    const fuse = catalogService
+        .getCatalog<ADVCatalogEntry>(catalogName)
+        .getFuzzyIndex(options);
 
     const searchCache: Record<string, CorrectionSuggestions> = {};
 
@@ -452,22 +454,29 @@ function checkAndUnshift(value: string, predicate: RegExp, pre: string) {
     return '';
 }
 
-function doFuzzySearch(value: string, fuse: Fuse, options: ResultOptions) {
+function doFuzzySearch(
+    value: string,
+    fuse: Fuse<ADVCatalogEntry>,
+    options: ResultOptions
+) {
     let { property, numberOfResults, alias, original } = { ...options };
 
-    let result: FuzzySearchResultEntry[] = fuse.search(value);
+    // remove fuse extended search flags
+    value = value.replace(/[|='!^$]/g, ' ');
+    // remove special chars
+    value = value.replace(/[,.;]/g, ' ');
 
+    let fuseResults = fuse.search(value);
+    // sort first by score, second alphabetically
+    fuseResults.sort((a, b) => a.item.Text.localeCompare(b.item.Text));
+    fuseResults.sort((a, b) => (a.score as number) - (b.score as number));
+
+    let result = fuseResults.map(v => v.item.Text);
     if (alias) {
-        result = _.filter(result, f => f.item !== alias);
-        result.unshift({
-            item: alias,
-            score: 0
-        });
+        result = [alias].concat(_.filter(result, f => f !== alias));
         numberOfResults = 10;
     }
-    const slicedResult = result
-        .slice(0, numberOfResults)
-        .map(entry => entry.item);
+    const slicedResult = result.slice(0, numberOfResults);
     return {
         field: property,
         original: original,
@@ -497,18 +506,14 @@ function cleanText(str: string) {
     return cleaned.toLowerCase();
 }
 
-function getFuseOptions() {
+function getFuseOptions(): Fuse.IFuseOptions<ADVCatalogEntry> {
     return {
-        id: 'Text',
-        shouldSort: true,
-        tokenize: true,
+        shouldSort: false,
         includeScore: true,
-        matchAllTokens: true,
         threshold: 0.6,
-        location: 0,
-        distance: 100,
-        maxPatternLength: 100,
         minMatchCharLength: 1,
+        ignoreLocation: true,
+        useExtendedSearch: true, // searching for each space delimited substring
         keys: [
             {
                 name: 'Text',

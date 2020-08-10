@@ -1,10 +1,10 @@
-import * as path from 'path';
-import * as fs from 'fs';
-import * as csv from 'fast-csv';
+import path from 'path';
+import fs from 'fs';
+import { parseFile } from 'fast-csv';
 import { logger } from '../../../../aspects';
 import { FileNotFoundError } from '../../model/domain.error';
 import { CSVConfig } from '../../model/file-loader.model';
-import * as _ from 'lodash';
+import _ from 'lodash';
 
 async function loadBinaryFile(
     fileName: string,
@@ -47,18 +47,18 @@ async function importCSVFile<T extends string, R>(
         options.headers === true ? true : prepareCSVHeaders(options.headers);
 
     return new Promise<R[]>(resolve => {
-        csv.fromPath(filePath, {
+        parseFile(filePath, {
             headers: headers,
             delimiter: options.delimiter || ',',
             ignoreEmpty: true,
             discardUnmappedColumns: true
         })
-            .on('data', function(entry) {
+            .on('data', function (entry) {
                 if (!options.filterFunction || options.filterFunction(entry)) {
                     data.push(options.mappingFunction(entry));
                 }
             })
-            .on('end', function() {
+            .on('end', function () {
                 resolve(data);
             });
     });
@@ -76,8 +76,8 @@ function prepareCSVHeaders(headers: Record<string, number>): string[] {
 }
 
 async function importJSONFile(filePath: string): Promise<{}> {
-    return new Promise(function(resolve, reject) {
-        fs.readFile(filePath, 'utf8', function(err, data) {
+    return new Promise(function (resolve, reject) {
+        fs.readFile(filePath, 'utf8', function (err, data) {
             if (err) {
                 reject(err);
             } else {
@@ -90,8 +90,8 @@ async function importJSONFile(filePath: string): Promise<{}> {
 
 // tslint:disable-next-line: no-any
 async function importBinaryFile(filePath: string): Promise<any> {
-    return new Promise(function(resolve, reject) {
-        fs.readFile(filePath, function(err, data) {
+    return new Promise(function (resolve, reject) {
+        fs.readFile(filePath, function (err, data) {
             if (err) {
                 reject(err);
             } else {

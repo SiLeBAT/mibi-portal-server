@@ -1,11 +1,10 @@
-import * as path from 'path';
-import * as express from 'express';
-import * as helmet from 'helmet';
-import * as compression from 'compression';
-import * as bodyParser from 'body-parser';
-import * as cors from 'cors';
-import * as morgan from 'morgan';
-import * as swaggerUi from 'swagger-ui-express';
+import path from 'path';
+import express from 'express';
+import helmet from 'helmet';
+import compression from 'compression';
+import cors from 'cors';
+import morgan from 'morgan';
+import swaggerUi from 'swagger-ui-express';
 import { InversifyExpressServer } from 'inversify-express-utils';
 
 // local
@@ -15,7 +14,7 @@ import { Logger } from '../../aspects/logging';
 import { SERVER_ERROR_CODE, ROUTE } from './model/enums';
 import { AppServerConfiguration } from './model/server.model';
 import { injectable, Container } from 'inversify';
-import SERVER_TYPES from './server.types';
+import { SERVER_TYPES } from './server.types';
 
 export interface AppServer {
     startServer(): void;
@@ -49,9 +48,9 @@ export class DefaultAppServer implements AppServer {
             app.set('port', serverConfig.port);
             app.set('logger', logger);
 
-            app.use(bodyParser.json({ limit: '50mb' }));
+            app.use(express.json({ limit: '50mb' }));
             app.use(
-                bodyParser.urlencoded({
+                express.urlencoded({
                     extended: false
                 })
             );
@@ -65,7 +64,7 @@ export class DefaultAppServer implements AppServer {
                 res.setHeader('Pragma', 'no-cache');
                 res.setHeader('X-XSS-Protection', '1; mode=block');
                 res.setHeader('X-Content-Type-Options', 'nosniff');
-                return next();
+                next();
             });
 
             app.use(cors());
@@ -76,7 +75,7 @@ export class DefaultAppServer implements AppServer {
             app.use(
                 '/api-docs' + ROUTE.VERSION,
                 swaggerUi.serve,
-                swaggerUi.setup(null, {
+                swaggerUi.setup(undefined, {
                     swaggerUrl: ROUTE.VERSION
                 })
             );

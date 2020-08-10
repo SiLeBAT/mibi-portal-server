@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import { logger } from '../../../aspects';
 import { VersionRootController } from '../model/controller.model';
 import { ROUTE } from '../model/enums';
@@ -7,7 +7,7 @@ import { AbstractController } from './abstract.controller';
 import { AppServerConfiguration } from '../model/server.model';
 import { controller, response, httpGet } from 'inversify-express-utils';
 import { inject } from 'inversify';
-import SERVER_TYPES from '../server.types';
+import { SERVER_TYPES } from '../server.types';
 const openAPI = require('./../doc/openapi_v2.json');
 
 // tslint:disable-next-line: no-any
@@ -28,7 +28,7 @@ export class DefaultVersionRootController extends AbstractController
         );
     }
     @httpGet('/')
-    async getAPIDefinition(@response() res: Response) {
+    getAPIDefinition(@response() res: Response) {
         logger.info(
             `${this.constructor.name}.${this.getAPIDefinition.name}, Request received`
         );

@@ -9,23 +9,23 @@ export class DefaultUserService implements UserService {
         private userRepository: UserRepository
     ) {}
 
-    getUserByEmail(email: string): Promise<User> {
+    async getUserByEmail(email: string): Promise<User> {
         return this.userRepository.findByUsername(email);
     }
 
-    getUserById(userId: string): Promise<User> {
+    async getUserById(userId: string): Promise<User> {
         return this.userRepository.findByUserId(userId);
     }
 
-    updateUser(user: User): Promise<User> {
+    async updateUser(user: User): Promise<User> {
         return this.userRepository.updateUser(user);
     }
 
-    createUser(user: User): Promise<User> {
+    async createUser(user: User): Promise<User> {
         return this.userRepository.createUser(user);
     }
 
-    hasUserWithEmail(email: string): Promise<boolean> {
+    async hasUserWithEmail(email: string): Promise<boolean> {
         return this.userRepository.hasUserWithEmail(email);
     }
 }

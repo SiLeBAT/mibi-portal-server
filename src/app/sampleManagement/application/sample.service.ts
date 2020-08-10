@@ -25,7 +25,7 @@ import { UnauthorizedError } from 'express-jwt';
 import { ConfigurationService } from '../../core/model/configuration.model';
 import { injectable, inject } from 'inversify';
 import { APPLICATION_TYPES } from './../../application.types';
-import moment = require('moment');
+import moment from 'moment';
 import { NRL_ID, ReceiveAs } from '../domain/enums';
 import { NRLService } from '../model/nrl.model';
 import { FileBuffer } from '../../core/model/file.model';
@@ -123,7 +123,11 @@ export class DefaultSampleService implements SampleService {
             } catch (error) {
                 if (error instanceof UnauthorizedError) {
                     logger.info(
-                        `${this.constructor.name}.${this.convertToJson.name}, unable to determine user origin because of invalid token. error=${error}`
+                        `${this.constructor.name}.${
+                            this.convertToJson.name
+                        }, unable to determine user origin because of invalid token. error=${String(
+                            error
+                        )}`
                     );
                 } else {
                     throw error;
@@ -146,7 +150,7 @@ export class DefaultSampleService implements SampleService {
 
         const fileName = this.amendFileName(
             sampleSet.meta.fileName || this.DEFAULT_FILE_NAME,
-            '.MP_' + moment().unix(),
+            '.MP_' + moment().unix().toString(),
             fileBuffer.extension
         );
 
@@ -333,9 +337,12 @@ export class DefaultSampleService implements SampleService {
                 this.overrideRecipient
                     ? this.overrideRecipient
                     : orderNotificationMetaData.recipient.email,
-                `Neuer Auftrag von ${orderNotificationMetaData.user.institution
-                    .city || '<unbekannt>'} an ${orderNotificationMetaData
-                    .recipient.name || '<unbekannt>'}`,
+                `Neuer Auftrag von ${
+                    orderNotificationMetaData.user.institution.city ||
+                    '<unbekannt>'
+                } an ${
+                    orderNotificationMetaData.recipient.name || '<unbekannt>'
+                }`,
                 [],
                 [dataset]
             )
@@ -365,9 +372,9 @@ export class DefaultSampleService implements SampleService {
             samples: sampleSet.samples.map(sample => sample.clone())
         };
 
-        nrlSampleSet.samples.forEach(sample =>
-            this.replaceEmptySampleIDWithSampleIDAVV(sample)
-        );
+        nrlSampleSet.samples.forEach(sample => {
+            this.replaceEmptySampleIDWithSampleIDAVV(sample);
+        });
 
         return nrlSampleSet;
     }

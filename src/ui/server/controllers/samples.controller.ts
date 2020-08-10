@@ -1,6 +1,6 @@
 import { SampleMetaDTO, AnalysisDTO } from './../model/shared-dto.model';
-import * as moment from 'moment';
-import * as _ from 'lodash';
+import moment from 'moment';
+import _ from 'lodash';
 import { Request, Response } from 'express';
 import { logger } from '../../../aspects';
 import {
@@ -62,7 +62,7 @@ import {
 import { inject } from 'inversify';
 
 import { APPLICATION_TYPES } from './../../../app/application.types';
-import SERVER_TYPES from '../server.types';
+import { SERVER_TYPES } from '../server.types';
 import { Analysis } from 'src/app/sampleManagement/model/sample.model';
 import { NRLService } from '../../../app/sampleManagement/model/nrl.model';
 moment.locale('de');
@@ -369,7 +369,7 @@ export class DefaultSamplesController extends AbstractController
         return validationOptions;
     }
 
-    private getUserFromToken(token: string): Promise<User> {
+    private async getUserFromToken(token: string): Promise<User> {
         const payload: TokenPayload = this.tokenService.verifyToken(token);
         const userId = payload.sub;
         return this.userService.getUserById(userId);

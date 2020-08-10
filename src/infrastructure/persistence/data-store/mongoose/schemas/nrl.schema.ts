@@ -1,14 +1,13 @@
-import { AnalysisProcedureModel } from './analysisProdecure.schema';
-import { Schema, Document } from 'mongoose';
+import { AnalysisProcedureModel } from './analysis-prodecure.schema';
+import { Schema } from 'mongoose';
+import { CommonModel } from '../common.model';
 
-export interface NRLModel extends Document {
+export interface NRLModel extends CommonModel {
     standardProcedures: AnalysisProcedureModel[];
     optionalProcedures: AnalysisProcedureModel[];
     name: string;
     email: string;
     selector: string[];
-    created: Date;
-    updated: Date;
 }
 
 export const nrlSchema = new Schema({
@@ -33,15 +32,15 @@ export const nrlSchema = new Schema({
     ],
     created: {
         type: Date,
-        default: Date.now,
+        default: () => Date.now(),
         required: true
     },
     updated: {
         type: Date,
-        default: Date.now,
+        default: () => Date.now(),
         required: true
     }
-}).pre('save', function(next) {
+}).pre('save', function (next) {
     if (this) {
         let doc = this as NRLModel;
         let now = new Date();

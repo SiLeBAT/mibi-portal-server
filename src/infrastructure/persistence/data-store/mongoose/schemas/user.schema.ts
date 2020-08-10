@@ -1,13 +1,9 @@
-import { Schema, Document } from 'mongoose';
-import { ObjectId } from 'bson';
-import * as mongooseUniqueValidator from 'mongoose-unique-validator';
-import { MongooseUpdateResponse } from '../mongoose.repository';
+import { Schema } from 'mongoose';
+import mongooseUniqueValidator from 'mongoose-unique-validator';
 import { InstitutionModel } from './institution.schema';
+import { CommonModel } from '../common.model';
 
-export interface UserModelUpdateResponse extends MongooseUpdateResponse {}
-
-export interface UserModel extends Document {
-    _id: ObjectId;
+export interface UserModel extends CommonModel {
     password: string;
     email: string;
     firstName: string;
@@ -17,8 +13,6 @@ export interface UserModel extends Document {
     adminEnabled: boolean;
     numAttempt: number;
     lastAttempt: number;
-    created: Date;
-    updated: Date;
 }
 
 export const userSchema = new Schema({
@@ -57,7 +51,7 @@ export const userSchema = new Schema({
     },
     lastAttempt: {
         type: Number,
-        default: Date.now(),
+        default: () => Date.now(),
         required: true
     },
     institution: {
@@ -66,15 +60,15 @@ export const userSchema = new Schema({
     },
     created: {
         type: Date,
-        default: Date.now,
+        default: () => Date.now(),
         required: true
     },
     updated: {
         type: Date,
-        default: Date.now,
+        default: () => Date.now(),
         required: true
     }
-}).pre('save', function(next) {
+}).pre('save', function (next) {
     if (this) {
         let doc = this as UserModel;
         let now = new Date();

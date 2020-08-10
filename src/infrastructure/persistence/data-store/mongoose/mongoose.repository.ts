@@ -1,47 +1,24 @@
-import { Document, Model, Types } from 'mongoose';
+import { Model, Types, CreateQuery } from 'mongoose';
 import { injectable } from 'inversify';
-
-interface UpdateResponse {}
-export interface MongooseUpdateResponse extends UpdateResponse {
-    ok: number;
-}
-
-interface ModelAttributes {}
-interface Read<T> {
-    retrieve: () => Promise<T[]>;
-    findById: (id: string) => Promise<T | null>;
-    findOne(cond?: Object): Promise<T | null>;
-    find(cond: Object, fields: Object, options: Object): Promise<T[]>;
-}
-
-interface Write<T> {
-    create: (item: T) => Promise<T>;
-    update: (
-        _id: string,
-        attributes: ModelAttributes
-    ) => Promise<UpdateResponse>;
-    delete: (_id: string) => Promise<T>;
-}
-
-export interface RepositoryBase<T> extends Read<T>, Write<T> {}
+import { CommonModel } from './common.model';
 
 @injectable()
-export class MongooseRepositoryBase<T extends Document> {
+export class MongooseRepositoryBase<T extends CommonModel> {
     private _model: Model<T>;
 
     constructor(schemaModel: Model<T>) {
         this._model = schemaModel;
     }
 
-    protected _create(item: T) {
+    protected async _create(item: CreateQuery<T>): Promise<T> {
         return this._model.create(item);
     }
 
-    protected _retrieve() {
+    protected async _retrieve(): Promise<T[]> {
         return this._model.find({}).exec();
     }
 
-    protected _retrievePopulatedWith(populate: string[]) {
+    protected async _retrievePopulatedWith(populate: string[]): Promise<T[]> {
         let query = this._model.find({});
         populate.forEach(p => {
             query = query.populate(p);
@@ -49,32 +26,30 @@ export class MongooseRepositoryBase<T extends Document> {
         return query.exec();
     }
 
-    protected _update(
-        _id: string,
-        attr: ModelAttributes
-    ): Promise<MongooseUpdateResponse> {
+    protected async _update(_id: string, attr: Partial<T>): Promise<T | null> {
         return this._model
-            .update(
-                { _id: this._toObjectId(_id) },
-                { ...attr, ...{ updated: Date.now() } }
+            .findByIdAndUpdate(
+                this._toObjectId(_id),
+                { ...attr, updated: Date.now() },
+                { useFindAndModify: false }
             )
             .exec();
     }
 
-    protected _delete(_id: string) {
-        return this._model.remove({ _id: _id }).exec();
+    protected async _delete(_id: string): Promise<T | null> {
+        return this._model.findByIdAndRemove(_id).exec();
     }
 
-    protected _findById(_id: string) {
+    protected async _findById(_id: string): Promise<T | null> {
         return this._model.findById(_id).exec();
     }
 
-    protected _findOne(cond?: Object) {
+    protected async _findOne(cond: {}): Promise<T | null> {
         return this._model.findOne(cond).exec();
     }
 
-    protected _find(
-        cond?: Object,
+    protected async _find(
+        cond: {},
         fields?: Object,
         options?: Object
     ): Promise<T[]> {
@@ -86,7 +61,7 @@ export class MongooseRepositoryBase<T extends Document> {
     }
 }
 
-function createRepository<T extends Document>(schema: Model<T>) {
+function createRepository<T extends CommonModel>(schema: Model<T>) {
     return new MongooseRepositoryBase(schema);
 }
 

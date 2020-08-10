@@ -13,7 +13,7 @@ export class MongooseNRLRepository extends MongooseRepositoryBase<NRLModel>
         super(model);
     }
 
-    retrieve(): Promise<NRL[]> {
+    async retrieve(): Promise<NRL[]> {
         return this._retrievePopulatedWith([
             'standardProcedures',
             'optionalProcedures'

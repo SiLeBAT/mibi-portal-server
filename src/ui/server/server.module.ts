@@ -9,14 +9,14 @@ import {
     TokensController,
     NRLsController
 } from './model/controller.model';
-import SERVER_TYPES from './server.types';
+import { SERVER_TYPES } from './server.types';
 import { DefaultSystemInfoController } from './controllers/info.controller';
 import { DefaultInstituteController } from './controllers/institutes.controller';
 import { DefaultUsersController } from './controllers/users.controller';
 import { DefaultSamplesController } from './controllers/samples.controller';
 import { RequestHandler } from 'express';
 import { uploadToMemory } from './middleware/file-upload.middleware';
-import { DefaultVersionRootController } from './controllers/versionRoot.controller';
+import { DefaultVersionRootController } from './controllers/version-root.controller';
 import { AppServerConfiguration } from './model/server.model';
 import { DefaultNRLsController } from './controllers/nrls.controller';
 

@@ -3,7 +3,7 @@ import {
     PDFConstants,
     SampleSheetPDFConfig
 } from '../model/pdf.model';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import { injectable, inject } from 'inversify';
 import { APPLICATION_TYPES } from '../../application.types';
 import {
@@ -78,7 +78,9 @@ export class DefaultPDFConfigProviderService
 
     private preProcessStyles() {
         this.preProcessStyle(this.defaultStyle);
-        _.forEach(this.styles, v => this.preProcessStyle(v));
+        _.forEach(this.styles, v => {
+            this.preProcessStyle(v);
+        });
     }
 
     private preProcessStyle(style: {}) {

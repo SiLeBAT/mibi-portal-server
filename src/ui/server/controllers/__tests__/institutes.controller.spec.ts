@@ -1,14 +1,14 @@
 /// <reference types='jest' />
 
 import { getContainer } from '../../../../aspects/container/container';
-import * as mockReq from 'mock-express-request';
-import * as mockRes from 'mock-express-response';
+import mockReq from 'mock-express-request';
+import mockRes from 'mock-express-response';
 import { getApplicationContainerModule } from '../../../../app/ports';
 import { InstitutesController } from '../../model/controller.model';
 import { Container } from 'inversify';
 import { getServerContainerModule } from '../../server.module';
 import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
-import SERVER_TYPES from '../../server.types';
+import { SERVER_TYPES } from '../../server.types';
 
 // tslint:disable
 describe('Institution controller', () => {
@@ -46,7 +46,7 @@ describe('Institution controller', () => {
         container = null;
     });
 
-    it('should respond with list of institutes', function() {
+    it('should respond with list of institutes', function () {
         const req = new mockReq({
             method: 'GET',
             headers: {

@@ -1,5 +1,5 @@
-import * as _ from 'lodash';
-import * as Fuse from 'fuse.js';
+import _ from 'lodash';
+import Fuse from 'fuse.js';
 import {
     autoCorrectADV16,
     autoCorrectADV8,
@@ -102,7 +102,7 @@ describe('Custom Auto-correction Functions', () => {
                 getCatalog: jest.fn(() => {
                     return {
                         dump: () => mockADVEntries,
-                        getFuzzyIndex: (options: Fuse.FuseOptions) =>
+                        getFuzzyIndex: (options: Fuse.IFuseOptions<{}>) =>
                             new Fuse(mockADVEntries, options),
                         containsEntryWithKeyValue: (k: string, v: string) =>
                             // @ts-ignore
@@ -233,8 +233,7 @@ describe('Custom Auto-correction Functions', () => {
                 correctionOffer: [
                     'Escherichia coli',
                     'Salmonella Colindale',
-                    'Escherichia coli Carbapenemase-bildend',
-                    'Salmonella Dublin'
+                    'Escherichia coli Carbapenemase-bildend'
                 ],
                 code: 0
             });
@@ -244,7 +243,11 @@ describe('Custom Auto-correction Functions', () => {
             const specificSampleData = {
                 ...genericSampleData,
                 ...{
-                    pathogen_adv: { value: '', errors: [], correctionOffer: [] }
+                    pathogen_adv: {
+                        value: '',
+                        errors: [],
+                        correctionOffer: []
+                    }
                 }
             };
 
@@ -304,7 +307,7 @@ describe('Custom Auto-correction Functions', () => {
                 getCatalog: jest.fn(() => {
                     return {
                         dump: () => mockADVEntries,
-                        getFuzzyIndex: (options: Fuse.FuseOptions) =>
+                        getFuzzyIndex: (options: Fuse.IFuseOptions<{}>) =>
                             new Fuse(mockADVEntries, options),
                         containsEntryWithKeyValue: (k: string, v: string) =>
                             // @ts-ignore
@@ -476,7 +479,7 @@ describe('Custom Auto-correction Functions', () => {
                 getCatalog: jest.fn(() => {
                     return {
                         dump: () => mockADVEntries,
-                        getFuzzyIndex: (options: Fuse.FuseOptions) =>
+                        getFuzzyIndex: (options: Fuse.IFuseOptions<{}>) =>
                             new Fuse(mockADVEntries, options),
                         containsEntryWithKeyValue: (k: string, v: string) =>
                             // @ts-ignore
@@ -612,7 +615,7 @@ describe('Custom Auto-correction Functions', () => {
                 getCatalog: jest.fn(() => {
                     return {
                         dump: () => mockADVEntries,
-                        getFuzzyIndex: (options: Fuse.FuseOptions) =>
+                        getFuzzyIndex: (options: Fuse.IFuseOptions<{}>) =>
                             new Fuse(mockADVEntries, options),
                         containsEntryWithKeyValue: (k: string, v: string) =>
                             // @ts-ignore
@@ -700,7 +703,7 @@ describe('Custom Auto-correction Functions', () => {
                 getCatalog: jest.fn(() => {
                     return {
                         dump: () => mockADVEntries,
-                        getFuzzyIndex: (options: Fuse.FuseOptions) =>
+                        getFuzzyIndex: (options: Fuse.IFuseOptions<{}>) =>
                             new Fuse(mockADVEntries, options),
                         containsEntryWithKeyValue: (k: string, v: string) =>
                             // @ts-ignore
@@ -828,7 +831,7 @@ describe('Custom Auto-correction Functions', () => {
                 getCatalog: jest.fn(() => {
                     return {
                         dump: () => mockADVEntries,
-                        getFuzzyIndex: (options: Fuse.FuseOptions) =>
+                        getFuzzyIndex: (options: Fuse.IFuseOptions<{}>) =>
                             new Fuse(mockADVEntries, options),
                         containsEntryWithKeyValue: (k: string, v: string) =>
                             // @ts-ignore
