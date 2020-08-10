@@ -1,5 +1,5 @@
-import { Institute } from './institute.model';
 import { TokenType } from '../domain/enums';
+import { Institute } from './institute.model';
 
 export interface UserCredentials {
     email: string;

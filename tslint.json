@@ -32,6 +32,7 @@
         "strict-string-expressions": true,
         "no-promise-as-boolean": true,
         "invalid-void": [true, {"allow-generics": ["Promise"]}],
+        "ordered-imports": true,
 
         "no-for-in": false,
         "strict-boolean-expressions": false,

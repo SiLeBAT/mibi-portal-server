@@ -1,29 +1,29 @@
+import { inject, injectable } from 'inversify';
 import { logger } from '../../../aspects';
+import { NotificationType } from '../../core/domain/enums';
+import { ConfigurationService } from '../../core/model/configuration.model';
 import {
-    RegistrationService,
-    UserRegistration,
-    RequestActivationNotificationPayload,
-    RequestAdminActivationNotificationPayload,
+    EmailNotificationMeta,
+    Notification,
+    NotificationService
+} from '../../core/model/notification.model';
+import { UserAlreadyExistsError } from '../domain/domain.error';
+import { TokenType } from '../domain/enums';
+import { createUser } from '../domain/user.entity';
+import { InstituteService } from '../model/institute.model';
+import { RecoveryData } from '../model/login.model';
+import {
     AdminActivationNotificationPayload,
     AdminActivationReminderPayload,
-    AlreadyRegisteredUserNotificationPayload
+    AlreadyRegisteredUserNotificationPayload,
+    RegistrationService,
+    RequestActivationNotificationPayload,
+    RequestAdminActivationNotificationPayload,
+    UserRegistration
 } from '../model/registration.model';
-import {
-    NotificationService,
-    Notification,
-    EmailNotificationMeta
-} from '../../core/model/notification.model';
-import { NotificationType } from '../../core/domain/enums';
-import { createUser } from '../domain/user.entity';
-import { RecoveryData } from '../model/login.model';
-import { User, UserToken, UserService } from '../model/user.model';
-import { TokenType } from '../domain/enums';
 import { TokenService } from '../model/token.model';
-import { ConfigurationService } from '../../core/model/configuration.model';
-import { InstituteService } from '../model/institute.model';
-import { injectable, inject } from 'inversify';
+import { User, UserService, UserToken } from '../model/user.model';
 import { APPLICATION_TYPES } from './../../application.types';
-import { UserAlreadyExistsError } from '../domain/domain.error';
 
 @injectable()
 export class DefaultRegistrationService implements RegistrationService {

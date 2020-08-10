@@ -1,5 +1,5 @@
-import { SearchAlias } from './validation.model';
 import Fuse from 'fuse.js';
+import { SearchAlias } from './validation.model';
 
 export type CatalogData =
     | Record<string, string>

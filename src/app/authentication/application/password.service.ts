@@ -1,21 +1,22 @@
+import { inject, injectable } from 'inversify';
+import { NotificationType } from '../../core/domain/enums';
+import { ConfigurationService } from '../../core/model/configuration.model';
+import {
+    EmailNotificationMeta,
+    Notification,
+    NotificationService
+} from '../../core/model/notification.model';
 import {
     PasswordService,
     RecoveryData,
-    ResetSuccessNotificationPayload,
-    ResetRequestNotificationPayload
+    ResetRequestNotificationPayload,
+    ResetSuccessNotificationPayload
 } from '../model/login.model';
-import { TokenType } from './../domain/enums';
-import { User, UserToken, UserService } from './../model/user.model';
-import { NotificationType } from '../../core/domain/enums';
-import {
-    NotificationService,
-    EmailNotificationMeta,
-    Notification
-} from '../../core/model/notification.model';
 import { TokenService } from '../model/token.model';
-import { ConfigurationService } from '../../core/model/configuration.model';
-import { injectable, inject } from 'inversify';
 import { APPLICATION_TYPES } from './../../application.types';
+import { TokenType } from './../domain/enums';
+import { User, UserService, UserToken } from './../model/user.model';
+
 @injectable()
 export class DefaultPasswordService implements PasswordService {
     private appName: string;

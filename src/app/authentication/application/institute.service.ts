@@ -1,9 +1,9 @@
+import { inject, injectable } from 'inversify';
 import {
-    InstituteService,
     Institute,
-    InstituteRepository
+    InstituteRepository,
+    InstituteService
 } from '../model/institute.model';
-import { injectable, inject } from 'inversify';
 import { APPLICATION_TYPES } from './../../application.types';
 
 @injectable()

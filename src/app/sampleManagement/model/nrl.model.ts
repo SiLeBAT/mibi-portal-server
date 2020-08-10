@@ -1,5 +1,5 @@
-import { Sample, Analysis } from './sample.model';
 import { NRL_ID } from '../domain/enums';
+import { Analysis, Sample } from './sample.model';
 
 export interface NRL {
     selectors: string[];

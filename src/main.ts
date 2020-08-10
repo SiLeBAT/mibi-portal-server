@@ -1,29 +1,29 @@
 import config from 'config';
-import { logger, getContainer } from './aspects';
-import { createServer, getServerContainerModule } from './ui/server/ports';
+import {
+    createApplication,
+    getApplicationContainerModule,
+    MiBiApplication
+} from './app/ports';
+import { getContainer, logger } from './aspects';
 import {
     createDataStore,
+    getMailContainerModule,
     getPersistenceContainerModule,
-    MailService,
     initialiseCatalogRepository,
     initialiseSearchAliasRepository,
-    getMailContainerModule,
+    MailService,
     MAIL_TYPES
 } from './infrastructure/ports';
 import {
-    createApplication,
-    MiBiApplication,
-    getApplicationContainerModule
-} from './app/ports';
-import {
-    SystemConfigurationService,
-    LoginConfiguration,
-    GeneralConfiguration,
-    ServerConfiguration,
-    MailConfiguration,
     AppConfiguration,
-    DataStoreConfiguration
+    DataStoreConfiguration,
+    GeneralConfiguration,
+    LoginConfiguration,
+    MailConfiguration,
+    ServerConfiguration,
+    SystemConfigurationService
 } from './main.model';
+import { createServer, getServerContainerModule } from './ui/server/ports';
 
 export class DefaultConfigurationService implements SystemConfigurationService {
     private loginConfigurationDefaults: LoginConfiguration = {

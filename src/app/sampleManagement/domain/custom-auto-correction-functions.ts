@@ -1,19 +1,19 @@
-import _ from 'lodash';
 import Fuse from 'fuse.js';
+import _ from 'lodash';
 import { logger } from '../../../aspects';
-import { SampleData, SampleProperty } from '../model/sample.model';
 import {
-    CorrectionSuggestions,
-    SearchAlias,
     CatalogEnhancement,
+    CorrectionFunction,
+    CorrectionSuggestions,
     ResultOptions,
-    CorrectionFunction
+    SearchAlias
 } from '../model/autocorrection.model';
 import {
-    CatalogService,
+    ADV9CatalogEntry,
     ADVCatalogEntry,
-    ADV9CatalogEntry
+    CatalogService
 } from '../model/catalog.model';
+import { SampleData, SampleProperty } from '../model/sample.model';
 
 function autoCorrectADV2(catalogService: CatalogService): CorrectionFunction {
     const catalogName = 'adv2';

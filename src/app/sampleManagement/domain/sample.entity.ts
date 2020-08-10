@@ -1,21 +1,22 @@
 import _ from 'lodash';
+import { EditValue } from '../model/autocorrection.model';
+import { NRLService } from '../model/nrl.model';
 import {
+    Analysis,
+    AnnotatedSampleDataEntry,
     Sample,
-    SampleMetaData,
     SampleData,
     SampleDataEntries,
-    SampleProperty,
-    AnnotatedSampleDataEntry,
-    Analysis
+    SampleMetaData,
+    SampleProperty
 } from '../model/sample.model';
-import { EditValue } from '../model/autocorrection.model';
 import {
     ValidationError,
     ValidationErrorCollection
 } from '../model/validation.model';
-import { NRL_ID, Urgency } from './enums';
 import { ZOMO_ID } from './constants';
-import { NRLService } from '../model/nrl.model';
+import { NRL_ID, Urgency } from './enums';
+
 export class DefaultSample implements Sample {
     static create(data: SampleData, meta: SampleMetaData): Sample {
         const cleanedData = _.cloneDeep(data);

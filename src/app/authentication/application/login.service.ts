@@ -1,20 +1,21 @@
+import { inject, injectable } from 'inversify';
 import moment from 'moment';
+import { ConfigurationService } from '../../core/model/configuration.model';
 import {
+    LoginResponse,
     LoginService,
-    UserLoginInformation,
-    LoginResponse
+    UserLoginInformation
 } from '../model/login.model';
 import { RegistrationService } from '../model/registration.model';
-import { User, UserService } from '../model/user.model';
 import { TokenService } from '../model/token.model';
-import { ConfigurationService } from '../../core/model/configuration.model';
+import { User, UserService } from '../model/user.model';
+import { APPLICATION_TYPES } from './../../application.types';
 import {
     AuthorizationError,
     UserNotActivatedError,
     UserNotVerifiedError
 } from './../domain/domain.error';
-import { injectable, inject } from 'inversify';
-import { APPLICATION_TYPES } from './../../application.types';
+
 @injectable()
 export class DefaultLoginService implements LoginService {
     private threshold: number;

@@ -1,14 +1,15 @@
 import { Response } from 'express';
+import { inject } from 'inversify';
+import { controller, httpGet, response } from 'inversify-express-utils';
 import { logger } from '../../../aspects';
 import { SystemInfoController } from '../model/controller.model';
-import { SystemInformationDTO } from '../model/response.model';
-import { AbstractController } from './abstract.controller';
-import { controller, httpGet, response } from 'inversify-express-utils';
-import { inject } from 'inversify';
-import { ROUTE } from '../model/enums';
-import { SERVER_TYPES } from '../server.types';
-import { AppServerConfiguration } from '../model/server.model';
 import { UnknownPackageConfigurationError } from '../model/domain.error';
+import { ROUTE } from '../model/enums';
+import { SystemInformationDTO } from '../model/response.model';
+import { AppServerConfiguration } from '../model/server.model';
+import { SERVER_TYPES } from '../server.types';
+import { AbstractController } from './abstract.controller';
+
 const pjson = require('../../../../package.json');
 
 enum INFO_ROUTE {

@@ -1,11 +1,11 @@
-import { sampleSheetPDFConfig } from '../domain/sample-sheet/sample-sheet-pdf.config';
 import { FileBuffer } from '../../core/model/file.model';
+import { sampleSheetPDFConfig } from '../domain/sample-sheet/sample-sheet-pdf.config';
 import {
+    SampleSheet,
     SampleSheetConfig,
     SampleSheetMetaStrings,
-    SampleSheetSamplesStrings,
-    SampleSheet,
-    SampleSheetNRLStrings
+    SampleSheetNRLStrings,
+    SampleSheetSamplesStrings
 } from './sample-sheet.model';
 
 export type SampleSheetPDFConfig = typeof sampleSheetPDFConfig;

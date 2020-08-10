@@ -1,11 +1,11 @@
+import { NRL_ID, Urgency } from '../domain/enums';
 import { sampleSheetConfig } from '../domain/sample-sheet/sample-sheet.config';
 import {
     sampleSheetMetaStrings,
-    sampleSheetSamplesStrings,
-    sampleSheetNRLStrings
+    sampleSheetNRLStrings,
+    sampleSheetSamplesStrings
 } from '../domain/sample-sheet/sample-sheet.strings';
-import { NRL_ID, Urgency } from '../domain/enums';
-import { Address, SampleSet, Sample } from './sample.model';
+import { Address, Sample, SampleSet } from './sample.model';
 
 export type SampleSheetConfig = typeof sampleSheetConfig;
 export type SampleSheetMetaStrings = typeof sampleSheetMetaStrings;

@@ -1,19 +1,17 @@
-import path from 'path';
-import express from 'express';
-import helmet from 'helmet';
 import compression from 'compression';
 import cors from 'cors';
-import morgan from 'morgan';
-import swaggerUi from 'swagger-ui-express';
+import express from 'express';
+import helmet from 'helmet';
+import { Container, injectable } from 'inversify';
 import { InversifyExpressServer } from 'inversify-express-utils';
-
-// local
+import morgan from 'morgan';
+import path from 'path';
+import swaggerUi from 'swagger-ui-express';
+import { Logger } from '../../aspects/logging';
 import { logger } from './../../aspects';
 import { validateToken } from './middleware/token-validator.middleware';
-import { Logger } from '../../aspects/logging';
-import { SERVER_ERROR_CODE, ROUTE } from './model/enums';
+import { ROUTE, SERVER_ERROR_CODE } from './model/enums';
 import { AppServerConfiguration } from './model/server.model';
-import { injectable, Container } from 'inversify';
 import { SERVER_TYPES } from './server.types';
 
 export interface AppServer {

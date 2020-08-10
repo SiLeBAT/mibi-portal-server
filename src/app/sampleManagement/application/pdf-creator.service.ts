@@ -1,21 +1,21 @@
-import { injectable, inject } from 'inversify';
-import {
-    PDFCreatorService,
-    PDFConfigProviderService
-} from '../model/pdf.model';
-import { Address, SampleData, Sample } from '../model/sample.model';
-import { APPLICATION_TYPES } from '../../application.types';
-import _ from 'lodash';
 import fs from 'fs';
-import { NRL_ID, Urgency } from '../domain/enums';
+import { inject, injectable } from 'inversify';
+import _ from 'lodash';
+import { APPLICATION_TYPES } from '../../application.types';
 import { FileBuffer } from '../../core/model/file.model';
 import { PDFService } from '../../pdf/pdf.model';
+import { NRL_ID, Urgency } from '../domain/enums';
+import {
+    PDFConfigProviderService,
+    PDFCreatorService
+} from '../model/pdf.model';
 import {
     SampleSheet,
-    SampleSheetMetaData,
     SampleSheetAnalysis,
-    SampleSheetAnalysisOption
+    SampleSheetAnalysisOption,
+    SampleSheetMetaData
 } from '../model/sample-sheet.model';
+import { Address, Sample, SampleData } from '../model/sample.model';
 
 @injectable()
 export class DefaultPDFCreatorService implements PDFCreatorService {

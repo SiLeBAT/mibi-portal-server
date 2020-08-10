@@ -1,24 +1,24 @@
+import { inject, injectable } from 'inversify';
 import _ from 'lodash';
 import { logger } from '../../../aspects';
 import {
-    FormValidatorService,
-    Validator,
-    AVVFormatProvider,
-    ValidationErrorProvider,
-    ValidationOptions,
-    ValidationConstraints,
-    ValidationRuleSet,
-    ValidationRule
-} from '../model/validation.model';
-import { CatalogService } from '../model/catalog.model';
+    baseConstraints,
+    standardConstraints,
+    zoMoConstraints
+} from '../domain/validation-constraints';
 import { createValidator } from '../domain/validator.entity';
+import { CatalogService } from '../model/catalog.model';
 import { Sample, SampleProperty } from '../model/sample.model';
 import {
-    baseConstraints,
-    zoMoConstraints,
-    standardConstraints
-} from '../domain/validation-constraints';
-import { injectable, inject } from 'inversify';
+    AVVFormatProvider,
+    FormValidatorService,
+    ValidationConstraints,
+    ValidationErrorProvider,
+    ValidationOptions,
+    ValidationRule,
+    ValidationRuleSet,
+    Validator
+} from '../model/validation.model';
 import { APPLICATION_TYPES } from './../../application.types';
 
 enum ConstraintSet {

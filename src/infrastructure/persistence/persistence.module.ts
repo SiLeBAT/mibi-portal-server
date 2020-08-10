@@ -1,39 +1,39 @@
-import { PERSISTENCE_TYPES } from './persistence.types';
 import { ContainerModule, interfaces } from 'inversify';
 import { Model } from 'mongoose';
-import { ValidationErrorModel } from './data-store/mongoose/schemas/validation-error.schema';
 import {
-    MongooseValidationErrorModel,
-    MongooseUserModel,
-    MongooseTokenModel,
-    MongooseStateModel,
+    CatalogRepository,
+    FileRepository,
+    InstituteRepository,
+    NRLRepository,
+    SearchAliasRepository,
+    StateRepository,
+    TokenRepository,
+    UserRepository,
+    ValidationErrorRepository
+} from '../../app/ports';
+import { APPLICATION_TYPES } from './../../app/application.types';
+import {
+    MongooseInstitutionModel,
     MongooseNRLModel,
-    MongooseInstitutionModel
+    MongooseStateModel,
+    MongooseTokenModel,
+    MongooseUserModel,
+    MongooseValidationErrorModel
 } from './data-store/mongoose/mongoose.model';
-import { UserModel } from './data-store/mongoose/schemas/user.schema';
+import { InstitutionModel } from './data-store/mongoose/schemas/institution.schema';
+import { NRLModel } from './data-store/mongoose/schemas/nrl.schema';
 import { TokenModel } from './data-store/mongoose/schemas/reset-token.schema';
 import { StateModel } from './data-store/mongoose/schemas/state.schema';
-import { NRLModel } from './data-store/mongoose/schemas/nrl.schema';
-import { InstitutionModel } from './data-store/mongoose/schemas/institution.schema';
-import {
-    NRLRepository,
-    StateRepository,
-    InstituteRepository,
-    UserRepository,
-    TokenRepository,
-    ValidationErrorRepository,
-    FileRepository,
-    SearchAliasRepository,
-    CatalogRepository
-} from '../../app/ports';
+import { UserModel } from './data-store/mongoose/schemas/user.schema';
+import { ValidationErrorModel } from './data-store/mongoose/schemas/validation-error.schema';
+import { PERSISTENCE_TYPES } from './persistence.types';
+import { DefaultFileRepository } from './repositories/file.repository';
+import { MongooseInstituteRepository } from './repositories/institute.repository';
 import { MongooseNRLRepository } from './repositories/nrl.repository';
 import { DefaultStateRepository } from './repositories/state.repository';
-import { MongooseInstituteRepository } from './repositories/institute.repository';
-import { DefaultUserRepository } from './repositories/user.repository';
 import { DefaultTokenRepository } from './repositories/token.repository';
+import { DefaultUserRepository } from './repositories/user.repository';
 import { DefaultValidationErrorRepository } from './repositories/validation-error.repository';
-import { DefaultFileRepository } from './repositories/file.repository';
-import { APPLICATION_TYPES } from './../../app/application.types';
 
 export interface PersistenceContainerModuleConfig {
     searchAliasRepository: SearchAliasRepository;

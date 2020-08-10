@@ -1,4 +1,4 @@
-import { UserCredentials, User } from './user.model';
+import { User, UserCredentials } from './user.model';
 
 export interface UserLoginInformation extends UserCredentials {
     userAgent: string | string[] | undefined;

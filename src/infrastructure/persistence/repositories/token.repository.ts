@@ -1,15 +1,15 @@
-import { TokenModel } from '../data-store/mongoose/schemas/reset-token.schema';
-import { MongooseRepositoryBase } from '../data-store/mongoose/mongoose.repository';
+import { inject, injectable } from 'inversify';
 import { JsonWebTokenError } from 'jsonwebtoken';
+import { Model } from 'mongoose';
+import { MongooseRepositoryBase } from '../data-store/mongoose/mongoose.repository';
+import { TokenModel } from '../data-store/mongoose/schemas/reset-token.schema';
+import { PERSISTENCE_TYPES } from '../persistence.types';
 import {
     TokenRepository,
-    User,
     TokenType,
+    User,
     UserToken
 } from './../../../app/ports';
-import { injectable, inject } from 'inversify';
-import { Model } from 'mongoose';
-import { PERSISTENCE_TYPES } from '../persistence.types';
 
 @injectable()
 export class DefaultTokenRepository extends MongooseRepositoryBase<TokenModel>

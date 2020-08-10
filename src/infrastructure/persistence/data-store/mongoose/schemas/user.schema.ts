@@ -1,7 +1,7 @@
 import { Schema } from 'mongoose';
 import mongooseUniqueValidator from 'mongoose-unique-validator';
-import { InstitutionModel } from './institution.schema';
 import { CommonModel } from '../common.model';
+import { InstitutionModel } from './institution.schema';
 
 export interface UserModel extends CommonModel {
     password: string;

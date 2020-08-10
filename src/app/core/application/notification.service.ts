@@ -1,13 +1,13 @@
 import { EventEmitter } from 'events';
-import {
-    Notification,
-    NotificationService,
-    NotificationMeta,
-    EmailNotificationMeta,
-    Attachment
-} from '../model/notification.model';
 import { injectable } from 'inversify';
 import { logger } from '../../../aspects';
+import {
+    Attachment,
+    EmailNotificationMeta,
+    Notification,
+    NotificationMeta,
+    NotificationService
+} from '../model/notification.model';
 
 @injectable()
 export class DefaultNotificationService implements NotificationService {

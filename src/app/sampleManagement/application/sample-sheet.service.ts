@@ -1,17 +1,17 @@
-import { injectable, inject } from 'inversify';
-import { SampleSet, Analysis, Sample } from '../model/sample.model';
-import { EMPTY_ANALYSIS } from '../domain/constants';
+import { inject, injectable } from 'inversify';
 import _ from 'lodash';
-import {
-    SampleSheetService,
-    SampleSheet,
-    SampleSheetMetaData,
-    SampleSheetAnalysis,
-    SampleSheetAnalysisOption
-} from '../model/sample-sheet.model';
-import { NRL_ID, Urgency } from '../domain/enums';
 import { APPLICATION_TYPES } from '../../application.types';
+import { EMPTY_ANALYSIS } from '../domain/constants';
+import { NRL_ID, Urgency } from '../domain/enums';
 import { NRLService } from '../model/nrl.model';
+import {
+    SampleSheet,
+    SampleSheetAnalysis,
+    SampleSheetAnalysisOption,
+    SampleSheetMetaData,
+    SampleSheetService
+} from '../model/sample-sheet.model';
+import { Analysis, Sample, SampleSet } from '../model/sample.model';
 
 @injectable()
 export class DefaultSampleSheetService implements SampleSheetService {

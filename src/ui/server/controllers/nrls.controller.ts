@@ -1,18 +1,18 @@
 import { Request, Response } from 'express';
-import { NRLPort, NRL } from '../../../app/ports';
-import { logger } from '../../../aspects';
-import { NRLsController } from '../model/controller.model';
-import { NRLDTO, NRLCollectionDTO } from '../model/response.model';
-import { AbstractController } from './abstract.controller';
+import { inject } from 'inversify';
 import {
     controller,
     httpGet,
     request,
     response
 } from 'inversify-express-utils';
-import { inject } from 'inversify';
-import { ROUTE } from '../model/enums';
 import { APPLICATION_TYPES } from '../../../app/application.types';
+import { NRL, NRLPort } from '../../../app/ports';
+import { logger } from '../../../aspects';
+import { NRLsController } from '../model/controller.model';
+import { ROUTE } from '../model/enums';
+import { NRLCollectionDTO, NRLDTO } from '../model/response.model';
+import { AbstractController } from './abstract.controller';
 
 enum NRL_ROUTE {
     ROOT = '/nrls'

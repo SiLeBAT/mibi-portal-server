@@ -1,5 +1,5 @@
-import { OrderDTO } from './shared-dto.model';
 import { ExcelFileInfo } from '../../../app/ports';
+import { OrderDTO } from './shared-dto.model';
 
 export interface RegistrationRequestResponseDTO {
     registerRequest: boolean;

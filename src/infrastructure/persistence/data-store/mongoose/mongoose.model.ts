@@ -1,25 +1,25 @@
+import mongoose from 'mongoose';
 import {
     AnalysisProcedureModel,
     analysisProcedureSchema
 } from './schemas/analysis-prodecure.schema';
-import mongoose from 'mongoose';
 
 import {
-    institutionSchema,
-    InstitutionModel
+    InstitutionModel,
+    institutionSchema
 } from './schemas/institution.schema';
 
-import { nrlSchema, NRLModel } from './schemas/nrl.schema';
+import { NRLModel, nrlSchema } from './schemas/nrl.schema';
 
-import { tokenSchema, TokenModel } from './schemas/reset-token.schema';
+import { TokenModel, tokenSchema } from './schemas/reset-token.schema';
 
 import { StateModel, stateSchema } from './schemas/state.schema';
 
-import { userSchema, UserModel } from './schemas/user.schema';
+import { UserModel, userSchema } from './schemas/user.schema';
 
 import {
-    validationErrorSchema,
-    ValidationErrorModel
+    ValidationErrorModel,
+    validationErrorSchema
 } from './schemas/validation-error.schema';
 
 export const MongooseStateModel = mongoose.model<StateModel>(

@@ -1,7 +1,7 @@
 import { ContainerModule, interfaces } from 'inversify';
+import { DefaultMailService } from './mail';
 import { MailConfiguration } from './mail.model';
 import { MAIL_TYPES } from './mail.types';
-import { DefaultMailService } from './mail';
 
 export function getMailContainerModule(
     mailConfig: MailConfiguration

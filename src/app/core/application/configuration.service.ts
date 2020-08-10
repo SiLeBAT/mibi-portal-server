@@ -1,9 +1,8 @@
-// npm
+import { inject, injectable } from 'inversify';
 import {
     ApplicationConfiguration,
     ConfigurationService
 } from '../model/configuration.model';
-import { injectable, inject } from 'inversify';
 import { APPLICATION_TYPES } from './../../application.types';
 
 @injectable()

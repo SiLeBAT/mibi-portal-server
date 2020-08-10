@@ -1,24 +1,24 @@
-import { ADVCatalogEntry, ZSPCatalogEntry } from './../model/catalog.model';
-import moment from 'moment';
 import _ from 'lodash';
+import moment from 'moment';
+import { CatalogService } from '../model/catalog.model';
+import { SampleDataValues, SampleProperty } from '../model/sample.model';
 import {
-    ValidationError,
-    RequiredIfOtherOptions,
-    MatchRegexPatternOptions,
-    MatchIdToYearOptions,
-    ValidatorFunction,
-    NonUniqueEntryOptions,
-    InCatalogOptions,
-    MatchADVNumberOrStringOptions,
-    RegisteredZoMoOptions,
     AtLeastOneOfOptions,
     DependentFieldsOptions,
+    InCatalogOptions,
+    MatchADVNumberOrStringOptions,
+    MatchIdToYearOptions,
+    MatchRegexPatternOptions,
+    NonUniqueEntryOptions,
     NumbersOnlyOptions,
     ReferenceDateOptions,
+    RegisteredZoMoOptions,
+    RequiredIfOtherOptions,
+    ValidationError,
+    ValidatorFunction,
     ValidatorFunctionOptions
 } from '../model/validation.model';
-import { CatalogService } from '../model/catalog.model';
-import { SampleProperty, SampleDataValues } from '../model/sample.model';
+import { ADVCatalogEntry, ZSPCatalogEntry } from './../model/catalog.model';
 import { MalformedValidationOptionsError } from './domain.error';
 import { NRL_ID } from './enums';
 

@@ -1,22 +1,22 @@
+import { inject, injectable } from 'inversify';
 import _ from 'lodash';
 import { logger } from '../../../aspects';
 import {
-    autoCorrectADV16,
-    autoCorrectADV9,
-    autoCorrectADV8,
     autoCorrectADV12,
+    autoCorrectADV16,
+    autoCorrectADV2,
     autoCorrectADV3,
-    autoCorrectADV2
+    autoCorrectADV8,
+    autoCorrectADV9
 } from '../domain/custom-auto-correction-functions';
 import {
     CorrectionFunction,
-    FormAutoCorrectionService,
-    CorrectionSuggestions
+    CorrectionSuggestions,
+    FormAutoCorrectionService
 } from '../model/autocorrection.model';
 import { CatalogService } from '../model/catalog.model';
-import { ValidationErrorProvider } from '../model/validation.model';
 import { Sample, SampleData } from '../model/sample.model';
-import { injectable, inject } from 'inversify';
+import { ValidationErrorProvider } from '../model/validation.model';
 import { APPLICATION_TYPES } from './../../application.types';
 
 @injectable()

@@ -1,6 +1,6 @@
+import { SearchAlias, SearchAliasRepository } from '../../../app/ports';
 import { logger } from '../../../aspects';
 import { loadJSONFile } from '../data-store/file/file-loader';
-import { SearchAliasRepository, SearchAlias } from '../../../app/ports';
 
 class FileSearchAliasRepository implements SearchAliasRepository {
     private fileName = 'search-alias.json';

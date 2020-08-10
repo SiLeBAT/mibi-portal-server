@@ -1,14 +1,14 @@
+import { inject, injectable } from 'inversify';
 import { sign, verify } from 'jsonwebtoken';
 import { ConfigurationService } from '../../core/model/configuration.model';
+import { TokenType } from '../domain/enums';
 import {
-    TokenService,
-    TokenPayload,
     AdminTokenPayload,
-    TokenRepository
+    TokenPayload,
+    TokenRepository,
+    TokenService
 } from '../model/token.model';
 import { User, UserToken } from '../model/user.model';
-import { TokenType } from '../domain/enums';
-import { injectable, inject } from 'inversify';
 import { APPLICATION_TYPES } from './../../application.types';
 
 @injectable()

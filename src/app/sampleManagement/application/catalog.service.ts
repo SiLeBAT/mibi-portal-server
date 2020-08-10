@@ -1,9 +1,9 @@
+import { inject, injectable } from 'inversify';
 import _ from 'lodash';
-import { CatalogRepository, SearchAliasRepository } from '../../ports';
 import { logger } from '../../../aspects';
-import { CatalogService, Catalog, CatalogData } from '../model/catalog.model';
+import { CatalogRepository, SearchAliasRepository } from '../../ports';
+import { Catalog, CatalogData, CatalogService } from '../model/catalog.model';
 import { SearchAlias } from '../model/validation.model';
-import { injectable, inject } from 'inversify';
 import { APPLICATION_TYPES } from './../../application.types';
 
 @injectable()

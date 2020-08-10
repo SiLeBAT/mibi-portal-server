@@ -1,24 +1,24 @@
-import { DefaultTokensController } from './controllers/tokens.controller';
+import { RequestHandler } from 'express';
 import { ContainerModule, interfaces } from 'inversify';
-import {
-    SystemInfoController,
-    InstitutesController,
-    UsersController,
-    SamplesController,
-    VersionRootController,
-    TokensController,
-    NRLsController
-} from './model/controller.model';
-import { SERVER_TYPES } from './server.types';
 import { DefaultSystemInfoController } from './controllers/info.controller';
 import { DefaultInstituteController } from './controllers/institutes.controller';
-import { DefaultUsersController } from './controllers/users.controller';
-import { DefaultSamplesController } from './controllers/samples.controller';
-import { RequestHandler } from 'express';
-import { uploadToMemory } from './middleware/file-upload.middleware';
-import { DefaultVersionRootController } from './controllers/version-root.controller';
-import { AppServerConfiguration } from './model/server.model';
 import { DefaultNRLsController } from './controllers/nrls.controller';
+import { DefaultSamplesController } from './controllers/samples.controller';
+import { DefaultTokensController } from './controllers/tokens.controller';
+import { DefaultUsersController } from './controllers/users.controller';
+import { DefaultVersionRootController } from './controllers/version-root.controller';
+import { uploadToMemory } from './middleware/file-upload.middleware';
+import {
+    InstitutesController,
+    NRLsController,
+    SamplesController,
+    SystemInfoController,
+    TokensController,
+    UsersController,
+    VersionRootController
+} from './model/controller.model';
+import { AppServerConfiguration } from './model/server.model';
+import { SERVER_TYPES } from './server.types';
 
 export function getServerContainerModule(
     serverCongfiguration: AppServerConfiguration

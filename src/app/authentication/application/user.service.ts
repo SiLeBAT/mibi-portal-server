@@ -1,7 +1,8 @@
+import { inject, injectable } from 'inversify';
 import { UserRepository } from '../../ports';
-import { UserService, User } from '../model/user.model';
-import { injectable, inject } from 'inversify';
+import { User, UserService } from '../model/user.model';
 import { APPLICATION_TYPES } from './../../application.types';
+
 @injectable()
 export class DefaultUserService implements UserService {
     constructor(
