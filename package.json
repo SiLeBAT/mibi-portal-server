@@ -22,7 +22,7 @@
     "test:coverage": "npm test -- --coverage && open coverage/lcov-report/index.html",
     "test:report": "npm test -- --reporters default jest-stare --testResultsProcessor=jest-stare && open jest-stare/index.html",
     "clean": "npx rimraf lib/*",
-    "lint": "tslint --project tsconfig.json --fix -c tslint.json \"src/**/*.ts\"",
+    "lint": "tslint --project tsconfig.json --fix -c tslint.json -e \"src/**/__mocks__/*.ts\" -e \"src/**/__tests__/*.ts\" -e \"test/**/*.ts\" \"src/**/*.ts\"",
     "pretty": "prettier --write \"src/**/*.ts\""
   },
   "husky": {
@@ -95,7 +95,7 @@
     "@types/swagger-ui-express": "3.0.1",
     "copyfiles": "~2.3.0",
     "husky": "~4.2.5",
-    "jest": "~25.5.4",
+    "jest": "~26.3.0",
     "jest-stare": "~1.27.0",
     "lint-staged": "~10.2.11",
     "mock-express-request": "0.2.2",

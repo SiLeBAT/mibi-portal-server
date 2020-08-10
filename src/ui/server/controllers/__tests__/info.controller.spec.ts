@@ -48,12 +48,11 @@ describe('Info controller', () => {
     it('should respond with JSON', function () {
         const res = new mockRes();
         expect.assertions(4);
-        return controller.getSystemInfo(res).then(success => {
-            expect(res.statusCode).toBe(200);
-            const body = res._getJSON();
-            expect(body).toHaveProperty('version');
-            expect(body).toHaveProperty('supportContact');
-            expect(body).toHaveProperty('lastChange');
-        });
+        controller.getSystemInfo(res);
+        expect(res.statusCode).toBe(200);
+        const body = res._getJSON();
+        expect(body).toHaveProperty('version');
+        expect(body).toHaveProperty('supportContact');
+        expect(body).toHaveProperty('lastChange');
     });
 });
