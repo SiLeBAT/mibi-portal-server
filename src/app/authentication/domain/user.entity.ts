@@ -18,6 +18,7 @@ class GenericUser implements User {
     email: string;
     institution: Institute;
     dataProtectionAgreed: boolean;
+    dataProtectionDate: Date;
 
     static create(
         id: string,
@@ -27,6 +28,7 @@ class GenericUser implements User {
         inst: Institute,
         password: string,
         dataProtectionAgreed: boolean,
+        dataProtectionDate: Date,
         enabled: boolean = false,
         adminEnabled: boolean = false,
         numAttempt: number = 0,
@@ -40,6 +42,7 @@ class GenericUser implements User {
             inst,
             password,
             dataProtectionAgreed,
+            dataProtectionDate,
             enabled,
             adminEnabled,
             numAttempt,
@@ -55,6 +58,7 @@ class GenericUser implements User {
         inst: Institute,
         private _password: string,
         dataProtectionAgreed: boolean,
+        dataProtectionDate: Date,
         private enabled: boolean,
         private adminEnabled: boolean,
         private numAttempt: number,
@@ -66,6 +70,7 @@ class GenericUser implements User {
         this.lastName = lname;
         this.institution = inst;
         this.dataProtectionAgreed = dataProtectionAgreed;
+        this.dataProtectionDate = dataProtectionDate;
     }
 
     get password(): string {
@@ -133,6 +138,7 @@ export function createUser(
     inst: Institute,
     password: string,
     dataProtectionAgreed: boolean,
+    dataProtectionDate: Date,
     enabled: boolean = false,
     adminEnabled: boolean = false,
     numAttempt: number = 0,
@@ -146,6 +152,7 @@ export function createUser(
         inst,
         password,
         dataProtectionAgreed,
+        dataProtectionDate,
         enabled,
         adminEnabled,
         numAttempt,

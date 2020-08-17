@@ -14,7 +14,8 @@ import { AbstractController } from './abstract.controller';
 import {
     ResetRequestDTO,
     NewPasswordRequestDTO,
-    RegistrationDetailsDTO
+    RegistrationDetailsDTO,
+    GDPRConfirmationRequestDTO
 } from '../model/request.model';
 import {
     PasswordResetRequestResponseDTO,
@@ -46,7 +47,8 @@ enum USERS_ROUTE {
     LOGIN = '/login',
     VERIFICATION = '/verification',
     ACTIVATION = '/activation',
-    REGISTRATION = '/registration'
+    REGISTRATION = '/registration',
+    GDPR_AGREEMENT = '/gdpr-agreement'
 }
 @controller(ROUTE.VERSION + USERS_ROUTE.ROOT)
 export class DefaultUsersController extends AbstractController
@@ -95,6 +97,7 @@ export class DefaultUsersController extends AbstractController
             this.handleError(res, error);
         }
     }
+
     @httpPatch(USERS_ROUTE.RESET_PASSWORD + '/:token')
     async patchResetPassword(
         @requestParam('token') token: string,
@@ -152,6 +155,40 @@ export class DefaultUsersController extends AbstractController
         } catch (error) {
             logger.info(
                 `${this.constructor.name}.${this.postLogin.name} has thrown an error. ${error}`
+            );
+            this.handleError(res, error);
+        }
+    }
+
+    @httpPut(USERS_ROUTE.GDPR_AGREEMENT)
+    async putGDPRAgreement(@request() req: Request, @response() res: Response) {
+        logger.info(
+            `${this.constructor.name}.${this.putGDPRAgreement.name}, Request received`
+        );
+        try {
+            const gdprConfirmationRequest: GDPRConfirmationRequestDTO =
+                req.body;
+
+            if (!gdprConfirmationRequest.email) {
+                throw new MalformedRequestError(
+                    'Email for password reset not supplied'
+                );
+            }
+
+            const response: LoginResponse = await this.loginService.confirmGDPR(
+                gdprConfirmationRequest
+            );
+
+            const dto: TokenizedUserDTO = this.fromLoginResponseToResponseDTO(
+                response
+            );
+            logger.info(
+                `${this.constructor.name}.${this.putGDPRAgreement.name}, Response sent`
+            );
+            this.ok(res, dto);
+        } catch (error) {
+            logger.info(
+                `${this.constructor.name}.${this.putGDPRAgreement.name} has thrown an error. ${error}`
             );
             this.handleError(res, error);
         }
@@ -303,7 +340,8 @@ export class DefaultUsersController extends AbstractController
             email: req.body.email,
             password: req.body.password,
             userAgent: req.headers['user-agent'],
-            host: req.headers['host']
+            host: req.headers['host'],
+            gdprDate: req.body.gdprDate
         };
     }
     private fromLoginResponseToResponseDTO(
@@ -314,7 +352,8 @@ export class DefaultUsersController extends AbstractController
             lastName: response.user.lastName,
             email: response.user.email,
             token: response.token,
-            instituteId: response.user.institution.uniqueId
+            instituteId: response.user.institution.uniqueId,
+            gdprAgreementRequested: response.gdprAgreementRequested
         };
     }
 }

@@ -21,6 +21,7 @@ export interface AppConfiguration {
     jobRecipient: string;
     login: LoginConfiguration;
     apiUrl: string;
+    gdprDate: string;
 }
 
 export interface LoginConfiguration {

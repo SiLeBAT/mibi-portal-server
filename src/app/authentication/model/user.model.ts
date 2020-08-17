@@ -14,6 +14,7 @@ export interface User {
     uniqueId: string;
     readonly password: string;
     dataProtectionAgreed: boolean;
+    dataProtectionDate: Date;
     isAuthorized(credentials: UserCredentials): Promise<boolean>;
     updatePassword(password: string): Promise<string>;
     updateNumberOfFailedAttempts(increment: boolean): void;

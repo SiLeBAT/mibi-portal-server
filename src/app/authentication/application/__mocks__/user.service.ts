@@ -7,6 +7,7 @@ export const genericUser: User = {
     email: 'test',
     password: 'test',
     dataProtectionAgreed: false,
+    dataProtectionDate: new Date('01.07.2020'),
     institution: {
         uniqueId: 'test',
         stateShort: 'test',

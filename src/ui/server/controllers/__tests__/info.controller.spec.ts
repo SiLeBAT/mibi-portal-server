@@ -33,7 +33,8 @@ describe('Info controller', () => {
                 },
                 apiUrl: 'test',
                 supportContact: 'test',
-                jwtSecret: 'test'
+                jwtSecret: 'test',
+                gdprDate: 'test'
             }),
             mockPersistenceContainerModule
         );

@@ -1,3 +1,4 @@
+import * as moment from 'moment';
 import { logger } from '../../../aspects';
 import {
     RegistrationService,
@@ -120,7 +121,8 @@ export class DefaultRegistrationService implements RegistrationService {
             credentials.lastName,
             inst,
             '',
-            credentials.dataProtectionAgreed
+            credentials.dataProtectionAgreed,
+            new Date()
         );
 
         await newUser.updatePassword(credentials.password);

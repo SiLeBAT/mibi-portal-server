@@ -20,3 +20,9 @@ export interface SampleSubmissionDTO {
     readonly order: SampleSetDTO;
     readonly comment: string;
 }
+
+export interface GDPRConfirmationRequestDTO {
+    readonly email: string;
+    readonly token: string;
+    readonly gdprConfirmed: boolean;
+}

@@ -19,7 +19,8 @@ describe('User class', () => {
                 email: []
             },
             'test',
-            true
+            true,
+            new Date('01.07.2020')
         );
         expect(user).toBeTruthy();
     });

@@ -33,6 +33,7 @@ function mapModelToInstitution(i: InstitutionModel): Institute {
 function mapModelToUser(model: UserModel): User {
     // FIXME: Remove this for fcl
     // const institution = mapModelToInstitution(model.institution);
+
     return createUser(
         model._id.toHexString(),
         model.email,
@@ -51,6 +52,7 @@ function mapModelToUser(model: UserModel): User {
         },
         model.password,
         model.dataProtectionAgreed,
+        model.dataProtectionDate,
         model.enabled,
         model.adminEnabled,
         model.numAttempt,

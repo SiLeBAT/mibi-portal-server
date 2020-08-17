@@ -49,12 +49,17 @@ export interface TokenizedUserDTO {
     readonly email: string;
     readonly token: string;
     readonly instituteId: string;
+    readonly gdprAgreementRequested: boolean;
 }
 
 export interface SystemInformationDTO {
     readonly version: string;
     readonly lastChange: string;
     readonly supportContact: string;
+}
+
+export interface GDPRDateDTO {
+    readonly gdprDate: string;
 }
 
 export interface InstituteCollectionDTO {

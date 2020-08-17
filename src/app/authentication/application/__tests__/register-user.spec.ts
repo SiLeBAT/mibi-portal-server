@@ -33,7 +33,8 @@ describe('Register User Use Case', () => {
                 },
                 apiUrl: 'test',
                 supportContact: 'test',
-                jwtSecret: 'test'
+                jwtSecret: 'test',
+                gdprDate: 'test'
             }),
             mockPersistenceContainerModule
         );

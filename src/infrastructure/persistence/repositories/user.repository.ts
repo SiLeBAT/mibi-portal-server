@@ -91,7 +91,8 @@ export class DefaultUserRepository extends MongooseRepositoryBase<UserModel>
             lastName: user.lastName,
             email: user.email,
             password: user.password,
-            dataProtectionAgreed: user.dataProtectionAgreed
+            dataProtectionAgreed: user.dataProtectionAgreed,
+            dataProtectionDate: user.dataProtectionDate
         });
 
         return super
@@ -105,6 +106,7 @@ export class DefaultUserRepository extends MongooseRepositoryBase<UserModel>
                     user.institution,
                     user.password,
                     user.dataProtectionAgreed,
+                    user.dataProtectionDate,
                     model.enabled,
                     model.adminEnabled
                 )
@@ -124,7 +126,9 @@ export class DefaultUserRepository extends MongooseRepositoryBase<UserModel>
                 enabled: user.isVerified(),
                 adminEnabled: user.isActivated(),
                 numAttempt: user.getNumberOfFailedAttempts(),
-                lastAttempt: user.getLastLoginAttempt()
+                lastAttempt: user.getLastLoginAttempt(),
+                dataProtectionAgreed: user.dataProtectionAgreed,
+                dataProtectionDate: user.dataProtectionDate
             })
             .then((response: UserModelUpdateResponse) => {
                 if (!response.ok) {

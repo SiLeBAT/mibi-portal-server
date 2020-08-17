@@ -5,6 +5,7 @@ export interface ApplicationConfiguration {
     apiUrl: string;
     supportContact: string;
     jwtSecret: string;
+    gdprDate: string;
 }
 
 export interface LoginConfiguration {

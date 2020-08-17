@@ -24,7 +24,8 @@ describe('Login User Use Case', () => {
                 },
                 apiUrl: 'test',
                 supportContact: 'test',
-                jwtSecret: 'test'
+                jwtSecret: 'test',
+                gdprDate: 'test'
             }),
             mockPersistenceContainerModule
         );
@@ -38,7 +39,8 @@ describe('Login User Use Case', () => {
             email: 'test',
             password: 'test',
             userAgent: 'test',
-            host: 'test'
+            host: 'test',
+            gdprDate: 'test'
         };
         const result = service.loginUser(credentials);
         // tslint:disable-next-line: no-floating-promises
@@ -72,7 +74,8 @@ describe('Login User Use Case', () => {
             email: 'test',
             password: 'test',
             userAgent: 'test',
-            host: 'test'
+            host: 'test',
+            gdprDate: 'test'
         };
         const result = service.loginUser(credentials);
         expect.assertions(1);
@@ -105,7 +108,8 @@ describe('Login User Use Case', () => {
             email: 'test',
             password: 'test',
             userAgent: 'test',
-            host: 'test'
+            host: 'test',
+            gdprDate: 'test'
         };
 
         const result = service.loginUser(credentials);
@@ -142,7 +146,8 @@ describe('Login User Use Case', () => {
             email: 'test',
             password: 'test',
             userAgent: 'test',
-            host: 'test'
+            host: 'test',
+            gdprDate: 'test'
         };
         const result = service.loginUser(credentials);
         expect.assertions(1);
@@ -180,7 +185,8 @@ describe('Login User Use Case', () => {
             email: 'test',
             password: 'test',
             userAgent: 'test',
-            host: 'test'
+            host: 'test',
+            gdprDate: 'test'
         };
         const result = service.loginUser(credentials);
         expect.assertions(1);
@@ -218,7 +224,8 @@ describe('Login User Use Case', () => {
             email: 'test',
             password: 'test',
             userAgent: 'test',
-            host: 'test'
+            host: 'test',
+            gdprDate: 'test'
         };
         const result = service.loginUser(credentials);
         expect.assertions(1);

@@ -1,17 +1,23 @@
 import { UserCredentials, User } from './user.model';
+import { GDPRConfirmationRequestDTO } from '../../../ui/server/model/request.model';
 
 export interface UserLoginInformation extends UserCredentials {
     userAgent: string | string[] | undefined;
     host: string | undefined;
+    gdprDate: string;
 }
 
 export interface LoginResponse {
     user: User;
     token: string;
+    gdprAgreementRequested: boolean;
 }
 
 export interface LoginPort {
     loginUser(credentials: UserLoginInformation): Promise<LoginResponse>;
+    confirmGDPR(
+        confirmationRequest: GDPRConfirmationRequestDTO
+    ): Promise<LoginResponse>;
 }
 
 export interface LoginService extends LoginPort {}

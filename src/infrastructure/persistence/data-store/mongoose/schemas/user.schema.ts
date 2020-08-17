@@ -72,7 +72,6 @@ export const userSchema = new Schema({
     },
     dataProtectionDate: {
         type: Date,
-        default: Date.now(),
         required: true
     },
     created: {

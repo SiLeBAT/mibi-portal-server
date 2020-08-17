@@ -15,10 +15,13 @@ import {
 } from './../domain/domain.error';
 import { injectable, inject } from 'inversify';
 import { APPLICATION_TYPES } from './../../application.types';
+import { logger } from '../../../aspects';
+import { GDPRConfirmationRequestDTO } from '../../../ui/server/model/request.model';
 @injectable()
 export class DefaultLoginService implements LoginService {
     private threshold: number;
     private secondsDelay: number;
+    private gdprDate: string;
 
     constructor(
         @inject(APPLICATION_TYPES.RegistrationService)
@@ -31,6 +34,7 @@ export class DefaultLoginService implements LoginService {
     ) {
         this.threshold = this.configurationService.getApplicationConfiguration().login.threshold;
         this.secondsDelay = this.configurationService.getApplicationConfiguration().login.secondsDelay;
+        this.gdprDate = this.configurationService.getApplicationConfiguration().gdprDate;
     }
 
     async loginUser(credentials: UserLoginInformation): Promise<LoginResponse> {
@@ -74,21 +78,63 @@ export class DefaultLoginService implements LoginService {
         }
 
         if (await user.isAuthorized(credentials)) {
+            let gdprAgreementRequested: boolean = true;
+
             if (user.getNumberOfFailedAttempts() > 0) {
                 user.updateNumberOfFailedAttempts(false);
                 await this.userService.updateUser(user);
             }
             await this.userService.updateUser(user);
 
+            if (user.dataProtectionAgreed && user.dataProtectionDate) {
+                moment.locale('en');
+                const dateParseString = 'MMMM DD, YYYY';
+                const gdprDateParsed = moment(
+                    this.gdprDate,
+                    dateParseString,
+                    true
+                );
+                const userGDPRDate = moment(user.dataProtectionDate);
+
+                if (gdprDateParsed.isBefore(userGDPRDate)) {
+                    gdprAgreementRequested = false;
+                }
+            }
+
             return {
                 user: user,
-                token: this.tokenService.generateToken(user.uniqueId)
+                token: this.tokenService.generateToken(user.uniqueId),
+                gdprAgreementRequested: gdprAgreementRequested
             };
         }
 
         user.updateNumberOfFailedAttempts(true);
         user.updateLastLoginAttempt();
         await this.userService.updateUser(user);
+
+        throw new AuthorizationError(`User not authorized. user=${user.email}`);
+    }
+
+    async confirmGDPR(
+        confirmationRequest: GDPRConfirmationRequestDTO
+    ): Promise<LoginResponse> {
+        const user = await this.userService.getUserByEmail(
+            confirmationRequest.email
+        );
+
+        if (confirmationRequest.gdprConfirmed) {
+            let gdprAgreementRequested: boolean = false;
+
+            user.dataProtectionAgreed = true;
+            user.dataProtectionDate = new Date();
+            await this.userService.updateUser(user);
+
+            return {
+                user: user,
+                token: confirmationRequest.token,
+                gdprAgreementRequested: gdprAgreementRequested
+            };
+        }
 
         throw new AuthorizationError(`User not authorized. user=${user.email}`);
     }
