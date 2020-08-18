@@ -15,6 +15,9 @@ export interface UserModel extends Document {
     institution: InstitutionModel;
     dataProtectionAgreed: boolean;
     dataProtectionDate: Date;
+    newsRegAgreed: boolean;
+    newsMailAgreed: boolean;
+    newsDate: Date;
     enabled: boolean;
     adminEnabled: boolean;
     numAttempt: number;
@@ -71,6 +74,18 @@ export const userSchema = new Schema({
         required: true
     },
     dataProtectionDate: {
+        type: Date,
+        required: true
+    },
+    newsRegAgreed: {
+        type: Boolean,
+        required: true
+    },
+    newsMailAgreed: {
+        type: Boolean,
+        required: true
+    },
+    newsDate: {
         type: Date,
         required: true
     },

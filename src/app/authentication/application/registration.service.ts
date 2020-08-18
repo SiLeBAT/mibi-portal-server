@@ -122,11 +122,15 @@ export class DefaultRegistrationService implements RegistrationService {
             inst,
             '',
             credentials.dataProtectionAgreed,
+            new Date(),
+            credentials.newsRegAgreed,
+            credentials.newsMailAgreed,
             new Date()
         );
 
         await newUser.updatePassword(credentials.password);
         const user = await this.userService.createUser(newUser);
+
         const recoveryData: RecoveryData = {
             userAgent: credentials.userAgent,
             email: user.email,

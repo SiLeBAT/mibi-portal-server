@@ -92,7 +92,10 @@ export class DefaultUserRepository extends MongooseRepositoryBase<UserModel>
             email: user.email,
             password: user.password,
             dataProtectionAgreed: user.dataProtectionAgreed,
-            dataProtectionDate: user.dataProtectionDate
+            dataProtectionDate: user.dataProtectionDate,
+            newsRegAgreed: user.newsRegAgreed,
+            newsMailAgreed: user.newsMailAgreed,
+            newsDate: user.newsDate
         });
 
         return super
@@ -107,6 +110,9 @@ export class DefaultUserRepository extends MongooseRepositoryBase<UserModel>
                     user.password,
                     user.dataProtectionAgreed,
                     user.dataProtectionDate,
+                    user.newsRegAgreed,
+                    user.newsMailAgreed,
+                    user.newsDate,
                     model.enabled,
                     model.adminEnabled
                 )
@@ -128,7 +134,10 @@ export class DefaultUserRepository extends MongooseRepositoryBase<UserModel>
                 numAttempt: user.getNumberOfFailedAttempts(),
                 lastAttempt: user.getLastLoginAttempt(),
                 dataProtectionAgreed: user.dataProtectionAgreed,
-                dataProtectionDate: user.dataProtectionDate
+                dataProtectionDate: user.dataProtectionDate,
+                newsRegAgreed: user.newsRegAgreed,
+                newsMailAgreed: user.newsMailAgreed,
+                newsDate: user.newsDate
             })
             .then((response: UserModelUpdateResponse) => {
                 if (!response.ok) {

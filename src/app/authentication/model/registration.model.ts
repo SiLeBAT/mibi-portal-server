@@ -21,6 +21,8 @@ export interface UserRegistration {
     email: string;
     password: string;
     dataProtectionAgreed: boolean;
+    newsRegAgreed: boolean;
+    newsMailAgreed: boolean;
     institution: string;
     userAgent: string;
     host: string;

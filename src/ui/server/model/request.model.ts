@@ -14,6 +14,8 @@ export interface RegistrationDetailsDTO {
     readonly lastName: string;
     readonly password: string;
     readonly dataProtectionAgreed: boolean;
+    readonly newsRegAgreed: boolean;
+    readonly newsMailAgreed: boolean;
 }
 
 export interface SampleSubmissionDTO {

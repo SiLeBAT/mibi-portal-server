@@ -19,6 +19,9 @@ class GenericUser implements User {
     institution: Institute;
     dataProtectionAgreed: boolean;
     dataProtectionDate: Date;
+    newsRegAgreed: boolean;
+    newsMailAgreed: boolean;
+    newsDate: Date;
 
     static create(
         id: string,
@@ -29,6 +32,9 @@ class GenericUser implements User {
         password: string,
         dataProtectionAgreed: boolean,
         dataProtectionDate: Date,
+        newsRegAgreed: boolean,
+        newsMailAgreed: boolean,
+        newsDate: Date,
         enabled: boolean = false,
         adminEnabled: boolean = false,
         numAttempt: number = 0,
@@ -43,6 +49,9 @@ class GenericUser implements User {
             password,
             dataProtectionAgreed,
             dataProtectionDate,
+            newsRegAgreed,
+            newsMailAgreed,
+            newsDate,
             enabled,
             adminEnabled,
             numAttempt,
@@ -59,6 +68,9 @@ class GenericUser implements User {
         private _password: string,
         dataProtectionAgreed: boolean,
         dataProtectionDate: Date,
+        newsRegAgreed: boolean,
+        newsMailAgreed: boolean,
+        newsDate: Date,
         private enabled: boolean,
         private adminEnabled: boolean,
         private numAttempt: number,
@@ -71,6 +83,9 @@ class GenericUser implements User {
         this.institution = inst;
         this.dataProtectionAgreed = dataProtectionAgreed;
         this.dataProtectionDate = dataProtectionDate;
+        this.newsRegAgreed = newsRegAgreed;
+        this.newsMailAgreed = newsMailAgreed;
+        this.newsDate = newsDate;
     }
 
     get password(): string {
@@ -139,6 +154,9 @@ export function createUser(
     password: string,
     dataProtectionAgreed: boolean,
     dataProtectionDate: Date,
+    newsRegAgreed: boolean,
+    newsMailAgreed: boolean,
+    newsDate: Date,
     enabled: boolean = false,
     adminEnabled: boolean = false,
     numAttempt: number = 0,
@@ -153,6 +171,9 @@ export function createUser(
         password,
         dataProtectionAgreed,
         dataProtectionDate,
+        newsRegAgreed,
+        newsMailAgreed,
+        newsDate,
         enabled,
         adminEnabled,
         numAttempt,

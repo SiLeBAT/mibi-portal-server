@@ -310,7 +310,10 @@ export class DefaultUsersController extends AbstractController
                     registrationDetail.email &&
                     registrationDetail.password &&
                     registrationDetail.dataProtectionAgreed
-                )
+                ) &&
+                (registrationDetail.newsRegAgreed === true ||
+                    registrationDetail.newsRegAgreed === false) &&
+                registrationDetail.newsMailAgreed === false
             ) {
                 throw new MalformedRequestError(
                     'Registration details missing.'
@@ -322,6 +325,8 @@ export class DefaultUsersController extends AbstractController
                 email: registrationDetail.email,
                 password: registrationDetail.password,
                 dataProtectionAgreed: registrationDetail.dataProtectionAgreed,
+                newsRegAgreed: registrationDetail.newsRegAgreed,
+                newsMailAgreed: registrationDetail.newsMailAgreed,
                 institution: '',
                 userAgent: req.headers['user-agent'] as string,
                 host: req.headers['host'] as string
