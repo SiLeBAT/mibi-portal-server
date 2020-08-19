@@ -28,7 +28,7 @@
         "restrict-plus-operands": true, 
         "no-object-literal-type-assertion": true,
         "no-async-without-await": true,
-        "strict-comparisons": true,
+        "strict-comparisons": [true, {"allow-object-equal-comparison": true}],
         "strict-string-expressions": true,
         "no-promise-as-boolean": true,
         "invalid-void": [true, {"allow-generics": ["Promise"]}],
