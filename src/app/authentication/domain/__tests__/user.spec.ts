@@ -20,6 +20,9 @@ describe('User class', () => {
             },
             'test',
             true,
+            new Date('01.07.2020'),
+            false,
+            false,
             new Date('01.07.2020')
         );
         expect(user).toBeTruthy();

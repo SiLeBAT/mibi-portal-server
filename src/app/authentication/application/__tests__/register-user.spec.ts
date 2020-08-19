@@ -49,6 +49,8 @@ describe('Register User Use Case', () => {
             password: 'test',
             institution: 'test',
             dataProtectionAgreed: false,
+            newsRegAgreed: false,
+            newsMailAgreed: false,
             userAgent: 'test',
             host: 'test'
         };
