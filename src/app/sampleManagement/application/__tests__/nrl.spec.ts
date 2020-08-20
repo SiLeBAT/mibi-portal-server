@@ -6,14 +6,12 @@ import { mockPersistenceContainerModule } from '../../../../infrastructure/persi
 import { APPLICATION_TYPES } from '../../../application.types';
 import { getApplicationContainerModule } from '../../../application.module';
 import { NRLService } from '../../model/nrl.model';
-import { SampleSetMetaData } from '../../model/sample.model';
 import { NRLRepository } from '../../model/repository.model';
 
 describe('NRL Assignment Service', () => {
     let service: NRLService;
 
     let genericTestSampleCollection: Sample[];
-    let meta: SampleSetMetaData;
     let testSampleData: SampleData;
     let genericTestSample: Sample;
     let container: Container | null;
@@ -105,21 +103,6 @@ describe('NRL Assignment Service', () => {
             },
             vvvo: { value: '', errors: [], correctionOffer: [] },
             comment: { value: '', errors: [], correctionOffer: [] }
-        };
-        meta = {
-            sender: {
-                instituteName: '',
-                department: '',
-                street: '',
-                zip: '',
-                city: '',
-                contactPerson: '',
-                telephone: '',
-                email: ''
-            },
-            fileName: '',
-            customerRefNumber: '',
-            signatureDate: ''
         };
         genericTestSample = factory.createSample(testSampleData);
         genericTestSampleCollection = [genericTestSample];
