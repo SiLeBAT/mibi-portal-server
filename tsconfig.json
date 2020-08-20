@@ -7,17 +7,27 @@
         "outDir": "lib",
         "sourceMap": true,
         "esModuleInterop": true,
-        "strictNullChecks": true,
-        "noImplicitAny": true,
         "removeComments": true,
         "forceConsistentCasingInFileNames": true,
-        "alwaysStrict": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "typeRoots": [
             "./node_modules/@types",
             "./typings"
-        ]
+        ],
+
+        "alwaysStrict": true,
+        "noImplicitAny": true,
+        "noImplicitThis": true,
+        "strictNullChecks": true,
+        "strictBindCallApply": true,
+        // "strictFunctionTypes": true,
+        // "strictPropertyInitialization": true,
+        // "strict": true
+    
+        // "noImplicitReturns": true,
+        "noUnusedLocals": true,
+        // "noUnusedParameters": true,
     },
     "include": [
         "src/**/*.ts"
