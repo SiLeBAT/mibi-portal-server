@@ -24,6 +24,7 @@ export interface User {
     updateLastLoginAttempt(): void;
     isVerified(verified?: boolean): boolean;
     isActivated(active?: boolean): boolean;
+    isNewsMailAgreed(newsMailAgreed?: boolean): boolean;
     getNumberOfFailedAttempts(): number;
     getLastLoginAttempt(): number;
     getFullName(): string;

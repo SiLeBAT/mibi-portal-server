@@ -5,6 +5,7 @@ export interface RegistrationPort {
     verifyUser(token: string): Promise<string>;
     activateUser(token: string): Promise<string>;
     registerUser(credentials: UserRegistration): Promise<void>;
+    confirmNewsletterSubscription(token: string): Promise<string>;
 }
 
 export interface RegistrationService extends RegistrationPort {
@@ -48,6 +49,15 @@ export interface RequestAdminActivationNotificationPayload
     email: string;
     institution: string;
     location: string;
+}
+
+export interface RequestNewsletterAgreementNotificationPayload
+    extends BaseNotificationPayload {
+    action_url: string;
+    api_url: string;
+    operating_system: string;
+    user_agent: string;
+    support_contact: string;
 }
 
 export interface RequestForUnknownInstituteNotificationPayload

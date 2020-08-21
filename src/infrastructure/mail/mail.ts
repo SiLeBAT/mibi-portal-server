@@ -96,6 +96,11 @@ export class DefaultMailService implements MailService {
                         this.viewsDir + 'sentnotification.html'
                     );
                     break;
+                case NotificationType.NEWSLETTER_AGREEMENT:
+                    templateFile = await readFilePromise(
+                        this.viewsDir + 'newsagreement.html'
+                    );
+                    break;
                 default:
                     logger.warn('Unknown notification type', {
                         notification: data.type

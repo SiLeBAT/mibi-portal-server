@@ -17,7 +17,8 @@ function validateToken(secret: string) {
         ROUTE.VERSION + '/samples',
         /\/v1\/users\/reset-password\/*/,
         /\/v1\/users\/verification\/*/,
-        /\/v1\/users\/activation\/*/
+        /\/v1\/users\/activation\/*/,
+        /\/v1\/users\/news-confirmation\/*/
     ];
 
     return jwt({

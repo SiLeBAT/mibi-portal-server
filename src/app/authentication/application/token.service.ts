@@ -4,7 +4,8 @@ import {
     TokenService,
     TokenPayload,
     AdminTokenPayload,
-    TokenRepository
+    TokenRepository,
+    NewsletterTokenPayload
 } from '../model/token.model';
 import { User, UserToken } from '../model/user.model';
 import { TokenType } from '../domain/enums';
@@ -42,6 +43,16 @@ export class DefaultTokenService implements TokenService {
         };
         return sign(payload, this.jwtSecret, {
             expiresIn: this.adminExpirationTime
+        });
+    }
+
+    generateNewsletterToken(id: string): string {
+        const payload: NewsletterTokenPayload = {
+            sub: id,
+            newsletter: true
+        };
+        return sign(payload, this.jwtSecret, {
+            expiresIn: this.expirationTime
         });
     }
 

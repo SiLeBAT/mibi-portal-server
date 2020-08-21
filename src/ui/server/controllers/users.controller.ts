@@ -23,7 +23,8 @@ import {
     TokenizedUserDTO,
     FailedLoginErrorDTO,
     ActivationResponseDTO,
-    RegistrationRequestResponseDTO
+    RegistrationRequestResponseDTO,
+    NewsConfirmationResponseDTO
 } from '../model/response.model';
 import { MalformedRequestError } from '../model/domain.error';
 import { SERVER_ERROR_CODE, ROUTE } from '../model/enums';
@@ -48,7 +49,8 @@ enum USERS_ROUTE {
     VERIFICATION = '/verification',
     ACTIVATION = '/activation',
     REGISTRATION = '/registration',
-    GDPR_AGREEMENT = '/gdpr-agreement'
+    GDPR_AGREEMENT = '/gdpr-agreement',
+    NEWS_CONFIRMATION = '/news-confirmation'
 }
 @controller(ROUTE.VERSION + USERS_ROUTE.ROOT)
 export class DefaultUsersController extends AbstractController
@@ -219,6 +221,7 @@ export class DefaultUsersController extends AbstractController
             this.handleError(res, error);
         }
     }
+
     @httpPatch(USERS_ROUTE.ACTIVATION + '/:token')
     async patchActivation(
         @requestParam('token') token: string,
@@ -244,6 +247,7 @@ export class DefaultUsersController extends AbstractController
             this.handleError(res, error);
         }
     }
+
     @httpPost(USERS_ROUTE.REGISTRATION)
     async postRegistration(@request() req: Request, @response() res: Response) {
         logger.info(
@@ -268,6 +272,35 @@ export class DefaultUsersController extends AbstractController
         } catch (error) {
             logger.info(
                 `${this.constructor.name}.${this.postRegistration.name} has thrown an error. ${error}`
+            );
+            this.handleError(res, error);
+        }
+    }
+
+    @httpPatch(USERS_ROUTE.NEWS_CONFIRMATION + '/:token')
+    async patchNewsConfirmation(
+        @requestParam('token') token: string,
+        @response() res: Response
+    ) {
+        logger.info(
+            `${this.constructor.name}.${this.patchNewsConfirmation.name}, Request received`
+        );
+        try {
+            const username = await this.registrationService.confirmNewsletterSubscription(
+                token
+            );
+
+            const dto: NewsConfirmationResponseDTO = {
+                newsconfirmation: true,
+                username
+            };
+            logger.info(
+                `${this.constructor.name}.${this.patchNewsConfirmation.name}, Response sent`
+            );
+            this.ok(res, dto);
+        } catch (error) {
+            logger.info(
+                `${this.constructor.name}.${this.patchNewsConfirmation.name} has thrown an error. ${error}`
             );
             this.handleError(res, error);
         }

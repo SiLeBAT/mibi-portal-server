@@ -8,7 +8,8 @@ import {
     RequestForUnknownInstituteNotificationPayload,
     AdminActivationNotificationPayload,
     AdminActivationReminderPayload,
-    AlreadyRegisteredUserNotificationPayload
+    AlreadyRegisteredUserNotificationPayload,
+    RequestNewsletterAgreementNotificationPayload
 } from '../model/registration.model';
 import {
     NotificationService,
@@ -86,6 +87,26 @@ export class DefaultRegistrationService implements RegistrationService {
         return userName;
     }
 
+    async confirmNewsletterSubscription(
+        newsletterToken: string
+    ): Promise<string> {
+        const userNewsletterToken = await this.tokenService.getUserTokenByJWT(
+            newsletterToken
+        );
+        const userId = userNewsletterToken.userId;
+        this.tokenService.verifyTokenWithUser(newsletterToken, String(userId));
+        const user = await this.userService.getUserById(userId);
+        user.isNewsMailAgreed(true);
+        user.newsDate = new Date();
+        await this.userService.updateUser(user);
+        await this.tokenService.deleteTokenForUser(user, TokenType.NEWSLETTER);
+        const userName = user.firstName + ' ' + user.lastName;
+        logger.verbose(
+            `${this.constructor.name}.${this.confirmNewsletterSubscription.name}, User newsletter subscription successful.`
+        );
+        return userName;
+    }
+
     async registerUser(credentials: UserRegistration): Promise<void> {
         let instituteIsUnknown = false;
         const result = await this.userService.hasUserWithEmail(
@@ -146,6 +167,11 @@ export class DefaultRegistrationService implements RegistrationService {
                 requestAdminActivationNotification
             );
         }
+
+        if (user.newsRegAgreed === true) {
+            await this.prepareUserForNewsletterAgreement(user, recoveryData);
+        }
+
         return this.prepareUserForVerification(user, recoveryData);
     }
 
@@ -218,6 +244,42 @@ export class DefaultRegistrationService implements RegistrationService {
 
         return this.notificationService.sendNotification(
             requestAdminActivationNotification
+        );
+    }
+
+    private async prepareUserForNewsletterAgreement(
+        user: User,
+        recoveryData: RecoveryData
+    ): Promise<void> {
+        const hasOldNewsletterToken = await this.tokenService.hasTokenForUser(
+            user,
+            TokenType.NEWSLETTER
+        );
+        if (hasOldNewsletterToken) {
+            await this.tokenService.deleteTokenForUser(
+                user,
+                TokenType.NEWSLETTER
+            );
+        }
+
+        const newsletterToken = this.tokenService.generateNewsletterToken(
+            user.uniqueId
+        );
+
+        const newsletterAgreementToken = await this.tokenService.saveToken(
+            newsletterToken,
+            TokenType.NEWSLETTER,
+            user.uniqueId
+        );
+
+        const requestNewsletterAgreementNotification = this.createRequestNewsletterAgreementNotification(
+            user,
+            recoveryData,
+            newsletterAgreementToken
+        );
+
+        return this.notificationService.sendNotification(
+            requestNewsletterAgreementNotification
         );
     }
 
@@ -306,6 +368,35 @@ export class DefaultRegistrationService implements RegistrationService {
             meta: this.notificationService.createEmailNotificationMetaData(
                 this.supportContact,
                 `Aktivieren Sie das ${this.appName} Konto für ${fullName}`
+            )
+        };
+    }
+
+    private createRequestNewsletterAgreementNotification(
+        user: User,
+        recoveryData: RecoveryData,
+        newsletterAgreementToken: UserToken
+    ): Notification<
+        RequestNewsletterAgreementNotificationPayload,
+        EmailNotificationMeta
+    > {
+        return {
+            type: NotificationType.NEWSLETTER_AGREEMENT,
+            payload: {
+                name: user.firstName + ' ' + user.lastName,
+                action_url:
+                    this.apiUrl +
+                    '/users/newsactivate/' +
+                    newsletterAgreementToken.token,
+                api_url: this.apiUrl,
+                operating_system: recoveryData.host,
+                user_agent: recoveryData.userAgent,
+                support_contact: this.supportContact,
+                appName: this.appName
+            },
+            meta: this.notificationService.createEmailNotificationMetaData(
+                user.email,
+                `Agreement for newsletter subscription for ${this.appName} `
             )
         };
     }

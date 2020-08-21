@@ -1,5 +1,6 @@
 export enum TokenType {
     RESET,
     ACTIVATE,
-    ADMIN
+    ADMIN,
+    NEWSLETTER
 }

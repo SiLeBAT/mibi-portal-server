@@ -9,6 +9,10 @@ export interface AdminTokenPayload extends TokenPayload {
     admin: boolean;
 }
 
+export interface NewsletterTokenPayload extends TokenPayload {
+    newsletter: boolean;
+}
+
 export interface TokenPort {
     generateToken(userId: string): string;
     verifyTokenWithUser(token: string, id: string): TokenPayload;
@@ -17,6 +21,7 @@ export interface TokenPort {
 
 export interface TokenService extends TokenPort {
     generateAdminToken(id: string): string;
+    generateNewsletterToken(id: string): string;
     saveToken(
         token: string,
         type: TokenType,

@@ -110,6 +110,13 @@ class GenericUser implements User {
         return this.adminEnabled;
     }
 
+    isNewsMailAgreed(newsMailAgreed?: boolean) {
+        if (!(newsMailAgreed === undefined)) {
+            this.newsMailAgreed = !!newsMailAgreed;
+        }
+        return this.newsMailAgreed;
+    }
+
     isAuthorized(credentials: UserCredentials): Promise<boolean> {
         return this.verifyPassword(this._password, credentials.password);
     }

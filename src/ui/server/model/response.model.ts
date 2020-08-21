@@ -19,6 +19,11 @@ export interface ActivationResponseDTO {
     readonly username: string;
 }
 
+export interface NewsConfirmationResponseDTO {
+    readonly newsconfirmation: boolean;
+    readonly username: string;
+}
+
 export interface TokenRefreshConfirmationResponseDTO {
     readonly refresh: boolean;
     readonly token: string;
