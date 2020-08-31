@@ -40,7 +40,9 @@ import {
     META_ANALYSIS_PHAGETYPING_CELL,
     META_ANAYLSIS_OTHER_BOOL_CELL,
     META_CUSTOMER_REF_NUMBER_CELL,
-    META_SIGNATURE_DATE_CELL
+    META_SIGNATURE_DATE_CELL,
+    DEFAULT_SAMPLE_DATA_HEADER_ROW,
+    SAMPLE_DATA_HEADER_ROW_MARKER
 } from '../domain/constants';
 import { DefaultNRLService } from './nrl.service';
 import {
@@ -304,7 +306,7 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
     }
 
     private fromWorksheetToData(workSheet: WorkSheet): Sample[] {
-        const lineNumber: number = this.getVersionDependentLine(workSheet);
+        const lineNumber = this.getSampleDataHeaderRow(workSheet);
         const data = utils.sheet_to_json<Record<string, string>>(workSheet, {
             header: FORM_PROPERTIES,
             range: lineNumber,
@@ -383,17 +385,14 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
         }
     }
 
-    private getVersionDependentLine(workSheet: WorkSheet): number {
-        let num = 41;
-        _.find(workSheet, (o, i) => {
-            if (o.v === 'Ihre Probe-nummer') {
-                const h = i.replace(/\D/, '');
-                num = parseInt(h, 10);
-                return true;
+    private getSampleDataHeaderRow(workSheet: WorkSheet): number {
+        for (let key in workSheet) {
+            if (workSheet[key].v === SAMPLE_DATA_HEADER_ROW_MARKER) {
+                const row = utils.encode_row(utils.decode_cell(key).r);
+                return parseInt(row, 10);
             }
-            return false;
-        });
-        return num;
+        }
+        return DEFAULT_SAMPLE_DATA_HEADER_ROW;
     }
 
     private fromDataToCleanedSamples(

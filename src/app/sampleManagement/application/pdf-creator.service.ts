@@ -461,12 +461,19 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
     private createMetaSignatureDataProcessing(): {} {
         const strings = this.strings.meta.signature;
         return {
-            text: [
-                { text: strings.dataProcessingText },
+            stack: [
                 {
-                    text: strings.dataProcessingLink,
-                    link: strings.dataProcessingLink,
-                    style: 'link'
+                    text: [
+                        { text: strings.dataProcessingText },
+                        {
+                            text: strings.dataProcessingLink,
+                            link: strings.dataProcessingLink,
+                            style: 'link'
+                        }
+                    ]
+                },
+                {
+                    text: strings.dataProcessingHint
                 }
             ]
         };
@@ -502,10 +509,10 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
             stack: [
                 {
                     text: [
-                        { text: strings.sendInstructions },
+                        { text: strings.sendInstructionsPre },
                         {
-                            text: strings.sendInstructionsMail,
-                            style: 'elevated'
+                            text: strings.sendInstructionsLink,
+                            style: 'link'
                         },
                         { text: strings.sendInstructionsPost }
                     ]

@@ -34,6 +34,8 @@ export const sampleSheetMetaStrings = {
         dataProcessingText: 'Informationen zur Datenverarbeitung: Siehe ',
         dataProcessingLink:
             'https://www.bfr.bund.de/de/datenschutzerklaerung-107546.html',
+        dataProcessingHint:
+            'Eingesandte Isolate können vom BfR auch für weitergehende Untersuchungen verwendet werden, z.B. für Ausbruchsuntersuchungen und zur Klärung wissenschaftlicher Fragestellungen.',
         signature: 'Unterschrift'
     },
     analysis: {
@@ -62,15 +64,17 @@ export const sampleSheetMetaStrings = {
         title: 'Dringlichkeit:'
     },
     instructions: {
-        sendInstructions:
-            'Bitte senden Sie die Excel-Datei mit eindeutiger Zuordnung (z.B. "E.coli.xlsx") an die allgemeine E-Mail-Adresse der mikrobiologischen NRLs des BfR: ',
-        sendInstructionsMail: 'NRLs-Mibi@bfr.bund.de',
-        sendInstructionsPost: '.',
+        sendInstructionsPre:
+            'Bitte lassen Sie diesen Untersuchungsauftrag durch das MiBi-Portal (',
+        sendInstructionsLink: 'https://mibi-portal.bfr.bund.de',
+        sendInstructionsPost:
+            ') prüfen und senden Sie die Probendaten über die dort vorhandene Senden-Funktion an das BfR.',
         printInstructions:
-            'Danach drucken Sie bitte das Formular, unterschreiben es und legen es als Begleitschein den Proben bei.'
+            'Sie erhalten die geprüften Untersuchungsaufträge vom Portal per E-Mail. Drucken Sie diese bitte aus und legen Sie diese unterschrieben den Proben als Begleitschein bei.'
     },
     footer: {
-        validated: 'Validiert durch OE-Mibi, AL-4 am 09.10.2017',
+        validated:
+            'Dieses Formular wurde validiert durch OE-Mibi, AL-4 am 28.08.2020',
         sop: 'Mibi-SOP 059',
         page: 'Seite',
         pageOf: 'von'
