@@ -158,8 +158,7 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                 ),
                 { text: strings.subtitle, style: 'comment', noWrap: true },
                 {
-                    text:
-                        strings.version + ' ' + this.config.version.toString(),
+                    text: strings.version + this.config.version.toString(),
                     style: 'version'
                 }
             ]
@@ -473,7 +472,15 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                     ]
                 },
                 {
-                    text: strings.dataProcessingHint
+                    text: [
+                        { text: strings.dataProcessingHintPre },
+                        {
+                            text: strings.dataProcessingHintLink,
+                            link: strings.dataProcessingHintLink,
+                            style: 'link'
+                        },
+                        { text: strings.dataProcessingHintPost }
+                    ]
                 }
             ]
         };
@@ -776,7 +783,6 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
         return {
             columns: [
                 { text: strings.validated },
-                { text: strings.sop, alignment: 'center' },
                 {
                     text:
                         strings.page +

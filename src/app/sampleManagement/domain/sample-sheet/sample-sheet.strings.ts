@@ -6,7 +6,7 @@ export const sampleSheetMetaStrings = {
         titleSup: 'a,b',
         subtitle:
             'Erläuterungen zum Ausfüllen dieses Formulars befinden sich im zweiten Tabellenblatt dieser Datei',
-        version: 'Version'
+        version: 'Version V'
     },
     recipient: {
         title: 'Empfänger',
@@ -34,8 +34,11 @@ export const sampleSheetMetaStrings = {
         dataProcessingText: 'Informationen zur Datenverarbeitung: Siehe ',
         dataProcessingLink:
             'https://www.bfr.bund.de/de/datenschutzerklaerung-107546.html',
-        dataProcessingHint:
-            'Eingesandte Isolate können vom BfR auch für weitergehende Untersuchungen verwendet werden, z.B. für Ausbruchsuntersuchungen und zur Klärung wissenschaftlicher Fragestellungen.',
+        dataProcessingHintPre:
+            'Bitte beachten Sie die allgemeinen Bedingungen für den Austausch von Materialien – Vergabe an das BfR (Material Transfer-Bedingungen – Teil B (',
+        dataProcessingHintLink:
+            'https://www.bfr.bund.de/cm/343/mt-bedingungen-teil-b.pdf',
+        dataProcessingHintPost: ')',
         signature: 'Unterschrift'
     },
     analysis: {
@@ -74,8 +77,7 @@ export const sampleSheetMetaStrings = {
     },
     footer: {
         validated:
-            'Dieses Formular wurde validiert durch OE-Mibi, AL-4 am 28.08.2020',
-        sop: 'Mibi-SOP 059',
+            'OE-Mibi-SOP-059_FB_A01_elektronischer Einsendebogen_V15 gültig ab 02.09.2020',
         page: 'Seite',
         pageOf: 'von'
     }
