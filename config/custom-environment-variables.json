@@ -4,7 +4,8 @@
         "clientUrl": "MIBI_CLIENT_URL"
     },
     "server": {
-        "port": "MIBI_NODE_PORT"
+        "port": "MIBI_NODE_PORT",
+        "apiRoot": "MIBI_API_ROOT"
     },
     "dataStore": {
         "host": "MIBI_DB_HOST",

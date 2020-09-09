@@ -10,6 +10,7 @@
     },
     "server": {
         "port": 3000,
+        "apiRoot": "",
         "publicAPIDoc": { }
     },
     "dataStore": {

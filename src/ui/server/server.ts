@@ -38,10 +38,12 @@ export class DefaultAppServer implements AppServer {
     }
 
     private initialise(container: Container) {
-        this.server = new InversifyExpressServer(container);
         const serverConfig = container.get<AppServerConfiguration>(
             SERVER_TYPES.AppServerConfiguration
         );
+        this.server = new InversifyExpressServer(container, null, {
+            rootPath: serverConfig.apiRoot
+        });
         this.server.setConfig(app => {
             app.use(helmet());
             app.use(compression());
@@ -73,13 +75,19 @@ export class DefaultAppServer implements AppServer {
             );
             app.use(express.static(path.join(__dirname, this.publicDir)));
             app.use(
-                '/api-docs' + API_ROUTE.V2,
+                serverConfig.apiRoot + '/api-docs' + API_ROUTE.V2,
                 swaggerUi.serve,
                 swaggerUi.setup(undefined, {
-                    swaggerUrl: API_ROUTE.V2
+                    swaggerUrl: serverConfig.apiRoot + API_ROUTE.V2
                 })
             );
-            app.use(API_ROUTE.V2 + '/*', validateToken(serverConfig.jwtSecret));
+            app.use(
+                serverConfig.apiRoot + API_ROUTE.V2 + '/*',
+                validateToken(
+                    serverConfig.apiRoot + API_ROUTE.V2,
+                    serverConfig.jwtSecret
+                )
+            );
         });
 
         this.server.setErrorConfig(app => {

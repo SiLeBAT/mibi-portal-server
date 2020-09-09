@@ -1,22 +1,20 @@
 import jwt from 'express-jwt';
-import { API_ROUTE } from '../model/enums';
 
-function validateToken(secret: string) {
+function validateToken(apiRoute: string, secret: string) {
     const whiteList = [
-        '/api-docs' + API_ROUTE.V2,
-        API_ROUTE.V2,
-        API_ROUTE.V2 + '/',
-        API_ROUTE.V2 + '/info',
-        API_ROUTE.V2 + '/institutes',
-        API_ROUTE.V2 + '/nrls',
-        API_ROUTE.V2 + '/users/login',
-        API_ROUTE.V2 + '/users/registration',
-        API_ROUTE.V2 + '/users/reset-password-request',
-        API_ROUTE.V2 + '/samples/validated',
-        API_ROUTE.V2 + '/samples',
-        new RegExp(API_ROUTE.V2 + '/users/reset-password'),
-        new RegExp(API_ROUTE.V2 + '/users/verification'),
-        new RegExp(API_ROUTE.V2 + '/users/activation')
+        apiRoute,
+        apiRoute + '/',
+        apiRoute + '/info',
+        apiRoute + '/institutes',
+        apiRoute + '/nrls',
+        apiRoute + '/users/login',
+        apiRoute + '/users/registration',
+        apiRoute + '/users/reset-password-request',
+        apiRoute + '/samples/validated',
+        apiRoute + '/samples',
+        new RegExp(apiRoute + '/users/reset-password'),
+        new RegExp(apiRoute + '/users/verification'),
+        new RegExp(apiRoute + '/users/activation')
     ];
 
     return jwt({

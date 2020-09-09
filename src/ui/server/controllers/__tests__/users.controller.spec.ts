@@ -22,6 +22,7 @@ describe('Login controller', () => {
         container.load(
             getServerContainerModule({
                 port: 1,
+                apiRoot: '',
                 publicAPIDoc: {},
                 jwtSecret: 'test',
                 logLevel: 'info',
