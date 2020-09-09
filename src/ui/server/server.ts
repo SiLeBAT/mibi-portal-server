@@ -11,7 +11,7 @@ import { InversifyExpressServer } from 'inversify-express-utils';
 import { logger } from './../../aspects';
 import { validateToken } from './middleware/token-validator.middleware';
 import { Logger } from '../../aspects/logging';
-import { SERVER_ERROR_CODE, ROUTE } from './model/enums';
+import { SERVER_ERROR_CODE, API_ROUTE } from './model/enums';
 import { AppServerConfiguration } from './model/server.model';
 import { injectable, Container } from 'inversify';
 import { SERVER_TYPES } from './server.types';
@@ -73,16 +73,13 @@ export class DefaultAppServer implements AppServer {
             );
             app.use(express.static(path.join(__dirname, this.publicDir)));
             app.use(
-                '/api-docs' + ROUTE.VERSION,
+                '/api-docs' + API_ROUTE.V2,
                 swaggerUi.serve,
                 swaggerUi.setup(undefined, {
-                    swaggerUrl: ROUTE.VERSION
+                    swaggerUrl: API_ROUTE.V2
                 })
             );
-            app.use(
-                ROUTE.VERSION + '/*',
-                validateToken(serverConfig.jwtSecret)
-            );
+            app.use(API_ROUTE.V2 + '/*', validateToken(serverConfig.jwtSecret));
         });
 
         this.server.setErrorConfig(app => {

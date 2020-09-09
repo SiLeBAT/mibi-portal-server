@@ -11,13 +11,13 @@ import {
     response
 } from 'inversify-express-utils';
 import { inject } from 'inversify';
-import { ROUTE } from '../model/enums';
+import { API_ROUTE } from '../model/enums';
 import { APPLICATION_TYPES } from '../../../app/application.types';
 
 enum NRL_ROUTE {
     ROOT = '/nrls'
 }
-@controller(ROUTE.VERSION + NRL_ROUTE.ROOT)
+@controller(API_ROUTE.V2 + NRL_ROUTE.ROOT)
 export class DefaultNRLsController extends AbstractController
     implements NRLsController {
     constructor(
