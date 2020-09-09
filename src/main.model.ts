@@ -24,7 +24,7 @@ export interface AppConfiguration {
     appName: string;
     jobRecipient: string;
     login: LoginConfiguration;
-    apiUrl: string;
+    clientUrl: string;
 }
 
 export interface LoginConfiguration {

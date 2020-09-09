@@ -6,7 +6,7 @@
       "threshold": 5,
       "secondsDelay": 600
     },
-    "apiUrl": "http://localhost:3000"
+    "clientUrl": "http://localhost:4200"
   },
   "server": {
     "port": 3000,

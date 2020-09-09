@@ -28,7 +28,7 @@ export interface UserRegistration {
 interface BaseNotificationPayload {
     name: string;
     appName: string;
-    api_url: string;
+    client_url: string;
 }
 export interface RequestActivationNotificationPayload
     extends BaseNotificationPayload {
