@@ -16,6 +16,24 @@
       "revId": "5631f9b5ca93655e449d8e19215cbc25a305a4ff",
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8ef5d2b4_f94d3b6d",
+        "filename": "src/ui/server/middleware/token-validator.middleware.ts",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1015828
+      },
+      "writtenOn": "2020-09-10T11:20:18Z",
+      "side": 1,
+      "message": "Thanks for checking that. The resulting regexp is the same as the old one without the /* at the end. Something like /v3/v2/ is a non existing route, so no token validation required here.\n\nWhat in my opinion is more critical is that this is the only point in the app where the critical routes gets blocked. So if you make a typo here you can make a non-public api public. But thats another story...",
+      "parentUuid": "1128135c_753acff3",
+      "revId": "5631f9b5ca93655e449d8e19215cbc25a305a4ff",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
     }
   ]
 }
