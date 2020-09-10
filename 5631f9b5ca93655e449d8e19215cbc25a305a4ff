@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1128135c_753acff3",
+        "filename": "src/ui/server/middleware/token-validator.middleware.ts",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1015829
+      },
+      "writtenOn": "2020-09-10T10:23:01Z",
+      "side": 1,
+      "message": "Are these regular expressions sufficient, or is a ^ prefix missing? \nE.g. the url .../v3/v2/users/activation\nwould pass the whitelist.",
+      "revId": "5631f9b5ca93655e449d8e19215cbc25a305a4ff",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    }
+  ]
+}
