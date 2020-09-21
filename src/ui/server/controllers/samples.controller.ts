@@ -29,7 +29,7 @@ import {
     PutValidatedRequestDTO,
     PutSamplesJSONRequestDTO
 } from '../model/request.model';
-import { SERVER_ERROR_CODE, ROUTE } from '../model/enums';
+import { SERVER_ERROR_CODE, API_ROUTE } from '../model/enums';
 import {
     MalformedRequestError,
     TokenNotFoundError
@@ -77,7 +77,7 @@ enum SAMPLES_ROUTE {
     VALIDATED = '/validated',
     SUBMITTED = '/submitted'
 }
-@controller(ROUTE.VERSION + SAMPLES_ROUTE.ROOT)
+@controller(API_ROUTE.V2 + SAMPLES_ROUTE.ROOT)
 export class DefaultSamplesController extends AbstractController
     implements SamplesController {
     constructor(

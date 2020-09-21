@@ -1,11 +1,11 @@
 {
     "application": {
-        "jobRecipient": "MIBI_JOB_RECIPIENT"
+        "jobRecipient": "MIBI_JOB_RECIPIENT",
+        "clientUrl": "MIBI_CLIENT_URL"
     },
     "server": {
         "port": "MIBI_NODE_PORT",
-        "jwtSecret": "MIBI_JWT_SECRET",
-        "apiUrl": "MIBI_API_URL"
+        "apiRoot": "MIBI_API_ROOT"
     },
     "dataStore": {
         "host": "MIBI_DB_HOST",
@@ -15,8 +15,13 @@
         "authDatabase": "MIBI_DB_AUTH_DATABASE",
         "dataDir": "MIBI_DATA_DIR"
     },
+    "mail": {
+        "fromAddress": "MIBI_MAIL_FROM",
+        "replyToAddress": "MIBI_MAIL_REPLY"
+    },
     "general": {
         "supportContact": "MIBI_SUPPORT_CONTACT",
-        "logLevel": "MIBI_LOG_LEVEL"
+        "logLevel": "MIBI_LOG_LEVEL",
+        "jwtSecret": "MIBI_JWT_SECRET"
     }
 }
