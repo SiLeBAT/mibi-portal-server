@@ -3,7 +3,7 @@ import { NRL_ID } from './../domain/enums';
 import { ApplicationDomainError } from './../../core/domain/domain.error';
 import { Sample } from '../model/sample.model';
 import { NRLService, NRL } from '../model/nrl.model';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import { logger } from '../../../aspects';
 import { injectable, inject } from 'inversify';
 import { APPLICATION_TYPES } from '../../application.types';
@@ -73,7 +73,7 @@ export class DefaultNRLService implements NRLService {
             });
     }
 
-    retrieveNRLs(): Promise<NRL[]> {
+    async retrieveNRLs(): Promise<NRL[]> {
         return this.nrlRepository.retrieve();
     }
 
@@ -82,7 +82,7 @@ export class DefaultNRLService implements NRLService {
             const newSample = sample.clone();
             const pathogen = newSample.getValueFor('pathogen_adv');
             const nrl = this.getNRLForPathogen(pathogen);
-            newSample.setNRL(nrl);
+            newSample.setNRL(this, nrl);
             return newSample;
         });
     }
@@ -121,7 +121,7 @@ export class DefaultNRLService implements NRLService {
         const analysis: Partial<Analysis> = {};
 
         found.optionalProcedures.reduce((acc, p) => {
-            this.setValueForAnalysisKey('' + p.key, acc, false);
+            this.setValueForAnalysisKey(p.key, acc, false);
             return acc;
         }, analysis);
 
@@ -135,7 +135,7 @@ export class DefaultNRLService implements NRLService {
         }
         const analysis: Partial<Analysis> = {};
         found.standardProcedures.reduce((acc, p) => {
-            this.setValueForAnalysisKey('' + p.key, acc, true);
+            this.setValueForAnalysisKey(p.key, acc, true);
             return acc;
         }, analysis);
 
@@ -143,29 +143,35 @@ export class DefaultNRLService implements NRLService {
     }
 
     private setValueForAnalysisKey(
-        key: string,
+        key: number,
         analysis: Partial<Analysis>,
         value: boolean
-    ) {
+    ): void {
         switch (key) {
-            case '0':
-                return (analysis.species = value);
-            case '1':
-                return (analysis.serological = value);
-            case '2':
-                return (analysis.resistance = value);
-            case '3':
-                return (analysis.vaccination = value);
-            case '4':
-                return (analysis.molecularTyping = value);
-            case '5':
-                return (analysis.toxin = value);
-            case '6':
-                return (analysis.esblAmpCCarbapenemasen = value);
-            case '7':
-                return (analysis.sample = value);
-            default:
-                return false;
+            case 0:
+                analysis.species = value;
+                break;
+            case 1:
+                analysis.serological = value;
+                break;
+            case 2:
+                analysis.resistance = value;
+                break;
+            case 3:
+                analysis.vaccination = value;
+                break;
+            case 4:
+                analysis.molecularTyping = value;
+                break;
+            case 5:
+                analysis.toxin = value;
+                break;
+            case 6:
+                analysis.esblAmpCCarbapenemasen = value;
+                break;
+            case 7:
+                analysis.sample = value;
+                break;
         }
     }
 }

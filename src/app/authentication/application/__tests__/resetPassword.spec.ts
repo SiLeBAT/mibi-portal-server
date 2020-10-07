@@ -24,7 +24,7 @@ describe('Reset Password Use Case', () => {
                     threshold: 0,
                     secondsDelay: 0
                 },
-                apiUrl: 'test',
+                clientUrl: 'test',
                 supportContact: 'test',
                 jwtSecret: 'test'
             }),
@@ -180,15 +180,13 @@ describe('Reset Password Use Case', () => {
             throw new Error();
         });
         expect.assertions(1);
-        return service
-            .resetPassword(token, password)
-            .then(
-                result =>
-                    expect(
-                        (mockNotificationService.sendNotification as jest.Mock)
-                            .mock.calls.length
-                    ).toBe(0),
-                err => expect(err).toBeTruthy()
-            );
+        return service.resetPassword(token, password).then(
+            result =>
+                expect(
+                    (mockNotificationService.sendNotification as jest.Mock).mock
+                        .calls.length
+                ).toBe(0),
+            err => expect(err).toBeTruthy()
+        );
     });
 });

@@ -1,11 +1,10 @@
-import { Schema, Document } from 'mongoose';
+import { Schema } from 'mongoose';
+import { CommonModel } from '../common.model';
 
-export interface StateModel extends Document {
+export interface StateModel extends CommonModel {
     name: string;
     short: string;
     AVV: string[];
-    created: Date;
-    updated: Date;
 }
 
 export const stateSchema = new Schema({
@@ -24,15 +23,15 @@ export const stateSchema = new Schema({
     ],
     created: {
         type: Date,
-        default: Date.now,
+        default: () => Date.now(),
         required: true
     },
     updated: {
         type: Date,
-        default: Date.now,
+        default: () => Date.now(),
         required: true
     }
-}).pre('save', function(next) {
+}).pre('save', function (next) {
     if (this) {
         let doc = this as StateModel;
         let now = new Date();

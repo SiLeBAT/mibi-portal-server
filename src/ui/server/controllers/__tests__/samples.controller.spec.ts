@@ -1,4 +1,3 @@
-import { Urgency } from './../../../../app/sampleManagement/domain/enums';
 /// <reference types='jest' />
 
 var mockReq = require('mock-express-request');
@@ -9,7 +8,7 @@ import { Container } from 'inversify';
 import { getServerContainerModule } from '../../server.module';
 import { getApplicationContainerModule } from '../../../../app/ports';
 import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
-import SERVER_TYPES from '../../server.types';
+import { SERVER_TYPES } from '../../server.types';
 import { rebindMocks } from '../../../../__mocks__/util';
 import { APPLICATION_TYPES } from '../../../../app/application.types';
 import { getContainer } from '../../../../aspects/container/container';
@@ -24,6 +23,7 @@ describe('Sample controller', () => {
         container.load(
             getServerContainerModule({
                 port: 1,
+                apiRoot: '',
                 publicAPIDoc: {},
                 jwtSecret: 'test',
                 logLevel: 'info',
@@ -36,7 +36,7 @@ describe('Sample controller', () => {
                     threshold: 0,
                     secondsDelay: 0
                 },
-                apiUrl: 'test',
+                clientUrl: 'test',
                 supportContact: 'test',
                 jwtSecret: 'test'
             }),
@@ -164,7 +164,7 @@ describe('Sample controller', () => {
     });
 
     describe('root', () => {
-        it('should respond with error if incorrect payload', function() {
+        it('should respond with error if incorrect payload', function () {
             const req = new mockReq({
                 method: 'PUT',
                 headers: {
@@ -184,7 +184,7 @@ describe('Sample controller', () => {
             });
         });
 
-        it('should respond with Order JSON', function() {
+        it('should respond with Order JSON', function () {
             const req = new mockReq({
                 method: 'PUT',
                 headers: {
@@ -287,7 +287,7 @@ describe('Sample controller', () => {
         });
     });
     describe('validate sample', () => {
-        it('should respond with error if incorrect payload', function() {
+        it('should respond with error if incorrect payload', function () {
             const req = new mockReq({
                 method: 'PUT',
                 headers: {
@@ -307,7 +307,7 @@ describe('Sample controller', () => {
             });
         });
 
-        it('should respond with Order JSON', function() {
+        it('should respond with Order JSON', function () {
             const req = new mockReq({
                 method: 'PUT',
                 headers: {

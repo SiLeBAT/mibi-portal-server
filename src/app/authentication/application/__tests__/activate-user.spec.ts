@@ -23,7 +23,7 @@ describe('Activate User Use Case', () => {
                     threshold: 0,
                     secondsDelay: 0
                 },
-                apiUrl: 'test',
+                clientUrl: 'test',
                 supportContact: 'test',
                 jwtSecret: 'test'
             }),
@@ -153,15 +153,13 @@ describe('Activate User Use Case', () => {
             throw new Error();
         });
         expect.assertions(1);
-        return service
-            .activateUser(token)
-            .then(
-                result =>
-                    expect(
-                        mockTokenService.deleteTokenForUser.mock.calls.length
-                    ).toBe(0),
-                err => expect(err).toBeTruthy()
-            );
+        return service.activateUser(token).then(
+            result =>
+                expect(
+                    mockTokenService.deleteTokenForUser.mock.calls.length
+                ).toBe(0),
+            err => expect(err).toBeTruthy()
+        );
     });
     it('should trigger notification: sendNotification', () => {
         const mockNotificationService = getMockNotificationService();

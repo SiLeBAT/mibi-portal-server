@@ -9,7 +9,7 @@ class FileSearchAliasRepository implements SearchAliasRepository {
 
     constructor(private dataDir: string) {}
 
-    initialise() {
+    async initialise(): Promise<void> {
         logger.verbose(
             `${this.constructor.name}.${this.initialise.name}, loading Search Alias data from Filesystem.`
         );
@@ -24,11 +24,11 @@ class FileSearchAliasRepository implements SearchAliasRepository {
                     throw error;
                 }
             )
-            .then(() =>
+            .then(() => {
                 logger.info(
                     `${this.constructor.name}.${this.initialise.name}, finished initialising Search Alias Repository from Filesystem.`
-                )
-            );
+                );
+            });
     }
 
     getAliases() {

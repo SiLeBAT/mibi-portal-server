@@ -1,5 +1,5 @@
-import * as _ from 'lodash';
-import * as Fuse from 'fuse.js';
+import _ from 'lodash';
+import Fuse from 'fuse.js';
 import { ApplicationDomainError } from '../../core/domain/domain.error';
 import { Catalog, CatalogData } from '../model/catalog.model';
 
@@ -39,10 +39,13 @@ class DefaultCatalog<T extends CatalogData> implements Catalog<T> {
     dump(): T[] {
         return this.data;
     }
-    // tslint:disable-next-line
-    getFuzzyIndex(options: Fuse.FuseOptions, enhamcements: any[] = []): Fuse {
+
+    getFuzzyIndex(
+        options: Fuse.IFuseOptions<T>,
+        enhancements: T[] = []
+    ): Fuse<T> {
         const data = this.dump();
-        return new Fuse(data.concat(enhamcements), options);
+        return new Fuse(data.concat(enhancements), options);
     }
 }
 

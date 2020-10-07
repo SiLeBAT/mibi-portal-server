@@ -53,7 +53,7 @@ export class DefaultTokenService implements TokenService {
         return verify(token, this.jwtSecret) as TokenPayload;
     }
 
-    saveToken(
+    async saveToken(
         token: string,
         type: TokenType,
         userId: string
@@ -64,18 +64,18 @@ export class DefaultTokenService implements TokenService {
             userId
         });
     }
-    getUserTokenByJWT(token: string): Promise<UserToken> {
+    async getUserTokenByJWT(token: string): Promise<UserToken> {
         return this.tokenRepository.getUserTokenByJWT(token);
     }
 
-    deleteTokenForUser(
+    async deleteTokenForUser(
         user: User,
         type: TokenType = TokenType.ACTIVATE
     ): Promise<boolean> {
         return this.tokenRepository.deleteTokenForUser(user, type);
     }
 
-    hasTokenForUser(
+    async hasTokenForUser(
         user: User,
         type: TokenType = TokenType.ACTIVATE
     ): Promise<boolean> {

@@ -1,8 +1,7 @@
-import { Schema, Document } from 'mongoose';
+import { Schema } from 'mongoose';
+import { CommonModel } from '../common.model';
 
-export interface InstitutionModel extends Document {
-    created: Date;
-    updated: Date;
+export interface InstitutionModel extends CommonModel {
     state_short: string;
     name1: string;
     name2: string;
@@ -45,15 +44,15 @@ export const institutionSchema = new Schema({
     ],
     created: {
         type: Date,
-        default: Date.now,
+        default: () => Date.now(),
         required: true
     },
     updated: {
         type: Date,
-        default: Date.now,
+        default: () => Date.now(),
         required: true
     }
-}).pre('save', function(next) {
+}).pre('save', function (next) {
     if (this) {
         let doc = this as InstitutionModel;
         let now = new Date();

@@ -19,7 +19,7 @@ import { APPLICATION_TYPES } from './../../application.types';
 @injectable()
 export class DefaultPasswordService implements PasswordService {
     private appName: string;
-    private apiUrl: string;
+    private clientUrl: string;
     private supportContact: string;
 
     constructor(
@@ -32,7 +32,7 @@ export class DefaultPasswordService implements PasswordService {
         @inject(APPLICATION_TYPES.UserService) private userService: UserService
     ) {
         this.appName = this.configurationService.getApplicationConfiguration().appName;
-        this.apiUrl = this.configurationService.getApplicationConfiguration().apiUrl;
+        this.clientUrl = this.configurationService.getApplicationConfiguration().clientUrl;
         this.supportContact = this.configurationService.getApplicationConfiguration().supportContact;
     }
     async requestPasswordReset(recoveryData: RecoveryData): Promise<void> {
@@ -57,9 +57,7 @@ export class DefaultPasswordService implements PasswordService {
             recoveryData,
             resetToken
         );
-        return this.notificationService.sendNotification(
-            requestResetNotification
-        );
+        this.notificationService.sendNotification(requestResetNotification);
     }
 
     async resetPassword(token: string, password: string): Promise<void> {
@@ -73,9 +71,7 @@ export class DefaultPasswordService implements PasswordService {
         const resetSuccessNotification = this.createResetSuccessNotification(
             user
         );
-        return this.notificationService.sendNotification(
-            resetSuccessNotification
-        );
+        this.notificationService.sendNotification(resetSuccessNotification);
     }
 
     private createResetRequestNotification(
@@ -87,8 +83,8 @@ export class DefaultPasswordService implements PasswordService {
             type: NotificationType.REQUEST_RESET,
             payload: {
                 name: user.firstName + ' ' + user.lastName,
-                action_url: this.apiUrl + '/users/reset/' + resetToken.token,
-                api_url: this.apiUrl,
+                action_url: this.clientUrl + '/users/reset/' + resetToken.token,
+                client_url: this.clientUrl,
                 operating_system: recoveryData.host,
                 user_agent: recoveryData.userAgent,
                 support_contact: this.supportContact,
@@ -108,9 +104,9 @@ export class DefaultPasswordService implements PasswordService {
             type: NotificationType.RESET_SUCCESS,
             payload: {
                 name: user.firstName + ' ' + user.lastName,
-                api_url: this.apiUrl,
+                client_url: this.clientUrl,
                 email: user.email,
-                action_url: this.apiUrl + '/users/login',
+                action_url: this.clientUrl + '/users/login',
                 appName: this.appName
             },
             meta: this.notificationService.createEmailNotificationMetaData(

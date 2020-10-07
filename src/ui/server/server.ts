@@ -1,21 +1,20 @@
-import * as path from 'path';
-import * as express from 'express';
-import * as helmet from 'helmet';
-import * as compression from 'compression';
-import * as bodyParser from 'body-parser';
-import * as cors from 'cors';
-import * as morgan from 'morgan';
-import * as swaggerUi from 'swagger-ui-express';
+import path from 'path';
+import express from 'express';
+import helmet from 'helmet';
+import compression from 'compression';
+import cors from 'cors';
+import morgan from 'morgan';
+import swaggerUi from 'swagger-ui-express';
 import { InversifyExpressServer } from 'inversify-express-utils';
 
 // local
 import { logger } from './../../aspects';
 import { validateToken } from './middleware/token-validator.middleware';
 import { Logger } from '../../aspects/logging';
-import { SERVER_ERROR_CODE, ROUTE } from './model/enums';
+import { SERVER_ERROR_CODE, API_ROUTE } from './model/enums';
 import { AppServerConfiguration } from './model/server.model';
 import { injectable, Container } from 'inversify';
-import SERVER_TYPES from './server.types';
+import { SERVER_TYPES } from './server.types';
 
 export interface AppServer {
     startServer(): void;
@@ -39,19 +38,21 @@ export class DefaultAppServer implements AppServer {
     }
 
     private initialise(container: Container) {
-        this.server = new InversifyExpressServer(container);
         const serverConfig = container.get<AppServerConfiguration>(
             SERVER_TYPES.AppServerConfiguration
         );
+        this.server = new InversifyExpressServer(container, null, {
+            rootPath: serverConfig.apiRoot
+        });
         this.server.setConfig(app => {
             app.use(helmet());
             app.use(compression());
             app.set('port', serverConfig.port);
             app.set('logger', logger);
 
-            app.use(bodyParser.json({ limit: '50mb' }));
+            app.use(express.json({ limit: '50mb' }));
             app.use(
-                bodyParser.urlencoded({
+                express.urlencoded({
                     extended: false
                 })
             );
@@ -65,7 +66,7 @@ export class DefaultAppServer implements AppServer {
                 res.setHeader('Pragma', 'no-cache');
                 res.setHeader('X-XSS-Protection', '1; mode=block');
                 res.setHeader('X-Content-Type-Options', 'nosniff');
-                return next();
+                next();
             });
 
             app.use(cors());
@@ -74,38 +75,43 @@ export class DefaultAppServer implements AppServer {
             );
             app.use(express.static(path.join(__dirname, this.publicDir)));
             app.use(
-                '/api-docs' + ROUTE.VERSION,
+                serverConfig.apiRoot + '/api-docs' + API_ROUTE.V2,
                 swaggerUi.serve,
-                swaggerUi.setup(null, {
-                    swaggerUrl: ROUTE.VERSION
+                swaggerUi.setup(undefined, {
+                    swaggerUrl: serverConfig.apiRoot + API_ROUTE.V2
                 })
             );
             app.use(
-                ROUTE.VERSION + '/*',
-                validateToken(serverConfig.jwtSecret)
+                serverConfig.apiRoot + API_ROUTE.V2 + '/*',
+                validateToken(
+                    serverConfig.apiRoot + API_ROUTE.V2,
+                    serverConfig.jwtSecret
+                )
             );
         });
 
         this.server.setErrorConfig(app => {
-            app.use((
-                // tslint:disable-next-line
-                err: any,
-                req: express.Request,
-                res: express.Response,
-                next: express.NextFunction
-            ) => {
-                if (err.status === 401) {
-                    app.get('logger').warn(
-                        `Log caused error with status 401. error=${err}`
-                    );
-                    res.status(401)
-                        .send({
-                            code: SERVER_ERROR_CODE.AUTHORIZATION_ERROR,
-                            message: err.message
-                        })
-                        .end();
+            app.use(
+                (
+                    // tslint:disable-next-line
+                    err: any,
+                    req: express.Request,
+                    res: express.Response,
+                    next: express.NextFunction
+                ) => {
+                    if (err.status === 401) {
+                        app.get('logger').warn(
+                            `Log caused error with status 401. error=${err}`
+                        );
+                        res.status(401)
+                            .send({
+                                code: SERVER_ERROR_CODE.AUTHORIZATION_ERROR,
+                                message: err.message
+                            })
+                            .end();
+                    }
                 }
-            });
+            );
 
             app.get('*', (req: express.Request, res: express.Response) => {
                 res.sendFile(

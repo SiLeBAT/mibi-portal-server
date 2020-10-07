@@ -17,13 +17,13 @@ import {
     httpPost
 } from 'inversify-express-utils';
 import { inject } from 'inversify';
-import { SERVER_ERROR_CODE, ROUTE } from '../model/enums';
+import { SERVER_ERROR_CODE, API_ROUTE } from '../model/enums';
 
 import { APPLICATION_TYPES } from './../../../app/application.types';
 enum TOKENS_ROUTE {
     ROOT = '/tokens'
 }
-@controller(ROUTE.VERSION + TOKENS_ROUTE.ROOT)
+@controller(API_ROUTE.V2 + TOKENS_ROUTE.ROOT)
 export class DefaultTokensController extends AbstractController
     implements TokensController {
     constructor(
@@ -33,7 +33,7 @@ export class DefaultTokensController extends AbstractController
     }
 
     @httpPost('/')
-    async postTokens(@request() req: Request, @response() res: Response) {
+    postTokens(@request() req: Request, @response() res: Response) {
         logger.info(
             `${this.constructor.name}.${this.postTokens.name}, Request received`
         );

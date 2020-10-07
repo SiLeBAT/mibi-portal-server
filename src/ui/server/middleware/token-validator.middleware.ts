@@ -1,22 +1,20 @@
-import * as jwt from 'express-jwt';
-import { ROUTE } from '../model/enums';
+import jwt from 'express-jwt';
 
-function validateToken(secret: string) {
+function validateToken(apiRoute: string, secret: string) {
     const whiteList = [
-        '/api-docs' + ROUTE.VERSION,
-        ROUTE.VERSION,
-        ROUTE.VERSION + '/',
-        ROUTE.VERSION + '/info',
-        ROUTE.VERSION + '/institutes',
-        ROUTE.VERSION + '/nrls',
-        ROUTE.VERSION + '/users/login',
-        ROUTE.VERSION + '/users/registration',
-        ROUTE.VERSION + '/users/reset-password-request',
-        ROUTE.VERSION + '/samples/validated',
-        ROUTE.VERSION + '/samples',
-        /\/v2\/users\/reset-password\/*/,
-        /\/v2\/users\/verification\/*/,
-        /\/v2\/users\/activation\/*/
+        apiRoute,
+        apiRoute + '/',
+        apiRoute + '/info',
+        apiRoute + '/institutes',
+        apiRoute + '/nrls',
+        apiRoute + '/users/login',
+        apiRoute + '/users/registration',
+        apiRoute + '/users/reset-password-request',
+        apiRoute + '/samples/validated',
+        apiRoute + '/samples',
+        new RegExp(apiRoute + '/users/reset-password'),
+        new RegExp(apiRoute + '/users/verification'),
+        new RegExp(apiRoute + '/users/activation')
     ];
 
     return jwt({
@@ -37,4 +35,5 @@ function getTokenFromHeader(req: any): string | null {
     }
     return null;
 }
+
 export { validateToken, getTokenFromHeader };

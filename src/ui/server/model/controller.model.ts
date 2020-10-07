@@ -8,11 +8,11 @@ export interface ControllerFactory {
 }
 
 export interface VersionRootController extends Controller {
-    getAPIDefinition(res: Response): Promise<void>;
+    getAPIDefinition(res: Response): void;
 }
 
 export interface TokensController extends Controller {
-    postTokens(req: Request, res: Response): Promise<void>;
+    postTokens(req: Request, res: Response): void;
 }
 
 export interface InstitutesController extends Controller {
@@ -37,7 +37,7 @@ export interface UsersController extends Controller {
 }
 
 export interface SystemInfoController extends Controller {
-    getSystemInfo(res: Response): Promise<void>;
+    getSystemInfo(res: Response): void;
 }
 
 export interface SamplesController extends Controller {

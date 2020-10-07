@@ -1,6 +1,6 @@
 /* istanbul ignore file */
-import * as winston from 'winston';
-import * as config from 'config';
+import winston from 'winston';
+import config from 'config';
 import { TransformableInfo } from 'logform';
 
 interface LogConfiguration {
@@ -51,7 +51,7 @@ export class Logger {
                   ' ' +
                   (typeof info.meta === 'object'
                       ? JSON.stringify(info.meta)
-                      : info.meta)
+                      : (info.meta as string))
                 : logMsg;
 
         return logMsg;

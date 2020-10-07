@@ -1,22 +1,32 @@
 {
     "application": {
-        "appName": "Portal",
+        "appName": "MiBi-Portal",
         "jobRecipient": "",
         "login": {
             "threshold": 5,
             "secondsDelay": 600
         },
-        "apiUrl": ""
+        "clientUrl": ""
     },
     "server": {
         "port": 3000,
+        "apiRoot": "",
         "publicAPIDoc": {
-            
+            "/info": ["get"],
+            "/samples/submitted": ["post"],
+            "/samples/validated": ["put"],
+            "/samples": ["put"],
+            "/users/login": ["post"],
+            "/tokens": ["post"]
         }
     },
     "dataStore": {
-        "connectionString": "mongodb://localhost/datadevdb",
-        "dataDir": "./datadev"
+        "host": "localhost:27017",
+        "dataBase": "",
+        "username": "",
+        "password": "",
+        "authDatabase": "",
+        "dataDir": "./data"
     },
     "mail": {
         "fromAddress": "",

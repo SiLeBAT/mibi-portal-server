@@ -2,9 +2,9 @@ import { DefaultSample } from './../src/app/sampleManagement/domain/sample.entit
 import { Urgency, NRL_ID } from './../src/app/sampleManagement/domain/enums';
 import { SampleData } from './../src/app/sampleManagement/model/sample.model';
 import { PutValidatedRequestDTO } from '../src/ui/server/model/request.model';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as _ from 'lodash';
+import fs from 'fs';
+import path from 'path';
+import _ from 'lodash';
 import { logger } from '../src/aspects';
 import { SampleSet } from '../src/app/ports';
 import { SampleSetMetaData, Sample, SampleMetaData } from '../src/app/sampleManagement/model/sample.model';
@@ -12,11 +12,12 @@ import { DefaultExcelUnmarshalService } from '../src/app/sampleManagement/applic
 import { SampleDTO, SampleMetaDTO, SampleValidationErrorDTO } from '../src/ui/server/model/shared-dto.model';
 import { Api } from './api';
 import { promisify } from 'util';
-import { EMPTY_META } from '../src/app/sampleManagement/domain/constants';
-import { getMockNRLService } from '../src/app/sampleManagement/application/__mocks__/nrl.service';
+import { EMPTY_ANALYSIS } from '../src/app/sampleManagement/domain/constants';
 
-const DATA_DIR: string = 'testData/validation';
+const DATA_DIR: string = 'test/data/validation';
 
+const deactivatedFiles: string[] = [
+]
 
 const factory = {
     createSample(data: SampleData): Sample {
@@ -26,8 +27,7 @@ const factory = {
                 nrl: NRL_ID.NRL_AR,
                 analysis: {},
                 urgency: Urgency.NORMAL
-            },
-            getMockNRLService()
+            }
         );
     }
 }
@@ -40,6 +40,7 @@ describe('Test validation errors', () => {
 
         let count = 0;
         requests.map(req => count += req.order.sampleSet.samples.length);
+        logger.info(`${count} samples are to be tested`);
         expect.assertions(count);
 
         return Promise.all(requests.map(async (request) => {
@@ -57,12 +58,17 @@ describe('Test validation errors', () => {
                 expect({ ...meta, codes: receivedCodes }).toEqual({ ...meta, codes: expectedCodes });
             });
         }))
-    }, 1000 * 120);
+    }, 1000 * 60);
 });
 
 async function getFilesToTest(): Promise<string[]> {
     let fileNames: string[] = [];
-    fs.readdirSync(path.join('.', DATA_DIR)).forEach(function (file) {
+    fs.readdirSync(path.join('.', DATA_DIR)).forEach(file => {
+
+        if(deactivatedFiles.find(f => f === file)) {
+            logger.info(`Deactivated ${file}`);
+            return;
+        }
 
         file = path.join('.', DATA_DIR, file);
 
@@ -71,7 +77,7 @@ async function getFilesToTest(): Promise<string[]> {
         }
 
     });
-    logger.info(`Found ${fileNames.length} datafiles in directory ${DATA_DIR}`);
+    logger.info(`${fileNames.length} datafiles in directory ${DATA_DIR} are to be tested`);
     return fileNames;
 }
 
@@ -106,7 +112,7 @@ function fromSampleMetaToDTO(meta: SampleMetaData): SampleMetaDTO {
     return {
         nrl: meta.nrl.toString(),
         urgency: meta.urgency.toString(),
-        analysis: { ...EMPTY_META.analysis, ...meta.analysis }
+        analysis: { ...EMPTY_ANALYSIS, ...meta.analysis }
     };
 }
 function fromSampleSetMetaDataToDTO(

@@ -9,7 +9,7 @@ import { UsersController } from '../../model/controller.model';
 import { Container } from 'inversify';
 import { getServerContainerModule } from '../../server.module';
 import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
-import SERVER_TYPES from '../../server.types';
+import { SERVER_TYPES } from '../../server.types';
 import { rebindMocks } from '../../../../__mocks__/util';
 import { getMockLoginService } from '../../../../app/authentication/application/__mocks__/login.service';
 import { APPLICATION_TYPES } from '../../../../app/application.types';
@@ -22,6 +22,7 @@ describe('Login controller', () => {
         container.load(
             getServerContainerModule({
                 port: 1,
+                apiRoot: '',
                 publicAPIDoc: {},
                 jwtSecret: 'test',
                 logLevel: 'info',
@@ -34,7 +35,7 @@ describe('Login controller', () => {
                     threshold: 0,
                     secondsDelay: 0
                 },
-                apiUrl: 'test',
+                clientUrl: 'test',
                 supportContact: 'test',
                 jwtSecret: 'test'
             }),

@@ -13,19 +13,19 @@ export class DefaultInstituteService implements InstituteService {
         private instituteRepository: InstituteRepository
     ) {}
 
-    retrieveInstitutes(): Promise<Institute[]> {
+    async retrieveInstitutes(): Promise<Institute[]> {
         return this.instituteRepository.retrieve();
     }
 
-    getInstituteById(instituteId: string): Promise<Institute> {
+    async getInstituteById(instituteId: string): Promise<Institute> {
         return this.instituteRepository.findByInstituteId(instituteId);
     }
 
-    getInstituteByName(name: string): Promise<Institute> {
+    async getInstituteByName(name: string): Promise<Institute> {
         return this.instituteRepository.findByInstituteName(name);
     }
 
-    createInstitute(institute: Institute): Promise<Institute> {
+    async createInstitute(institute: Institute): Promise<Institute> {
         return this.instituteRepository.createInstitute(institute);
     }
 }

@@ -1,4 +1,4 @@
-import { TokenModel } from '../data-store/mongoose/schemas/resetToken.schema';
+import { TokenModel } from '../data-store/mongoose/schemas/reset-token.schema';
 import { MongooseRepositoryBase } from '../data-store/mongoose/mongoose.repository';
 import { JsonWebTokenError } from 'jsonwebtoken';
 import {
@@ -19,7 +19,7 @@ export class DefaultTokenRepository extends MongooseRepositoryBase<TokenModel>
     ) {
         super(model);
     }
-    hasTokenForUser(
+    async hasTokenForUser(
         user: User,
         type: TokenType = TokenType.ACTIVATE
     ): Promise<boolean> {
@@ -27,16 +27,19 @@ export class DefaultTokenRepository extends MongooseRepositoryBase<TokenModel>
             return docs.length > 0;
         });
     }
-    deleteTokenForUser(
+    async deleteTokenForUser(
         user: User,
         type: TokenType = TokenType.ACTIVATE
     ): Promise<boolean> {
-        return super
-            ._findOne({ user: user.uniqueId, type })
-            .then((token: TokenModel) => !!super._delete(token._id));
+        let token = await super._findOne({ user: user.uniqueId, type });
+        if (token === null) {
+            return false;
+        }
+        token = await super._delete(token._id);
+        return token !== null;
     }
 
-    saveToken(token: UserToken): Promise<UserToken> {
+    async saveToken(token: UserToken): Promise<UserToken> {
         const newToken = new this.model({
             token: token.token,
             type: token.type,
@@ -44,7 +47,7 @@ export class DefaultTokenRepository extends MongooseRepositoryBase<TokenModel>
         });
         return super._create(newToken).then(res => newToken);
     }
-    getUserTokenByJWT(token: string): Promise<UserToken> {
+    async getUserTokenByJWT(token: string): Promise<UserToken> {
         return super._findOne({ token: token }).then(model => {
             if (!model) {
                 throw new JsonWebTokenError(

@@ -24,7 +24,7 @@ describe('Verify User Use Case', () => {
                     threshold: 0,
                     secondsDelay: 0
                 },
-                apiUrl: 'test',
+                clientUrl: 'test',
                 supportContact: 'test',
                 jwtSecret: 'test'
             }),
@@ -185,14 +185,12 @@ describe('Verify User Use Case', () => {
 
         mockTokenService.deleteTokenForUser.mockReset();
         expect.assertions(1);
-        return service
-            .verifyUser(token)
-            .then(
-                result =>
-                    expect(
-                        mockTokenService.deleteTokenForUser.mock.calls.length
-                    ).toBe(0),
-                err => expect(err).toBeTruthy()
-            );
+        return service.verifyUser(token).then(
+            result =>
+                expect(
+                    mockTokenService.deleteTokenForUser.mock.calls.length
+                ).toBe(0),
+            err => expect(err).toBeTruthy()
+        );
     });
 });

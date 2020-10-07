@@ -1,4 +1,4 @@
-import { Sample, SampleProperty, SamplePropertyValues } from './sample.model';
+import { Sample, SampleProperty, SampleDataValues } from './sample.model';
 import {
     CatalogService,
     ADVCatalogEntry,
@@ -86,7 +86,7 @@ export interface ValidatorFunction<T extends ValidatorFunctionOptions> {
         value: string,
         options: T,
         key: SampleProperty,
-        attributes: SamplePropertyValues
+        attributes: SampleDataValues
     ): ValidationError | null;
 }
 export interface ValidatorFunctionOptions {
@@ -131,20 +131,20 @@ export interface RegisteredZoMoOptions extends ValidatorFunctionOptions {
 }
 
 export interface AtLeastOneOfOptions extends ValidatorFunctionOptions {
-    additionalMembers: (SampleProperty)[];
+    additionalMembers: SampleProperty[];
 }
 
 export interface DependentFieldsOptions extends ValidatorFunctionOptions {
-    dependents: (SampleProperty)[];
+    dependents: SampleProperty[];
 }
 
 export interface NumbersOnlyOptions extends ValidatorFunctionOptions {}
 
 export interface ReferenceDateOptions extends ValidatorFunctionOptions {
-    earliest?: (SampleProperty) | string;
-    latest?: (SampleProperty) | string;
+    earliest?: SampleProperty | string;
+    latest?: SampleProperty | string;
     modifier?: {
         value: number;
-        unit: string;
+        unit: 'year';
     };
 }

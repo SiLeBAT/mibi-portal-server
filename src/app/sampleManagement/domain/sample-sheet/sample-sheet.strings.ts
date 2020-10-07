@@ -1,10 +1,12 @@
+import { NRL_ID } from '../enums';
+
 export const sampleSheetMetaStrings = {
     header: {
         title: 'Untersuchungsauftrag für Isolate/Proben',
         titleSup: 'a,b',
         subtitle:
             'Erläuterungen zum Ausfüllen dieses Formulars befinden sich im zweiten Tabellenblatt dieser Datei',
-        version: 'Version'
+        version: 'Version V'
     },
     recipient: {
         title: 'Empfänger',
@@ -14,8 +16,8 @@ export const sampleSheetMetaStrings = {
         nrl: 'Labor'
     },
     stamp: {
-        entryDate: 'Eingangsdatum beim BfR',
-        senderFileNumber: 'Aktenzeichen des Einsenders'
+        receiptDate: 'Eingangsdatum beim BfR',
+        customerRefNumber: 'Aktenzeichen des Einsenders'
     },
     sender: {
         title: 'Einsender',
@@ -28,16 +30,24 @@ export const sampleSheetMetaStrings = {
         email: 'Email-Adresse'
     },
     signature: {
-        meta: 'Ort, Datum',
+        date: 'Ort, Datum',
         dataProcessingText: 'Informationen zur Datenverarbeitung: Siehe ',
         dataProcessingLink:
             'https://www.bfr.bund.de/de/datenschutzerklaerung-107546.html',
+        dataProcessingHintPre:
+            'Bitte beachten Sie die allgemeinen Bedingungen für den Austausch von Materialien – Vergabe an das BfR (Material Transfer-Bedingungen – Teil B (',
+        dataProcessingHintLink:
+            'https://www.bfr.bund.de/cm/343/mt-bedingungen-teil-b.pdf',
+        dataProcessingHintPost: ')',
         signature: 'Unterschrift'
     },
     analysis: {
         title: 'Bitte führen Sie folgende Untersuchungen der Isolate durch',
         titleSup: 'c',
-        marked: 'X',
+        options: {
+            standard: 'Standard',
+            active: 'X'
+        },
         species:
             'Speziesbestimmung/-differenzierung (bzw. Bestätigung der Differenzierung)',
         serological: 'Serologische Differenzierung',
@@ -57,16 +67,17 @@ export const sampleSheetMetaStrings = {
         title: 'Dringlichkeit:'
     },
     instructions: {
-        sendInstructions:
-            'Bitte senden Sie die Excel-Datei mit eindeutiger Zuordnung (z.B. "E.coli.xlsx") an die allgemeine E-Mail-Adresse der mikrobiologischen NRLs des BfR: ',
-        sendInstructionsMail: 'NRLs-Mibi@bfr.bund.de',
-        sendInstructionsPost: '.',
+        sendInstructionsPre:
+            'Bitte lassen Sie diesen Untersuchungsauftrag durch das MiBi-Portal (',
+        sendInstructionsLink: 'https://mibi-portal.bfr.bund.de',
+        sendInstructionsPost:
+            ') prüfen und senden Sie die Probendaten über die dort vorhandene Senden-Funktion an das BfR.',
         printInstructions:
-            'Danach drucken Sie bitte das Formular, unterschreiben es und legen es als Begleitschein den Proben bei.'
+            'Sie erhalten die geprüften Untersuchungsaufträge vom Portal per E-Mail. Drucken Sie diese bitte aus und legen Sie diese unterschrieben den Proben als Begleitschein bei.'
     },
     footer: {
-        validated: 'Validiert durch OE-Mibi, AL-4 am 09.10.2017',
-        sop: 'Mibi-SOP 059',
+        validated:
+            'OE-Mibi-SOP-059_FB_A01_elektronischer Einsendebogen_V15 gültig ab 02.09.2020',
         page: 'Seite',
         pageOf: 'von'
     }
@@ -115,4 +126,23 @@ export const sampleSheetSamplesStrings = {
         vvvo: '',
         comment: '(u.a. Untersuchungs-programm)'
     }
+};
+
+export const sampleSheetNRLStrings: Record<NRL_ID, string> = {
+    'NRL-AR': 'NRL Antibiotikaresistenz',
+    'NRL-Campy': 'NRL Campylobacter',
+    'NRL-VTEC': 'NRL Escherichia coli einschließlich verotoxinbildende E. coli',
+    'NRL-Staph':
+        'NRL koagulasepositive Staphylokokken einschließlich Staphylococcus aureus',
+    'NRL-Listeria': 'NRL Listeria monocytogenes',
+    'NRL-Salm':
+        'NRL Salmonellen (Durchführung von Analysen und Tests auf Zoonosen)',
+    'NRL-Trichinella': 'NRL Trichinella',
+    'NRL-Virus': 'NRL Überwachung von Viren in zweischaligen Weichtieren',
+    'NRL-Vibrio': 'NRL Überwachung von Bakterien in zweischaligen Weichtieren',
+    'L-Bacillus': 'Bacillus spp. ',
+    'L-Clostridium': 'Clostridium spp. (C. difficile)',
+    'KL-Leptospira': 'Leptospira',
+    'KL-Yersinia': 'Yersinia',
+    'Labor nicht erkannt': ''
 };

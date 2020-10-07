@@ -3,14 +3,15 @@ import {
     PDFConstants,
     SampleSheetPDFConfig
 } from '../model/pdf.model';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import { injectable, inject } from 'inversify';
 import { APPLICATION_TYPES } from '../../application.types';
 import {
     SampleSheetConfig,
     SampleSheetMetaStrings,
     SampleSheetSamplesStrings,
-    SampleSheetConstants
+    SampleSheetConstants,
+    SampleSheetNRLStrings
 } from '../model/sample-sheet.model';
 
 @injectable()
@@ -49,10 +50,12 @@ export class DefaultPDFConfigProviderService
     get strings(): {
         meta: SampleSheetMetaStrings;
         samples: SampleSheetSamplesStrings;
+        nrl: SampleSheetNRLStrings;
     } {
         return {
             meta: this.constants.metaStrings,
-            samples: this.constants.samplesStrings
+            samples: this.constants.samplesStrings,
+            nrl: this.constants.nrlStrings
         };
     }
 
@@ -75,7 +78,9 @@ export class DefaultPDFConfigProviderService
 
     private preProcessStyles() {
         this.preProcessStyle(this.defaultStyle);
-        _.forEach(this.styles, v => this.preProcessStyle(v));
+        _.forEach(this.styles, v => {
+            this.preProcessStyle(v);
+        });
     }
 
     private preProcessStyle(style: {}) {

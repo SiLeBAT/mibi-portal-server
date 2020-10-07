@@ -6,22 +6,15 @@ export { getMailContainerModule } from './mail/mail.module';
 
 // Persistence
 
-export {
-    getPersistenceContainerModule
-} from './persistence/persistence.module';
+export { getPersistenceContainerModule } from './persistence/persistence.module';
 export { UserNotFoundError } from './persistence/model/domain.error';
-export {
-    createRepository
-} from './persistence/data-store/mongoose/mongoose.repository';
+export { createRepository } from './persistence/data-store/mongoose/mongoose.repository';
 export {
     createDataStore,
     mapCollectionToRepository
 } from './persistence/data-store/mongoose/mongoose';
+
 export { DataStore } from './persistence/model/data-store.model';
 
-export {
-    initialiseRepository as initialiseCatalogRepository
-} from './persistence/repositories/catalog.repository';
-export {
-    initialiseRepository as initialiseSearchAliasRepository
-} from './persistence/repositories/search-alias.repository';
+export { initialiseRepository as initialiseCatalogRepository } from './persistence/repositories/catalog.repository';
+export { initialiseRepository as initialiseSearchAliasRepository } from './persistence/repositories/search-alias.repository';

@@ -2,11 +2,16 @@ import { APIDocConfig } from './ui/server/ports';
 
 export interface ServerConfiguration {
     port: number;
+    apiRoot: string;
     publicAPIDoc: APIDocConfig;
 }
 
 export interface DataStoreConfiguration {
-    connectionString: string;
+    host: string;
+    dataBase: string;
+    username: string;
+    password: string;
+    authDatabase: string;
     dataDir: string;
 }
 
@@ -20,7 +25,7 @@ export interface AppConfiguration {
     appName: string;
     jobRecipient: string;
     login: LoginConfiguration;
-    apiUrl: string;
+    clientUrl: string;
 }
 
 export interface LoginConfiguration {

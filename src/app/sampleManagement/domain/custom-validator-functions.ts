@@ -1,6 +1,6 @@
 import { ADVCatalogEntry, ZSPCatalogEntry } from './../model/catalog.model';
-import * as moment from 'moment';
-import * as _ from 'lodash';
+import moment from 'moment';
+import _ from 'lodash';
 import {
     ValidationError,
     RequiredIfOtherOptions,
@@ -18,7 +18,7 @@ import {
     ValidatorFunctionOptions
 } from '../model/validation.model';
 import { CatalogService } from '../model/catalog.model';
-import { SampleProperty, SamplePropertyValues } from '../model/sample.model';
+import { SampleProperty, SampleDataValues } from '../model/sample.model';
 import { MalformedValidationOptionsError } from './domain.error';
 import { NRL_ID } from './enums';
 
@@ -70,7 +70,7 @@ function matchesRegexPattern(
     value: string,
     options: MatchRegexPatternOptions,
     key: SampleProperty,
-    attributes: SamplePropertyValues
+    attributes: SampleDataValues
 ) {
     if (!value || !options.regex.length) {
         return null;
@@ -94,7 +94,7 @@ function matchesIdToSpecificYear(
     value: string,
     options: MatchIdToYearOptions,
     key: SampleProperty,
-    attributes: SamplePropertyValues
+    attributes: SampleDataValues
 ) {
     if (!value) {
         return null;
@@ -154,7 +154,7 @@ function nonUniqueEntry(
         value: string,
         options: NonUniqueEntryOptions,
         key: SampleProperty,
-        attributes: SamplePropertyValues
+        attributes: SampleDataValues
     ) => {
         if (attributes[key]) {
             const cat = catalogService.getCatalog<ADVCatalogEntry>(
@@ -188,7 +188,7 @@ function inCatalog(
         value: string,
         options: InCatalogOptions,
         key: SampleProperty,
-        attributes: SamplePropertyValues
+        attributes: SampleDataValues
     ) => {
         const trimmedValue = value.trim();
         if (attributes[key]) {
@@ -215,7 +215,7 @@ function matchADVNumberOrString(
         value: string,
         options: MatchADVNumberOrStringOptions,
         key: SampleProperty,
-        attributes: SamplePropertyValues
+        attributes: SampleDataValues
     ) => {
         const trimmedValue = value.trim();
         const altKeys = options.alternateKeys || [];
@@ -258,14 +258,14 @@ function shouldBeZoMo(
         value: string,
         options: RegisteredZoMoOptions,
         key: SampleProperty,
-        attributes: SamplePropertyValues
+        attributes: SampleDataValues
     ) => {
         const years = getYears(options.year, attributes);
 
         let result = null;
         _.forEach(years, yearToCheck => {
             const cat = catalogService.getCatalog<ZSPCatalogEntry>(
-                'zsp' + yearToCheck
+                'zsp' + yearToCheck.toString()
             );
             if (cat) {
                 const groupValues = options.group.map(g => attributes[g.attr]);
@@ -293,13 +293,13 @@ function registeredZoMo(
         value: string,
         options: RegisteredZoMoOptions,
         key: SampleProperty,
-        attributes: SamplePropertyValues
+        attributes: SampleDataValues
     ) => {
         const years = getYears(options.year, attributes);
         if (years.length > 0) {
             const yearToCheck = Math.min(...years);
             const cat = catalogService.getCatalog<ZSPCatalogEntry>(
-                'zsp' + yearToCheck
+                'zsp' + yearToCheck.toString()
             );
             if (cat) {
                 const groupValues = options.group.map(g => attributes[g.attr]);
@@ -324,7 +324,7 @@ function registeredZoMo(
     };
 }
 
-function getYears(ary: string[], attributes: SamplePropertyValues): number[] {
+function getYears(ary: string[], attributes: SampleDataValues): number[] {
     const tmp = ary.map((y: SampleProperty) => {
         const yearValue = attributes[y];
         const formattedYear = moment
@@ -340,7 +340,7 @@ function atLeastOneOf(
     value: string,
     options: AtLeastOneOfOptions,
     key: SampleProperty,
-    attributes: SamplePropertyValues
+    attributes: SampleDataValues
 ) {
     if (isEmptyString(attributes[key])) {
         for (let i = 0; i < options.additionalMembers.length; i++) {
@@ -357,7 +357,7 @@ function dateAllowEmpty(
     value: string,
     options: AtLeastOneOfOptions,
     key: SampleProperty,
-    attributes: SamplePropertyValues
+    attributes: SampleDataValues
 ) {
     if (isEmptyString(value)) {
         return null;
@@ -380,7 +380,7 @@ function dependentFields(
     value: string,
     options: DependentFieldsOptions,
     key: SampleProperty,
-    attributes: SamplePropertyValues
+    attributes: SampleDataValues
 ) {
     if (attributes[key]) {
         for (let i = 0; i < options.dependents.length; i++) {
@@ -397,7 +397,7 @@ function numbersOnly(
     value: string,
     options: NumbersOnlyOptions,
     key: SampleProperty,
-    attributes: SamplePropertyValues
+    attributes: SampleDataValues
 ) {
     if (attributes[key]) {
         if (!numbersOnlyValue(value)) {
@@ -445,16 +445,14 @@ function referenceDate(
         if (options.earliest) {
             if (options.modifier) {
                 referenceDate = referenceDate.subtract(
-                    // tslint:disable-next-line
-                    options.modifier.value as any,
+                    options.modifier.value,
                     options.modifier.unit
                 );
             }
         } else if (options.latest) {
             if (options.modifier) {
                 referenceDate = referenceDate.add(
-                    // tslint:disable-next-line
-                    options.modifier.value as any,
+                    options.modifier.value,
                     options.modifier.unit
                 );
             }

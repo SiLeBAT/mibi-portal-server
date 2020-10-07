@@ -4,10 +4,11 @@ import { User } from '../../authentication/model/user.model';
 import { Institute } from '../../authentication/model/institute.model';
 import { ExcelFileInfo } from './excel.model';
 import { Urgency, NRL_ID, ReceiveAs } from '../domain/enums';
+import { NRLService } from './nrl.model';
 
-export type SamplePropertyValues = Record<SampleProperty, string>;
+export type SampleDataValues = Record<SampleProperty, string>;
 export type SampleProperty = keyof SampleData;
-export type SampleDataValues = Record<SampleProperty, SampleDataEntry>;
+export type SampleDataEntries = Record<SampleProperty, SampleDataEntry>;
 export interface SampleDataEntry {
     value: string;
 }
@@ -17,6 +18,7 @@ export interface AnnotatedSampleDataEntry extends SampleDataEntry {
     correctionOffer: string[];
     oldValue?: string;
 }
+
 export interface SampleData {
     sample_id: AnnotatedSampleDataEntry;
     sample_id_avv: AnnotatedSampleDataEntry;
@@ -45,6 +47,7 @@ export interface SampleMetaData {
     urgency: Urgency;
     analysis: Partial<Analysis>;
 }
+
 export interface Address {
     instituteName: string;
     department?: string;
@@ -71,9 +74,12 @@ export interface Analysis {
         active: boolean;
     };
 }
+
 export interface SampleSetMetaData {
     sender: Address;
     fileName: string;
+    customerRefNumber: string;
+    signatureDate: string;
 }
 
 export interface SampleSet {
@@ -93,23 +99,23 @@ export interface Sample {
     readonly meta: SampleMetaData;
     getUrgency(): Urgency;
     setUrgency(urgency: Urgency): void;
-    setNRL(nrl: NRL_ID): void;
+    setNRL(nrlService: NRLService, nrl: NRL_ID): void;
     getNRL(): NRL_ID;
     getAnalysis(): Partial<Analysis>;
-    setAnalysis(analysis: Partial<Analysis>): void;
+    setAnalysis(nrlService: NRLService, analysis: Partial<Analysis>): void;
     getValueFor(property: SampleProperty): string;
     getEntryFor(property: SampleProperty): AnnotatedSampleDataEntry;
-    getOldValues(): Record<string, EditValue>;
+    getOldValues(): Record<SampleProperty, EditValue>;
     clone(): Sample;
     getAnnotatedData(): SampleData;
-    getDataValues(): SampleDataValues;
-    addErrorTo(id: string, errors: ValidationError): void;
-    addCorrectionTo(id: string, correctionOffer: string[]): void;
+    getDataEntries(): SampleDataEntries;
+    addErrorTo(property: SampleProperty, errors: ValidationError): void;
+    addCorrectionTo(property: SampleProperty, correctionOffer: string[]): void;
     isValid(): boolean;
     addErrors(errors: ValidationErrorCollection): void;
     isZoMo(): boolean;
     getErrorCount(level: number): number;
-    clearSingleCorrectionSuggestions(): void;
+    applySingleCorrectionSuggestions(): void;
 }
 
 interface RecipientInfo {

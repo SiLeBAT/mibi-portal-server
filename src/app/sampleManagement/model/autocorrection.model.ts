@@ -30,10 +30,6 @@ export interface ResultOptions {
     numberOfResults: number;
     property: SampleProperty;
 }
-export interface FuzzySearchResultEntry {
-    item: string;
-    score: number;
-}
 
 export interface FormAutoCorrectionPort {
     applyAutoCorrection(sampleCollection: Sample[]): Promise<Sample[]>;

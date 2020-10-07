@@ -11,13 +11,13 @@ import {
     response
 } from 'inversify-express-utils';
 import { inject } from 'inversify';
-import { ROUTE } from '../model/enums';
+import { API_ROUTE } from '../model/enums';
 import { APPLICATION_TYPES } from './../../../app/application.types';
 
 enum INSTITUTES_ROUTE {
     ROOT = '/institutes'
 }
-@controller(ROUTE.VERSION + INSTITUTES_ROUTE.ROOT)
+@controller(API_ROUTE.V2 + INSTITUTES_ROUTE.ROOT)
 export class DefaultInstituteController extends AbstractController
     implements InstitutesController {
     constructor(

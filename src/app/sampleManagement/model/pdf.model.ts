@@ -1,10 +1,11 @@
-import { SampleSet } from './sample.model';
 import { sampleSheetPDFConfig } from '../domain/sample-sheet/sample-sheet-pdf.config';
 import { FileBuffer } from '../../core/model/file.model';
 import {
     SampleSheetConfig,
     SampleSheetMetaStrings,
-    SampleSheetSamplesStrings
+    SampleSheetSamplesStrings,
+    SampleSheet,
+    SampleSheetNRLStrings
 } from './sample-sheet.model';
 
 export type SampleSheetPDFConfig = typeof sampleSheetPDFConfig;
@@ -22,9 +23,10 @@ export interface PDFConfigProviderService {
     readonly strings: {
         meta: SampleSheetMetaStrings;
         samples: SampleSheetSamplesStrings;
+        nrl: SampleSheetNRLStrings;
     };
 }
 
 export interface PDFCreatorService {
-    createPDF(sampleSet: SampleSet): Promise<FileBuffer>;
+    createPDF(sampleSheet: SampleSheet): Promise<FileBuffer>;
 }

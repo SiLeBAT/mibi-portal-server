@@ -1,11 +1,9 @@
 import { APPLICATION_TYPES } from './../../application.types';
-import { Analysis } from './../model/sample.model';
 import { WorkBook, WorkSheet, read, utils, CellObject } from 'xlsx';
-import * as _ from 'lodash';
-import * as moment from 'moment';
+import _ from 'lodash';
+import moment from 'moment';
 import 'moment/locale/de';
 import {
-    SampleSet,
     AnnotatedSampleDataEntry,
     Sample,
     SampleData,
@@ -13,11 +11,7 @@ import {
     SampleFactory
 } from '../model/sample.model';
 
-import {
-    ExcelUnmarshalService,
-    EinsendebogenMetaData,
-    EinsendebogenAnalysis
-} from '../model/excel.model';
+import { ExcelUnmarshalService } from '../model/excel.model';
 import { Urgency, NRL_ID } from '../domain/enums';
 import { injectable, inject } from 'inversify';
 import {
@@ -42,11 +36,21 @@ import {
     META_ANALYSIS_SEROLOGICAL_CELL,
     META_SENDER_CONTACTPERSON_CELL,
     META_ANALYSIS_COMPAREHUMAN_TEXT_CELL,
-    EMPTY_META,
     META_ANALYSIS_ZOONOSENISOLATE_CELL,
-    META_ANALYSIS_PHAGETYPING_CELL
+    META_ANALYSIS_PHAGETYPING_CELL,
+    META_ANAYLSIS_OTHER_BOOL_CELL,
+    META_CUSTOMER_REF_NUMBER_CELL,
+    META_SIGNATURE_DATE_CELL,
+    DEFAULT_SAMPLE_DATA_HEADER_ROW,
+    SAMPLE_DATA_HEADER_ROW_MARKER
 } from '../domain/constants';
 import { DefaultNRLService } from './nrl.service';
+import {
+    SampleSheet,
+    SampleSheetMetaData,
+    SampleSheetAnalysis,
+    SampleSheetAnalysisOption
+} from '../model/sample-sheet.model';
 
 @injectable()
 export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
@@ -57,44 +61,28 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
     async convertExcelToJSJson(
         buffer: Buffer,
         fileName: string
-    ): Promise<SampleSet> {
-        try {
-            const sampleSheet: WorkSheet = await this.fromFileToWorkSheet(
-                buffer
-            );
-            const data: Sample[] = this.fromWorksheetToData(sampleSheet);
-            const meta: EinsendebogenMetaData = this.getMetaDataFromFileData(
-                sampleSheet,
-                fileName
-            );
+    ): Promise<SampleSheet> {
+        const workSheet: WorkSheet = await this.fromFileToWorkSheet(buffer);
 
-            return {
-                samples: this.isForSingleSpecifiedNRL(data, meta)
-                    ? this.addCorrectMetaData(data, meta)
-                    : data,
-                meta: {
-                    sender: meta.sender,
-                    fileName: meta.fileName
-                }
-            };
-        } catch (error) {
-            throw error;
-        }
+        return {
+            samples: this.fromWorksheetToData(workSheet),
+            meta: this.getMetaDataFromFileData(workSheet, fileName)
+        };
     }
 
     private async fromFileToWorkSheet(buffer: Buffer): Promise<WorkSheet> {
         return new Promise<WorkSheet>((resolve, reject) => {
             const workbook: WorkBook = read(buffer, {
                 type: 'buffer',
-                cellDates: true,
-                cellText: false,
-                cellStyles: true,
-                cellNF: true
+                cellDates: true, // write date as JS-Date to 'v' field, sets 't' field to 'd'
+                cellText: true, // write formatted text to 'w' field
+                cellStyles: false, // write style to 's' field
+                cellNF: false // write number format string to 'z' field
             });
             const worksheetName: string = workbook.SheetNames[0];
-            const sampleSheet: WorkSheet = workbook.Sheets[worksheetName];
+            const workSheet: WorkSheet = workbook.Sheets[worksheetName];
             if (worksheetName === VALID_SHEET_NAME) {
-                resolve(sampleSheet);
+                resolve(workSheet);
             } else {
                 reject(
                     `Not a valid excel sheet, name of first sheet must be ${VALID_SHEET_NAME}`
@@ -106,149 +94,102 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
     private getMetaDataFromFileData(
         workSheet: WorkSheet,
         fileName: string
-    ): EinsendebogenMetaData {
-        const meta: EinsendebogenMetaData = {
+    ): SampleSheetMetaData {
+        return {
             nrl: this.getNRLFromWorkSheet(workSheet),
             urgency: this.getUrgencyFromWorkSheet(workSheet),
             sender: this.getSenderFromWorkSheet(workSheet),
             analysis: this.getAnalysisFromWorkSheet(workSheet),
-            fileName
-        };
-
-        return meta;
-    }
-
-    private addCorrectMetaData(
-        data: Sample[],
-        meta: EinsendebogenMetaData
-    ): Sample[] {
-        return data.map(sample => {
-            sample.setAnalysis(
-                this.fromEinsendebogenAnalysisToSampleAnalysis(meta.analysis)
-            );
-            sample.setUrgency(meta.urgency);
-            return sample;
-        });
-    }
-
-    private fromEinsendebogenAnalysisToSampleAnalysis(
-        analysis: EinsendebogenAnalysis
-    ): Partial<Analysis> {
-        return {
-            ...EMPTY_META.analysis,
-            ...{
-                species: analysis.species,
-                serological: analysis.serological,
-                resistance: analysis.resistance,
-                vaccination: analysis.vaccination,
-                molecularTyping: analysis.molecularTyping,
-                toxin: analysis.toxin,
-                esblAmpCCarbapenemasen: analysis.esblAmpCCarbapenemasen,
-                other: analysis.other,
-                compareHuman: _.cloneDeep(analysis.compareHuman)
-            }
+            fileName,
+            customerRefNumber: this.getStringFromCell(
+                workSheet[META_CUSTOMER_REF_NUMBER_CELL]
+            ),
+            signatureDate: this.getStringFromCell(
+                workSheet[META_SIGNATURE_DATE_CELL]
+            )
         };
     }
+
     private getAnalysisFromWorkSheet(
         workSheet: WorkSheet
-    ): EinsendebogenAnalysis {
+    ): SampleSheetAnalysis {
+        const getOptionFromCell = (
+            cell: CellObject
+        ): SampleSheetAnalysisOption => {
+            return this.getStringFromCell(cell) !== ''
+                ? SampleSheetAnalysisOption.ACTIVE
+                : SampleSheetAnalysisOption.OMIT;
+        };
+
         return {
-            species:
-                !!this.getDataFromCell(workSheet[META_ANALYSIS_SPECIES_CELL]) ||
-                false,
-            serological:
-                !!this.getDataFromCell(
-                    workSheet[META_ANALYSIS_SEROLOGICAL_CELL]
-                ) || false,
-            resistance:
-                !!this.getDataFromCell(
-                    workSheet[META_ANALYSIS_RESISTANCE_CELL]
-                ) || false,
-            zoonosenIsolate:
-                !!this.getDataFromCell(
-                    workSheet[META_ANALYSIS_ZOONOSENISOLATE_CELL]
-                ) || false,
-
-            phageTyping:
-                !!this.getDataFromCell(
-                    workSheet[META_ANALYSIS_PHAGETYPING_CELL]
-                ) || false,
-
-            vaccination:
-                !!this.getDataFromCell(
-                    workSheet[META_ANALYSIS_VACCINATION_CELL]
-                ) || false,
-            molecularTyping:
-                !!this.getDataFromCell(
-                    workSheet[META_ANALYSIS_MOLECULARTYPING_CELL]
-                ) || false,
-            toxin:
-                !!this.getDataFromCell(workSheet[META_ANALYSIS_TOXIN_CELL]) ||
-                false,
-            esblAmpCCarbapenemasen:
-                !!this.getDataFromCell(
-                    workSheet[META_ANALYSIS_ESBLAMPCCARBAPENEMASEN_CELL]
-                ) || false,
-            other: (
-                '' +
-                this.getDataFromCell(workSheet[META_ANALYSIS_OTHER_TEXT_CELL])
-            ).trim(),
-            compareHuman: {
-                active:
-                    !!this.getDataFromCell(
-                        workSheet[META_ANALYSIS_COMPAREHUMAN_BOOL_CELL]
-                    ) || false,
-                value: (
-                    '' +
-                    this.getDataFromCell(
-                        workSheet[META_ANALYSIS_COMPAREHUMAN_TEXT_CELL]
-                    )
-                ).trim()
-            }
+            species: getOptionFromCell(workSheet[META_ANALYSIS_SPECIES_CELL]),
+            serological: getOptionFromCell(
+                workSheet[META_ANALYSIS_SEROLOGICAL_CELL]
+            ),
+            resistance: getOptionFromCell(
+                workSheet[META_ANALYSIS_RESISTANCE_CELL]
+            ),
+            zoonosenIsolate: getOptionFromCell(
+                workSheet[META_ANALYSIS_ZOONOSENISOLATE_CELL]
+            ),
+            phageTyping: getOptionFromCell(
+                workSheet[META_ANALYSIS_PHAGETYPING_CELL]
+            ),
+            vaccination: getOptionFromCell(
+                workSheet[META_ANALYSIS_VACCINATION_CELL]
+            ),
+            molecularTyping: getOptionFromCell(
+                workSheet[META_ANALYSIS_MOLECULARTYPING_CELL]
+            ),
+            toxin: getOptionFromCell(workSheet[META_ANALYSIS_TOXIN_CELL]),
+            esblAmpCCarbapenemasen: getOptionFromCell(
+                workSheet[META_ANALYSIS_ESBLAMPCCARBAPENEMASEN_CELL]
+            ),
+            other: getOptionFromCell(workSheet[META_ANAYLSIS_OTHER_BOOL_CELL]),
+            otherText: this.getStringFromCell(
+                workSheet[META_ANALYSIS_OTHER_TEXT_CELL]
+            ),
+            compareHuman: getOptionFromCell(
+                workSheet[META_ANALYSIS_COMPAREHUMAN_BOOL_CELL]
+            ),
+            compareHumanText: this.getStringFromCell(
+                workSheet[META_ANALYSIS_COMPAREHUMAN_TEXT_CELL]
+            )
         };
     }
 
     private getSenderFromWorkSheet(workSheet: WorkSheet): Address {
         return {
-            instituteName: (
-                '' +
-                this.getDataFromCell(workSheet[META_SENDER_INSTITUTENAME_CELL])
-            ).trim(),
-            department: (
-                '' +
-                this.getDataFromCell(workSheet[META_SENDER_DEPARTMENT_CELL])
-            ).trim(),
-            street: (
-                '' + this.getDataFromCell(workSheet[META_SENDER_STREET_CELL])
-            ).trim(),
-            zip: (
-                '' + this.getDataFromCell(workSheet[META_SENDER_ZIP_CITY_CELL])
-            )
+            instituteName: this.getStringFromCell(
+                workSheet[META_SENDER_INSTITUTENAME_CELL]
+            ),
+            department: this.getStringFromCell(
+                workSheet[META_SENDER_DEPARTMENT_CELL]
+            ),
+            street: this.getStringFromCell(workSheet[META_SENDER_STREET_CELL]),
+            zip: this.getStringFromCell(workSheet[META_SENDER_ZIP_CITY_CELL])
                 .split(',')[0]
                 .trim(),
             city: (
-                this.getDataFromCell(workSheet[META_SENDER_ZIP_CITY_CELL]) + ','
+                this.getStringFromCell(workSheet[META_SENDER_ZIP_CITY_CELL]) +
+                ','
             )
                 .split(',')[1]
                 .trim(),
-            contactPerson: (
-                '' +
-                this.getDataFromCell(workSheet[META_SENDER_CONTACTPERSON_CELL])
-            ).trim(),
-            telephone: (
-                '' + this.getDataFromCell(workSheet[META_SENDER_TELEPHONE_CELL])
-            ).trim(),
-            email: (
-                '' + this.getDataFromCell(workSheet[META_SENDER_EMAIL_CELL])
-            ).trim()
+            contactPerson: this.getStringFromCell(
+                workSheet[META_SENDER_CONTACTPERSON_CELL]
+            ),
+            telephone: this.getStringFromCell(
+                workSheet[META_SENDER_TELEPHONE_CELL]
+            ),
+            email: this.getStringFromCell(workSheet[META_SENDER_EMAIL_CELL])
         };
     }
 
     private getUrgencyFromWorkSheet(workSheet: WorkSheet): Urgency {
-        const urgency: string =
-            '' + this.getDataFromCell(workSheet[META_URGENCY_CELL]);
+        const urgency = this.getStringFromCell(workSheet[META_URGENCY_CELL]);
 
-        switch (urgency.trim().toLowerCase()) {
+        switch (urgency.toLowerCase()) {
             case 'eilt':
                 return Urgency.URGENT;
             case 'normal':
@@ -257,20 +198,115 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
         }
     }
     private getNRLFromWorkSheet(workSheet: WorkSheet): NRL_ID {
-        const workSheetNRL: string = workSheet[META_NRL_CELL].v || '';
+        const workSheetNRL = this.getStringFromCell(workSheet[META_NRL_CELL]);
         return DefaultNRLService.mapNRLStringToEnum(workSheetNRL);
     }
 
-    private getDataFromCell(
-        cell: CellObject
-    ): string | number | boolean | Date | undefined {
-        if (!cell) {
+    private getStringFromCell(cell: CellObject): string {
+        if (!cell || cell.v === undefined) {
             return '';
         }
-        return cell.v;
+        switch (cell.t) {
+            case 'b':
+                return this.getStringFromBooleanCell(cell);
+            case 'e':
+                return this.getStringFromErrorCell(cell);
+            case 'n':
+                return this.getStringFromNumberCell(cell);
+            case 'd':
+                return this.getStringFromDateCell(cell);
+            case 's':
+                return (cell.v as string).trim();
+            case 'z':
+                return '';
+        }
     }
+
+    private getStringFromBooleanCell(cell: CellObject): string {
+        const v = cell.v as boolean;
+        return v ? 'WAHR' : 'FALSCH';
+    }
+
+    private getStringFromErrorCell(cell: CellObject): string {
+        // returns the english error strings
+        return cell.w!;
+    }
+
+    private getStringFromNumberCell(cell: CellObject): string {
+        const v = cell.v as number;
+        // number cells are formatted with english rules
+        // due to the complexity of convert all the rules to german, all user defined number formats are ignored
+        return v.toString().replace('.', ',');
+    }
+
+    private getStringFromDateCell(cell: CellObject): string {
+        const v = cell.v as Date;
+
+        // date cells are formatted with english rules, so some conversion is necessary to get a german localized string
+        // due to the complexity of this task all user defined date formats are ignored
+
+        const localMoment = this.getLocalizedMomentFromDate(v);
+
+        // to check if cell contains a time or a date reparse the cell to excel's serialized date format
+        const serializedDate = utils.aoa_to_sheet([[v]], { cellDates: false })[
+            'A1'
+        ].v as number;
+
+        // excel uses integer part for dates and fractional part for time
+        const isTime = serializedDate - Math.floor(serializedDate) !== 0;
+        const isDate = serializedDate >= 1;
+
+        // format the date accordingly
+        if (isDate && !isTime) {
+            return localMoment.format('L');
+        } else if (!isDate) {
+            return localMoment.format('LTS');
+        } else {
+            return localMoment.format('L LTS');
+        }
+    }
+
+    private getLocalizedMomentFromDate(date: Date): moment.Moment {
+        // moment does not interpret timezones so some trickery is necessary
+
+        // create moment with given timezone offset
+        const offMoment = moment(date);
+
+        // get timezone offset of local server timezone
+        const localOffset = moment().utcOffset();
+
+        // convert to utc time with offset to local server timezone
+        let correctMoment = offMoment.utcOffset(localOffset);
+        correctMoment = this.correctMomentForXLSXSummerTimeBug(
+            correctMoment,
+            date
+        );
+
+        return correctMoment.locale('de');
+    }
+
+    private correctMomentForXLSXSummerTimeBug(
+        momentDate: moment.Moment,
+        date: Date
+    ): moment.Moment {
+        // since xlsx v0.16.0 date is in summer time if the date itself lies in summer, instead of local server time is in summer
+
+        const localOffset = moment().utcOffset();
+
+        const gmtString = date.toString();
+        const gmtIndex = gmtString.indexOf('GMT');
+        const hours = Number(gmtString.substr(gmtIndex + 4, 2));
+        const minutes = Number(gmtString.substr(gmtIndex + 6, 2));
+        let parsedOffset = hours * 60 + minutes;
+        if (gmtString.substr(gmtIndex + 3, 1) === '-') {
+            parsedOffset = -parsedOffset;
+        }
+
+        return momentDate.add(parsedOffset - localOffset, 'minutes');
+    }
+
     private fromWorksheetToData(workSheet: WorkSheet): Sample[] {
-        const lineNumber: number = this.getVersionDependentLine(workSheet);
+        const lineNumber = this.getSampleDataHeaderRow(workSheet);
         const data = utils.sheet_to_json<Record<string, string>>(workSheet, {
             header: FORM_PROPERTIES,
             range: lineNumber,
@@ -279,17 +315,6 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
         const cleanedData = this.fromDataToCleanedSamples(data);
         const formattedData: Sample[] = this.formatData(cleanedData);
         return formattedData;
-    }
-
-    private isForSingleSpecifiedNRL(
-        samples: Sample[],
-        meta: EinsendebogenMetaData
-    ): boolean {
-        return (
-            samples[0].getNRL() === meta.nrl &&
-            samples.length ===
-                samples.filter(s => s.getNRL() === samples[0].getNRL()).length
-        );
     }
 
     private formatData(data: Record<string, string>[]): Sample[] {
@@ -321,38 +346,30 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
         };
     }
 
-    private parseDate(date: string) {
-        date = date.toString();
-        let parseOptions = {
-            dateFormat: 'DD.MM.YYYY'
-        };
-        const americanDF = /\d\d?\/\d\d?\/\d\d\d?\d?/;
-        if (americanDF.test(date)) {
-            parseOptions = {
-                dateFormat: 'MM/DD/YYYY'
-            };
-        }
+    private parseDate(stringOrDate: string | Date) {
+        const date = stringOrDate.toString();
         try {
-            let parsedDate = 'Invalid date';
+            let parsedMoment: moment.Moment;
+
+            // date was given as Date object
             if (date.includes('GMT')) {
-                const localOffset = moment().utcOffset();
-                // parse as localelized date of input timezone
-                // this is the date as parsed by xlsx
-                parsedDate = moment(date)
-                    // convert to utc time and offset to local server timezone
-                    // this is the date as interpreted by xlsx before parsing
-                    .utcOffset(localOffset)
-                    .locale('de')
-                    .format('DD.MM.YYYY');
+                parsedMoment = this.getLocalizedMomentFromDate(new Date(date));
+                // date was given as string
             } else {
-                parsedDate = moment(date, parseOptions.dateFormat)
-                    .locale('de')
-                    .format('DD.MM.YYYY');
+                const americanDF = /\d\d?\/\d\d?\/\d\d\d?\d?/;
+                let dateFormat: string;
+                if (americanDF.test(date)) {
+                    dateFormat = 'MM/DD/YYYY';
+                } else {
+                    dateFormat = 'DD.MM.YYYY';
+                }
+                parsedMoment = moment(date, dateFormat).locale('de');
             }
-            if (parsedDate === 'Invalid date') {
+
+            if (!parsedMoment.isValid()) {
                 return date;
             }
-            return parsedDate;
+            return parsedMoment.format('DD.MM.YYYY');
         } catch (e) {
             return date;
         }
@@ -368,17 +385,14 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
         }
     }
 
-    private getVersionDependentLine(workSheet: WorkSheet): number {
-        let num = 41;
-        _.find(workSheet, (o, i) => {
-            if (o.v === 'Ihre Probe-nummer') {
-                const h = i.replace(/\D/, '');
-                num = parseInt(h, 10);
-                return true;
+    private getSampleDataHeaderRow(workSheet: WorkSheet): number {
+        for (let key in workSheet) {
+            if (workSheet[key].v === SAMPLE_DATA_HEADER_ROW_MARKER) {
+                const row = utils.encode_row(utils.decode_cell(key).r);
+                return parseInt(row, 10);
             }
-            return false;
-        });
-        return num;
+        }
+        return DEFAULT_SAMPLE_DATA_HEADER_ROW;
     }
 
     private fromDataToCleanedSamples(

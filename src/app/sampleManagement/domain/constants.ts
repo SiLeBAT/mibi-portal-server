@@ -1,4 +1,4 @@
-import { NRL_ID } from './enums';
+import { Analysis } from '../model/sample.model';
 
 export const VALID_SHEET_NAME: string = 'Einsendeformular';
 
@@ -24,6 +24,9 @@ export const FORM_PROPERTIES: string[] = [
     'comment'
 ];
 
+export const DEFAULT_SAMPLE_DATA_HEADER_ROW = 41;
+export const SAMPLE_DATA_HEADER_ROW_MARKER = 'Ihre Probe-nummer';
+
 export const META_NRL_CELL = 'B7';
 export const META_URGENCY_CELL = 'L27';
 export const META_SENDER_INSTITUTENAME_CELL = 'C12';
@@ -33,6 +36,8 @@ export const META_SENDER_ZIP_CITY_CELL = 'C19';
 export const META_SENDER_CONTACTPERSON_CELL = 'C20';
 export const META_SENDER_TELEPHONE_CELL = 'C21';
 export const META_SENDER_EMAIL_CELL = 'C22';
+export const META_CUSTOMER_REF_NUMBER_CELL = 'R6';
+export const META_SIGNATURE_DATE_CELL = 'A27';
 export const META_ANALYSIS_SPECIES_CELL = 'P12';
 export const META_ANALYSIS_SEROLOGICAL_CELL = 'P13';
 export const META_ANALYSIS_PHAGETYPING_CELL = 'P14';
@@ -47,21 +52,23 @@ export const META_ANALYSIS_OTHER_TEXT_CELL = 'J22';
 export const META_ANALYSIS_COMPAREHUMAN_BOOL_CELL = 'P23';
 export const META_ANALYSIS_COMPAREHUMAN_TEXT_CELL = 'J24';
 
-export const EMPTY_META = {
-    nrl: NRL_ID.UNKNOWN,
-    analysis: {
-        species: false,
-        serological: false,
-        resistance: false,
-        vaccination: false,
-        molecularTyping: false,
-        toxin: false,
-        esblAmpCCarbapenemasen: false,
-        sample: false,
-        other: '',
-        compareHuman: {
-            value: '',
-            active: false
-        }
+export const EMPTY_ANALYSIS: Analysis = {
+    species: false,
+    serological: false,
+    resistance: false,
+    vaccination: false,
+    molecularTyping: false,
+    toxin: false,
+    esblAmpCCarbapenemasen: false,
+    sample: false,
+    other: '',
+    compareHuman: {
+        value: '',
+        active: false
     }
+};
+
+export const ZOMO_ID = {
+    code: 81,
+    string: 'Zoonosen-Monitoring - Planprobe'
 };

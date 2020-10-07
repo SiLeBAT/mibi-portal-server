@@ -1,17 +1,11 @@
-import { CatalogConfig } from './../../../../app/ports';
-import * as path from 'path';
-import * as fs from 'fs';
-import * as csv from 'fast-csv';
+import path from 'path';
+import fs from 'fs';
+import { parseFile } from 'fast-csv';
 import { logger } from '../../../../aspects';
 import { FileNotFoundError } from '../../model/domain.error';
+import { CSVConfig } from '../../model/file-loader.model';
+import _ from 'lodash';
 
-interface CSVImportOptions {
-    filePath: string;
-    filterFunction: Function;
-    mappingFunction: Function;
-    headers: boolean;
-    delimiter: string;
-}
 async function loadBinaryFile(
     fileName: string,
     dataDir: string
@@ -23,25 +17,16 @@ async function loadBinaryFile(
     return importBinaryFile(filePath);
 }
 
-async function loadCSVFile<T>(
-    catalogConfig: CatalogConfig,
-    dataDir: string
-): Promise<T[]> {
+async function loadCSVFile<T extends string, R>(
+    fileName: string,
+    dataDir: string,
+    config: CSVConfig<T, R>
+): Promise<R[]> {
     logger.verbose(
-        `Loading data from Filesystem. fileName=${catalogConfig.filename} dataDir=${dataDir}`
+        `Loading data from Filesystem. fileName=${fileName} dataDir=${dataDir}`
     );
-    const filePath = resolveFilePath(catalogConfig.filename, dataDir);
-    return importCSVFile<T>({
-        filePath,
-        filterFunction: catalogConfig.filterFunction
-            ? catalogConfig.filterFunction
-            : () => true,
-        headers: !!catalogConfig.headers,
-        delimiter: catalogConfig.delimiter ? catalogConfig.delimiter : ',',
-        mappingFunction: catalogConfig.mappingFunction
-            ? catalogConfig.mappingFunction
-            : (e: T) => e
-    });
+    const filePath = resolveFilePath(fileName, dataDir);
+    return importCSVFile<T, R>(filePath, config);
 }
 
 async function loadJSONFile(fileName: string, dataDir: string): Promise<{}> {
@@ -52,28 +37,47 @@ async function loadJSONFile(fileName: string, dataDir: string): Promise<{}> {
     return importJSONFile(filePath);
 }
 
-async function importCSVFile<T>(options: CSVImportOptions): Promise<T[]> {
-    const data: T[] = [];
+async function importCSVFile<T extends string, R>(
+    filePath: string,
+    options: CSVConfig<T, R>
+): Promise<R[]> {
+    const data: R[] = [];
 
-    return new Promise<T[]>(function(resolve, reject) {
-        csv.fromPath(options.filePath, {
-            headers: options.headers,
-            delimiter: options.delimiter
+    const headers =
+        options.headers === true ? true : prepareCSVHeaders(options.headers);
+
+    return new Promise<R[]>(resolve => {
+        parseFile(filePath, {
+            headers: headers,
+            delimiter: options.delimiter || ',',
+            ignoreEmpty: true,
+            discardUnmappedColumns: true
         })
-            .on('data', function(entry) {
-                if (options.filterFunction(entry)) {
+            .on('data', function (entry) {
+                if (!options.filterFunction || options.filterFunction(entry)) {
                     data.push(options.mappingFunction(entry));
                 }
             })
-            .on('end', function() {
+            .on('end', function () {
                 resolve(data);
             });
     });
 }
 
+function prepareCSVHeaders(headers: Record<string, number>): string[] {
+    return _.reduce(
+        _.entries(headers),
+        (acc, [name, index]) => {
+            acc[index] = name;
+            return acc;
+        },
+        new Array<string>()
+    );
+}
+
 async function importJSONFile(filePath: string): Promise<{}> {
-    return new Promise(function(resolve, reject) {
-        fs.readFile(filePath, 'utf8', function(err, data) {
+    return new Promise(function (resolve, reject) {
+        fs.readFile(filePath, 'utf8', function (err, data) {
             if (err) {
                 reject(err);
             } else {
@@ -86,8 +90,8 @@ async function importJSONFile(filePath: string): Promise<{}> {
 
 // tslint:disable-next-line: no-any
 async function importBinaryFile(filePath: string): Promise<any> {
-    return new Promise(function(resolve, reject) {
-        fs.readFile(filePath, function(err, data) {
+    return new Promise(function (resolve, reject) {
+        fs.readFile(filePath, function (err, data) {
             if (err) {
                 reject(err);
             } else {

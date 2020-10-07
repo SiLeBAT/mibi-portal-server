@@ -1,6 +1,6 @@
 import { SampleMetaDTO, AnalysisDTO } from './../model/shared-dto.model';
-import * as moment from 'moment';
-import * as _ from 'lodash';
+import moment from 'moment';
+import _ from 'lodash';
 import { Request, Response } from 'express';
 import { logger } from '../../../aspects';
 import {
@@ -15,7 +15,6 @@ import {
     TokenPayload,
     TokenPort,
     UserPort,
-    NRLPort,
     Urgency,
     User,
     ReceiveAs,
@@ -30,7 +29,7 @@ import {
     PutValidatedRequestDTO,
     PutSamplesJSONRequestDTO
 } from '../model/request.model';
-import { SERVER_ERROR_CODE, ROUTE } from '../model/enums';
+import { SERVER_ERROR_CODE, API_ROUTE } from '../model/enums';
 import {
     MalformedRequestError,
     TokenNotFoundError
@@ -63,8 +62,9 @@ import {
 import { inject } from 'inversify';
 
 import { APPLICATION_TYPES } from './../../../app/application.types';
-import SERVER_TYPES from '../server.types';
+import { SERVER_TYPES } from '../server.types';
 import { Analysis } from 'src/app/sampleManagement/model/sample.model';
+import { NRLService } from '../../../app/sampleManagement/model/nrl.model';
 moment.locale('de');
 
 enum RESOURCE_VIEW_TYPE {
@@ -77,7 +77,7 @@ enum SAMPLES_ROUTE {
     VALIDATED = '/validated',
     SUBMITTED = '/submitted'
 }
-@controller(ROUTE.VERSION + SAMPLES_ROUTE.ROOT)
+@controller(API_ROUTE.V2 + SAMPLES_ROUTE.ROOT)
 export class DefaultSamplesController extends AbstractController
     implements SamplesController {
     constructor(
@@ -89,7 +89,8 @@ export class DefaultSamplesController extends AbstractController
         private sampleService: SamplePort,
         @inject(APPLICATION_TYPES.TokenService) private tokenService: TokenPort,
         @inject(APPLICATION_TYPES.UserService) private userService: UserPort,
-        @inject(APPLICATION_TYPES.NRLService) private nrlService: NRLPort,
+        // dirty fix: Use of NRLService instead of NRLPort
+        @inject(APPLICATION_TYPES.NRLService) private nrlService: NRLService,
         @inject(APPLICATION_TYPES.SampleFactory) private factory: SampleFactory
     ) {
         super();
@@ -368,7 +369,7 @@ export class DefaultSamplesController extends AbstractController
         return validationOptions;
     }
 
-    private getUserFromToken(token: string): Promise<User> {
+    private async getUserFromToken(token: string): Promise<User> {
         const payload: TokenPayload = this.tokenService.verifyToken(token);
         const userId = payload.sub;
         return this.userService.getUserById(userId);
@@ -381,7 +382,8 @@ export class DefaultSamplesController extends AbstractController
                 const e = entry;
                 for (const prop in e.sampleData) {
                     e.sampleData[prop] = {
-                        value: e.sampleData[prop].value
+                        value: e.sampleData[prop].value,
+                        oldValue: e.sampleData[prop].oldValue
                     };
                 }
                 return e;
@@ -404,8 +406,12 @@ export class DefaultSamplesController extends AbstractController
         dto: SampleSetMetaDTO
     ): SampleSetMetaData {
         return {
-            sender: dto.sender,
-            fileName: dto.fileName ? dto.fileName : ''
+            sender: { ...dto.sender },
+            fileName: dto.fileName ? dto.fileName : '',
+            customerRefNumber: dto.customerRefNumber
+                ? dto.customerRefNumber
+                : '',
+            signatureDate: dto.signatureDate ? dto.signatureDate : ''
         };
     }
 
@@ -423,15 +429,21 @@ export class DefaultSamplesController extends AbstractController
         data: SampleSetMetaData
     ): SampleSetMetaDTO {
         return {
-            sender: data.sender,
-            fileName: data.fileName
+            sender: { ...data.sender },
+            fileName: data.fileName,
+            customerRefNumber:
+                data.customerRefNumber === ''
+                    ? undefined
+                    : data.customerRefNumber, // non-breaking API change
+            signatureDate:
+                data.signatureDate === '' ? undefined : data.signatureDate // non-breaking API change
         };
     }
 
     private fromDTOToSample({ sampleData, sampleMeta }: SampleDTO): Sample {
         const annotatedSample = this.fromDTOToAnnotatedSampleData(sampleData);
         const sample = this.factory.createSample({ ...annotatedSample });
-        sample.setAnalysis(sampleMeta.analysis);
+        sample.setAnalysis(this.nrlService, sampleMeta.analysis);
         sample.setUrgency(this.fromUrgencyStringToEnum(sampleMeta.urgency));
         return sample;
     }
@@ -458,7 +470,7 @@ export class DefaultSamplesController extends AbstractController
             correctionOffer: dto.correctionOffer ? dto.correctionOffer : []
         };
 
-        if (dto.oldValue) {
+        if (dto.oldValue !== undefined) {
             annotatedSampleDataEntry.oldValue = dto.oldValue;
         }
 
@@ -470,7 +482,7 @@ export class DefaultSamplesController extends AbstractController
             sampleSet: {
                 meta: this.fromSampleSetMetaDataToDTO(sampleSet.meta),
                 samples: sampleSet.samples.map(sample => ({
-                    sampleData: sample.getDataValues(),
+                    sampleData: sample.getDataEntries(),
                     sampleMeta: {
                         nrl: sample.getNRL().toString(),
                         analysis: this.fromAnalysisToDTO(sample.getAnalysis()),

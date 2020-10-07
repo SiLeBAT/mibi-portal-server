@@ -1,4 +1,4 @@
-import * as config from 'config';
+import config from 'config';
 import { logger, getContainer } from './aspects';
 import { createServer, getServerContainerModule } from './ui/server/ports';
 import {
@@ -102,10 +102,14 @@ async function init() {
     const appConfiguration: AppConfiguration = configurationService.getApplicationConfiguration();
     const mailConfiguration: MailConfiguration = configurationService.getMailConfiguration();
 
+    logger.info(`Starting MiBi-Portal. appName=${appConfiguration.appName}`);
+
     const catalogRepository = await initialiseCatalogRepository(
         dataStoreConfig.dataDir
     ).catch((error: Error) => {
-        logger.error(`Failed to initialize Catalog Repository. error=${error}`);
+        logger.error(
+            `Failed to initialize Catalog Repository. error=${String(error)}`
+        );
         throw error;
     });
 
@@ -113,12 +117,20 @@ async function init() {
         dataStoreConfig.dataDir
     ).catch((error: Error) => {
         logger.error(
-            `Failed to initialize Search Alias Repository. error=${error}`
+            `Failed to initialize Search Alias Repository. error=${String(
+                error
+            )}`
         );
         throw error;
     });
 
-    createDataStore(dataStoreConfig.connectionString);
+    createDataStore({
+        host: dataStoreConfig.host,
+        database: dataStoreConfig.dataBase,
+        username: dataStoreConfig.username,
+        password: dataStoreConfig.password,
+        authDatabase: dataStoreConfig.authDatabase
+    });
 
     const container = getContainer({ defaultScope: 'Singleton' });
 
@@ -153,7 +165,7 @@ async function init() {
     server.startServer();
 
     process.on('uncaughtException', error => {
-        logger.error(`Uncaught Exception. error=${error}`);
+        logger.error(`Uncaught Exception. error=${String(error)}`);
         process.exit(1);
     });
 }

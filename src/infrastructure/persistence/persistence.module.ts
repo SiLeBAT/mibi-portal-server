@@ -1,7 +1,7 @@
 import { PERSISTENCE_TYPES } from './persistence.types';
 import { ContainerModule, interfaces } from 'inversify';
 import { Model } from 'mongoose';
-import { ValidationErrorModel } from './data-store/mongoose/schemas/validationError.schema';
+import { ValidationErrorModel } from './data-store/mongoose/schemas/validation-error.schema';
 import {
     MongooseValidationErrorModel,
     MongooseUserModel,
@@ -11,7 +11,7 @@ import {
     MongooseInstitutionModel
 } from './data-store/mongoose/mongoose.model';
 import { UserModel } from './data-store/mongoose/schemas/user.schema';
-import { TokenModel } from './data-store/mongoose/schemas/resetToken.schema';
+import { TokenModel } from './data-store/mongoose/schemas/reset-token.schema';
 import { StateModel } from './data-store/mongoose/schemas/state.schema';
 import { NRLModel } from './data-store/mongoose/schemas/nrl.schema';
 import { InstitutionModel } from './data-store/mongoose/schemas/institution.schema';
