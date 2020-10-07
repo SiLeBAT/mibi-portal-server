@@ -2,6 +2,7 @@ import { APIDocConfig } from './ui/server/ports';
 
 export interface ServerConfiguration {
     port: number;
+    apiRoot: string;
     publicAPIDoc: APIDocConfig;
 }
 
@@ -24,7 +25,7 @@ export interface AppConfiguration {
     appName: string;
     jobRecipient: string;
     login: LoginConfiguration;
-    apiUrl: string;
+    clientUrl: string;
 }
 
 export interface LoginConfiguration {

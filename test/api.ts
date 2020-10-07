@@ -3,7 +3,7 @@ import { PutValidatedRequestDTO, PutSamplesJSONRequestDTO } from '../src/ui/serv
 import { PutValidatedResponseDTO, PutSamplesJSONResponseDTO, PutSamplesXLSXResponseDTO } from '../src/ui/server/model/response.model';
 import rp from 'request-promise-native';
 import request = require('request');
-import { ROUTE } from '../src/ui/server/model/enums';
+import { API_ROUTE } from '../src/ui/server/model/enums';
 
 const API_URL = config.get('apiUrl');
 
@@ -12,8 +12,8 @@ export class Api {
         json: true,
     };
 
-    static readonly SAMPLES_ENDPOINT = ROUTE.VERSION + '/samples';
-    static readonly SAMPLES_VALIDATED_ENDPOINT = ROUTE.VERSION + '/samples/validated';
+    static readonly SAMPLES_ENDPOINT = API_ROUTE.V2 + '/samples';
+    static readonly SAMPLES_VALIDATED_ENDPOINT = API_ROUTE.V2 + '/samples/validated';
 
     static putSamplesXLSX(file: Buffer, fileName: string): Promise<PutSamplesJSONResponseDTO> {
         const formData = {

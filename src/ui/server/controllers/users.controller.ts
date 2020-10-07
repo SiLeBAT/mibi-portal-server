@@ -25,7 +25,7 @@ import {
     RegistrationRequestResponseDTO
 } from '../model/response.model';
 import { MalformedRequestError } from '../model/domain.error';
-import { SERVER_ERROR_CODE, ROUTE } from '../model/enums';
+import { SERVER_ERROR_CODE, API_ROUTE } from '../model/enums';
 import { JsonWebTokenError } from 'jsonwebtoken';
 import {
     controller,
@@ -48,7 +48,7 @@ enum USERS_ROUTE {
     ACTIVATION = '/activation',
     REGISTRATION = '/registration'
 }
-@controller(ROUTE.VERSION + USERS_ROUTE.ROOT)
+@controller(API_ROUTE.V2 + USERS_ROUTE.ROOT)
 export class DefaultUsersController extends AbstractController
     implements UsersController {
     constructor(

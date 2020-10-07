@@ -7,6 +7,6 @@ export enum SERVER_ERROR_CODE {
     AUTOCORRECTED_INPUT = 6
 }
 
-export enum ROUTE {
-    VERSION = '/v2'
+export enum API_ROUTE {
+    V2 = '/v2'
 }

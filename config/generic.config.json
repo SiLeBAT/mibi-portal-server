@@ -5,14 +5,13 @@
         "login": {
             "threshold": 0,
             "secondsDelay": 0
-          },
-          "apiUrl": ""
+        },
+        "clientUrl": ""
     },
     "server": {
         "port": 3000,
-        "publicAPIDoc": {
-            
-        }
+        "apiRoot": "",
+        "publicAPIDoc": { }
     },
     "dataStore": {
         "host": "",

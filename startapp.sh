@@ -11,5 +11,5 @@ BASE_NAME=`basename $LOG_FILE .log`
 DIR_NAME=`dirname $LOG_FILE`
 ADMIN_LOG=$DIR_NAME/$BASE_NAME-admin.log
 
-NODE_ENV=$MIBI_NODE_ENV HOST=$MIBI_HOST forever -l $LOG_FILE -a start ./lib/main.js
+NODE_ENV=$MIBI_NODE_ENV HOST=$MIBI_HOST MIBI_API_ROOT=$MIBI_API_ROOT forever -l $LOG_FILE -a start ./lib/main.js
 forever -l $ADMIN_LOG -a start ./node_modules/mongo-express/app.js
