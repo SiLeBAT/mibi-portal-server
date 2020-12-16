@@ -1,0 +1,13 @@
+{
+  "realm": "mibi-portal",
+  "auth-server-url": "http://localhost:8080/auth/",
+  "ssl-required": "external",
+  "resource": "mibiapp",
+  "verify-token-audience": true,
+  "credentials": {
+    "secret": "b6bfc4f6-e3e0-4e86-901d-15ca7fac7c01"
+  },
+  "use-resource-role-mappings": true,
+  "confidential-port": 0,
+  "policy-enforcer": {}
+}

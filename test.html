@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+
+<body>
+    <a href="/v2/testLogin">Login</a>
+    <a href="/v2/testLogin2">Login2</a>
+    <a href="/v2/test2">Test2</a>
+    <a href="/v2/logout">Logout</a>
+    <script>
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if(this.readyState == 4 && this.status == 200) {
+                console.log(xhttp.responseText);
+            } else if (this.status == 302) {
+                console.log('request failed');
+                this.abort();
+                } else {
+                    console.log(this.statusText);
+                                }
+        }
+        xhttp.open("GET", "/v2/test2", true);
+        xhttp.send();
+    </script>
+</body>

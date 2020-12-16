@@ -1,7 +1,7 @@
 {
     "extends": ["tslint-config-standard", "tslint-config-prettier"],
     "rules": {
-        "no-any": true,
+        "no-any": false,
         "semicolon": [
             true,
             "always"
@@ -11,7 +11,7 @@
             true,
             "no-public"
         ],
-        "no-console": [true],
+        "no-console": [false],
         "no-debugger": true,
         "file-name-casing": [true, "kebab-case"],
         "function-constructor": true,
