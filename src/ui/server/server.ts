@@ -75,6 +75,7 @@ export class DefaultAppServer implements AppServer {
                 morgan(Logger.mapLevelToMorganFormat(serverConfig.logLevel))
             );
             app.use(express.static(path.join(__dirname, this.publicDir)));
+
             app.use(
                 serverConfig.apiRoot + '/api-docs' + API_ROUTE.V2,
                 swaggerUi.serve,
