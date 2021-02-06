@@ -74,6 +74,7 @@ export class DefaultAppServer implements AppServer {
             app.use(
                 morgan(Logger.mapLevelToMorganFormat(serverConfig.logLevel))
             );
+
             app.use(express.static(path.join(__dirname, this.publicDir)));
 
             app.use(
