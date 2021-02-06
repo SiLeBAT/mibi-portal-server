@@ -84,6 +84,7 @@ export class DefaultAppServer implements AppServer {
                     swaggerUrl: serverConfig.apiRoot + API_ROUTE.V2
                 })
             );
+
             app.use(
                 serverConfig.apiRoot + API_ROUTE.V2 + '/*',
                 validateToken(
