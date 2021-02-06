@@ -70,6 +70,7 @@ export class DefaultAppServer implements AppServer {
             });
 
             app.use(cors());
+
             app.use(
                 morgan(Logger.mapLevelToMorganFormat(serverConfig.logLevel))
             );
