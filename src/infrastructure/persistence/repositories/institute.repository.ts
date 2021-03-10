@@ -53,6 +53,7 @@ export class MongooseInstituteRepository
             .then(model => createInstitution(model._id.toHexString()));
     }
 
+    // mapper call is missing so only unique id is gathered
     async findByInstituteName(name: string): Promise<Institute> {
         return super
             ._findOne({ name1: name })

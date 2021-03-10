@@ -117,6 +117,7 @@ export class DefaultSampleService implements SampleService {
             fileName
         );
 
+        // ???
         if (token) {
             try {
                 this.tokenService.verifyToken(token);

@@ -1,11 +1,53 @@
 <!DOCTYPE html>
 
-<body>
-    <a href="/v2/testLogin">Login</a>
+<head>
+    <script src="http://localhost:8080/auth/js/keycloak.js"></script>
+    <script>
+        function initKeycloak() {
+            var keycloak = new Keycloak();
+            keycloak.init({
+                onLoad: 'login-required'
+            }).then(function(authenticated) {
+                alert(authenticated ? 'authenticated' : 'not authenticated');
+            }).catch(function() {
+                alert('failed to initialize');
+            });
+            keycloak.onAuthLogout = () => {
+                alert('logged out');
+            }
+        }
+    </script>
+</head>
+<body onload="initKeycloak()">
+    <!-- your page content goes here -->
+</body>
+
+<!-- <body> -->
+    <!-- <a href="/v2/testLogin">Login</a>
     <a href="/v2/testLogin2">Login2</a>
     <a href="/v2/test2">Test2</a>
     <a href="/v2/logout">Logout</a>
+    <div onclick="onClick()">Test</div>
+    <div onclick="onClick2()">Test2</div>
+    <a href="http://localhost:3000/client/api/info">Test2</a>
     <script>
+        function onClick(){
+            fetch('http://localhost:3000/client/userinfo', {credentials:"omit"})
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                });        
+            }
+        function onClick2(){
+            fetch('http://localhost:3000/client/userinfo', {credentials:"include"})
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                });        
+            }
+    </script> -->
+
+    <!-- <script>
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
             if(this.readyState == 4 && this.status == 200) {
@@ -19,5 +61,5 @@
         }
         xhttp.open("GET", "/v2/test2", true);
         xhttp.send();
-    </script>
-</body>
+    </script> -->
+<!-- </body> -->

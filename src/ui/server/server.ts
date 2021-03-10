@@ -3,14 +3,14 @@ import express, { Request, Response } from 'express';
 // import helmet from 'helmet';
 // import compression from 'compression';
 // import cors from 'cors';
-import morgan from 'morgan';
+// import morgan from 'morgan';
 import swaggerUi from 'swagger-ui-express';
 import { InversifyExpressServer } from 'inversify-express-utils';
 
 // local
 import { logger } from './../../aspects';
 // import { validateToken } from './middleware/token-validator.middleware';
-import { Logger } from '../../aspects/logging';
+// import { Logger } from '../../aspects/logging';
 import { API_ROUTE, SERVER_ERROR_CODE } from './model/enums';
 import { AppServerConfiguration } from './model/server.model';
 import { injectable, Container } from 'inversify';
@@ -25,6 +25,83 @@ export interface AppServer {
     startServer(): void;
 }
 
+function parseRedirectUrl(req: any) : string {
+    // TODO: check check for valid urls
+    return req.query.redirect_url ? req.query.redirect_url as string : '/';
+}
+
+function followRedirectUrl() {
+    return (req: any, res: any) => {
+        // TODO: re-add other queries
+        res.redirect(parseRedirectUrl(req));
+    }
+}
+
+function regenerateSession() {
+    return (req: any, res: any, next: any) => {
+        if (req.kauth && req.kauth.grant) {
+            return next();
+        }
+        // checkSSO failed
+        if (req.query.auth_callback) {
+            return next();
+        }
+        // checkSSO redirect
+        if (req.session.auth_is_check_sso_complete) {
+            return next();
+        }
+        req.session.regenerate((err: any) => {
+            console.log('REGENERATED');
+            console.log(req.sessionID);
+            next();
+        })
+    }
+}
+
+class ClientAdapter extends KeycloakConnect {
+    // we want to logout the client and redirect to the application if authentication failed
+    accessDenied(req: any, res: any) {
+        // if best match is html redirect to logout, otherwise respond to xhr with auth error
+        if(req.accepts(['html', 'json', 'text']) === 'html') {
+            let redirectUrl: string;
+
+            if(req.path === '/client/login') {
+                redirectUrl = parseRedirectUrl(req);
+            } else {
+                let urlParts = {
+                    pathname: req.path,
+                    query: req.query
+                };
+        
+                delete urlParts.query.error;
+                delete urlParts.query.auth_callback;
+                delete urlParts.query.state;
+                delete urlParts.query.code;
+                delete urlParts.query.session_state;
+        
+                redirectUrl = url.format(urlParts);
+            }
+    
+            const logoutUrl = url.format({
+                pathname: '/client/logout',
+                query: {
+                    redirect_url: redirectUrl
+                }
+            });
+    
+            // console.log('TEST: ', logoutUrl);
+            res.redirect(logoutUrl);
+        } else {
+            super.accessDenied(req, res);
+        }
+    }
+
+    unstoreGrant(sessionId: any) {
+        super.unstoreGrant(sessionId);
+        console.log('-----------------UNSTORE GRANT');
+    }
+}
+
 @injectable()
 export class DefaultAppServer implements AppServer {
     private server: InversifyExpressServer;
@@ -32,7 +109,7 @@ export class DefaultAppServer implements AppServer {
     private publicDir = 'public';
 
     constructor(container: Container) {
-        this.initialise(container);
+        this.initialize(container);
     }
 
     startServer() {
@@ -42,67 +119,97 @@ export class DefaultAppServer implements AppServer {
         );
     }
 
-    private initialise(container: Container) {
+    private initialize(container: Container) {
+        const serverConfig = container.get<AppServerConfiguration>(
+            SERVER_TYPES.AppServerConfiguration
+        );
         const clientBackChannel = new EventEmitter();
         const MemoryStore = createMemoryStore(session);
         const clientSessionStore = new MemoryStore({});
-        const clientAuthAdapter = new KeycloakConnect(
+        const clientAuthAdapter = new ClientAdapter(
             { store: clientSessionStore, scope: 'test_scope' },
-            'keycloak-client.json'
+            // { cookies: true },
+            'config/keycloak/keycloak-client.json'
         );
-        clientAuthAdapter.accessDenied = (req, res) => {
-            res.redirect('/auth_result/access_denied');
-        };
-        const apiAuthAdapter = new KeycloakConnect({}, 'keycloak-api.json');
+
+        const apiAuthAdapter = new KeycloakConnect({}, 'config/keycloak/keycloak-api.json');
 
         const serveClient = () => {
+            // TODO: check env for production mode
             return (req: Request, res: Response) => {
-                res.redirect('http://localhost:4200' + req.url);
-                // res.sendFile(
-                // path.join(__dirname, this.publicDir + '/index.html')
-                // );
+                // res.redirect('http://localhost:4200' + req.url);
+                res.sendFile(
+                    path.join(__dirname, this.publicDir + '/index.html')
+                );
             };
         };
 
         const clientRouter = express.Router();
+
+        clientRouter.get('/test', (req, res) => {
+            res.sendFile(path.join(__dirname, '/test.html'))
+        });
+
+        clientRouter.get('/keycloak.json', (req, res) => {
+            res.sendFile(path.join(__dirname, '/keycloak.json'))
+        });
+
+        clientRouter.get('/favicon.ico', (req, res, next) => {
+            next('not fav');
+        })
 
         // bypass direct api calls
         clientRouter.use('/api', (req, res, next) => {
             next('router');
         });
 
+        // ignore index.html so it is not served by the static file middleware
+        clientRouter.get('/index.html', (req, res, next) => {
+            req.url = '/';
+            next();
+        });
+
+        // serve static files
+        clientRouter.use(
+            express.static(path.join(__dirname, this.publicDir), {
+                index: false, // prevents auto redirecting '/' routes to '/index.html'
+                redirect: false // prevents adding a trailing '/' to the routes (causes unecessary browser redirects)
+            })
+        );
+
         // establish client sessions
         clientRouter.use(
             session({
-                secret: 'some secret', // TODO
+                secret: 'some secret', // TODO: from config
                 resave: false, // TODO
                 saveUninitialized: false, // TODO
                 // TODO
-                // cookie: {
-                //     secure: 'auto',
-                //     httpOnly: true,
-                //     maxAge: 3600000
-                // },
-                store: clientSessionStore
-                // name: 'mibisession' // TODO
+                cookie: {
+                    // secure: 'auto',
+                    httpOnly: true,
+                    // maxAge: 10000,
+                    sameSite: 'lax' // only get request causing a browser navigation
+                },
+                store: clientSessionStore,
+                name: 'mibi.auth-session'
             })
         );
 
         clientRouter.use((req, res, next) => {
             console.log('client router');
-            console.log(req.url);
-            console.log(req.hostname);
-            console.log(req.headers.host);
+            console.log(req.url + ' : ' + req.hostname + ' : ' + req.headers.host);
             console.log(req.sessionID);
+            // console.log(req.session);
             next();
         });
 
         // set logout redirect uri
         clientRouter.use('/client/logout', (req, res, next) => {
+            const redirectUrl = req.query.redirect_url ? req.query.redirect_url : '';
             req.url = url.format({
                 pathname: req.path,
                 query: {
-                    redirect_url: 'http://localhost:3000/auth_result/logged_out'
+                    redirect_url: 'http://localhost:3000' + redirectUrl
                 }
             });
             next();
@@ -136,10 +243,13 @@ export class DefaultAppServer implements AppServer {
             console.log('AFTER KEYCLOAK');
             const loggedIn = req.kauth && req.kauth.grant ? true : false;
             // const sessionLoggedIn = req.session && req.session.keycloak_token;
+            // console.log(req.session);
+            // console.log(req.kauth?.grant);
             console.log('loggedIn: ', loggedIn);
             next();
         });
 
+        // above keycloak middleware?
         // inform clients about backchannel logout events
         clientRouter.get('/client/backchannel', (req, res, next) => {
             if (
@@ -154,7 +264,7 @@ export class DefaultAppServer implements AppServer {
                 console.log('event no session');
                 res.end();
             }
-            console.log(req.sessionID);
+            // console.log(req.sessionID);
             res.set({
                 'Cache-Control': 'no-cache',
                 'Content-Type': 'text/event-stream',
@@ -169,7 +279,7 @@ export class DefaultAppServer implements AppServer {
                 console.log('TRIGGERED');
                 console.log(req.sessionID);
                 // const rand = Math.floor(Math.random() * 10000);
-                res.write('event: backchannel\ndata: logout\n\n');
+                res.write('event: auth\ndata: logout\n\n');
             };
             req.on('close', () => {
                 console.log('EVENT REQ CLOSED');
@@ -185,7 +295,7 @@ export class DefaultAppServer implements AppServer {
 
             clientBackChannel.on('admin-request', adminRequestHandler);
             console.log(
-                'registerd clients: ',
+                'registered clients: ',
                 clientBackChannel.listenerCount('admin-request')
             );
         });
@@ -193,32 +303,48 @@ export class DefaultAppServer implements AppServer {
         // oauth login flow
         clientRouter.get(
             '/client/login',
+            regenerateSession(),
             clientAuthAdapter.protect(),
-            (req, res, next) => {
-                res.redirect('/auth_result/logged_in');
-                // NEW TAB FLOW
-                // req.url = '/client/sessioninfo';
-            }
+            followRedirectUrl()
+            // (req, res, next) => {
+            //     // NEW TAB FLOW
+            //     // req.url = '/client/sessioninfo';
+            // }
         );
 
         clientRouter.get('/client/userinfo', (req: any, res, next) => {
             const grant: GrantProperties | undefined = req.kauth?.grant;
             if (grant && grant.access_token) {
-                clientAuthAdapter.grantManager
-                    .userInfo(grant.access_token)
-                    .then((info: any) => {
-                        console.log('', info);
-                        res.send({
-                            id: info.sub,
-                            firstName: info.given_name,
-                            lastName: info.family_name,
-                            email: info.email,
-                            userName: info.preferred_username
-                        });
-                    })
-                    .catch(next);
+                const token = (grant.access_token as any).content;
+                console.log((grant.refresh_token as any).content);
+                // TODO: check for errors
+                res.send({
+                    user: {
+                        id: token.sub,
+                        firstName: token.given_name,
+                        lastName: token.family_name,
+                        email: token.email,
+                        userName: token.preferred_username
+                    }
+                });
+                // userInfo from keycloak
+                // clientAuthAdapter.grantManager
+                //     .userInfo(grant.access_token)
+                //     .then((info: any) => {
+                //         // console.log('', info);
+                //         res.send({
+                //             user: {
+                //                 id: info.sub,
+                //                 firstName: info.given_name,
+                //                 lastName: info.family_name,
+                //                 email: info.email,
+                //                 userName: info.preferred_username
+                //             }
+                //         });
+                //     })
+                //     .catch(next);
             } else {
-                res.send({ error: 'not found' });
+                res.send({ user: null });
             }
         });
 
@@ -261,9 +387,36 @@ export class DefaultAppServer implements AppServer {
 
         // forward client api calls to versioned api endpoints
         clientRouter.all('/client/api/*', (req: any, res, next) => {
-            req.url = req.url.replace('client/api', 'api/v2'); // TODO make more safe
+            // console.log('SESSION: ', req.session);
+
+            if (req.query.sub) {
+                if (!(req.kauth && req.kauth.grant)) {
+                    res.status(403);
+                    res.end('Access unauthorized');
+                    return;
+                }
+                if (req.query.sub !== req.kauth.grant.access_token.content.sub) {
+                    res.status(403);
+                    res.end('Access invalid id');
+                    return;
+                }
+                // let urlParts = {
+                //     pathname: req.path,
+                //     query: req.query
+                // };
+                // delete urlParts.query.sub;
+                // let cleanUrl = url.format(urlParts);
+                // req.url = cleanUrl;
+            }
+
+            // TODO: do not clear all query params
+            // redirect to api and clear all query parameters
+            req.url = '/api/v2/' + req.params[0];
             console.log('REPLACED: ', req.url);
+
+            // console.log('HEADER: ', req.headers);
             if (req.kauth && req.kauth.grant) {
+                // console.log('GRANT', req.kauth.grant);
                 req.headers.authorization =
                     'Bearer ' + (req.kauth.grant.access_token.token as string);
             }
@@ -276,43 +429,46 @@ export class DefaultAppServer implements AppServer {
         });
 
         // authentication already checked, so serve client directly
-        clientRouter.get('/auth_result/*', serveClient());
+        // clientRouter.use('/auth_result', serveClient());
 
-        // ignore index.html so it is not served by the static file middleware
-        clientRouter.get('/index.html', (req, res, next) => {
-            req.url = '/';
+        // authentication failed, so serve client directly
+        clientRouter.get('*', (req: any, res, next) => {
+            console.log('FAILED: ', req.session.access_denied);
+            if (req.session.access_denied) {
+                req.session.access_denied = false;
+                serveClient()(req, res);
+            } else {
+                next();
+            }
+        })
+
+        // authenticate and serve client for all other routes
+        clientRouter.get('*', regenerateSession(), clientAuthAdapter.checkSso(), serveClient());
+
+        const apiRouter = express.Router();
+
+        apiRouter.use((req, res, next) => {
+            // console.log('api router');
+            // console.log(req.url + ' : ' + req.hostname + ' : ' + req.headers.host);
             next();
         });
 
-        // serve static files
-        clientRouter.use(
-            express.static(path.join(__dirname, this.publicDir), {
-                index: false, // prevents auto redirecting '/' routes to '/index.html'
-                redirect: false // prevents adding a trailing '/' to the routes (causes unecessary browser redirects)
+        apiRouter.use(
+            API_ROUTE.V2 + '/docs',
+            swaggerUi.serve,
+            swaggerUi.setup(undefined, {
+                swaggerUrl: serverConfig.apiRoot + '/api' + API_ROUTE.V2
             })
         );
 
-        // authenticate and serve client for all other routes
-        clientRouter.get('/*', clientAuthAdapter.checkSso(), serveClient());
-
-        const apiAuthRouter = express.Router();
-
-        apiAuthRouter.use((req, res, next) => {
-            console.log('api router');
-            console.log(req.url);
-            console.log(req.hostname);
-            console.log(req.headers.host);
-            next();
-        });
-
         // bypass public routes
-        apiAuthRouter.get(
-            ['/v2/info', '/v2/institutes', '/v2/nrls'],
+        apiRouter.get(
+            ['/v2', '/v2/info', '/v2/institutes', '/v2/nrls'],
             (req, res, next) => {
                 next('router');
             }
         );
-        apiAuthRouter.put(
+        apiRouter.put(
             ['/v2/samples', '/v2/samples/validated'],
             (req, res, next) => {
                 next('router');
@@ -320,23 +476,24 @@ export class DefaultAppServer implements AppServer {
         );
 
         // hide keycloak middleware logout endpoint (is for browser flow only)
-        apiAuthRouter.use('/logout', (req, res) => {
+        apiRouter.use('/logout', (req, res) => {
             apiAuthAdapter.accessDenied(req, res);
         });
 
         // authenticate api calls
-        apiAuthRouter.use(
+        apiRouter.use(
             apiAuthAdapter.middleware({
                 logout: '/logout',
                 admin: '/admin'
             })
         );
 
-        apiAuthRouter.use((req: any, res, next) => {
+        apiRouter.use((req: any, res, next) => {
+            // console.log(req.kauth);
             next();
         });
 
-        apiAuthRouter.get(
+        apiRouter.get(
             '/v2/test',
             apiAuthAdapter.protect('apirole'),
             (req, res, next) => {
@@ -345,11 +502,8 @@ export class DefaultAppServer implements AppServer {
         );
 
         // protect all routes
-        apiAuthRouter.use(apiAuthAdapter.protect());
+        apiRouter.use(apiAuthAdapter.protect());
 
-        const serverConfig = container.get<AppServerConfiguration>(
-            SERVER_TYPES.AppServerConfiguration
-        );
         this.server = new InversifyExpressServer(container, null, {
             // rootPath: serverConfig.apiRoot
             rootPath: '/api'
@@ -383,23 +537,15 @@ export class DefaultAppServer implements AppServer {
 
             // app.use(cors());
 
-            app.use(
-                morgan(Logger.mapLevelToMorganFormat(serverConfig.logLevel))
-            );
+            // app.use(
+            //     morgan(Logger.mapLevelToMorganFormat(serverConfig.logLevel))
+            // );
 
             // app.use(express.static(path.join(__dirname, this.publicDir)));
 
-            app.use(
-                serverConfig.apiRoot + '/api/docs' + API_ROUTE.V2,
-                swaggerUi.serve,
-                swaggerUi.setup(undefined, {
-                    swaggerUrl: serverConfig.apiRoot + '/api' + API_ROUTE.V2
-                })
-            );
-
             app.use(clientRouter);
             // must be added after clientRouter
-            app.use('/api', apiAuthRouter);
+            app.use('/api', apiRouter);
 
             // app.use(
             //     serverConfig.apiRoot + API_ROUTE.V2 + '/*',

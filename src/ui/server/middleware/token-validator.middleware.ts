@@ -26,12 +26,15 @@ function validateToken(apiRoute: string, secret: string) {
 }
 
 // tslint:disable-next-line: no-any
-function getTokenFromHeader(req: any): string | null {
-    if (
-        req.headers.authorization &&
-        req.headers.authorization.split(' ')[0] === 'Bearer'
-    ) {
-        return req.headers.authorization.split(' ')[1];
+function getTokenFromHeader(req: any): any | null {
+    // if (
+    //     req.headers.authorization &&
+    //     req.headers.authorization.split(' ')[0] === 'Bearer'
+    // ) {
+    //     return req.headers.authorization.split(' ')[1];
+    // }
+    if(req.kauth && req.kauth.grant) {
+        return req.kauth.grant.access_token;
     }
     return null;
 }

@@ -12,16 +12,18 @@ import {
     ApplicantMetaData,
     SampleSet,
     SampleSetMetaData,
-    TokenPayload,
-    TokenPort,
-    UserPort,
+    // TokenPayload,
+    // TokenPort,
+    // UserPort,
     Urgency,
     User,
     ReceiveAs,
     SampleData,
     AnnotatedSampleDataEntry,
     SampleMetaData,
-    SampleFactory
+    SampleFactory,
+    createUser,
+    // createInstitution
 } from '../../../app/ports';
 import { SamplesController } from '../model/controller.model';
 import {
@@ -65,6 +67,8 @@ import { APPLICATION_TYPES } from './../../../app/application.types';
 import { SERVER_TYPES } from '../server.types';
 import { Analysis } from 'src/app/sampleManagement/model/sample.model';
 import { NRLService } from '../../../app/sampleManagement/model/nrl.model';
+import { InstituteService } from '../../../app/authentication/model/institute.model';
+// import jsonwebtoken from 'jsonwebtoken';
 moment.locale('de');
 
 enum RESOURCE_VIEW_TYPE {
@@ -87,11 +91,12 @@ export class DefaultSamplesController extends AbstractController
         private formAutoCorrectionService: FormAutoCorrectionPort,
         @inject(APPLICATION_TYPES.SampleService)
         private sampleService: SamplePort,
-        @inject(APPLICATION_TYPES.TokenService) private tokenService: TokenPort,
-        @inject(APPLICATION_TYPES.UserService) private userService: UserPort,
+        // @inject(APPLICATION_TYPES.TokenService) private tokenService: TokenPort,
+        // @inject(APPLICATION_TYPES.UserService) private userService: UserPort,
         // dirty fix: Use of NRLService instead of NRLPort
         @inject(APPLICATION_TYPES.NRLService) private nrlService: NRLService,
-        @inject(APPLICATION_TYPES.SampleFactory) private factory: SampleFactory
+        @inject(APPLICATION_TYPES.SampleFactory) private factory: SampleFactory,
+        @inject(APPLICATION_TYPES.InstituteService) private instituteService: InstituteService
     ) {
         super();
     }
@@ -244,7 +249,7 @@ export class DefaultSamplesController extends AbstractController
     ): Promise<SampleSet> {
         let contype = req.headers['content-type'];
         const type = this.getResourceViewType(contype);
-        const token: string | null = getTokenFromHeader(req);
+        // const token: string | null = getTokenFromHeader(req);
         switch (type) {
             case RESOURCE_VIEW_TYPE.XLSX:
                 const file = this.parseInputDTO(() => {
@@ -254,7 +259,7 @@ export class DefaultSamplesController extends AbstractController
                     };
                 });
                 return this.sampleService
-                    .convertToJson(file.buffer, file.name, token)
+                    .convertToJson(file.buffer, file.name, null)
                     .catch((error: Error) => {
                         throw error;
                     });
@@ -351,28 +356,46 @@ export class DefaultSamplesController extends AbstractController
     ): Promise<ValidationOptions> {
         const validationOptions: ValidationOptions = {};
 
-        const token = getTokenFromHeader(req);
+        // const token = getTokenFromHeader(req);
         let stateShort = '';
-        if (token) {
-            const user: User = await this.getUserFromToken(token);
-            try {
-                const instute = user.institution;
-                stateShort = instute.stateShort;
-            } catch (error) {
-                logger.info(
-                    `${this.constructor.name}.${this.getValidationOptions.name}, no state found for user. Using default state. error=${error}`
-                );
-            }
-        }
+        // if (token) {
+        //     const user: User = await this.getUserFromToken(token);
+        //     try {
+        //         const instute = user.institution;
+        //         stateShort = instute.stateShort;
+        //     } catch (error) {
+        //         logger.info(
+        //             `${this.constructor.name}.${this.getValidationOptions.name}, no state found for user. Using default state. error=${error}`
+        //         );
+        //     }
+        // }
 
         validationOptions.state = stateShort;
         return validationOptions;
     }
 
-    private async getUserFromToken(token: string): Promise<User> {
-        const payload: TokenPayload = this.tokenService.verifyToken(token);
-        const userId = payload.sub;
-        return this.userService.getUserById(userId);
+    // private async getUserFromToken(token: string): Promise<User> {
+    //     const payload: TokenPayload = this.tokenService.verifyToken(token);
+    //     const userId = payload.sub;
+    //     return this.userService.getUserById(userId);
+    // }
+
+    private async getUserFromToken(token: any): Promise<User> {
+        // const decodedToken = jsonwebtoken.decode(token) as any;
+        // if(decodedToken === null) {
+            // throw new Error('Token decode error');
+        // }
+        let institute = await this.instituteService.getInstituteByName(token.content.institute);
+        institute = await this.instituteService.getInstituteById(institute.uniqueId);
+        console.log(token.content.institute, institute);
+        return createUser(
+            token.content.sub,
+            token.content.email,
+            token.content.given_name,
+            token.content.family_name,
+            institute,
+            ''
+        );
     }
 
     private fromDTOToUnannotatedSampleSet(dto: SampleSetDTO): SampleSet {
