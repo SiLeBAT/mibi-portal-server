@@ -268,7 +268,8 @@ export class DefaultAppServer implements AppServer {
             res.set({
                 'Cache-Control': 'no-cache',
                 'Content-Type': 'text/event-stream',
-                Connection: 'keep-alive'
+                // Connection: 'keep-alive',
+                'X-Accel-Buffering': 'no'
             });
             res.flushHeaders();
             res.write('retry: 10000\n\n');
