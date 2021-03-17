@@ -429,20 +429,6 @@ export class DefaultAppServer implements AppServer {
             next('router');
         });
 
-        // authentication already checked, so serve client directly
-        // clientRouter.use('/auth_result', serveClient());
-
-        // authentication failed, so serve client directly
-        clientRouter.get('*', (req: any, res, next) => {
-            console.log('FAILED: ', req.session.access_denied);
-            if (req.session.access_denied) {
-                req.session.access_denied = false;
-                serveClient()(req, res);
-            } else {
-                next();
-            }
-        })
-
         // authenticate and serve client for all other routes
         clientRouter.get('*', regenerateSession(), clientAuthAdapter.checkSso(), serveClient());
 
