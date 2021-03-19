@@ -25,7 +25,7 @@ export interface AppServer {
     startServer(): void;
 }
 
-function parseRedirectUrl(req: any) : string {
+function parseRedirectUrl(req: any): string {
     // TODO: check check for valid urls
     return req.query.redirect_url ? req.query.redirect_url as string : '/';
 }
@@ -62,33 +62,33 @@ class ClientAdapter extends KeycloakConnect {
     // we want to logout the client and redirect to the application if authentication failed
     accessDenied(req: any, res: any) {
         // if best match is html redirect to logout, otherwise respond to xhr with auth error
-        if(req.accepts(['html', 'json', 'text']) === 'html') {
+        if (req.accepts(['html', 'json', 'text']) === 'html') {
             let redirectUrl: string;
 
-            if(req.path === '/client/login') {
+            if (req.path === '/client/login') {
                 redirectUrl = parseRedirectUrl(req);
             } else {
                 let urlParts = {
                     pathname: req.path,
                     query: req.query
                 };
-        
+
                 delete urlParts.query.error;
                 delete urlParts.query.auth_callback;
                 delete urlParts.query.state;
                 delete urlParts.query.code;
                 delete urlParts.query.session_state;
-        
+
                 redirectUrl = url.format(urlParts);
             }
-    
+
             const logoutUrl = url.format({
                 pathname: '/client/logout',
                 query: {
                     redirect_url: redirectUrl
                 }
             });
-    
+
             // console.log('TEST: ', logoutUrl);
             res.redirect(logoutUrl);
         } else {
@@ -137,10 +137,10 @@ export class DefaultAppServer implements AppServer {
         const serveClient = () => {
             // TODO: check env for production mode
             return (req: Request, res: Response) => {
-                // res.redirect('http://localhost:4200' + req.url);
-                res.sendFile(
-                    path.join(__dirname, this.publicDir + '/index.html')
-                );
+                res.redirect('http://localhost:4200' + req.url);
+                // res.sendFile(
+                // path.join(__dirname, this.publicDir + '/index.html')
+                // );
             };
         };
 
@@ -205,13 +205,20 @@ export class DefaultAppServer implements AppServer {
 
         // set logout redirect uri
         clientRouter.use('/client/logout', (req, res, next) => {
-            const redirectUrl = req.query.redirect_url ? req.query.redirect_url : '';
-            req.url = url.format({
-                pathname: req.path,
-                query: {
-                    redirect_url: 'http://localhost:3000' + redirectUrl
-                }
-            });
+            let redirectUrl = req.query.redirect_url;
+            if (redirectUrl) {
+                let host = req.hostname;
+                let headerHost = req.headers.host;
+                let port = headerHost ? headerHost.split(':')[1] || '' : '';
+                redirectUrl = req.protocol + '://' + host + (port === '' ? '' : ':' + port) + redirectUrl;
+                req.url = url.format({
+                    pathname: req.path,
+                    query: {
+                        redirect_url: redirectUrl
+                    }
+                });
+            }
+            // const redirectUrl = req.query.redirect_url ? req.query.redirect_url : '';
             next();
         });
 
