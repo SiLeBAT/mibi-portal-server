@@ -137,10 +137,10 @@ export class DefaultAppServer implements AppServer {
         const serveClient = () => {
             // TODO: check env for production mode
             return (req: Request, res: Response) => {
-                res.redirect('http://localhost:4200' + req.url);
-                // res.sendFile(
-                // path.join(__dirname, this.publicDir + '/index.html')
-                // );
+                // res.redirect('http://localhost:4200' + req.url);
+                res.sendFile(
+                path.join(__dirname, this.publicDir + '/index.html')
+                );
             };
         };
 
