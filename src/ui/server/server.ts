@@ -25,28 +25,30 @@ export interface AppServer {
     startServer(): void;
 }
 
-function parseRedirectUrl(req: any): string {
-    // TODO: check check for valid urls
-    return req.query.redirect_url ? req.query.redirect_url as string : '/';
-}
+// function parseRedirectUrl(req: any): string {
+//     // TODO: check check for valid urls
+//     return req.query.redirect_url ? req.query.redirect_url as string : '/';
+// }
 
-function followRedirectUrl() {
-    return (req: any, res: any) => {
-        // TODO: re-add other queries
-        res.redirect(parseRedirectUrl(req));
-    }
-}
+// function followRedirectUrl() {
+//     return (req: any, res: any) => {
+//         // TODO: re-add other queries
+//         res.redirect(parseRedirectUrl(req));
+//     }
+// }
 
 function regenerateSession() {
+    // regenerate session if user is not authenticated and checkSSO or login is initiated
     return (req: any, res: any, next: any) => {
+        // ignore if user is authenticated
         if (req.kauth && req.kauth.grant) {
             return next();
         }
-        // checkSSO failed
+        // ignore if redirected from auth server after checkSSO failed
         if (req.query.auth_callback) {
             return next();
         }
-        // checkSSO redirect
+        // ignore if redirected from checkSSO to clean url
         if (req.session.auth_is_check_sso_complete) {
             return next();
         }
@@ -59,28 +61,23 @@ function regenerateSession() {
 }
 
 class ClientAdapter extends KeycloakConnect {
-    // we want to logout the client and redirect to the application if authentication failed
+    // logout the client and redirect to the application if authentication failed
     accessDenied(req: any, res: any) {
         // if best match is html redirect to logout, otherwise respond to xhr with auth error
         if (req.accepts(['html', 'json', 'text']) === 'html') {
-            let redirectUrl: string;
+            let urlParts = {
+                pathname: req.path,
+                query: req.query
+            };
 
-            if (req.path === '/client/login') {
-                redirectUrl = parseRedirectUrl(req);
-            } else {
-                let urlParts = {
-                    pathname: req.path,
-                    query: req.query
-                };
+            delete urlParts.query.error;
+            delete urlParts.query.auth_callback;
+            delete urlParts.query.state;
+            delete urlParts.query.code;
+            delete urlParts.query.session_state;
+            urlParts.query.auth_error = 1;
 
-                delete urlParts.query.error;
-                delete urlParts.query.auth_callback;
-                delete urlParts.query.state;
-                delete urlParts.query.code;
-                delete urlParts.query.session_state;
-
-                redirectUrl = url.format(urlParts);
-            }
+            const redirectUrl = url.format(urlParts);
 
             const logoutUrl = url.format({
                 pathname: '/client/logout',
@@ -203,7 +200,9 @@ export class DefaultAppServer implements AppServer {
             next();
         });
 
-        // set logout redirect uri
+        // add host to logout redirect uri
+        // TODO: keep query params
+        // session is cleared during checkSSo after redirect from auth server logout endpoint
         clientRouter.use('/client/logout', (req, res, next) => {
             let redirectUrl = req.query.redirect_url;
             if (redirectUrl) {
@@ -308,12 +307,18 @@ export class DefaultAppServer implements AppServer {
             );
         });
 
-        // oauth login flow
+        // fall through to redirect_url endpoint to initiate login from there
+        // TODO: keep query params
         clientRouter.get(
             '/client/login',
-            regenerateSession(),
-            clientAuthAdapter.protect(),
-            followRedirectUrl()
+            (req: any, res, next) => {
+                req.url = req.query.redirect_url ? req.query.redirect_url : '/';
+                req.forceLogin = true;
+                next();
+            }
+            // regenerateSession(),
+            // clientAuthAdapter.protect(),
+            // followRedirectUrl()
             // (req, res, next) => {
             //     // NEW TAB FLOW
             //     // req.url = '/client/sessioninfo';
@@ -437,7 +442,18 @@ export class DefaultAppServer implements AppServer {
         });
 
         // authenticate and serve client for all other routes
-        clientRouter.get('*', regenerateSession(), clientAuthAdapter.checkSso(), serveClient());
+        clientRouter.get('*', regenerateSession(), (req: any, res, next) => {
+            // req from client/login endpoint is handled here
+            if (req.forceLogin) {
+                console.log('FORCELOGIN: ', req.url);
+                console.log(req.originalUrl);
+                // keycloak adapter takes originalUrl as redirectUrl after login
+                req.originalUrl = req.url;
+                clientAuthAdapter.protect()(req, res, next);
+            } else {
+                clientAuthAdapter.checkSso()(req, res, next);
+            }
+        }, serveClient());
 
         const apiRouter = express.Router();
 
