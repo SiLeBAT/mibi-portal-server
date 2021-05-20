@@ -136,7 +136,7 @@ export class DefaultAppServer implements AppServer {
             return (req: Request, res: Response) => {
                 // res.redirect('http://localhost:4200' + req.url);
                 res.sendFile(
-                path.join(__dirname, this.publicDir + '/index.html')
+                    path.join(__dirname, this.publicDir + '/index.html')
                 );
             };
         };
@@ -523,6 +523,8 @@ export class DefaultAppServer implements AppServer {
             // app.use(compression());
             app.set('port', serverConfig.port);
             app.set('logger', logger);
+
+            app.set('trust proxy', true);
 
             app.use(express.json({ limit: '50mb' }));
             // app.use(
