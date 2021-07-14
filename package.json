@@ -15,7 +15,7 @@
     "cp:all": "npm run cp:view && npm run cp:scripts && npm run cp:json",
     "tsc": "tsc",
     "build": "npm run tsc && npm run cp:all",
-    "prebuild": "npx node-pre-gyp rebuild -C node_modules/argon2 && npm run clean",
+    "prebuild": "npm rebuild argon2 --build-from-source && npm run clean",
     "test": "jest --config=jest.json",
     "test:integration": "jest --config=jest-integration.json --verbose",
     "test:watch": "npm test -- --watch",
