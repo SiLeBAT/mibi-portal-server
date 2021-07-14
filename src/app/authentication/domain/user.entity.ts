@@ -5,7 +5,7 @@ import { Institute } from '../model/institute.model';
 const defaultHashOptions = {
     hashLength: 128,
     timeCost: 10,
-    memoryCost: 1024,
+    memoryCost: 2048,
     parallelism: 4,
     type: argon2.argon2id
 };

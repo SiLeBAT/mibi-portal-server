@@ -249,8 +249,8 @@ export class DefaultSamplesController extends AbstractController
             case RESOURCE_VIEW_TYPE.XLSX:
                 const file = this.parseInputDTO(() => {
                     return {
-                        buffer: req.file.buffer,
-                        name: req.file.originalname
+                        buffer: req.file!.buffer,
+                        name: req.file!.originalname
                     };
                 });
                 return this.sampleService

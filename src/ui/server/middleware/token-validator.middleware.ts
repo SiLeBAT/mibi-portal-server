@@ -19,6 +19,7 @@ function validateToken(apiRoute: string, secret: string) {
 
     return jwt({
         secret,
+        algorithms: ['HS256'],
         getToken: getTokenFromHeader
     }).unless({
         path: whiteList

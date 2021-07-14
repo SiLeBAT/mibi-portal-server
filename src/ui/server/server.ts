@@ -45,31 +45,44 @@ export class DefaultAppServer implements AppServer {
             rootPath: serverConfig.apiRoot
         });
         this.server.setConfig(app => {
-            app.use(helmet());
-            app.use(compression());
             app.set('port', serverConfig.port);
             app.set('logger', logger);
 
-            app.use(express.json({ limit: '50mb' }));
+            app.disable('x-powered-by');
+
+            // Common security headers
             app.use(
-                express.urlencoded({
-                    extended: false
+                helmet({
+                    frameguard: {
+                        action: 'deny'
+                    },
+                    contentSecurityPolicy: {
+                        useDefaults: true,
+                        directives: {
+                            'script-src': [
+                                "'self'",
+                                "'unsafe-eval'",
+                                "'unsafe-inline'"
+                            ]
+                        }
+                    }
                 })
             );
 
             app.use((req, res, next) => {
-                res.setHeader('X-Frame-Options', 'deny');
                 res.setHeader(
                     'Cache-Control',
-                    'no-cache, no-store, must-revalidate'
+                    'no-store, must-revalidate, max-age=0'
                 );
-                res.setHeader('Pragma', 'no-cache');
+                // deprecated (helmet sets it to "0")
                 res.setHeader('X-XSS-Protection', '1; mode=block');
-                res.setHeader('X-Content-Type-Options', 'nosniff');
                 next();
             });
 
             app.use(cors());
+
+            app.use(compression());
+            app.use(express.json({ limit: '50mb' }));
 
             app.use(
                 morgan(Logger.mapLevelToMorganFormat(serverConfig.logLevel))
