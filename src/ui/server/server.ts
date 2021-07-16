@@ -63,7 +63,8 @@ export class DefaultAppServer implements AppServer {
                                 "'self'",
                                 "'unsafe-eval'",
                                 "'unsafe-inline'"
-                            ]
+                            ],
+                            'script-src-attr': null // not supported by firefox
                         }
                     }
                 })
