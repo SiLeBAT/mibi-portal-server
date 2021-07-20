@@ -231,9 +231,10 @@ describe('Custom Auto-correction Functions', () => {
                 field: 'pathogen_adv',
                 original: 'E. coli',
                 correctionOffer: [
-                    'Escherichia coli',
                     'Salmonella Colindale',
-                    'Escherichia coli Carbapenemase-bildend'
+                    'Escherichia coli',
+                    'Escherichia coli Carbapenemase-bildend',
+                    'Salmonella Dublin'
                 ],
                 code: 0
             });

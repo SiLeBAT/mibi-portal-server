@@ -45,35 +45,52 @@ export class DefaultAppServer implements AppServer {
             rootPath: serverConfig.apiRoot
         });
         this.server.setConfig(app => {
-            app.use(helmet());
-            app.use(compression());
             app.set('port', serverConfig.port);
             app.set('logger', logger);
 
-            app.use(express.json({ limit: '50mb' }));
+            app.disable('x-powered-by');
+
+            // Common security headers
             app.use(
-                express.urlencoded({
-                    extended: false
+                helmet({
+                    frameguard: {
+                        action: 'deny'
+                    },
+                    contentSecurityPolicy: {
+                        useDefaults: true,
+                        directives: {
+                            'script-src': [
+                                "'self'",
+                                "'unsafe-eval'",
+                                "'unsafe-inline'"
+                            ],
+                            'script-src-attr': null // not supported by firefox
+                        }
+                    }
                 })
             );
 
             app.use((req, res, next) => {
-                res.setHeader('X-Frame-Options', 'deny');
                 res.setHeader(
                     'Cache-Control',
-                    'no-cache, no-store, must-revalidate'
+                    'no-store, must-revalidate, max-age=0'
                 );
-                res.setHeader('Pragma', 'no-cache');
+                // deprecated (helmet sets it to "0")
                 res.setHeader('X-XSS-Protection', '1; mode=block');
-                res.setHeader('X-Content-Type-Options', 'nosniff');
                 next();
             });
 
             app.use(cors());
+
+            app.use(compression());
+            app.use(express.json({ limit: '50mb' }));
+
             app.use(
                 morgan(Logger.mapLevelToMorganFormat(serverConfig.logLevel))
             );
+
             app.use(express.static(path.join(__dirname, this.publicDir)));
+
             app.use(
                 serverConfig.apiRoot + '/api-docs' + API_ROUTE.V2,
                 swaggerUi.serve,
@@ -81,6 +98,7 @@ export class DefaultAppServer implements AppServer {
                     swaggerUrl: serverConfig.apiRoot + API_ROUTE.V2
                 })
             );
+
             app.use(
                 serverConfig.apiRoot + API_ROUTE.V2 + '/*',
                 validateToken(
