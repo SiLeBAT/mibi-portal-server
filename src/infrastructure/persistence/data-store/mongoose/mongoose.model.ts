@@ -35,13 +35,16 @@ export const MongooseTokenModel = mongoose.model<TokenModel>(
     tokenSchema
 );
 export const MongooseUserModel = mongoose.model<UserModel>('User', userSchema);
-export const MongooseNRLModel: mongoose.Model<NRLModel> = mongoose.model<
-    NRLModel
->('NRL', nrlSchema);
-export const MongooseValidationErrorModel = mongoose.model<
-    ValidationErrorModel
->('ValidationError', validationErrorSchema);
+export const MongooseNRLModel: mongoose.Model<NRLModel> =
+    mongoose.model<NRLModel>('NRL', nrlSchema);
+export const MongooseValidationErrorModel =
+    mongoose.model<ValidationErrorModel>(
+        'ValidationError',
+        validationErrorSchema
+    );
 
-export const MongooseAnalysisProcedureModel = mongoose.model<
-    AnalysisProcedureModel
->('AnalysisProcedure', analysisProcedureSchema);
+export const MongooseAnalysisProcedureModel =
+    mongoose.model<AnalysisProcedureModel>(
+        'AnalysisProcedure',
+        analysisProcedureSchema
+    );

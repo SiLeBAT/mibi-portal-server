@@ -18,8 +18,10 @@ enum INSTITUTES_ROUTE {
     ROOT = '/institutes'
 }
 @controller(API_ROUTE.V2 + INSTITUTES_ROUTE.ROOT)
-export class DefaultInstituteController extends AbstractController
-    implements InstitutesController {
+export class DefaultInstituteController
+    extends AbstractController
+    implements InstitutesController
+{
     constructor(
         @inject(APPLICATION_TYPES.InstituteService)
         private instiuteService: InstitutePort

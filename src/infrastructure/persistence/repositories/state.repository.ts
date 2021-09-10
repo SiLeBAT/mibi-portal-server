@@ -11,8 +11,10 @@ import { Model } from 'mongoose';
 import { PERSISTENCE_TYPES } from '../persistence.types';
 
 @injectable()
-export class DefaultStateRepository extends MongooseRepositoryBase<StateModel>
-    implements StateRepository {
+export class DefaultStateRepository
+    extends MongooseRepositoryBase<StateModel>
+    implements StateRepository
+{
     constructor(
         @inject(PERSISTENCE_TYPES.StateModel) model: Model<StateModel>
     ) {

@@ -199,9 +199,8 @@ export class DefaultFormValidatorService implements FormValidatorService {
             newConstraints['sample_id_avv']['matchesIdToSpecificYear']
         ) {
             // Necessary because of Ticket #49
-            newConstraints['sample_id_avv'][
-                'matchesIdToSpecificYear'
-            ].regex = this.avvFormatProvider.getFormat(options.state);
+            newConstraints['sample_id_avv']['matchesIdToSpecificYear'].regex =
+                this.avvFormatProvider.getFormat(options.state);
         }
         return { ...newConstraints };
     }

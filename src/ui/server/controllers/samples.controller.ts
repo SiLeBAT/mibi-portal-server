@@ -78,8 +78,10 @@ enum SAMPLES_ROUTE {
     SUBMITTED = '/submitted'
 }
 @controller(API_ROUTE.V2 + SAMPLES_ROUTE.ROOT)
-export class DefaultSamplesController extends AbstractController
-    implements SamplesController {
+export class DefaultSamplesController
+    extends AbstractController
+    implements SamplesController
+{
     constructor(
         @inject(APPLICATION_TYPES.FormValidatorService)
         private formValidationService: FormValidatorPort,
@@ -138,9 +140,8 @@ export class DefaultSamplesController extends AbstractController
                     ...sampleSet.meta
                 }
             };
-            const validatedOrderDTO: OrderDTO = this.fromSampleSetToOrderDTO(
-                validatedSampleSet
-            );
+            const validatedOrderDTO: OrderDTO =
+                this.fromSampleSetToOrderDTO(validatedSampleSet);
             const responseDTO: PutValidatedResponseDTO = {
                 order: validatedOrderDTO
             };
@@ -166,9 +167,8 @@ export class DefaultSamplesController extends AbstractController
             const annotatedSampleSet: SampleSet = this.parseInputDTO(() => {
                 return this.fromDTOToSampleSet(requestDTO.order.sampleSet);
             });
-            const validationOptions: ValidationOptions = await this.getValidationOptions(
-                req
-            );
+            const validationOptions: ValidationOptions =
+                await this.getValidationOptions(req);
             const validatedSamples: Sample[] = await this.validateSamples(
                 annotatedSampleSet.samples,
                 validationOptions
@@ -179,9 +179,8 @@ export class DefaultSamplesController extends AbstractController
                 meta: annotatedSampleSet.meta
             };
 
-            const orderDTO: OrderDTO = this.fromSampleSetToOrderDTO(
-                validatedSampleSet
-            );
+            const orderDTO: OrderDTO =
+                this.fromSampleSetToOrderDTO(validatedSampleSet);
 
             if (this.hasSampleError(validatedSamples)) {
                 const errorDTO: InvalidInputErrorDTO = {
@@ -277,9 +276,8 @@ export class DefaultSamplesController extends AbstractController
         const type = this.getResourceViewType(accept);
         switch (type) {
             case RESOURCE_VIEW_TYPE.XLSX:
-                const result: PutSamplesXLSXResponseDTO = await this.sampleService.convertToExcel(
-                    sampleSet
-                );
+                const result: PutSamplesXLSXResponseDTO =
+                    await this.sampleService.convertToExcel(sampleSet);
                 logger.info(
                     `${this.constructor.name}.${this.putSamples.name}, Response sent`
                 );
@@ -330,18 +328,17 @@ export class DefaultSamplesController extends AbstractController
         // 1) Auto-correction needs to happen before validation.
         // 2) Assign NRL
         // 3) Validate Samples
-        const autocorrectedSamples = await this.formAutoCorrectionService.applyAutoCorrection(
-            samples
-        );
+        const autocorrectedSamples =
+            await this.formAutoCorrectionService.applyAutoCorrection(samples);
 
-        const assignedSamples = this.nrlService.assignNRLsToSamples(
-            autocorrectedSamples
-        );
+        const assignedSamples =
+            this.nrlService.assignNRLsToSamples(autocorrectedSamples);
 
-        const validationResult = await this.formValidationService.validateSamples(
-            assignedSamples,
-            options
-        );
+        const validationResult =
+            await this.formValidationService.validateSamples(
+                assignedSamples,
+                options
+            );
 
         return validationResult;
     }
@@ -449,10 +446,8 @@ export class DefaultSamplesController extends AbstractController
     }
 
     private fromDTOToAnnotatedSampleData(dto: SampleDataDTO): SampleData {
-        const annotatedSampleData: Record<
-            string,
-            AnnotatedSampleDataEntry
-        > = {};
+        const annotatedSampleData: Record<string, AnnotatedSampleDataEntry> =
+            {};
         for (const prop in dto) {
             annotatedSampleData[prop] = this.fromDTOToAnnotatedSampleDataEntry(
                 dto[prop]

@@ -12,8 +12,10 @@ import { Model } from 'mongoose';
 import { PERSISTENCE_TYPES } from '../persistence.types';
 
 @injectable()
-export class DefaultTokenRepository extends MongooseRepositoryBase<TokenModel>
-    implements TokenRepository {
+export class DefaultTokenRepository
+    extends MongooseRepositoryBase<TokenModel>
+    implements TokenRepository
+{
     constructor(
         @inject(PERSISTENCE_TYPES.TokenModel) private model: Model<TokenModel>
     ) {

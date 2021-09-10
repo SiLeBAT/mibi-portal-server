@@ -21,7 +21,8 @@ import { APPLICATION_TYPES } from './../../application.types';
 
 @injectable()
 export class DefaultFormAutoCorrectionService
-    implements FormAutoCorrectionService {
+    implements FormAutoCorrectionService
+{
     private correctionFunctions: CorrectionFunction[] = [];
 
     constructor(

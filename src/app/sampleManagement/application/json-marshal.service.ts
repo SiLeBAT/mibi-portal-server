@@ -118,8 +118,8 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
         const mapAnalysisOptionToString = (
             option: SampleSheetAnalysisOption
         ): string => {
-            const strings = this.sampleSheetConstants.metaStrings.analysis
-                .options;
+            const strings =
+                this.sampleSheetConstants.metaStrings.analysis.options;
             switch (option) {
                 case SampleSheetAnalysisOption.OMIT:
                     return '';

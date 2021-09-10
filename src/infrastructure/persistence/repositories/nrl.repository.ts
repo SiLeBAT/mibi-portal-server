@@ -7,8 +7,10 @@ import { Model } from 'mongoose';
 import { PERSISTENCE_TYPES } from '../persistence.types';
 
 @injectable()
-export class MongooseNRLRepository extends MongooseRepositoryBase<NRLModel>
-    implements NRLRepository {
+export class MongooseNRLRepository
+    extends MongooseRepositoryBase<NRLModel>
+    implements NRLRepository
+{
     constructor(@inject(PERSISTENCE_TYPES.NRLModel) model: Model<NRLModel>) {
         super(model);
     }

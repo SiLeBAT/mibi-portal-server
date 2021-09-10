@@ -71,8 +71,10 @@ export class DefaultSampleService implements SampleService {
         @inject(APPLICATION_TYPES.SampleSheetService)
         private sampleSheetService: SampleSheetService
     ) {
-        this.appName = this.configurationService.getApplicationConfiguration().appName;
-        this.overrideRecipient = this.configurationService.getApplicationConfiguration().jobRecipient;
+        this.appName =
+            this.configurationService.getApplicationConfiguration().appName;
+        this.overrideRecipient =
+            this.configurationService.getApplicationConfiguration().jobRecipient;
     }
 
     async sendSamples(
@@ -112,10 +114,11 @@ export class DefaultSampleService implements SampleService {
         fileName: string,
         token: string | null
     ): Promise<SampleSet> {
-        const sampleSheet = await this.excelUnmarshalService.convertExcelToJSJson(
-            buffer,
-            fileName
-        );
+        const sampleSheet =
+            await this.excelUnmarshalService.convertExcelToJSJson(
+                buffer,
+                fileName
+            );
 
         if (token) {
             try {
@@ -138,9 +141,8 @@ export class DefaultSampleService implements SampleService {
     }
 
     async convertToExcel(sampleSet: SampleSet): Promise<ExcelFileInfo> {
-        const sampleSheet = this.sampleSheetService.fromSampleSetToSampleSheet(
-            sampleSet
-        );
+        const sampleSheet =
+            this.sampleSheetService.fromSampleSetToSampleSheet(sampleSet);
 
         this.prepareSampleSheetForExport(sampleSheet);
 
@@ -219,9 +221,8 @@ export class DefaultSampleService implements SampleService {
         sampleSet: SampleSet,
         creatorFunc: (sampleSheet: SampleSheet) => Promise<FileBuffer>
     ): Promise<Payload> {
-        const sampleSheet = this.sampleSheetService.fromSampleSetToSampleSheet(
-            sampleSet
-        );
+        const sampleSheet =
+            this.sampleSheetService.fromSampleSetToSampleSheet(sampleSet);
 
         const fileBuffer = await creatorFunc(sampleSheet);
 
@@ -246,10 +247,11 @@ export class DefaultSampleService implements SampleService {
         applicantMetaData: ApplicantMetaData
     ): void {
         payloads.forEach(payload => {
-            const orderNotificationMetaData = this.resolveOrderNotificationMetaData(
-                applicantMetaData,
-                payload.nrl
-            );
+            const orderNotificationMetaData =
+                this.resolveOrderNotificationMetaData(
+                    applicantMetaData,
+                    payload.nrl
+                );
 
             const newOrderNotification = this.createNewOrderNotification(
                 this.createNotificationAttachment(payload),

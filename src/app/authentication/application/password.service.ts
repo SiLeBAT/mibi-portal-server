@@ -31,9 +31,12 @@ export class DefaultPasswordService implements PasswordService {
         private configurationService: ConfigurationService,
         @inject(APPLICATION_TYPES.UserService) private userService: UserService
     ) {
-        this.appName = this.configurationService.getApplicationConfiguration().appName;
-        this.clientUrl = this.configurationService.getApplicationConfiguration().clientUrl;
-        this.supportContact = this.configurationService.getApplicationConfiguration().supportContact;
+        this.appName =
+            this.configurationService.getApplicationConfiguration().appName;
+        this.clientUrl =
+            this.configurationService.getApplicationConfiguration().clientUrl;
+        this.supportContact =
+            this.configurationService.getApplicationConfiguration().supportContact;
     }
     async requestPasswordReset(recoveryData: RecoveryData): Promise<void> {
         const user = await this.userService.getUserByEmail(recoveryData.email);
@@ -68,9 +71,8 @@ export class DefaultPasswordService implements PasswordService {
         await user.updatePassword(password);
         await this.userService.updateUser(user);
         await this.tokenService.deleteTokenForUser(user, TokenType.RESET);
-        const resetSuccessNotification = this.createResetSuccessNotification(
-            user
-        );
+        const resetSuccessNotification =
+            this.createResetSuccessNotification(user);
         this.notificationService.sendNotification(resetSuccessNotification);
     }
 

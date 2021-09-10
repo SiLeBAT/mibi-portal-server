@@ -9,8 +9,10 @@ import { Model } from 'mongoose';
 import { PERSISTENCE_TYPES } from '../persistence.types';
 
 @injectable()
-export class DefaultUserRepository extends MongooseRepositoryBase<UserModel>
-    implements UserRepository {
+export class DefaultUserRepository
+    extends MongooseRepositoryBase<UserModel>
+    implements UserRepository
+{
     constructor(
         @inject(PERSISTENCE_TYPES.UserModel) private model: Model<UserModel>
     ) {

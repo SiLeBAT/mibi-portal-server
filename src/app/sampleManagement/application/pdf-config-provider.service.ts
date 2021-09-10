@@ -16,7 +16,8 @@ import {
 
 @injectable()
 export class DefaultPDFConfigProviderService
-    implements PDFConfigProviderService {
+    implements PDFConfigProviderService
+{
     // mmToInch * inchToPixel
     private readonly MM_TO_PIXEL = 0.0393701 * 72;
 

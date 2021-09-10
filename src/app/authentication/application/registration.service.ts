@@ -42,9 +42,12 @@ export class DefaultRegistrationService implements RegistrationService {
         @inject(APPLICATION_TYPES.InstituteService)
         private instituteService: InstituteService
     ) {
-        this.appName = this.configurationService.getApplicationConfiguration().appName;
-        this.clientUrl = this.configurationService.getApplicationConfiguration().clientUrl;
-        this.supportContact = this.configurationService.getApplicationConfiguration().supportContact;
+        this.appName =
+            this.configurationService.getApplicationConfiguration().appName;
+        this.clientUrl =
+            this.configurationService.getApplicationConfiguration().clientUrl;
+        this.supportContact =
+            this.configurationService.getApplicationConfiguration().supportContact;
     }
 
     async verifyUser(token: string): Promise<string> {
@@ -72,9 +75,8 @@ export class DefaultRegistrationService implements RegistrationService {
         user.isActivated(true);
         await this.userService.updateUser(user);
         await this.tokenService.deleteTokenForUser(user, TokenType.ADMIN);
-        const adminActivationNotification = this.createAdminActivationNotification(
-            user
-        );
+        const adminActivationNotification =
+            this.createAdminActivationNotification(user);
         this.notificationService.sendNotification(adminActivationNotification);
         const userName = user.firstName + ' ' + user.lastName;
         logger.verbose(
@@ -134,11 +136,12 @@ export class DefaultRegistrationService implements RegistrationService {
             user.uniqueId
         );
 
-        const requestActivationNotification = this.createRequestActivationNotification(
-            user,
-            recoveryData,
-            activationToken
-        );
+        const requestActivationNotification =
+            this.createRequestActivationNotification(
+                user,
+                recoveryData,
+                activationToken
+            );
 
         this.notificationService.sendNotification(
             requestActivationNotification
@@ -146,16 +149,14 @@ export class DefaultRegistrationService implements RegistrationService {
     }
 
     handleNotActivatedUser(user: User): void {
-        const requestNotAdminActivatedNotification = this.createNotAdminActivatedNotification(
-            user
-        );
+        const requestNotAdminActivatedNotification =
+            this.createNotAdminActivatedNotification(user);
         this.notificationService.sendNotification(
             requestNotAdminActivatedNotification
         );
 
-        const requestAdminActivationReminder = this.createAdminActivationReminder(
-            user
-        );
+        const requestAdminActivationReminder =
+            this.createAdminActivationReminder(user);
 
         this.notificationService.sendNotification(
             requestAdminActivationReminder
@@ -179,10 +180,11 @@ export class DefaultRegistrationService implements RegistrationService {
             user.uniqueId
         );
 
-        const requestAdminActivationNotification = this.createRequestAdminActivationNotification(
-            user,
-            adminActivationToken
-        );
+        const requestAdminActivationNotification =
+            this.createRequestAdminActivationNotification(
+                user,
+                adminActivationToken
+            );
 
         this.notificationService.sendNotification(
             requestAdminActivationNotification
@@ -190,9 +192,8 @@ export class DefaultRegistrationService implements RegistrationService {
     }
 
     private handleAlreadyRegisteredUser(credentials: UserRegistration): void {
-        const userAlreadyRegisteredNotification = this.createAlreadyRegisteredUserNotification(
-            credentials
-        );
+        const userAlreadyRegisteredNotification =
+            this.createAlreadyRegisteredUserNotification(credentials);
         this.notificationService.sendNotification(
             userAlreadyRegisteredNotification
         );

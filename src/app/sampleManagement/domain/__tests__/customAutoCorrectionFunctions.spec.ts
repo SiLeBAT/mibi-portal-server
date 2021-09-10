@@ -124,9 +124,8 @@ describe('Custom Auto-correction Functions', () => {
                 ...genericSampleData
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV16(
-                mockCatalogService
-            );
+            const correctionFunction: CorrectionFunction =
+                autoCorrectADV16(mockCatalogService);
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual(null);
@@ -144,9 +143,8 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV16(
-                mockCatalogService
-            );
+            const correctionFunction: CorrectionFunction =
+                autoCorrectADV16(mockCatalogService);
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual({
@@ -172,9 +170,8 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV16(
-                mockCatalogService
-            );
+            const correctionFunction: CorrectionFunction =
+                autoCorrectADV16(mockCatalogService);
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual({
@@ -197,9 +194,8 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV16(
-                mockCatalogService
-            );
+            const correctionFunction: CorrectionFunction =
+                autoCorrectADV16(mockCatalogService);
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual({
@@ -222,9 +218,8 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV16(
-                mockCatalogService
-            );
+            const correctionFunction: CorrectionFunction =
+                autoCorrectADV16(mockCatalogService);
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual({
@@ -252,9 +247,8 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV16(
-                mockCatalogService
-            );
+            const correctionFunction: CorrectionFunction =
+                autoCorrectADV16(mockCatalogService);
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual(null);
@@ -272,9 +266,8 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV16(
-                mockCatalogService
-            );
+            const correctionFunction: CorrectionFunction =
+                autoCorrectADV16(mockCatalogService);
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual(null);
@@ -330,9 +323,8 @@ describe('Custom Auto-correction Functions', () => {
                 ...genericSampleData
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV8(
-                mockCatalogService
-            );
+            const correctionFunction: CorrectionFunction =
+                autoCorrectADV8(mockCatalogService);
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual(null);
@@ -350,9 +342,8 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV8(
-                mockCatalogService
-            );
+            const correctionFunction: CorrectionFunction =
+                autoCorrectADV8(mockCatalogService);
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual(null);
@@ -370,9 +361,8 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV8(
-                mockCatalogService
-            );
+            const correctionFunction: CorrectionFunction =
+                autoCorrectADV8(mockCatalogService);
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual({
@@ -395,9 +385,8 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV8(
-                mockCatalogService
-            );
+            const correctionFunction: CorrectionFunction =
+                autoCorrectADV8(mockCatalogService);
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual({
@@ -420,9 +409,8 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV8(
-                mockCatalogService
-            );
+            const correctionFunction: CorrectionFunction =
+                autoCorrectADV8(mockCatalogService);
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual({
@@ -445,9 +433,8 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV8(
-                mockCatalogService
-            );
+            const correctionFunction: CorrectionFunction =
+                autoCorrectADV8(mockCatalogService);
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual({
@@ -502,9 +489,8 @@ describe('Custom Auto-correction Functions', () => {
                 ...genericSampleData
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV9(
-                mockCatalogService
-            );
+            const correctionFunction: CorrectionFunction =
+                autoCorrectADV9(mockCatalogService);
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual(null);
@@ -522,9 +508,8 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV9(
-                mockCatalogService
-            );
+            const correctionFunction: CorrectionFunction =
+                autoCorrectADV9(mockCatalogService);
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual(null);
@@ -542,9 +527,8 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV9(
-                mockCatalogService
-            );
+            const correctionFunction: CorrectionFunction =
+                autoCorrectADV9(mockCatalogService);
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual(null);
@@ -562,9 +546,8 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV9(
-                mockCatalogService
-            );
+            const correctionFunction: CorrectionFunction =
+                autoCorrectADV9(mockCatalogService);
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual({
@@ -587,9 +570,8 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV9(
-                mockCatalogService
-            );
+            const correctionFunction: CorrectionFunction =
+                autoCorrectADV9(mockCatalogService);
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual({
@@ -638,9 +620,8 @@ describe('Custom Auto-correction Functions', () => {
                 ...genericSampleData
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV3(
-                mockCatalogService
-            );
+            const correctionFunction: CorrectionFunction =
+                autoCorrectADV3(mockCatalogService);
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual(null);
@@ -654,9 +635,8 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV3(
-                mockCatalogService
-            );
+            const correctionFunction: CorrectionFunction =
+                autoCorrectADV3(mockCatalogService);
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual(null);
@@ -674,9 +654,8 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV3(
-                mockCatalogService
-            );
+            const correctionFunction: CorrectionFunction =
+                autoCorrectADV3(mockCatalogService);
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual({
@@ -729,9 +708,8 @@ describe('Custom Auto-correction Functions', () => {
                 ...genericSampleData
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV12(
-                mockCatalogService
-            );
+            const correctionFunction: CorrectionFunction =
+                autoCorrectADV12(mockCatalogService);
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual(null);
@@ -749,9 +727,8 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV12(
-                mockCatalogService
-            );
+            const correctionFunction: CorrectionFunction =
+                autoCorrectADV12(mockCatalogService);
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual(null);
@@ -769,9 +746,8 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV12(
-                mockCatalogService
-            );
+            const correctionFunction: CorrectionFunction =
+                autoCorrectADV12(mockCatalogService);
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual({
@@ -794,9 +770,8 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV12(
-                mockCatalogService
-            );
+            const correctionFunction: CorrectionFunction =
+                autoCorrectADV12(mockCatalogService);
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual({
@@ -852,9 +827,8 @@ describe('Custom Auto-correction Functions', () => {
                 ...genericSampleData
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV2(
-                mockCatalogService
-            );
+            const correctionFunction: CorrectionFunction =
+                autoCorrectADV2(mockCatalogService);
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual(null);
@@ -873,9 +847,8 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV2(
-                mockCatalogService
-            );
+            const correctionFunction: CorrectionFunction =
+                autoCorrectADV2(mockCatalogService);
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual({
@@ -899,9 +872,8 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV2(
-                mockCatalogService
-            );
+            const correctionFunction: CorrectionFunction =
+                autoCorrectADV2(mockCatalogService);
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual({
@@ -925,9 +897,8 @@ describe('Custom Auto-correction Functions', () => {
                 }
             };
 
-            const correctionFunction: CorrectionFunction = autoCorrectADV2(
-                mockCatalogService
-            );
+            const correctionFunction: CorrectionFunction =
+                autoCorrectADV2(mockCatalogService);
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual(null);

@@ -15,8 +15,10 @@ enum INFO_ROUTE {
     ROOT = '/info'
 }
 @controller(API_ROUTE.V2 + INFO_ROUTE.ROOT)
-export class DefaultSystemInfoController extends AbstractController
-    implements SystemInfoController {
+export class DefaultSystemInfoController
+    extends AbstractController
+    implements SystemInfoController
+{
     private supportContact = '';
     constructor(
         @inject(SERVER_TYPES.AppServerConfiguration)

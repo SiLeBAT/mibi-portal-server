@@ -18,8 +18,10 @@ enum NRL_ROUTE {
     ROOT = '/nrls'
 }
 @controller(API_ROUTE.V2 + NRL_ROUTE.ROOT)
-export class DefaultNRLsController extends AbstractController
-    implements NRLsController {
+export class DefaultNRLsController
+    extends AbstractController
+    implements NRLsController
+{
     constructor(
         @inject(APPLICATION_TYPES.NRLService)
         private nrlService: NRLPort
