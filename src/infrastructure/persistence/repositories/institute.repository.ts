@@ -4,7 +4,7 @@ import {
     createInstitution
 } from '../../../app/ports';
 import { mapModelToInstitution } from './data-mappers';
-import { InstitutionModel } from '../data-store/mongoose/schemas/institution.schema';
+import { InstitutionDocument } from '../data-store/mongoose/schemas/institution.schema';
 import { MongooseRepositoryBase } from '../data-store/mongoose/mongoose.repository';
 import { injectable, inject } from 'inversify';
 import { Model } from 'mongoose';
@@ -13,11 +13,11 @@ import { InstituteNotFoundError } from '../model/domain.error';
 
 @injectable()
 export class MongooseInstituteRepository
-    extends MongooseRepositoryBase<InstitutionModel>
+    extends MongooseRepositoryBase<InstitutionDocument>
     implements InstituteRepository {
     constructor(
         @inject(PERSISTENCE_TYPES.InstitutionModel)
-        private model: Model<InstitutionModel>
+        private model: Model<InstitutionDocument>
     ) {
         super(model);
     }
@@ -54,15 +54,13 @@ export class MongooseInstituteRepository
     }
 
     async findByInstituteName(name: string): Promise<Institute> {
-        return super
-            ._findOne({ name1: name })
-            .then((model: InstitutionModel) => {
-                if (!model) {
-                    throw new InstituteNotFoundError(
-                        `Institute not found. name=${name}`
-                    );
-                }
-                return createInstitution(model._id.toHexString());
-            });
+        return super._findOne({ name1: name }).then(model => {
+            if (!model) {
+                throw new InstituteNotFoundError(
+                    `Institute not found. name=${name}`
+                );
+            }
+            return createInstitution(model._id.toHexString());
+        });
     }
 }
