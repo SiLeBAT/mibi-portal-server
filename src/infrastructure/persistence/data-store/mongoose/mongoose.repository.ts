@@ -1,16 +1,16 @@
-import { Model, Types, CreateQuery } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { injectable } from 'inversify';
-import { CommonModel } from './common.model';
+import { CommonDocument } from './common.model';
 
 @injectable()
-export class MongooseRepositoryBase<T extends CommonModel> {
+export class MongooseRepositoryBase<T extends CommonDocument> {
     private _model: Model<T>;
 
     constructor(schemaModel: Model<T>) {
         this._model = schemaModel;
     }
 
-    protected async _create(item: CreateQuery<T>): Promise<T> {
+    protected async _create(item: T): Promise<T> {
         return this._model.create(item);
     }
 
@@ -27,7 +27,7 @@ export class MongooseRepositoryBase<T extends CommonModel> {
     }
 
     protected async _update(_id: string, attr: Partial<T>): Promise<T | null> {
-        return this._model
+        return (this._model as Model<any>)
             .findByIdAndUpdate(
                 this._toObjectId(_id),
                 { ...attr, updated: Date.now() },
@@ -61,7 +61,7 @@ export class MongooseRepositoryBase<T extends CommonModel> {
     }
 }
 
-function createRepository<T extends CommonModel>(schema: Model<T>) {
+function createRepository<T extends CommonDocument>(schema: Model<T>) {
     return new MongooseRepositoryBase(schema);
 }
 

@@ -8,13 +8,13 @@ import {
     NRL,
     DefaultNRLService
 } from '../../../app/ports';
-import { InstitutionModel } from '../data-store/mongoose/schemas/institution.schema';
-import { UserModel } from '../data-store/mongoose/schemas/user.schema';
-import { StateModel } from '../data-store/mongoose/schemas/state.schema';
-import { ValidationErrorModel } from '../data-store/mongoose/schemas/validation-error.schema';
-import { NRLModel } from '../data-store/mongoose/schemas/nrl.schema';
+import { InstitutionDocument } from '../data-store/mongoose/schemas/institution.schema';
+import { UserDocument } from '../data-store/mongoose/schemas/user.schema';
+import { StateDocument } from '../data-store/mongoose/schemas/state.schema';
+import { ValidationErrorDocument } from '../data-store/mongoose/schemas/validation-error.schema';
+import { NrlDocument } from '../data-store/mongoose/schemas/nrl.schema';
 
-function mapModelToInstitution(i: InstitutionModel): Institute {
+function mapModelToInstitution(i: InstitutionDocument): Institute {
     const inst = createInstitution(i._id);
     return {
         ...inst,
@@ -31,7 +31,7 @@ function mapModelToInstitution(i: InstitutionModel): Institute {
     };
 }
 
-function mapModelToUser(model: UserModel): User {
+function mapModelToUser(model: UserDocument): User {
     const institution = mapModelToInstitution(model.institution);
     return createUser(
         model._id.toHexString(),
@@ -47,7 +47,7 @@ function mapModelToUser(model: UserModel): User {
     );
 }
 
-function mapModelToState(model: StateModel): State {
+function mapModelToState(model: StateDocument): State {
     return {
         name: model.name,
         short: model.short,
@@ -56,7 +56,7 @@ function mapModelToState(model: StateModel): State {
 }
 
 function mapModelToValidationError(
-    model: ValidationErrorModel
+    model: ValidationErrorDocument
 ): ValidationError {
     return {
         code: model.code,
@@ -65,7 +65,7 @@ function mapModelToValidationError(
     };
 }
 
-function mapModelToNRL(model: NRLModel): NRL {
+function mapModelToNRL(model: NrlDocument): NRL {
     return {
         id: DefaultNRLService.mapNRLStringToEnum(model.name),
         selectors: model.selector,

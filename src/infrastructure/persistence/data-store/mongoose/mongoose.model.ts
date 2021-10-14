@@ -1,47 +1,47 @@
 import {
-    AnalysisProcedureModel,
+    AnalysisProcedureDocument,
     analysisProcedureSchema
 } from './schemas/analysis-prodecure.schema';
 import mongoose from 'mongoose';
 
 import {
     institutionSchema,
-    InstitutionModel
+    InstitutionDocument
 } from './schemas/institution.schema';
 
-import { nrlSchema, NRLModel } from './schemas/nrl.schema';
+import { nrlSchema, NrlDocument } from './schemas/nrl.schema';
 
-import { tokenSchema, TokenModel } from './schemas/reset-token.schema';
+import { tokenSchema, TokenDocument } from './schemas/reset-token.schema';
 
-import { StateModel, stateSchema } from './schemas/state.schema';
+import { StateDocument, stateSchema } from './schemas/state.schema';
 
-import { userSchema, UserModel } from './schemas/user.schema';
+import { userSchema, UserDocument } from './schemas/user.schema';
 
 import {
     validationErrorSchema,
-    ValidationErrorModel
+    ValidationErrorDocument
 } from './schemas/validation-error.schema';
 
-export const MongooseStateModel = mongoose.model<StateModel>(
+export const MongooseStateModel = mongoose.model<StateDocument>(
     'State',
     stateSchema
 );
-export const MongooseInstitutionModel = mongoose.model<InstitutionModel>(
+export const MongooseInstitutionModel = mongoose.model<InstitutionDocument>(
     'Institution',
     institutionSchema
 );
-export const MongooseTokenModel = mongoose.model<TokenModel>(
+export const MongooseTokenModel = mongoose.model<TokenDocument>(
     'ResetToken',
     tokenSchema
 );
-export const MongooseUserModel = mongoose.model<UserModel>('User', userSchema);
-export const MongooseNRLModel: mongoose.Model<NRLModel> = mongoose.model<
-    NRLModel
+export const MongooseUserModel = mongoose.model<UserDocument>('User', userSchema);
+export const MongooseNRLModel: mongoose.Model<NrlDocument> = mongoose.model<
+    NrlDocument
 >('NRL', nrlSchema);
 export const MongooseValidationErrorModel = mongoose.model<
-    ValidationErrorModel
+    ValidationErrorDocument
 >('ValidationError', validationErrorSchema);
 
 export const MongooseAnalysisProcedureModel = mongoose.model<
-    AnalysisProcedureModel
+    AnalysisProcedureDocument
 >('AnalysisProcedure', analysisProcedureSchema);
