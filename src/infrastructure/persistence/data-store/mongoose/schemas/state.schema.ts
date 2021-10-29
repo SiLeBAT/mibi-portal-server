@@ -1,13 +1,13 @@
 import { Schema } from 'mongoose';
-import { CommonModel } from '../common.model';
+import { CommonDocument } from '../common.model';
 
-export interface StateModel extends CommonModel {
+export interface StateDocument extends CommonDocument {
     name: string;
     short: string;
     AVV: string[];
 }
 
-export const stateSchema = new Schema({
+export const stateSchema = new Schema<StateDocument>({
     short: {
         type: String,
         required: true
@@ -33,7 +33,7 @@ export const stateSchema = new Schema({
     }
 }).pre('save', function (next) {
     if (this) {
-        let doc = this as StateModel;
+        let doc = this;
         let now = new Date();
         if (!doc.created) {
             doc.created = now;

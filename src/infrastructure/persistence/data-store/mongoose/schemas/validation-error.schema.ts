@@ -1,13 +1,13 @@
 import { Schema } from 'mongoose';
-import { CommonModel } from '../common.model';
+import { CommonDocument } from '../common.model';
 
-export interface ValidationErrorModel extends CommonModel {
+export interface ValidationErrorDocument extends CommonDocument {
     code: number;
     level: number;
     message: string;
 }
 
-export const validationErrorSchema = new Schema({
+export const validationErrorSchema = new Schema<ValidationErrorDocument>({
     code: {
         type: Number,
         required: true
@@ -30,7 +30,7 @@ export const validationErrorSchema = new Schema({
     }
 }).pre('save', function (next) {
     if (this) {
-        let doc = this as ValidationErrorModel;
+        let doc = this;
         let now = new Date();
         if (!doc.created) {
             doc.created = now;

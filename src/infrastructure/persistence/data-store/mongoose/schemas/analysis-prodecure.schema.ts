@@ -1,12 +1,12 @@
 import { Schema } from 'mongoose';
-import { CommonModel } from '../common.model';
+import { CommonDocument } from '../common.model';
 
-export interface AnalysisProcedureModel extends CommonModel {
+export interface AnalysisProcedureDocument extends CommonDocument {
     value: string;
     key: number;
 }
 
-export const analysisProcedureSchema = new Schema({
+export const analysisProcedureSchema = new Schema<AnalysisProcedureDocument>({
     value: {
         type: String,
         required: true
