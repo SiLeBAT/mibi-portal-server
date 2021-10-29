@@ -5,18 +5,18 @@ import {
     AVVFormatCollection
 } from '../../../app/ports';
 import { mapModelToState } from './data-mappers';
-import { StateModel } from '../data-store/mongoose/schemas/state.schema';
+import { StateDocument } from '../data-store/mongoose/schemas/state.schema';
 import { injectable, inject } from 'inversify';
 import { Model } from 'mongoose';
 import { PERSISTENCE_TYPES } from '../persistence.types';
 
 @injectable()
 export class DefaultStateRepository
-    extends MongooseRepositoryBase<StateModel>
+    extends MongooseRepositoryBase<StateDocument>
     implements StateRepository
 {
     constructor(
-        @inject(PERSISTENCE_TYPES.StateModel) model: Model<StateModel>
+        @inject(PERSISTENCE_TYPES.StateModel) model: Model<StateDocument>
     ) {
         super(model);
     }

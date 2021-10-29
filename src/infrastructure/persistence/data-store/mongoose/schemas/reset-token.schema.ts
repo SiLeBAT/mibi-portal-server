@@ -1,12 +1,12 @@
 import { Schema } from 'mongoose';
 import { UserToken } from '../../../../../app/ports';
-import { CommonModel } from '../common.model';
+import { CommonDocument } from '../common.model';
 
-export interface TokenModel extends CommonModel, UserToken {
+export interface TokenDocument extends CommonDocument, UserToken {
     user: string;
 }
 
-export const tokenSchema = new Schema({
+export const tokenSchema = new Schema<TokenDocument>({
     token: {
         type: String,
         required: true
@@ -31,7 +31,7 @@ export const tokenSchema = new Schema({
     }
 }).pre('save', function (next) {
     if (this) {
-        let doc = this as TokenModel;
+        let doc = this;
         let now = new Date();
         if (!doc.created) {
             doc.created = now;

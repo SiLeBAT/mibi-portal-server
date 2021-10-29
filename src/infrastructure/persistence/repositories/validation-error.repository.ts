@@ -1,18 +1,18 @@
 import { ValidationErrorRepository, ValidationError } from '../../../app/ports';
 import { mapModelToValidationError } from './data-mappers';
-import { ValidationErrorModel } from '../data-store/mongoose/schemas/validation-error.schema';
+import { ValidationErrorDocument } from '../data-store/mongoose/schemas/validation-error.schema';
 import { MongooseRepositoryBase } from '../data-store/mongoose/mongoose.repository';
 import { injectable, inject } from 'inversify';
 import { Model } from 'mongoose';
 import { PERSISTENCE_TYPES } from '../persistence.types';
 @injectable()
 export class DefaultValidationErrorRepository
-    extends MongooseRepositoryBase<ValidationErrorModel>
+    extends MongooseRepositoryBase<ValidationErrorDocument>
     implements ValidationErrorRepository
 {
     constructor(
         @inject(PERSISTENCE_TYPES.ValidationErrorModel)
-        model: Model<ValidationErrorModel>
+        model: Model<ValidationErrorDocument>
     ) {
         super(model);
     }

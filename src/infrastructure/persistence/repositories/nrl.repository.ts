@@ -1,6 +1,6 @@
 import { NRLRepository, NRL } from '../../../app/ports';
 import { mapModelToNRL } from './data-mappers';
-import { NRLModel } from '../data-store/mongoose/schemas/nrl.schema';
+import { NrlDocument } from '../data-store/mongoose/schemas/nrl.schema';
 import { MongooseRepositoryBase } from '../data-store/mongoose/mongoose.repository';
 import { injectable, inject } from 'inversify';
 import { Model } from 'mongoose';
@@ -8,10 +8,10 @@ import { PERSISTENCE_TYPES } from '../persistence.types';
 
 @injectable()
 export class MongooseNRLRepository
-    extends MongooseRepositoryBase<NRLModel>
+    extends MongooseRepositoryBase<NrlDocument>
     implements NRLRepository
 {
-    constructor(@inject(PERSISTENCE_TYPES.NRLModel) model: Model<NRLModel>) {
+    constructor(@inject(PERSISTENCE_TYPES.NRLModel) model: Model<NrlDocument>) {
         super(model);
     }
 

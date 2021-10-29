@@ -1,7 +1,7 @@
 import { UserRepository, createUser, User } from '../../../app/ports';
 
 import { mapModelToUser } from './data-mappers';
-import { UserModel } from '../data-store/mongoose/schemas/user.schema';
+import { UserDocument } from '../data-store/mongoose/schemas/user.schema';
 import { MongooseRepositoryBase } from '../data-store/mongoose/mongoose.repository';
 import { UserNotFoundError, UserUpdateError } from '../model/domain.error';
 import { injectable, inject } from 'inversify';
@@ -10,11 +10,11 @@ import { PERSISTENCE_TYPES } from '../persistence.types';
 
 @injectable()
 export class DefaultUserRepository
-    extends MongooseRepositoryBase<UserModel>
+    extends MongooseRepositoryBase<UserDocument>
     implements UserRepository
 {
     constructor(
-        @inject(PERSISTENCE_TYPES.UserModel) private model: Model<UserModel>
+        @inject(PERSISTENCE_TYPES.UserModel) private model: Model<UserDocument>
     ) {
         super(model);
     }
@@ -22,11 +22,11 @@ export class DefaultUserRepository
     async findByUserId(id: string): Promise<User> {
         return super
             ._findById(id)
-            .then(async (userModel: UserModel) => {
+            .then(async userModel => {
                 if (!userModel) return Promise.reject(null);
                 return populateWithAuxData(userModel);
             })
-            .then((userModel: UserModel) => {
+            .then(userModel => {
                 if (!userModel) {
                     throw new UserNotFoundError(`User not found. id=${id}`);
                 }
@@ -42,11 +42,11 @@ export class DefaultUserRepository
 
         return super
             ._findOne({ email: { $regex: nameRegex } })
-            .then(async (userModel: UserModel) => {
+            .then(async userModel => {
                 if (!userModel) return Promise.reject(null);
                 return populateWithAuxData(userModel);
             })
-            .then((userModel: UserModel) => {
+            .then(userModel => {
                 if (!userModel) {
                     throw new UserNotFoundError(
                         `User not found. username=${username}`
@@ -64,7 +64,7 @@ export class DefaultUserRepository
 
         return super
             ._findOne({ email: { $regex: nameRegex } })
-            .then((userModel: UserModel) => {
+            .then(userModel => {
                 if (!userModel) {
                     throw new UserNotFoundError(
                         `User not found. username=${username}`
@@ -138,7 +138,7 @@ export class DefaultUserRepository
     }
 }
 
-async function populateWithAuxData(model: UserModel): Promise<UserModel> {
+async function populateWithAuxData(model: UserDocument): Promise<UserDocument> {
     // For some reason .populate does not return a promise and only works with callback: although the docs promise otherwise.
     return new Promise(function (resolve, reject) {
         model.populate({ path: 'institution' }, function (err, data) {

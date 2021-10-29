@@ -1,4 +1,4 @@
-import { TokenModel } from '../data-store/mongoose/schemas/reset-token.schema';
+import { TokenDocument } from '../data-store/mongoose/schemas/reset-token.schema';
 import { MongooseRepositoryBase } from '../data-store/mongoose/mongoose.repository';
 import { JsonWebTokenError } from 'jsonwebtoken';
 import {
@@ -13,11 +13,12 @@ import { PERSISTENCE_TYPES } from '../persistence.types';
 
 @injectable()
 export class DefaultTokenRepository
-    extends MongooseRepositoryBase<TokenModel>
+    extends MongooseRepositoryBase<TokenDocument>
     implements TokenRepository
 {
     constructor(
-        @inject(PERSISTENCE_TYPES.TokenModel) private model: Model<TokenModel>
+        @inject(PERSISTENCE_TYPES.TokenModel)
+        private model: Model<TokenDocument>
     ) {
         super(model);
     }

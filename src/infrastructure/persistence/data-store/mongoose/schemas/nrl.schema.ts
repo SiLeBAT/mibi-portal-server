@@ -1,16 +1,16 @@
-import { AnalysisProcedureModel } from './analysis-prodecure.schema';
+import { AnalysisProcedureDocument } from './analysis-prodecure.schema';
 import { Schema } from 'mongoose';
-import { CommonModel } from '../common.model';
+import { CommonDocument } from '../common.model';
 
-export interface NRLModel extends CommonModel {
-    standardProcedures: AnalysisProcedureModel[];
-    optionalProcedures: AnalysisProcedureModel[];
+export interface NrlDocument extends CommonDocument {
+    standardProcedures: AnalysisProcedureDocument[];
+    optionalProcedures: AnalysisProcedureDocument[];
     name: string;
     email: string;
     selector: string[];
 }
 
-export const nrlSchema = new Schema({
+export const nrlSchema = new Schema<NrlDocument>({
     name: {
         type: String,
         required: true
@@ -42,7 +42,7 @@ export const nrlSchema = new Schema({
     }
 }).pre('save', function (next) {
     if (this) {
-        let doc = this as NRLModel;
+        let doc = this;
         let now = new Date();
         if (!doc.created) {
             doc.created = now;
