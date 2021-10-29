@@ -1,7 +1,7 @@
 import { PERSISTENCE_TYPES } from './persistence.types';
 import { ContainerModule, interfaces } from 'inversify';
 import { Model } from 'mongoose';
-import { ValidationErrorModel } from './data-store/mongoose/schemas/validation-error.schema';
+import { ValidationErrorDocument } from './data-store/mongoose/schemas/validation-error.schema';
 import {
     MongooseValidationErrorModel,
     MongooseUserModel,
@@ -10,11 +10,11 @@ import {
     MongooseNRLModel,
     MongooseInstitutionModel
 } from './data-store/mongoose/mongoose.model';
-import { UserModel } from './data-store/mongoose/schemas/user.schema';
-import { TokenModel } from './data-store/mongoose/schemas/reset-token.schema';
-import { StateModel } from './data-store/mongoose/schemas/state.schema';
-import { NRLModel } from './data-store/mongoose/schemas/nrl.schema';
-import { InstitutionModel } from './data-store/mongoose/schemas/institution.schema';
+import { UserDocument } from './data-store/mongoose/schemas/user.schema';
+import { TokenDocument } from './data-store/mongoose/schemas/reset-token.schema';
+import { StateDocument } from './data-store/mongoose/schemas/state.schema';
+import { NrlDocument } from './data-store/mongoose/schemas/nrl.schema';
+import { InstitutionDocument } from './data-store/mongoose/schemas/institution.schema';
 import {
     NRLRepository,
     StateRepository,
@@ -56,27 +56,27 @@ export function getPersistenceContainerModule({
             );
             bind(PERSISTENCE_TYPES.DataDir).toConstantValue(dataDir);
 
-            bind<Model<ValidationErrorModel>>(
+            bind<Model<ValidationErrorDocument>>(
                 PERSISTENCE_TYPES.ValidationErrorModel
             ).toConstantValue(MongooseValidationErrorModel);
 
-            bind<Model<UserModel>>(PERSISTENCE_TYPES.UserModel).toConstantValue(
-                MongooseUserModel
-            );
+            bind<Model<UserDocument>>(
+                PERSISTENCE_TYPES.UserModel
+            ).toConstantValue(MongooseUserModel);
 
-            bind<Model<TokenModel>>(
+            bind<Model<TokenDocument>>(
                 PERSISTENCE_TYPES.TokenModel
             ).toConstantValue(MongooseTokenModel);
 
-            bind<Model<StateModel>>(
+            bind<Model<StateDocument>>(
                 PERSISTENCE_TYPES.StateModel
             ).toConstantValue(MongooseStateModel);
 
-            bind<Model<NRLModel>>(PERSISTENCE_TYPES.NRLModel).toConstantValue(
-                MongooseNRLModel
-            );
+            bind<Model<NrlDocument>>(
+                PERSISTENCE_TYPES.NRLModel
+            ).toConstantValue(MongooseNRLModel);
 
-            bind<Model<InstitutionModel>>(
+            bind<Model<InstitutionDocument>>(
                 PERSISTENCE_TYPES.InstitutionModel
             ).toConstantValue(MongooseInstitutionModel);
 
