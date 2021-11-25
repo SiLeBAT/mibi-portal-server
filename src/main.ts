@@ -1,6 +1,6 @@
 import config from 'config';
 import { logger, getContainer } from './aspects';
-import { createServer, getServerContainerModule } from './ui/server/ports';
+import { getServerContainerModule, API_ROUTE, validateToken } from './ui/server/ports';
 import {
     createDataStore,
     getPersistenceContainerModule,
@@ -24,6 +24,7 @@ import {
     AppConfiguration,
     DataStoreConfiguration
 } from './main.model';
+import { createServer, ServerConfiguration as ExpressServerConfiguration } from '@SiLeBAT/fg43-ne-server';
 
 export class DefaultConfigurationService implements SystemConfigurationService {
     private loginConfigurationDefaults: LoginConfiguration = {
@@ -169,7 +170,24 @@ async function init() {
         mailService.getMailHandler().bind(mailService)
     );
 
-    const server = createServer(container);
+    const expressServerConfig: ExpressServerConfiguration = {
+        container,
+        api: {
+            root: serverConfig.apiRoot,
+            version: API_ROUTE.V2,
+            port: serverConfig.port,
+            docPath: '/api-docs'
+        },
+        logging: {
+            logger,
+            logLevel: generalConfig.logLevel
+        },
+        tokenValidation: {
+            validator: validateToken,
+            jwtSecret: generalConfig.jwtSecret
+        }
+    }
+    const server = createServer(expressServerConfig);
     server.startServer();
 
     process.on('uncaughtException', error => {
