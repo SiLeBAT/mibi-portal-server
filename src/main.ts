@@ -1,4 +1,5 @@
 import config from 'config';
+import path from 'path';
 import { logger, getContainer } from './aspects';
 import { getServerContainerModule, API_ROUTE, validateToken } from './ui/server/ports';
 import {
@@ -185,7 +186,8 @@ async function init() {
         tokenValidation: {
             validator: validateToken,
             jwtSecret: generalConfig.jwtSecret
-        }
+        },
+        publicDir: path.join(__dirname + '/ui/server/public'),
     }
     const server = createServer(expressServerConfig);
     server.startServer();
