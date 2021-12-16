@@ -150,12 +150,13 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
         const strings = this.strings.meta.header;
         return {
             stack: [
-                this.createSuperScriptedText(
-                    strings.title,
-                    strings.titleSup,
-                    ['title'],
-                    'titleSupScript'
-                ),
+                {
+                    text: [
+                        strings.title,
+                        { text: strings.titleSup, sup: true }
+                    ],
+                    style: 'title'
+                },
                 { text: strings.subtitle, style: 'comment', noWrap: true },
                 {
                     text: strings.version + this.config.version.toString(),
@@ -310,12 +311,13 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
         const getStringFromText = (text: string): string => (text ? text : ' ');
         return {
             stack: [
-                this.createSuperScriptedText(
-                    strings.title,
-                    strings.titleSup,
-                    ['heading1'],
-                    'heading1SupScript'
-                ),
+                {
+                    text: [
+                        strings.title,
+                        { text: strings.titleSup, sup: true }
+                    ],
+                    style: 'heading1'
+                },
                 this.createMetaTable({
                     widths: ['*', this.config.meta.columnGap],
                     body: [
@@ -360,11 +362,15 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                             }
                         ],
                         [
-                            this.createSuperScriptedText(
-                                strings.molecularTyping,
-                                strings.molecularTypingSup,
-                                []
-                            ),
+                            {
+                                text: [
+                                    strings.molecularTyping,
+                                    {
+                                        text: strings.molecularTypingSup,
+                                        sup: true
+                                    }
+                                ]
+                            },
                             {
                                 text: getStringFromOption(
                                     analysis.molecularTyping
@@ -417,11 +423,12 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                             }
                         ],
                         [
-                            this.createSuperScriptedText(
-                                strings.compareHuman,
-                                strings.compareHumanSup,
-                                ['markedCell']
-                            ),
+                            {
+                                text: [
+                                    strings.compareHuman,
+                                    { text: strings.compareHumanSup, sup: true }
+                                ]
+                            },
                             {
                                 text: getStringFromOption(
                                     analysis.compareHuman
@@ -559,21 +566,6 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
             layout: 'metaLayout',
             margin: [margins.left, margins.top, margins.right, margins.bottom],
             table: table
-        };
-    }
-
-    private createSuperScriptedText(
-        text: string,
-        sup: string,
-        style: string[],
-        supStyle: string = 'defaultSupScript'
-    ): {} {
-        return {
-            columns: [
-                { text: text, width: 'auto', style: style },
-                { text: sup, style: style.concat(supStyle) }
-            ],
-            columnGap: this.config.meta.superScriptGap
         };
     }
 

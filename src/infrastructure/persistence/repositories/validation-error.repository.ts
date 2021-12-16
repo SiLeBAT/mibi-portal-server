@@ -8,7 +8,8 @@ import { PERSISTENCE_TYPES } from '../persistence.types';
 @injectable()
 export class DefaultValidationErrorRepository
     extends MongooseRepositoryBase<ValidationErrorDocument>
-    implements ValidationErrorRepository {
+    implements ValidationErrorRepository
+{
     constructor(
         @inject(PERSISTENCE_TYPES.ValidationErrorModel)
         model: Model<ValidationErrorDocument>

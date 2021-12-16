@@ -22,7 +22,8 @@ export class DefaultTokenService implements TokenService {
         @inject(APPLICATION_TYPES.TokenRepository)
         private tokenRepository: TokenRepository
     ) {
-        const serverConfig = this.configurationService.getApplicationConfiguration();
+        const serverConfig =
+            this.configurationService.getApplicationConfiguration();
         this.jwtSecret = serverConfig.jwtSecret;
     }
 

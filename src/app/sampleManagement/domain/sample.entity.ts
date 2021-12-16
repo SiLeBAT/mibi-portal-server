@@ -117,9 +117,8 @@ export class DefaultSample implements Sample {
     }
 
     addCorrectionTo(property: SampleProperty, correctionOffer: string[]): void {
-        this._data[property].correctionOffer = this._data[
-            property
-        ].correctionOffer.concat(correctionOffer);
+        this._data[property].correctionOffer =
+            this._data[property].correctionOffer.concat(correctionOffer);
     }
 
     isValid(): boolean {

@@ -14,8 +14,10 @@ const openAPI = require('./../doc/openapi_v2.json');
 declare type APIDefinition = any;
 
 @controller(API_ROUTE.V2)
-export class DefaultVersionRootController extends AbstractController
-    implements VersionRootController {
+export class DefaultVersionRootController
+    extends AbstractController
+    implements VersionRootController
+{
     private publicAPI: APIDefinition;
     constructor(
         @inject(SERVER_TYPES.AppServerConfiguration)

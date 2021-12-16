@@ -29,8 +29,10 @@ export class DefaultLoginService implements LoginService {
         private configurationService: ConfigurationService,
         @inject(APPLICATION_TYPES.UserService) private userService: UserService
     ) {
-        this.threshold = this.configurationService.getApplicationConfiguration().login.threshold;
-        this.secondsDelay = this.configurationService.getApplicationConfiguration().login.secondsDelay;
+        this.threshold =
+            this.configurationService.getApplicationConfiguration().login.threshold;
+        this.secondsDelay =
+            this.configurationService.getApplicationConfiguration().login.secondsDelay;
     }
 
     async loginUser(credentials: UserLoginInformation): Promise<LoginResponse> {

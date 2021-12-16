@@ -38,13 +38,16 @@ export const MongooseUserModel = mongoose.model<UserDocument>(
     'User',
     userSchema
 );
-export const MongooseNRLModel: mongoose.Model<NrlDocument> = mongoose.model<
-    NrlDocument
->('NRL', nrlSchema);
-export const MongooseValidationErrorModel = mongoose.model<
-    ValidationErrorDocument
->('ValidationError', validationErrorSchema);
+export const MongooseNRLModel: mongoose.Model<NrlDocument> =
+    mongoose.model<NrlDocument>('NRL', nrlSchema);
+export const MongooseValidationErrorModel =
+    mongoose.model<ValidationErrorDocument>(
+        'ValidationError',
+        validationErrorSchema
+    );
 
-export const MongooseAnalysisProcedureModel = mongoose.model<
-    AnalysisProcedureDocument
->('AnalysisProcedure', analysisProcedureSchema);
+export const MongooseAnalysisProcedureModel =
+    mongoose.model<AnalysisProcedureDocument>(
+        'AnalysisProcedure',
+        analysisProcedureSchema
+    );

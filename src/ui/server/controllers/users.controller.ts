@@ -49,8 +49,10 @@ enum USERS_ROUTE {
     REGISTRATION = '/registration'
 }
 @controller(API_ROUTE.V2 + USERS_ROUTE.ROOT)
-export class DefaultUsersController extends AbstractController
-    implements UsersController {
+export class DefaultUsersController
+    extends AbstractController
+    implements UsersController
+{
     constructor(
         @inject(APPLICATION_TYPES.PasswordService)
         private passwordService: PasswordPort,
@@ -135,16 +137,14 @@ export class DefaultUsersController extends AbstractController
             `${this.constructor.name}.${this.postLogin.name}, Request received`
         );
         try {
-            const userLoginInfo: UserLoginInformation = this.mapRequestDTOToUserLoginInfo(
-                req
-            );
+            const userLoginInfo: UserLoginInformation =
+                this.mapRequestDTOToUserLoginInfo(req);
             const response: LoginResponse = await this.loginService.loginUser(
                 userLoginInfo
             );
 
-            const dto: TokenizedUserDTO = this.fromLoginResponseToResponseDTO(
-                response
-            );
+            const dto: TokenizedUserDTO =
+                this.fromLoginResponseToResponseDTO(response);
             logger.info(
                 `${this.constructor.name}.${this.postLogin.name}, Response sent`
             );
@@ -213,9 +213,8 @@ export class DefaultUsersController extends AbstractController
             `${this.constructor.name}.${this.postRegistration.name}, Request received`
         );
         try {
-            const credentials: UserRegistration = this.fromRequestToUserRegistration(
-                req
-            );
+            const credentials: UserRegistration =
+                this.fromRequestToUserRegistration(req);
             await this.registrationService.registerUser(credentials);
             const dto: RegistrationRequestResponseDTO = {
                 registerRequest: true,

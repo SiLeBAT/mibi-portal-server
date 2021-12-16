@@ -1,6 +1,7 @@
 import config from 'config';
+import path from 'path';
 import { logger, getContainer } from './aspects';
-import { createServer, getServerContainerModule } from './ui/server/ports';
+import { getServerContainerModule, API_ROUTE, validateToken } from './ui/server/ports';
 import {
     createDataStore,
     getPersistenceContainerModule,
@@ -24,6 +25,7 @@ import {
     AppConfiguration,
     DataStoreConfiguration
 } from './main.model';
+import { createServer, ServerConfiguration as ExpressServerConfiguration } from '@SiLeBAT/fg43-ne-server';
 
 export class DefaultConfigurationService implements SystemConfigurationService {
     private loginConfigurationDefaults: LoginConfiguration = {
@@ -64,11 +66,13 @@ export class DefaultConfigurationService implements SystemConfigurationService {
         }
 
         if (!config.has('application.login.threshold')) {
-            appConfiguration.login.threshold = this.loginConfigurationDefaults.threshold;
+            appConfiguration.login.threshold =
+                this.loginConfigurationDefaults.threshold;
         }
 
         if (!config.has('application.login.secondsDelay')) {
-            appConfiguration.login.secondsDelay = this.loginConfigurationDefaults.secondsDelay;
+            appConfiguration.login.secondsDelay =
+                this.loginConfigurationDefaults.secondsDelay;
         }
 
         return appConfiguration;
@@ -80,14 +84,15 @@ export class DefaultConfigurationService implements SystemConfigurationService {
         if (!config.has('general')) {
             generalConfiguration = {
                 logLevel: this.generalConfigurationDefaults.logLevel,
-                supportContact: this.generalConfigurationDefaults
-                    .supportContact,
+                supportContact:
+                    this.generalConfigurationDefaults.supportContact,
                 jwtSecret: this.generalConfigurationDefaults.jwtSecret
             };
         }
 
         if (!config.has('general.logLevel')) {
-            generalConfiguration.logLevel = this.generalConfigurationDefaults.logLevel;
+            generalConfiguration.logLevel =
+                this.generalConfigurationDefaults.logLevel;
         }
 
         return generalConfiguration;
@@ -96,11 +101,16 @@ export class DefaultConfigurationService implements SystemConfigurationService {
 
 async function init() {
     const configurationService = new DefaultConfigurationService();
-    const serverConfig: ServerConfiguration = configurationService.getServerConfiguration();
-    const generalConfig: GeneralConfiguration = configurationService.getGeneralConfiguration();
-    const dataStoreConfig: DataStoreConfiguration = configurationService.getDataStoreConfiguration();
-    const appConfiguration: AppConfiguration = configurationService.getApplicationConfiguration();
-    const mailConfiguration: MailConfiguration = configurationService.getMailConfiguration();
+    const serverConfig: ServerConfiguration =
+        configurationService.getServerConfiguration();
+    const generalConfig: GeneralConfiguration =
+        configurationService.getGeneralConfiguration();
+    const dataStoreConfig: DataStoreConfiguration =
+        configurationService.getDataStoreConfiguration();
+    const appConfiguration: AppConfiguration =
+        configurationService.getApplicationConfiguration();
+    const mailConfiguration: MailConfiguration =
+        configurationService.getMailConfiguration();
 
     logger.info(`Starting MiBi-Portal. appName=${appConfiguration.appName}`);
 
@@ -161,7 +171,25 @@ async function init() {
         mailService.getMailHandler().bind(mailService)
     );
 
-    const server = createServer(container);
+    const expressServerConfig: ExpressServerConfiguration = {
+        container,
+        api: {
+            root: serverConfig.apiRoot,
+            version: API_ROUTE.V2,
+            port: serverConfig.port,
+            docPath: '/api-docs'
+        },
+        logging: {
+            logger,
+            logLevel: generalConfig.logLevel
+        },
+        tokenValidation: {
+            validator: validateToken,
+            jwtSecret: generalConfig.jwtSecret
+        },
+        publicDir: path.join(__dirname + '/ui/server/public'),
+    }
+    const server = createServer(expressServerConfig);
     server.startServer();
 
     process.on('uncaughtException', error => {

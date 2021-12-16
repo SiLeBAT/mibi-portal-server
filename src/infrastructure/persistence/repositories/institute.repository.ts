@@ -14,7 +14,8 @@ import { InstituteNotFoundError } from '../model/domain.error';
 @injectable()
 export class MongooseInstituteRepository
     extends MongooseRepositoryBase<InstitutionDocument>
-    implements InstituteRepository {
+    implements InstituteRepository
+{
     constructor(
         @inject(PERSISTENCE_TYPES.InstitutionModel)
         private model: Model<InstitutionDocument>
