@@ -1,7 +1,11 @@
 import config from 'config';
 import path from 'path';
 import { logger, getContainer } from './aspects';
-import { getServerContainerModule, API_ROUTE, validateToken } from './ui/server/ports';
+import {
+    getServerContainerModule,
+    API_ROUTE,
+    validateToken
+} from './ui/server/ports';
 import {
     createDataStore,
     getPersistenceContainerModule,
@@ -25,7 +29,10 @@ import {
     AppConfiguration,
     DataStoreConfiguration
 } from './main.model';
-import { createServer, ServerConfiguration as ExpressServerConfiguration } from '@SiLeBAT/fg43-ne-server';
+import {
+    createServer,
+    ServerConfiguration as ExpressServerConfiguration
+} from '@SiLeBAT/fg43-ne-server';
 
 export class DefaultConfigurationService implements SystemConfigurationService {
     private loginConfigurationDefaults: LoginConfiguration = {
@@ -187,8 +194,8 @@ async function init() {
             validator: validateToken,
             jwtSecret: generalConfig.jwtSecret
         },
-        publicDir: path.join(__dirname + '/ui/server/public'),
-    }
+        publicDir: path.join(__dirname + '/ui/server/public')
+    };
     const server = createServer(expressServerConfig);
     server.startServer();
 
