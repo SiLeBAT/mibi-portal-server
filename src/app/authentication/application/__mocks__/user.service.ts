@@ -18,7 +18,7 @@ export const genericUser: User = {
         email: []
     },
     getFullName: jest.fn(),
-    isAuthorized: jest.fn(),
+    isAuthorized: jest.fn(() => Promise.resolve(true)),
     updatePassword: jest.fn(),
     isActivated: jest.fn(() => true),
     isVerified: jest.fn(() => true),

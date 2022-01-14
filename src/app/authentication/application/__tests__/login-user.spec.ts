@@ -2,7 +2,6 @@ import { getContainer } from '../../../../aspects/container/container';
 import { LoginService } from '../../model/login.model';
 import { getApplicationContainerModule } from '../../../ports';
 import { genericUser, getMockUserService } from '../__mocks__/user.service';
-import { getMockRegistrationService } from '../__mocks__/registration.service';
 import { getMockTokenService } from '../__mocks__/token.service';
 import { Container } from 'inversify';
 import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
@@ -33,6 +32,7 @@ describe('Login User Use Case', () => {
     afterEach(() => {
         container = null;
     });
+
     it('should return a promise', () => {
         const credentials = {
             email: 'test',
@@ -119,23 +119,21 @@ describe('Login User Use Case', () => {
     });
 
     it('should be throw an error because inactive user is faulty', () => {
-        const mockActivationService = getMockRegistrationService();
+        const mockUser = { ...genericUser };
+        mockUser.isVerified = jest.fn(() => false);
+        const mockUserService = getMockUserService();
         service = rebindMocks<LoginService>(
             container,
             APPLICATION_TYPES.LoginService,
             [
                 {
-                    id: APPLICATION_TYPES.RegistrationService,
-                    instance: mockActivationService
+                    id: APPLICATION_TYPES.UserService,
+                    instance: mockUserService
                 }
             ]
         );
-        mockActivationService.prepareUserForVerification = jest.fn(() =>
-            Promise.reject(true)
-        );
-
-        mockActivationService.handleNotActivatedUser = jest.fn(() =>
-            Promise.reject(true)
+        mockUserService.getUserByEmail = jest.fn(() =>
+            Promise.resolve(mockUser)
         );
 
         const credentials = {
@@ -157,23 +155,21 @@ describe('Login User Use Case', () => {
     });
 
     it('should be throw an error because user not activated by admin is faulty', () => {
-        const mockActivationService = getMockRegistrationService();
+        const mockUser = { ...genericUser };
+        mockUser.isActivated = jest.fn(() => false);
+        const mockUserService = getMockUserService();
         service = rebindMocks<LoginService>(
             container,
             APPLICATION_TYPES.LoginService,
             [
                 {
-                    id: APPLICATION_TYPES.RegistrationService,
-                    instance: mockActivationService
+                    id: APPLICATION_TYPES.UserService,
+                    instance: mockUserService
                 }
             ]
         );
-        mockActivationService.prepareUserForVerification = jest.fn(() =>
-            Promise.reject(true)
-        );
-
-        mockActivationService.handleNotActivatedUser = jest.fn(() =>
-            Promise.reject(true)
+        mockUserService.getUserByEmail = jest.fn(() =>
+            Promise.resolve(mockUser)
         );
 
         const credentials = {
@@ -195,23 +191,22 @@ describe('Login User Use Case', () => {
     });
 
     it('should be throw an error because inactive user and user not activated by admin is faulty', () => {
-        const mockActivationService = getMockRegistrationService();
+        const mockUser = { ...genericUser };
+        mockUser.isVerified = jest.fn(() => false);
+        mockUser.isActivated = jest.fn(() => false);
+        const mockUserService = getMockUserService();
         service = rebindMocks<LoginService>(
             container,
             APPLICATION_TYPES.LoginService,
             [
                 {
-                    id: APPLICATION_TYPES.RegistrationService,
-                    instance: mockActivationService
+                    id: APPLICATION_TYPES.UserService,
+                    instance: mockUserService
                 }
             ]
         );
-        mockActivationService.prepareUserForVerification = jest.fn(() =>
-            Promise.reject(true)
-        );
-
-        mockActivationService.handleNotActivatedUser = jest.fn(() =>
-            Promise.reject(true)
+        mockUserService.getUserByEmail = jest.fn(() =>
+            Promise.resolve(mockUser)
         );
 
         const credentials = {
