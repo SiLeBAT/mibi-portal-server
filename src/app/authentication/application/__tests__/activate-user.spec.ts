@@ -8,6 +8,7 @@ import { getApplicationContainerModule } from '../../../ports';
 import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
 import { APPLICATION_TYPES } from '../../../application.types';
 import { rebindMocks } from '../../../../__mocks__/util';
+import { sign } from 'jsonwebtoken';
 
 describe('Activate User Use Case', () => {
     let service: RegistrationService;
@@ -32,7 +33,7 @@ describe('Activate User Use Case', () => {
         service = container.get<RegistrationService>(
             APPLICATION_TYPES.RegistrationService
         );
-        token = 'test';
+        token = sign({ subject: 'test' }, 'test', { subject: 'test' });
     });
     afterEach(() => {
         container = null;

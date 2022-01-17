@@ -1,7 +1,8 @@
+import { sign } from 'jsonwebtoken';
 import { TokenRepository, TokenType, UserToken } from '../../../app/ports';
 
 export const genericUserToken: UserToken = {
-    token: 'test',
+    token: sign({ subject: 'test' }, 'test', { subject: 'test' }),
     type: TokenType.ACTIVATE,
     userId: 'test'
 };

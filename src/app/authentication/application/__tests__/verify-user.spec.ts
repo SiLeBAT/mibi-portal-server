@@ -8,6 +8,7 @@ import { mockPersistenceContainerModule } from '../../../../infrastructure/persi
 import { APPLICATION_TYPES } from '../../../application.types';
 import { rebindMocks } from '../../../../__mocks__/util';
 import { getApplicationContainerModule } from '../../../application.module';
+import { sign } from 'jsonwebtoken';
 
 describe('Verify User Use Case', () => {
     let service: RegistrationService;
@@ -35,7 +36,7 @@ describe('Verify User Use Case', () => {
         );
         user = { ...genericUser };
 
-        token = 'test';
+        token = sign({ subject: 'test' }, 'test', { subject: 'test' });
     });
     afterEach(() => {
         container = null;

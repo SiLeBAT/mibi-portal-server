@@ -8,6 +8,7 @@ import { getApplicationContainerModule } from '../../../ports';
 import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
 import { APPLICATION_TYPES } from '../../../application.types';
 import { rebindMocks } from '../../../../__mocks__/util';
+import { sign } from 'jsonwebtoken';
 
 describe('Reset Password Use Case', () => {
     let service: PasswordService;
@@ -34,7 +35,7 @@ describe('Reset Password Use Case', () => {
             APPLICATION_TYPES.PasswordService
         );
 
-        token = 'test';
+        token = sign({ subject: 'test' }, 'test', { subject: 'test' });
         password = 'test';
     });
 
