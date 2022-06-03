@@ -101,7 +101,11 @@ export class DefaultSampleService implements SampleService {
                 break;
             case ReceiveAs.EXCEL:
             default:
-                userPayloads = nrlPayloads;
+                userPayloads = await this.createPayloads(
+                    splittedSampleSets,
+                    sampleSheet =>
+                        this.jsonMarshalService.createExcel(sampleSheet)
+                );
                 break;
         }
 

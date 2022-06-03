@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+
+<head>
+    <style>
+        .legend {
+            display: grid;
+            grid-template-columns: min-content auto;
+            border: solid black 1px;
+            border-left-width: 2px;
+            border-top-width: 2px;
+        }
+
+        .table {
+            display: grid;
+            grid-template-columns: auto auto auto auto auto auto auto auto;
+            border: solid black 1px;
+            border-left-width: 2px;
+            border-top-width: 2px;
+        }
+
+        .row {
+            display: contents;
+        }
+
+        .row div {
+            border-right: solid black 1px;
+            border-bottom: solid black 1px;
+            padding: 0.1rem;
+            padding-left: 0.25rem;
+            padding-right: 0.25rem;
+        }
+
+        .row #package {
+            font-weight: bold;
+        }
+
+        .row--header div {
+            font-weight: bold;
+            background-color: transparent;
+        }
+
+        .critical div {
+            background-color: red;
+        }
+
+        .unstable div {
+            background-color: lightsalmon;
+        }
+
+        .watch div {
+            background-color: khaki;
+        }
+
+        .stable div {
+            background-color: lightgreen;
+        }
+
+        .info div {
+            background-color: lightgray;
+        }
+    </style>
+</head>
+<html>
+
+<body>
+    <h1>Package Maintenance Sheet - MiBi-Portal-Server - 23.05.2022</h1>
+    <h2>Legend</h2>
+    <div class="legend">
+        <div class="row stable">
+            <div>Stable</div>
+            <div>Commonly used and well supported. Essential for the app and up-to-date.</div>
+        </div>
+        <div class="row watch">
+            <div>Watch</div>
+            <div>Rarely used and not so well supported but up-to-date. Consider replacement or removal.</div>
+        </div>
+        <div class="row unstable">
+            <div>Unstable</div>
+            <div>Unsupported, deprecated or obsolete. Incompatible with other libraries or not up-to-date.</div>
+        </div>
+        <div class="row critical">
+            <div>Critical</div>
+            <div>Contains critical security issues and has to be replaced or updated.</div>
+        </div>
+    </div>
+    <br>
+    <div class="table">
+        <div class="row row--header">
+            <div id="package">Package</div>
+            <div id="environment">Environment</div>
+            <div id="description">Description</div>
+            <div id="usage">Usage</div>
+            <div id="essential">Essential</div>
+            <div id="stability">Stability</div>
+            <div id="semantic">Semantic</div>
+            <div id="last-update">Last Update</div>
+        </div>
+        <div class="row info">
+            <div id="package">Name of package</div>
+            <div id="environment">Runtime environment of package</div>
+            <div id="description">What is the package in general for?</div>
+            <div id="usage">Why is the package is used in the app?</div>
+            <div id="essential">Is the package essential for the app?</div>
+            <div id="stability">Is the package stable, and if not why?</div>
+            <div id="semantic">Does the package support semantic versioning?</div>
+            <div id="last-update">Date of last update</div>
+        </div>
+    </div>
+    <h2>Production Dependencies</h2>
+    <div class="table">
+        <div class="row row--header">
+            <div id="package">Package</div>
+            <div id="environment">Environment</div>
+            <div id="description">Description</div>
+            <div id="usage">Usage</div>
+            <div id="essential">Essential</div>
+            <div id="stability">Stability</div>
+            <div id="semantic">Semantic</div>
+            <div id="last-update">Last Update</div>
+        </div>
+        <div class="row unstable">
+            <div id="package">argon2</div>
+            <div id="environment">js</div>
+            <div id="description">hash algorithm</div>
+            <div id="usage">password generation</div>
+            <div id="essential">yes, until user server</div>
+            <div id="stability">prerelease, used by &lt; 1000</div>
+            <div id="semantic"></div>
+            <div id="last-update">23.05.2022</div>
+        </div>
+        <div class="row watch">
+            <div id="package">bluebird</div>
+            <div id="environment">js</div>
+            <div id="description">promise library</div>
+            <div id="usage">mongoose</div>
+            <div id="essential">remove?</div>
+            <div id="stability">last update 1 year</div>
+            <div id="semantic"></div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row unstable">
+            <div id="package">compression</div>
+            <div id="environment">node middleware</div>
+            <div id="description">supports compressed files</div>
+            <div id="usage">do we support compression?</div>
+            <div id="essential">remove?</div>
+            <div id="stability">last update 2 years</div>
+            <div id="semantic"></div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row stable">
+            <div id="package">config</div>
+            <div id="environment">node</div>
+            <div id="description">node config files</div>
+            <div id="usage">server configuration</div>
+            <div id="essential">yes</div>
+            <div id="stability">stable</div>
+            <div id="semantic"></div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row unstable">
+            <div id="package">cors</div>
+            <div id="environment">node middleware</div>
+            <div id="description">cross origin resource sharing</div>
+            <div id="usage">?</div>
+            <div id="essential">do we need this?</div>
+            <div id="stability">last update 3 years</div>
+            <div id="semantic"></div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row unstable">
+            <div id="package">express</div>
+            <div id="environment">express</div>
+            <div id="description">web framework</div>
+            <div id="usage">http request handling</div>
+            <div id="essential">yes</div>
+            <div id="stability">update</div>
+            <div id="semantic"></div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row unstable">
+            <div id="package">express-jwt</div>
+            <div id="environment">express middleware</div>
+            <div id="description">validate json web tokens</div>
+            <div id="usage">token validation</div>
+            <div id="essential">yes, until user server</div>
+            <div id="stability">update</div>
+            <div id="semantic">yes</div>
+            <div id="last-update">23.05.2022</div>
+        </div>
+        <div class="row stable">
+            <div id="package">fast-csv</div>
+            <div id="environment">js</div>
+            <div id="description">parsing csv files</div>
+            <div id="usage">parsing catalog files</div>
+            <div id="essential">yes</div>
+            <div id="stability">stable</div>
+            <div id="semantic">yes</div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row unstable">
+            <div id="package">fs-readfile-promise</div>
+            <div id="environment">js</div>
+            <div id="description">promised fs.readFile</div>
+            <div id="usage">used by mail service</div>
+            <div id="essential">remove?</div>
+            <div id="stability">last update 4 years, used by none</div>
+            <div id="semantic"></div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row unstable">
+            <div id="package">fuse.js</div>
+            <div id="environment">js</div>
+            <div id="description">fuzzy search</div>
+            <div id="usage">pathogen autocorrection service</div>
+            <div id="essential">yes</div>
+            <div id="stability">update</div>
+            <div id="semantic">no (publisher says yes)</div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row stable">
+            <div id="package">handlebars</div>
+            <div id="environment">html</div>
+            <div id="description">template language</div>
+            <div id="usage">used by html mails</div>
+            <div id="essential">yes</div>
+            <div id="stability">stable</div>
+            <div id="semantic"></div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row unstable">
+            <div id="package">helmet</div>
+            <div id="environment">express middleware</div>
+            <div id="description">sets security headers</div>
+            <div id="usage">framework</div>
+            <div id="essential">yes</div>
+            <div id="stability">update</div>
+            <div id="semantic"></div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row unstable">
+            <div id="package">inversify</div>
+            <div id="environment">inversify</div>
+            <div id="description">inversion of control</div>
+            <div id="usage">framework</div>
+            <div id="essential">yes</div>
+            <div id="stability">update</div>
+            <div id="semantic"></div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row unstable">
+            <div id="package">inversify-express-utils</div>
+            <div id="environment">inversify, express</div>
+            <div id="description">utils for develop express apps with inversify</div>
+            <div id="usage">framework</div>
+            <div id="essential">yes</div>
+            <div id="stability">update, used by &lt; 5000</div>
+            <div id="semantic"></div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row unstable">
+            <div id="package">jsonwebtoken</div>
+            <div id="environment">js</div>
+            <div id="description">jwt implementation</div>
+            <div id="usage">API and user tokens</div>
+            <div id="essential">yes</div>
+            <div id="stability">last update 2 year</div>
+            <div id="semantic"></div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row stable">
+            <div id="package">lodash</div>
+            <div id="environment">js</div>
+            <div id="description">iterating, manipulating, compositing of arrays and objects</div>
+            <div id="usage">common tool</div>
+            <div id="essential">yes</div>
+            <div id="stability">stable</div>
+            <div id="semantic"></div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row watch">
+            <div id="package">moment</div>
+            <div id="environment">js</div>
+            <div id="description">date formatting library</div>
+            <div id="usage">common tool</div>
+            <div id="essential">yes</div>
+            <div id="stability">maintenance only, publisher advises against using moment</div>
+            <div id="semantic"></div>
+            <div id="last-update">23.05.2022</div>
+        </div>
+        <div class="row unstable">
+            <div id="package">mongo-express</div>
+            <div id="environment">standalone app</div>
+            <div id="description">web interface for mongoDB</div>
+            <div id="usage">by PO</div>
+            <div id="essential">yes, replace with better tool</div>
+            <div id="stability">prerelease, security issues, deprecated sub dependencies, used by &lt; 1000</div>
+            <div id="semantic"></div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row unstable">
+            <div id="package">mongoose</div>
+            <div id="environment">mongoose</div>
+            <div id="description">mongoDB object modeling tool</div>
+            <div id="usage">interacting with mongoDB</div>
+            <div id="essential">yes</div>
+            <div id="stability">update</div>
+            <div id="semantic"></div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row unstable">
+            <div id="package">mongoose-unique-validator</div>
+            <div id="environment">mongoose plugin</div>
+            <div id="description">pre-save unique schema validation</div>
+            <div id="usage">used for uniqueness of users</div>
+            <div id="essential">yes?, replacable by own code?</div>
+            <div id="stability">update</div>
+            <div id="semantic"></div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row watch">
+            <div id="package">morgan</div>
+            <div id="environment">node middleware</div>
+            <div id="description">HTTP request logger</div>
+            <div id="usage">log API calls</div>
+            <div id="essential">yes</div>
+            <div id="stability">last update 1 year</div>
+            <div id="semantic"></div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row watch">
+            <div id="package">multer</div>
+            <div id="environment">node middleware</div>
+            <div id="description">handle multipart/from-data</div>
+            <div id="usage">excel upload</div>
+            <div id="essential">yes?</div>
+            <div id="stability">last update 1 year</div>
+            <div id="semantic">yes</div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row unstable">
+            <div id="package">nodemailer</div>
+            <div id="environment">node</div>
+            <div id="description">email sending</div>
+            <div id="usage">send mails from server</div>
+            <div id="essential">yes</div>
+            <div id="stability">update</div>
+            <div id="semantic">no</div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row unstable">
+            <div id="package">pdfmake</div>
+            <div id="environment">js</div>
+            <div id="description">creating pdf with tables</div>
+            <div id="usage">export sample sheet to pdf</div>
+            <div id="essential">yes, no better library found</div>
+            <div id="stability">update, prerelease, deprecated sub dependency</div>
+            <div id="semantic"></div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row unstable">
+            <div id="package">reflect-metadata</div>
+            <div id="environment">js</div>
+            <div id="description">add metadata to classes</div>
+            <div id="usage">used by inversify containers</div>
+            <div id="essential">yes?</div>
+            <div id="stability">prerelease, last update 2 years</div>
+            <div id="semantic"></div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row unstable">
+            <div id="package">swagger-ui-express</div>
+            <div id="environment">express module</div>
+            <div id="description">server swagger docs from express</div>
+            <div id="usage">API documentation</div>
+            <div id="essential">yes</div>
+            <div id="stability">update</div>
+            <div id="semantic"></div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row unstable">
+            <div id="package">validate.js</div>
+            <div id="environment">js</div>
+            <div id="description">validating javascript objects</div>
+            <div id="usage">validate samples</div>
+            <div id="essential">yes</div>
+            <div id="stability">prerelease, last update 2 years</div>
+            <div id="semantic"></div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row unstable">
+            <div id="package">winston</div>
+            <div id="environment">js</div>
+            <div id="description">logger</div>
+            <div id="usage">log server messages</div>
+            <div id="essential">yes</div>
+            <div id="stability">update</div>
+            <div id="semantic"></div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row unstable">
+            <div id="package">xlsx</div>
+            <div id="environment">js</div>
+            <div id="description">excel parser and writer</div>
+            <div id="usage">parse excel file</div>
+            <div id="essential">remove? (use xlsx-populate)</div>
+            <div id="stability">update, prerelease</div>
+            <div id="semantic"></div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row unstable">
+            <div id="package">xlsx-populate</div>
+            <div id="environment">js</div>
+            <div id="description">excel parser and writer</div>
+            <div id="usage">create excel file</div>
+            <div id="essential">remove? (use xlsx)</div>
+            <div id="stability">used by &lt; 1000, last update 2 years</div>
+            <div id="semantic"></div>
+            <div id="last-update"></div>
+        </div>
+    </div>
+
+    <h2>Development Dependencies</h2>
+
+    <div class="table">
+        <div class="row row--header">
+            <div id="package">Package</div>
+            <div id="environment">Environment</div>
+            <div id="description">Description</div>
+            <div id="usage">Usage</div>
+            <div id="essential">Essential</div>
+            <div id="stability">Stability</div>
+            <div id="semantic">Semantic</div>
+            <div id="last-update">Last Update</div>
+        </div>
+        <div class="row stable">
+            <div id="package">copyfiles</div>
+            <div id="environment">system</div>
+            <div id="description">copy files</div>
+            <div id="usage">npm script</div>
+            <div id="essential">yes</div>
+            <div id="stability">stable</div>
+            <div id="semantic"></div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row unstable">
+            <div id="package">husky</div>
+            <div id="environment">git</div>
+            <div id="description">git hooks</div>
+            <div id="usage">commit hooks</div>
+            <div id="essential">yes</div>
+            <div id="stability">update</div>
+            <div id="semantic"></div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row unstable">
+            <div id="package">jest</div>
+            <div id="environment">jest</div>
+            <div id="description">testing framework</div>
+            <div id="usage">test framework</div>
+            <div id="essential">yes</div>
+            <div id="stability">update</div>
+            <div id="semantic"></div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row unstable">
+            <div id="package">jest-stare</div>
+            <div id="environment">jest</div>
+            <div id="description">html reports</div>
+            <div id="usage">write report for unit tests</div>
+            <div id="essential">used?</div>
+            <div id="stability">deprecated sub dependencies, used by &lt; 1000</div>
+            <div id="semantic"></div>
+            <div id="last-update">23.05.2022</div>
+        </div>
+        <div class="row unstable">
+            <div id="package">lint-staged</div>
+            <div id="environment">git</div>
+            <div id="description">run linters against staged files</div>
+            <div id="usage">commit hooks</div>
+            <div id="essential">yes</div>
+            <div id="stability">update</div>
+            <div id="semantic"></div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row unstable">
+            <div id="package">mock-express-request</div>
+            <div id="environment">express mock</div>
+            <div id="description">mock express request</div>
+            <div id="usage">controller tests</div>
+            <div id="essential">remove?</div>
+            <div id="stability">prerelease, last update 3 years, used by &lt; 1000</div>
+            <div id="semantic"></div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row unstable">
+            <div id="package">mock-express-response</div>
+            <div id="environment">express mock</div>
+            <div id="description">mock express response</div>
+            <div id="usage">controller tests</div>
+            <div id="essential">remove?</div>
+            <div id="stability">prerelease, used by &lt; 3000</div>
+            <div id="semantic"></div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row stable">
+            <div id="package">nodemon</div>
+            <div id="environment">node</div>
+            <div id="description">file change detection for node</div>
+            <div id="usage">developing</div>
+            <div id="essential">yes</div>
+            <div id="stability">stable</div>
+            <div id="semantic"></div>
+            <div id="last-update">23.05.2022</div>
+        </div>
+        <div class="row unstable">
+            <div id="package">prettier</div>
+            <div id="environment">prettier</div>
+            <div id="description">code formatter</div>
+            <div id="usage">format files</div>
+            <div id="essential">replacable by eslint?</div>
+            <div id="stability">update</div>
+            <div id="semantic">no</div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row unstable">
+            <div id="package">request</div>
+            <div id="environment">request</div>
+            <div id="description">http client</div>
+            <div id="usage">used for integration tests</div>
+            <div id="essential">replace</div>
+            <div id="stability">moderate security vulnerability, deprecated, deprecated sub dependency</div>
+            <div id="semantic"></div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row unstable">
+            <div id="package">request-promise-native</div>
+            <div id="environment">request addon</div>
+            <div id="description">promise support for request</div>
+            <div id="usage">used for integration tests</div>
+            <div id="essential">remove</div>
+            <div id="stability">deprecated</div>
+            <div id="semantic"></div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row watch">
+            <div id="package">rimraf</div>
+            <div id="environment">system</div>
+            <div id="description">remove files</div>
+            <div id="usage">npm script</div>
+            <div id="essential">yes</div>
+            <div id="stability">last update 1 year</div>
+            <div id="semantic"></div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row unstable">
+            <div id="package">ts-jest</div>
+            <div id="environment">jest</div>
+            <div id="description">jest for typescript</div>
+            <div id="usage">jest for typescript</div>
+            <div id="essential">yes</div>
+            <div id="stability">update, deprecated sub dependency</div>
+            <div id="semantic">no</div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row unstable">
+            <div id="package">tslint</div>
+            <div id="environment">tslint</div>
+            <div id="description">typescript linter</div>
+            <div id="usage">linting</div>
+            <div id="essential">yes, replace by eslint</div>
+            <div id="stability">deprecated</div>
+            <div id="semantic"></div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row unstable">
+            <div id="package">tslint-config-prettier</div>
+            <div id="environment">tslint, prettier</div>
+            <div id="description">disable conflicting prettier rules</div>
+            <div id="usage">exclude prettier rules</div>
+            <div id="essential">yes, replacement for eslint?</div>
+            <div id="stability">deprecated</div>
+            <div id="semantic"></div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row unstable">
+            <div id="package">tslint-config-standard</div>
+            <div id="environment">tslint</div>
+            <div id="description">standard tslint rules</div>
+            <div id="usage">linting</div>
+            <div id="essential">yes, replace by eslint</div>
+            <div id="stability">requires tslint 5, deprecated</div>
+            <div id="semantic"></div>
+            <div id="last-update"></div>
+        </div>
+        <div class="row unstable">
+            <div id="package">typescript</div>
+            <div id="environment">typescript</div>
+            <div id="description">javascript with types</div>
+            <div id="usage">development language</div>
+            <div id="essential">yes</div>
+            <div id="stability">update to 4 incompatible with tslint-config-standard</div>
+            <div id="semantic">no</div>
+            <div id="last-update"></div>
+        </div>
+
+
+    </div>
+</body>
+
+</html>

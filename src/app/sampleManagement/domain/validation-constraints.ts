@@ -2,6 +2,12 @@ import _ from 'lodash';
 import { ValidationConstraints } from '../model/validation.model';
 
 export const zoMoConstraints: ValidationConstraints = {
+    sample_id: {
+        presence: {
+            error: 2,
+            allowEmpty: false
+        }
+    },
     sample_id_avv: {
         presence: {
             error: 5,
@@ -187,6 +193,22 @@ export const zoMoConstraints: ValidationConstraints = {
 };
 
 export const standardConstraints: ValidationConstraints = {
+    sample_id: {
+        atLeastOneOf: {
+            error: 69,
+            additionalMembers: ['sample_id_avv']
+        },
+        presence: {
+            error: 68,
+            allowEmpty: false
+        }
+    },
+    sample_id_avv: {
+        atLeastOneOf: {
+            error: 69,
+            additionalMembers: ['sample_id']
+        }
+    },
     sampling_date: {
         atLeastOneOf: {
             error: 19,
@@ -242,21 +264,8 @@ export const standardConstraints: ValidationConstraints = {
 };
 
 export const baseConstraints: ValidationConstraints = {
-    sample_id: {
-        atLeastOneOf: {
-            error: 69,
-            additionalMembers: ['sample_id_avv']
-        },
-        presence: {
-            error: 68,
-            allowEmpty: false
-        }
-    },
+    sample_id: {},
     sample_id_avv: {
-        atLeastOneOf: {
-            error: 69,
-            additionalMembers: ['sample_id']
-        },
         matchesIdToSpecificYear: {
             error: 72,
             regex: []
