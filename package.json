@@ -2,6 +2,8 @@
   "name": "mibi-portal-server",
   "version": "4.1.0",
   "license": "MIT",
+  "private": true,
+  "type": "commonjs",
   "scripts": {
     "start": "node ./lib/main.js",
     "serve": "npx nodemon -e ts --exec \"npm run serve:pipe\"",
@@ -11,8 +13,7 @@
     "start:admin-util": "cp ./config/admin-util/config.js ./node_modules/mongo-express/config.js && node ./node_modules/mongo-express/app.js",
     "cp:view": "npx copyfiles -u 1 ./src/**/views/**/* ./lib",
     "cp:json": "npx copyfiles -u 1 ./src/**/*.json ./lib",
-    "cp:scripts": "npx copyfiles -u 1 ./src/**/*.sh ./lib",
-    "cp:all": "npm run cp:view && npm run cp:scripts && npm run cp:json",
+    "cp:all": "npm run cp:view && npm run cp:json",
     "tsc": "tsc",
     "build": "npm run tsc && npm run cp:all",
     "prebuild": "npm run clean",
@@ -32,7 +33,6 @@
       "npm run lint"
     ]
   },
-  "private": true,
   "dependencies": {
     "@SiLeBAT/fg43-ne-server": "^1.1.0",
     "argon2": "0.28.5",
@@ -59,6 +59,7 @@
     "multer": "^1.4.4",
     "nodemailer": "6.7.5",
     "pdfmake": "0.2.5",
+    "pm2": "~5.2.0",
     "reflect-metadata": "0.1.13",
     "swagger-ui-express": "~4.4.0",
     "validate.js": "0.13.1",
