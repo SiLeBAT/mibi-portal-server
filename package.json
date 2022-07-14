@@ -41,7 +41,7 @@
     "config": "~3.3.7",
     "cors": "~2.8.5",
     "express": "~4.18.1",
-    "express-jwt": "^7.7.2",
+    "express-jwt": "^7.7.5",
     "fast-csv": "~4.3.6",
     "fs-readfile-promise": "~3.0.1",
     "fuse.js": "6.6.2",
@@ -51,7 +51,7 @@
     "inversify-express-utils": "~6.3.2",
     "jsonwebtoken": "~8.5.1",
     "lodash": "~4.17.21",
-    "moment": "~2.29.3",
+    "moment": "~2.29.4",
     "mongo-express": "0.53.0",
     "mongoose": "~5.13.14",
     "mongoose-unique-validator": "~2.0.3",
@@ -88,10 +88,10 @@
     "husky": "~7.0.4",
     "jest": "~27.5.1",
     "jest-stare": "~2.4.1",
-    "lint-staged": "~12.4.2",
+    "lint-staged": "~12.4.3",
     "mock-express-request": "0.2.2",
     "mock-express-response": "0.3.0",
-    "nodemon": "~2.0.16",
+    "nodemon": "~2.0.19",
     "prettier": "2.6.2",
     "request": "~2.88.2",
     "request-promise-native": "1.0.9",
@@ -101,6 +101,14 @@
     "tslint-config-prettier": "~1.18.0",
     "tslint-config-standard": "9.0.0",
     "typescript": "3.9.10"
+  },
+  "overrides": {
+    "mongo-express": {
+      "express-fileupload": "1.1.10"
+    },
+    "optimist": {
+      "minimist": "1.2.6"
+    }
   },
   "mibiConfig": {
     "lastChange": "2019-04-16 11:25:17 +0200"
