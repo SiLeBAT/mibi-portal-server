@@ -194,7 +194,7 @@ async function init() {
             validator: validateToken,
             jwtSecret: generalConfig.jwtSecret
         },
-        publicDir: path.join(__dirname + '/ui/server/public')
+        publicDir: path.join(__dirname + '/ui/server/public/de')
     };
     const server = createServer(expressServerConfig);
     server.startServer();
