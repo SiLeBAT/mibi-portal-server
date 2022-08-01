@@ -1,5 +1,5 @@
 import { ValidationErrorRepository, ValidationError } from '../../../app/ports';
-import { mapModelToValidationError } from './data-mappers';
+import { mapToValidationError } from './data-mappers';
 import { ValidationErrorDocument } from '../data-store/mongoose/schemas/validation-error.schema';
 import { MongooseRepositoryBase } from '../data-store/mongoose/mongoose.repository';
 import { injectable, inject } from 'inversify';
@@ -20,8 +20,8 @@ export class DefaultValidationErrorRepository
     async getAllErrors(): Promise<ValidationError[]> {
         return super
             ._retrieve()
-            .then(modelArray => {
-                return modelArray.map(m => mapModelToValidationError(m));
+            .then(docs => {
+                return docs.map(doc => mapToValidationError(doc));
             })
             .catch(error => {
                 throw error;

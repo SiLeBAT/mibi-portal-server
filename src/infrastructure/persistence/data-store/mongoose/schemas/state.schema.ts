@@ -23,12 +23,12 @@ export const stateSchema = new Schema<StateDocument>({
     ],
     created: {
         type: Date,
-        default: () => Date.now(),
+        default: () => new Date(),
         required: true
     },
     updated: {
         type: Date,
-        default: () => Date.now(),
+        default: () => new Date(),
         required: true
     }
 }).pre('save', function (next) {

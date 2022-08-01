@@ -20,12 +20,12 @@ export const validationErrorSchema = new Schema<ValidationErrorDocument>({
     },
     created: {
         type: Date,
-        default: () => Date.now(),
+        default: () => new Date(),
         required: true
     },
     updated: {
         type: Date,
-        default: () => Date.now(),
+        default: () => new Date(),
         required: true
     }
 }).pre('save', function (next) {

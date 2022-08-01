@@ -65,6 +65,7 @@ export class DefaultTokenService implements TokenService {
             userId
         });
     }
+
     async getUserTokenByJWT(token: string): Promise<UserToken> {
         return this.tokenRepository.getUserTokenByJWT(token);
     }

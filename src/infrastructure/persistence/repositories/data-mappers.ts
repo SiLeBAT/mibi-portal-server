@@ -6,85 +6,88 @@ import {
     State,
     ValidationError,
     NRL,
-    DefaultNRLService
+    DefaultNRLService,
+    UserToken
 } from '../../../app/ports';
 import { InstitutionDocument } from '../data-store/mongoose/schemas/institution.schema';
-import { UserDocument } from '../data-store/mongoose/schemas/user.schema';
+import { PopulatedUserDocument } from '../data-store/mongoose/schemas/user.schema';
 import { StateDocument } from '../data-store/mongoose/schemas/state.schema';
 import { ValidationErrorDocument } from '../data-store/mongoose/schemas/validation-error.schema';
-import { NrlDocument } from '../data-store/mongoose/schemas/nrl.schema';
+import { TokenDocument } from '../data-store/mongoose/schemas/reset-token.schema';
+import { PopulatedNrlDocument } from '../data-store/mongoose/schemas/nrl.schema';
 
-function mapModelToInstitution(i: InstitutionDocument): Institute {
-    const inst = createInstitution(i._id);
+export function mapToInstitution(doc: InstitutionDocument): Institute {
+    const inst = createInstitution(doc._id.toHexString());
     return {
         ...inst,
         ...{
-            stateShort: i.state_short,
-            name: i.name1,
-            addendum: i.name2,
-            city: i.city,
-            zip: i.zip,
-            phone: i.phone,
-            fax: i.fax,
-            email: i.email
+            stateShort: doc.state_short,
+            name: doc.name1,
+            addendum: doc.name2,
+            city: doc.city,
+            zip: doc.zip,
+            phone: doc.phone,
+            fax: doc.fax,
+            email: doc.email
         }
     };
 }
 
-function mapModelToUser(model: UserDocument): User {
-    const institution = mapModelToInstitution(model.institution);
+export function mapToUser(doc: PopulatedUserDocument): User {
+    const institution = mapToInstitution(doc.institution);
+
     return createUser(
-        model._id.toHexString(),
-        model.email,
-        model.firstName,
-        model.lastName,
+        doc._id.toHexString(),
+        doc.email,
+        doc.firstName,
+        doc.lastName,
         institution,
-        model.password,
-        model.enabled,
-        model.adminEnabled,
-        model.numAttempt,
-        model.lastAttempt
+        doc.password,
+        doc.enabled,
+        doc.adminEnabled,
+        doc.numAttempt,
+        doc.lastAttempt
     );
 }
 
-function mapModelToState(model: StateDocument): State {
+export function mapToUserToken(doc: TokenDocument): UserToken {
     return {
-        name: model.name,
-        short: model.short,
-        AVV: model.AVV
+        token: doc.token,
+        type: Number.parseInt(doc.type, 10),
+        userId: doc.user.toHexString()
     };
 }
 
-function mapModelToValidationError(
-    model: ValidationErrorDocument
+export function mapToState(doc: StateDocument): State {
+    return {
+        name: doc.name,
+        short: doc.short,
+        AVV: doc.AVV
+    };
+}
+
+export function mapToValidationError(
+    doc: ValidationErrorDocument
 ): ValidationError {
     return {
-        code: model.code,
-        level: model.level,
-        message: model.message
+        code: doc.code,
+        level: doc.level,
+        message: doc.message
     };
 }
 
-function mapModelToNRL(model: NrlDocument): NRL {
+export function mapToNRL(doc: PopulatedNrlDocument): NRL {
     return {
-        id: DefaultNRLService.mapNRLStringToEnum(model.name),
-        selectors: model.selector,
-        email: model.email,
-        standardProcedures: model.standardProcedures.map(p => ({
+        id: DefaultNRLService.mapNRLStringToEnum(doc.name),
+        selectors: doc.selector,
+        email: doc.email,
+        standardProcedures: doc.standardProcedures.map(p => ({
             value: p.value,
             key: p.key
         })),
-        optionalProcedures: model.optionalProcedures.map(p => ({
+        optionalProcedures: doc.optionalProcedures.map(p => ({
             value: p.value,
             key: p.key
         }))
     };
 }
-
-export {
-    mapModelToInstitution,
-    mapModelToUser,
-    mapModelToState,
-    mapModelToValidationError,
-    mapModelToNRL
-};

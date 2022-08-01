@@ -1,6 +1,6 @@
-import { Schema } from 'mongoose';
-import { InstitutionDocument } from './institution.schema';
+import { Schema, Types } from 'mongoose';
 import { CommonDocument } from '../common.model';
+import { InstitutionDocument } from './institution.schema';
 const mongooseUniqueValidator = require('mongoose-unique-validator');
 
 export interface UserDocument extends CommonDocument {
@@ -8,11 +8,16 @@ export interface UserDocument extends CommonDocument {
     email: string;
     firstName: string;
     lastName: string;
-    institution: InstitutionDocument;
+    institution: Types.ObjectId;
     enabled: boolean;
     adminEnabled: boolean;
     numAttempt: number;
     lastAttempt: number;
+}
+
+export interface PopulatedUserDocument
+    extends Omit<UserDocument, 'institution'> {
+    institution: InstitutionDocument;
 }
 
 export const userSchema = new Schema<UserDocument>({
@@ -60,12 +65,12 @@ export const userSchema = new Schema<UserDocument>({
     },
     created: {
         type: Date,
-        default: () => Date.now(),
+        default: () => new Date(),
         required: true
     },
     updated: {
         type: Date,
-        default: () => Date.now(),
+        default: () => new Date(),
         required: true
     }
 }).pre('save', function (next) {

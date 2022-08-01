@@ -6,13 +6,13 @@
   "type": "commonjs",
   "scripts": {
     "start": "node ./lib/main.js",
-    "serve": "npx nodemon -e ts --exec \"npm run serve:pipe\"",
-    "debug": "npx nodemon -e ts --exec \"npm run debug:pipe\"",
+    "serve": "nodemon -e ts --exec \"npm run serve:pipe\"",
+    "debug": "nodemon -e ts --exec \"npm run debug:pipe\"",
     "serve:pipe": "npm run build && node ./lib/main.js",
     "debug:pipe": "npm run build && node --inspect-brk ./lib/main.js",
     "start:admin-util": "cp ./config/admin-util/config.js ./node_modules/mongo-express/config.js && node ./node_modules/mongo-express/app.js",
-    "cp:view": "npx copyfiles -u 1 ./src/**/views/**/* ./lib",
-    "cp:json": "npx copyfiles -u 1 ./src/**/*.json ./lib",
+    "cp:view": "copyfiles -u 1 ./src/**/views/**/* ./lib",
+    "cp:json": "copyfiles -u 1 ./src/**/*.json ./lib",
     "cp:all": "npm run cp:view && npm run cp:json",
     "tsc": "tsc",
     "build": "npm run tsc && npm run cp:all",
@@ -22,7 +22,7 @@
     "test:watch": "npm test -- --watch",
     "test:coverage": "npm test -- --coverage && open coverage/lcov-report/index.html",
     "test:report": "npm test -- --reporters default jest-stare --testResultsProcessor=jest-stare && open jest-stare/index.html",
-    "clean": "npx rimraf lib/*",
+    "clean": "rimraf lib/*",
     "lint": "tslint --project tsconfig.json --fix -c tslint.json -e \"src/**/__mocks__/*.ts\" -e \"src/**/__tests__/*.ts\" -e \"test/**/*.ts\" \"src/**/*.ts\"",
     "pretty": "prettier --write \"src/**/*.ts\"",
     "prepare": "(husky -v && husky install) || echo husky not installed"
@@ -36,7 +36,6 @@
   "dependencies": {
     "@SiLeBAT/fg43-ne-server": "^1.1.0",
     "argon2": "0.28.5",
-    "bluebird": "~3.7.2",
     "compression": "~1.7.4",
     "config": "~3.3.7",
     "cors": "~2.8.5",
@@ -53,8 +52,8 @@
     "lodash": "~4.17.21",
     "moment": "~2.29.4",
     "mongo-express": "0.53.0",
-    "mongoose": "~5.13.14",
-    "mongoose-unique-validator": "~2.0.3",
+    "mongoose": "~6.1.10",
+    "mongoose-unique-validator": "~3.1.0",
     "morgan": "~1.10.0",
     "multer": "^1.4.4",
     "nodemailer": "6.7.5",
@@ -68,7 +67,6 @@
     "xlsx-populate": "~1.21.0"
   },
   "devDependencies": {
-    "@types/bluebird": "3.5.36",
     "@types/compression": "1.7.2",
     "@types/config": "0.0.41",
     "@types/cors": "2.8.12",
