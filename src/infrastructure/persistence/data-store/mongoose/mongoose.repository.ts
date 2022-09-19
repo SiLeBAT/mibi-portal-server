@@ -22,7 +22,7 @@ export class MongooseRepositoryBase<T extends CommonDocument> {
 
     protected async _retrievePopulatedWith<TPopulated extends {}>(
         paths: string[]
-    ): Promise<(HydratedDocument<T> & TPopulated)[]> {
+    ): Promise<(Omit<HydratedDocument<T>, keyof TPopulated> & TPopulated)[]> {
         return this._model.find({}).populate<TPopulated>(paths).exec();
     }
 
