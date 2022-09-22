@@ -1,6 +1,8 @@
-import { Model, Types } from 'mongoose';
+import { HydratedDocument, Model, Types } from 'mongoose';
 import { injectable } from 'inversify';
 import { CommonDocument } from './common.model';
+
+export type QueryId = string | Types.ObjectId;
 
 @injectable()
 export class MongooseRepositoryBase<T extends CommonDocument> {
@@ -10,56 +12,52 @@ export class MongooseRepositoryBase<T extends CommonDocument> {
         this._model = schemaModel;
     }
 
-    protected async _create(item: T): Promise<T> {
+    protected async _create(item: T): Promise<HydratedDocument<T>> {
         return this._model.create(item);
     }
 
-    protected async _retrieve(): Promise<T[]> {
+    protected async _retrieve(): Promise<HydratedDocument<T>[]> {
         return this._model.find({}).exec();
     }
 
-    protected async _retrievePopulatedWith(populate: string[]): Promise<T[]> {
-        let query = this._model.find({});
-        populate.forEach(p => {
-            query = query.populate(p);
-        });
-        return query.exec();
+    protected async _retrievePopulatedWith<TPopulated extends {}>(
+        paths: string[]
+    ): Promise<(Omit<HydratedDocument<T>, keyof TPopulated> & TPopulated)[]> {
+        return this._model.find({}).populate<TPopulated>(paths).exec();
     }
 
-    protected async _update(_id: string, attr: Partial<T>): Promise<T | null> {
-        // mongoose does not work well with generics (updated/created schema plugin could be used instead)
-        // tslint:disable-next-line: no-any
-        return (this._model as Model<any>)
-            .findByIdAndUpdate(
-                this._toObjectId(_id),
-                { ...attr, updated: Date.now() },
-                { useFindAndModify: false }
-            )
+    protected async _update(
+        id: QueryId,
+        attr: Partial<T>
+    ): Promise<HydratedDocument<T> | null> {
+        return this._model
+            .findByIdAndUpdate(this._toObjectId(id), {
+                ...attr,
+                updated: new Date()
+            })
             .exec();
     }
 
-    protected async _delete(_id: string): Promise<T | null> {
-        return this._model.findByIdAndRemove(_id).exec();
+    protected async _delete(id: QueryId): Promise<HydratedDocument<T> | null> {
+        return this._model.findByIdAndRemove(this._toObjectId(id)).exec();
     }
 
-    protected async _findById(_id: string): Promise<T | null> {
-        return this._model.findById(_id).exec();
+    protected async _findById(
+        id: QueryId
+    ): Promise<HydratedDocument<T> | null> {
+        return this._model.findById(this._toObjectId(id)).exec();
     }
 
-    protected async _findOne(cond: {}): Promise<T | null> {
+    protected async _findOne(cond: {}): Promise<HydratedDocument<T> | null> {
         return this._model.findOne(cond).exec();
     }
 
-    protected async _find(
-        cond: {},
-        fields?: Object,
-        options?: Object
-    ): Promise<T[]> {
-        return this._model.find(cond, options).exec();
+    protected async _find(cond: {}): Promise<HydratedDocument<T>[]> {
+        return this._model.find(cond).exec();
     }
 
-    private _toObjectId(_id: string): Types.ObjectId {
-        return Types.ObjectId.createFromHexString(_id);
+    private _toObjectId(id: QueryId): Types.ObjectId {
+        return new Types.ObjectId(id);
     }
 }
 

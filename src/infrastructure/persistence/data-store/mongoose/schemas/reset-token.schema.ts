@@ -1,9 +1,10 @@
-import { Schema } from 'mongoose';
-import { UserToken } from '../../../../../app/ports';
+import { Schema, Types } from 'mongoose';
 import { CommonDocument } from '../common.model';
 
-export interface TokenDocument extends CommonDocument, UserToken {
-    user: string;
+export interface TokenDocument extends CommonDocument {
+    token: string;
+    type: string;
+    user: Types.ObjectId;
 }
 
 export const tokenSchema = new Schema<TokenDocument>({
@@ -17,12 +18,12 @@ export const tokenSchema = new Schema<TokenDocument>({
     },
     created: {
         type: Date,
-        default: () => Date.now(),
+        default: () => new Date(),
         required: true
     },
     updated: {
         type: Date,
-        default: () => Date.now(),
+        default: () => new Date(),
         required: true
     },
     user: {

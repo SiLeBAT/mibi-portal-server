@@ -1,4 +1,4 @@
-import jwt from 'express-jwt';
+import { expressjwt } from 'express-jwt';
 
 function validateToken(apiRoute: string, secret: string) {
     const whiteList = [
@@ -17,10 +17,10 @@ function validateToken(apiRoute: string, secret: string) {
         new RegExp(apiRoute + '/users/activation')
     ];
 
-    return jwt({
+    return expressjwt({
         secret,
         algorithms: ['HS256'],
-        getToken: getTokenFromHeader
+        getToken: req => getTokenFromHeader(req) ?? undefined
     }).unless({
         path: whiteList
     });

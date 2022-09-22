@@ -1,13 +1,19 @@
-import { AnalysisProcedureDocument } from './analysis-prodecure.schema';
-import { Schema } from 'mongoose';
+import { Schema, Types } from 'mongoose';
 import { CommonDocument } from '../common.model';
+import { AnalysisProcedureDocument } from './analysis-prodecure.schema';
 
 export interface NrlDocument extends CommonDocument {
-    standardProcedures: AnalysisProcedureDocument[];
-    optionalProcedures: AnalysisProcedureDocument[];
+    standardProcedures: Types.ObjectId[];
+    optionalProcedures: Types.ObjectId[];
     name: string;
     email: string;
     selector: string[];
+}
+
+export interface PopulatedNrlDocument
+    extends Omit<NrlDocument, 'standardProcedures' | 'optionalProcedures'> {
+    standardProcedures: AnalysisProcedureDocument[];
+    optionalProcedures: AnalysisProcedureDocument[];
 }
 
 export const nrlSchema = new Schema<NrlDocument>({
@@ -32,12 +38,12 @@ export const nrlSchema = new Schema<NrlDocument>({
     ],
     created: {
         type: Date,
-        default: () => Date.now(),
+        default: () => new Date(),
         required: true
     },
     updated: {
         type: Date,
-        default: () => Date.now(),
+        default: () => new Date(),
         required: true
     }
 }).pre('save', function (next) {

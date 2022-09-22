@@ -1,10 +1,11 @@
 import { NRLRepository, NRL } from '../../../app/ports';
-import { mapModelToNRL } from './data-mappers';
+import { mapToNRL } from './data-mappers';
 import { NrlDocument } from '../data-store/mongoose/schemas/nrl.schema';
 import { MongooseRepositoryBase } from '../data-store/mongoose/mongoose.repository';
 import { injectable, inject } from 'inversify';
 import { Model } from 'mongoose';
 import { PERSISTENCE_TYPES } from '../persistence.types';
+import { AnalysisProcedureDocument } from '../data-store/mongoose/schemas/analysis-prodecure.schema';
 
 @injectable()
 export class MongooseNRLRepository
@@ -16,13 +17,13 @@ export class MongooseNRLRepository
     }
 
     async retrieve(): Promise<NRL[]> {
-        return this._retrievePopulatedWith([
-            'standardProcedures',
-            'optionalProcedures'
-        ])
+        return this._retrievePopulatedWith<{
+            standardProcedures: AnalysisProcedureDocument[];
+            optionalProcedures: AnalysisProcedureDocument[];
+        }>(['standardProcedures', 'optionalProcedures'])
 
-            .then(modelArray => {
-                return modelArray.map(m => mapModelToNRL(m));
+            .then(docs => {
+                return docs.map(doc => mapToNRL(doc));
             })
             .catch(error => {
                 throw error;

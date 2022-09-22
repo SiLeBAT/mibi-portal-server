@@ -44,12 +44,12 @@ export const institutionSchema = new Schema<InstitutionDocument>({
     ],
     created: {
         type: Date,
-        default: () => Date.now(),
+        default: () => new Date(),
         required: true
     },
     updated: {
         type: Date,
-        default: () => Date.now(),
+        default: () => new Date(),
         required: true
     }
 }).pre('save', function (next) {

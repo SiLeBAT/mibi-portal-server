@@ -4,12 +4,10 @@ source ./environment.sh
 
 LOG_FILE=$1
 if [ "$#" -ne 1 ]; then
-  LOG_FILE=./mibi_output
+  LOG_FILE=./logs/mibi-portal.log
 fi
 
-BASE_NAME=`basename $LOG_FILE .log`
-DIR_NAME=`dirname $LOG_FILE`
-ADMIN_LOG=$DIR_NAME/$BASE_NAME-admin.log
+export MIBI_LOG=$LOG_FILE
 
-NODE_ENV=$MIBI_NODE_ENV HOST=$MIBI_HOST MIBI_API_ROOT=$MIBI_API_ROOT forever -l $LOG_FILE -a start ./lib/main.js
-forever -l $ADMIN_LOG -a start ./node_modules/mongo-express/app.js
+npx pm2 kill --no-daemon
+npx pm2 start pm2.config.js

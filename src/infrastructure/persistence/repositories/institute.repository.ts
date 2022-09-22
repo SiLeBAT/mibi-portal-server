@@ -3,7 +3,7 @@ import {
     Institute,
     createInstitution
 } from '../../../app/ports';
-import { mapModelToInstitution } from './data-mappers';
+import { mapToInstitution } from './data-mappers';
 import { InstitutionDocument } from '../data-store/mongoose/schemas/institution.schema';
 import { MongooseRepositoryBase } from '../data-store/mongoose/mongoose.repository';
 import { injectable, inject } from 'inversify';
@@ -24,19 +24,19 @@ export class MongooseInstituteRepository
     }
 
     async findByInstituteId(id: string): Promise<Institute> {
-        return super._findById(id).then(m => {
-            if (!m) {
+        return super._findById(id).then(doc => {
+            if (!doc) {
                 throw new InstituteNotFoundError(
                     `Institute not found. id=${id}`
                 );
             }
-            return mapModelToInstitution(m);
+            return mapToInstitution(doc);
         });
     }
 
     async retrieve(): Promise<Institute[]> {
-        return super._retrieve().then(modelArray => {
-            return modelArray.map(m => mapModelToInstitution(m));
+        return super._retrieve().then(docs => {
+            return docs.map(doc => mapToInstitution(doc));
         });
     }
 
@@ -51,17 +51,17 @@ export class MongooseInstituteRepository
         });
         return super
             ._create(newInstitution)
-            .then(model => createInstitution(model._id.toHexString()));
+            .then(doc => createInstitution(doc._id.toHexString()));
     }
 
     async findByInstituteName(name: string): Promise<Institute> {
-        return super._findOne({ name1: name }).then(model => {
-            if (!model) {
+        return super._findOne({ name1: name }).then(doc => {
+            if (!doc) {
                 throw new InstituteNotFoundError(
                     `Institute not found. name=${name}`
                 );
             }
-            return createInstitution(model._id.toHexString());
+            return createInstitution(doc._id.toHexString());
         });
     }
 }

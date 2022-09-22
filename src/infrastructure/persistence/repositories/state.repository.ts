@@ -4,7 +4,7 @@ import {
     State,
     AVVFormatCollection
 } from '../../../app/ports';
-import { mapModelToState } from './data-mappers';
+import { mapToState } from './data-mappers';
 import { StateDocument } from '../data-store/mongoose/schemas/state.schema';
 import { injectable, inject } from 'inversify';
 import { Model } from 'mongoose';
@@ -30,8 +30,8 @@ export class DefaultStateRepository
     }
 
     private async retrieve(): Promise<State[]> {
-        return super._retrieve().then(modelArray => {
-            return modelArray.map(m => mapModelToState(m));
+        return super._retrieve().then(docs => {
+            return docs.map(doc => mapToState(doc));
         });
     }
 }

@@ -1,6 +1,6 @@
 {
     "apiUrl": "http://localhost:3000",
     "general": {
-        "logLevel": "trace"
+        "logLevel": "error"
       }
 }

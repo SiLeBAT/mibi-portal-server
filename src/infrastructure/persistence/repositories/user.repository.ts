@@ -1,12 +1,15 @@
 import { UserRepository, createUser, User } from '../../../app/ports';
-
-import { mapModelToUser } from './data-mappers';
-import { UserDocument } from '../data-store/mongoose/schemas/user.schema';
+import { mapToUser } from './data-mappers';
+import {
+    PopulatedUserDocument,
+    UserDocument
+} from '../data-store/mongoose/schemas/user.schema';
 import { MongooseRepositoryBase } from '../data-store/mongoose/mongoose.repository';
 import { UserNotFoundError, UserUpdateError } from '../model/domain.error';
 import { injectable, inject } from 'inversify';
-import { Model } from 'mongoose';
+import mongoose, { HydratedDocument, Model } from 'mongoose';
 import { PERSISTENCE_TYPES } from '../persistence.types';
+import { InstitutionDocument } from '../data-store/mongoose/schemas/institution.schema';
 
 @injectable()
 export class DefaultUserRepository
@@ -22,15 +25,15 @@ export class DefaultUserRepository
     async findByUserId(id: string): Promise<User> {
         return super
             ._findById(id)
-            .then(async userModel => {
-                if (!userModel) return Promise.reject(null);
-                return populateWithAuxData(userModel);
+            .then(async doc => {
+                if (!doc) return Promise.reject(null);
+                return populateWithAuxData(doc);
             })
-            .then(userModel => {
-                if (!userModel) {
+            .then(doc => {
+                if (!doc) {
                     throw new UserNotFoundError(`User not found. id=${id}`);
                 }
-                return mapModelToUser(userModel);
+                return mapToUser(doc);
             })
             .catch(error => {
                 throw error;
@@ -41,18 +44,18 @@ export class DefaultUserRepository
         const nameRegex = new RegExp(username, 'i');
 
         return super
-            ._findOne({ email: { $regex: nameRegex } })
-            .then(async userModel => {
-                if (!userModel) return Promise.reject(null);
-                return populateWithAuxData(userModel);
+            ._findOne({ email: mongoose.trusted({ $regex: nameRegex }) })
+            .then(async doc => {
+                if (!doc) return Promise.reject(null);
+                return populateWithAuxData(doc);
             })
-            .then(userModel => {
-                if (!userModel) {
+            .then(doc => {
+                if (!doc) {
                     throw new UserNotFoundError(
                         `User not found. username=${username}`
                     );
                 }
-                return mapModelToUser(userModel);
+                return mapToUser(doc);
             })
             .catch(error => {
                 throw error;
@@ -63,14 +66,14 @@ export class DefaultUserRepository
         const nameRegex = new RegExp(username, 'i');
 
         return super
-            ._findOne({ email: { $regex: nameRegex } })
-            .then(userModel => {
-                if (!userModel) {
+            ._findOne({ email: mongoose.trusted({ $regex: nameRegex }) })
+            .then(doc => {
+                if (!doc) {
                     throw new UserNotFoundError(
                         `User not found. username=${username}`
                     );
                 }
-                return userModel.password;
+                return doc.password;
             })
             .catch(error => {
                 throw error;
@@ -81,8 +84,8 @@ export class DefaultUserRepository
         const nameRegex = new RegExp(username, 'i');
 
         return super
-            ._findOne({ email: { $regex: nameRegex } })
-            .then(docs => !!docs);
+            ._findOne({ email: mongoose.trusted({ $regex: nameRegex }) })
+            .then(doc => !!doc);
     }
 
     async createUser(user: User): Promise<User> {
@@ -95,16 +98,16 @@ export class DefaultUserRepository
         });
         return super
             ._create(newUser)
-            .then(model =>
+            .then(doc =>
                 createUser(
-                    model._id.toHexString(),
+                    doc._id.toHexString(),
                     user.email,
                     user.firstName,
                     user.lastName,
                     user.institution,
                     user.password,
-                    model.enabled,
-                    model.adminEnabled
+                    doc.enabled,
+                    doc.adminEnabled
                 )
             )
             .catch(error => {
@@ -124,8 +127,8 @@ export class DefaultUserRepository
                 numAttempt: user.getNumberOfFailedAttempts(),
                 lastAttempt: user.getLastLoginAttempt()
             })
-            .then(async response => {
-                if (!response) {
+            .then(async doc => {
+                if (!doc) {
                     throw new UserUpdateError(
                         `Response not OK. Unable to update user.`
                     );
@@ -138,14 +141,10 @@ export class DefaultUserRepository
     }
 }
 
-async function populateWithAuxData(model: UserDocument): Promise<UserDocument> {
-    // For some reason .populate does not return a promise and only works with callback: although the docs promise otherwise.
-    return new Promise(function (resolve, reject) {
-        model.populate({ path: 'institution' }, function (err, data) {
-            if (err !== null) {
-                reject(err);
-            }
-            resolve(data);
-        });
+async function populateWithAuxData(
+    doc: HydratedDocument<UserDocument>
+): Promise<HydratedDocument<PopulatedUserDocument>> {
+    return doc.populate<{ institution: InstitutionDocument }>({
+        path: 'institution'
     });
 }

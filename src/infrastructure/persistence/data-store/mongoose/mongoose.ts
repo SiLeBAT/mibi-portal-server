@@ -1,8 +1,4 @@
-// core
-// npm
 import mongoose from 'mongoose';
-import Promise from 'bluebird';
-// local
 import { logger } from './../../../../aspects';
 import { createRepository } from './mongoose.repository';
 import { DataStore } from '../../model/data-store.model';
@@ -12,9 +8,6 @@ import {
     MongooseNRLModel,
     MongooseValidationErrorModel
 } from './mongoose.model';
-
-// tslint:disable-next-line
-(mongoose as any).Promise = Promise;
 
 export interface ConnectionInfo {
     host: string;
@@ -45,12 +38,10 @@ class MongooseDataStore implements DataStore {
             '", "db":"' +
             connectionInfo.database +
             '" }';
+        mongoose.set('sanitizeFilter', true);
         mongoose
             .connect(connectionString, {
-                dbName: connectionInfo.database,
-                useCreateIndex: true,
-                useNewUrlParser: true,
-                useUnifiedTopology: true
+                dbName: connectionInfo.database
             })
             .then(
                 db => {

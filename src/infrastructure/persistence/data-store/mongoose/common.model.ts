@@ -1,6 +1,7 @@
-import { Document } from 'mongoose';
+import { Types } from 'mongoose';
 
-export interface CommonDocument extends Document {
+export interface CommonDocument {
+    _id: Types.ObjectId;
     created: Date;
     updated: Date;
 }

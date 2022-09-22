@@ -1,30 +1,40 @@
 {
     "compilerOptions": {
-        "baseUrl": ".",
-        "target": "ES2019",
+        // Modules
+        "baseUrl": "./src",
         "module": "CommonJS",
         "moduleResolution":"Node",
-        "outDir": "lib",
-        "sourceMap": true,
-        "esModuleInterop": true,
-        "removeComments": true,
-        "forceConsistentCasingInFileNames": true,
-        "experimentalDecorators": true,
-        "emitDecoratorMetadata": true,
+        "types": ["node", "jest", "mockExpressRequest", "mockExpressResponse"],
         "typeRoots": [
             "./node_modules/@types",
             "./typings"
         ],
 
+        // Emit
+        "outDir": "lib",
+        "sourceMap": true,
+        "removeComments": true,
+        "newLine": "lf",
+
+        // Interop Constraints
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+
+        // Language and Environment
+        "target": "ES2019",
+        "experimentalDecorators": true,
+
+        // Type Checking: strict mode
         "alwaysStrict": true,
         "noImplicitAny": true,
         "noImplicitThis": true,
-        "strictNullChecks": true,
         "strictBindCallApply": true,
         // "strictFunctionTypes": true,
+        "strictNullChecks": true,
         // "strictPropertyInitialization": true,
         // "strict": true
-    
+
+        // Type Checking 
         // "noImplicitReturns": true,
         "noUnusedLocals": true,
         // "noUnusedParameters": true,
@@ -33,9 +43,7 @@
         "src/**/*.ts"
     ],
     "exclude": [
-        "node_modules",
         "src/**/__mocks__/*.ts",
-        "src/**/__tests__/*.ts",
-        "test/**/*.ts"
+        "src/**/__tests__/*.ts"
     ]
 }
