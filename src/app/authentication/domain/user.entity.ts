@@ -2,14 +2,6 @@ import argon2 from 'argon2';
 import { User, UserCredentials } from '../model/user.model';
 import { Institute } from '../model/institute.model';
 
-const defaultHashOptions = {
-    hashLength: 128,
-    timeCost: 10,
-    memoryCost: 2048,
-    parallelism: 4,
-    type: argon2.argon2id
-};
-
 class GenericUser implements User {
     uniqueId: string;
     firstName: string;
@@ -116,11 +108,8 @@ class GenericUser implements User {
         return argon2.verify(hashedPassword, password);
     }
 
-    private async hashPassword(
-        password: string,
-        options = defaultHashOptions
-    ): Promise<string> {
-        return argon2.hash(password, options);
+    private async hashPassword(password: string): Promise<string> {
+        return argon2.hash(password);
     }
 }
 
