@@ -14,7 +14,7 @@
   },
   "externalDocs": {
     "description": "Find out more about the MiBi-Portal",
-    "url": "https://mibi-portal.bfr.bund.de/content/faq"
+    "url": "https://mibi-portal.bfr.bund.de/faq"
   },
   "servers": [
     {
@@ -31,7 +31,7 @@
       "description": "Operations on samples",
       "externalDocs": {
         "description": "Find out more about our sample services",
-        "url": "https://mibi-portal.bfr.bund.de/content/faq"
+        "url": "https://mibi-portal.bfr.bund.de/faq"
       }
     },
     {
@@ -39,7 +39,7 @@
       "description": "Operations on users",
       "externalDocs": {
         "description": "Find out more about user services",
-        "url": "https://mibi-portal.bfr.bund.de/content/faq"
+        "url": "https://mibi-portal.bfr.bund.de/faq"
       }
     },
     {
