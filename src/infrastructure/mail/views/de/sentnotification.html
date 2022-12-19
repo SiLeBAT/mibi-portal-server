@@ -426,13 +426,15 @@
                   <td class="content-cell">
                     <h1>Liebe(r) {{name}},</h1>
 					<p>Sie haben die im Anhang befindlichen Probendaten erfolgreich an das BfR gesendet.</p>
-          <p>Bitte vergessen Sie nicht, den Einsendebogen in Ihrem Mailanhang auszudrucken und Ihren Isolaten beizulegen.</p>
-          <br>
-            <p>Ihre Mitteilung an das BfR:</p>
-            <p>{{ comment }}</p>
-            <br>
-					<br>
-          <p>Das {{ appName }} Team</p>
+                    <p>Bitte vergessen Sie nicht, den Einsendebogen in Ihrem Mailanhang auszudrucken und Ihren Isolaten beizulegen.</p>
+                    {{#if comment}}
+                    <br>
+                    <p>Ihre Mitteilung an das BfR:</p>
+                    <p style="white-space: pre-wrap;">{{ comment }}</p>
+                    {{/if}}
+                    <br>
+                    <br>
+                    <p>Das {{ appName }} Team</p>
                   </td>
                 </tr>
               </table>

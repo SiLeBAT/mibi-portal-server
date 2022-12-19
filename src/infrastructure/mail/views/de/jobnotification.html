@@ -400,7 +400,7 @@
               <td class="email-masthead">
                 <a href="{{client_url}}" class="email-masthead_name">
                   {{ appName }}
-      </a>
+                </a>
               </td>
             </tr>
             <!-- Email Body -->
@@ -411,15 +411,19 @@
                   <tr>
                     <td class="content-cell">
                       <h1>Sehr geehrte Damen und Herren,</h1>
-            <p>Bitte bearbeiten Sie den Auftrag im Anhang.</p>
-            <br>
-            <p>Mitteilung des Absenders an das BfR:</p>
-            <p>{{ comment }}</p>
-            <br>
-				      <p>{{ firstName }} {{ lastName }}<br>
-               {{ institution.name }}<br>
-               {{ institution.zip }} {{ institution.city }}<br>
-               {{ email }}</p>
+                      <p>Bitte bearbeiten Sie den Auftrag im Anhang.</p>
+                      {{#if comment}}
+                      <br>
+                      <p>Mitteilung des Absenders an das BfR:</p>
+                      <p style="white-space: pre-wrap;"><b>{{ comment }}</b></p>
+                      {{/if}}
+                      <br>
+                      <p>
+                        {{ firstName }} {{ lastName }}<br>
+                        {{ institution.name }}<br>
+                        {{ institution.zip }} {{ institution.city }}<br>
+                        {{ email }}
+                      </p>
                       <!-- Sub copy -->
                     </td>
                   </tr>
