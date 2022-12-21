@@ -14,7 +14,8 @@ import { Api } from './api';
 import { promisify } from 'util';
 import { EMPTY_ANALYSIS } from '../src/app/sampleManagement/domain/constants';
 
-const DATA_DIR: string = 'test/data/validation';
+const DATA_DIR = 'test/data/validation';
+const DATA_DIR_YEAR = DATA_DIR + '/' + (new Date()).getFullYear();
 
 const deactivatedFiles: string[] = [
 ]
@@ -35,7 +36,7 @@ const parser = new DefaultExcelUnmarshalService(factory);
 
 describe('Test validation errors', () => {
     it('should give correct error codes', async () => {
-        const fileNames = await getFilesToTest();
+        const fileNames = getFilesToTest(DATA_DIR).concat(getFilesToTest(DATA_DIR_YEAR));
         const requests = await Promise.all(fileNames.map((fileName) => getRequestDTOFromFile(fileName)));
 
         let count = 0;
@@ -61,23 +62,23 @@ describe('Test validation errors', () => {
     }, 1000 * 60);
 });
 
-async function getFilesToTest(): Promise<string[]> {
+function getFilesToTest(dataDir: string): string[] {
     let fileNames: string[] = [];
-    fs.readdirSync(path.join('.', DATA_DIR)).forEach(file => {
+    fs.readdirSync(path.join('.', dataDir)).forEach(file => {
 
         if(deactivatedFiles.find(f => f === file)) {
             logger.info(`Deactivated ${file}`);
             return;
         }
 
-        file = path.join('.', DATA_DIR, file);
+        file = path.join('.', dataDir, file);
 
         if (path.extname(file) === '.xlsx') {
             fileNames.push(file);
         }
 
     });
-    logger.info(`${fileNames.length} datafiles in directory ${DATA_DIR} are to be tested`);
+    logger.info(`${fileNames.length} datafiles in directory ${dataDir} are to be tested`);
     return fileNames;
 }
 
