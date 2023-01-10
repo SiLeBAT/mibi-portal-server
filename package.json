@@ -40,7 +40,7 @@
     "config": "~3.3.8",
     "cors": "~2.8.5",
     "express": "~4.18.2",
-    "express-jwt": "^7.7.5",
+    "express-jwt": "^8.3.0",
     "fast-csv": "~4.3.6",
     "fs-readfile-promise": "~3.0.1",
     "fuse.js": "6.6.2",
@@ -48,14 +48,14 @@
     "helmet": "~5.1.1",
     "inversify": "^5.1.1",
     "inversify-express-utils": "~6.3.2",
-    "jsonwebtoken": "~8.5.1",
+    "jsonwebtoken": "~9.0.0",
     "lodash": "~4.17.21",
     "moment": "~2.29.4",
-    "mongo-express": "0.53.0",
+    "mongo-express": "1.0.0",
     "mongoose": "~6.4.7",
     "mongoose-unique-validator": "~3.1.0",
     "morgan": "~1.10.0",
-    "multer": "^1.4.4",
+    "multer": "^1.4.5-lts.1",
     "nodemailer": "6.8.0",
     "pdfmake": "0.2.6",
     "pm2": "~5.2.1",
@@ -102,10 +102,17 @@
   },
   "overrides": {
     "mongo-express": {
-      "express-fileupload": "1.1.10"
+      "express-fileupload": "1.4.0",
+      "json2csv": "4.2.1"
     },
     "optimist": {
       "minimist": "1.2.6"
+    },
+    "config": {
+      "json5": "2.2.3"
+    },
+    "inversify-express-utils": {
+      "express": "4.17.3"
     }
   },
   "mibiConfig": {
