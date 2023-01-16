@@ -221,7 +221,7 @@ export class DefaultRegistrationService implements RegistrationService {
             },
             meta: this.notificationService.createEmailNotificationMetaData(
                 user.email,
-                `Aktivieren Sie Ihr Konto für ${this.appName} `
+                `Bestätigen Sie Ihre E-Mail-Adresse für das ${this.appName} `
             )
         };
     }

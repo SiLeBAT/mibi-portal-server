@@ -4,7 +4,7 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-  <title>Kontoaktivierung für das {{ appName }}</title>
+  <title>Bestätigung Ihrer E-Mail-Adresse für das {{ appName }}</title>
   <!--
     The style block is collapsed on page load to save you some scrolling.
     Postmark automatically inlines all CSS properties for maximum email client
@@ -426,11 +426,13 @@
                   <td class="content-cell">
                     <h1>Liebe(r) {{name}},</h1>
 					<p>Sie haben sich für ein {{ appName }}-Konto registriert.</p>
-					<p>Bitte benutzen Sie den Link unten, um Ihr Konto zu
-                      aktivieren.
-                      <strong>Dieser Aktivierungslink ist nur für die nächsten 24 Stunden gültig.
+
+					<p>Bitte benutzen Sie den Link unten, um Ihre E-Mail-Adresse zu bestätigen.
+                      <strong>
+                        Dieser Link ist 24 Stunden gültig.
                       </strong>
                     </p>
+
                     <!-- Action -->
                     <table class="body-action" align="center" width="100%" cellpadding="0" cellspacing="0">
                       <tr>
@@ -443,7 +445,7 @@
                                 <table border="0" cellspacing="0" cellpadding="0">
                                   <tr>
                                     <td>
-                                      <a href="{{action_url}}" class="button button--green" target="_blank">Aktivieren Sie Ihr Konto</a>
+                                      <a href="{{action_url}}" class="button button--green" target="_blank"> E-Mail-Adresse bestätigen</a>
                                     </td>
                                   </tr>
                                 </table>
@@ -454,16 +456,19 @@
                       </tr>
 					</table>
 
-					<p>Die Aktivierung Ihres Kontos muss durch den Administrator des {{ appName }}s bestätigt werden. Sie erhalten  nach erfolgter Freischaltung eine weitere Benachrichtigung.</p>
-					<p>Nach der erfolgreichen 2-Schritt Aktivierung können Sie sich am {{ appName }} anmelden.</p>
+                    <p>Im Anschluss an die Bestätigung der E-Mail-Adresse muss die Aktivierung
+                        Ihres Kontos durch den Administrator des {{ appName }}s vollzogen werden.
+                        Sie erhalten nach erfolgter Freischaltung eine weitere Benachrichtigung.</p>
+
+                    <p>Nach der erfolgreichen 2-Schritt-Aktivierung können Sie sich am {{ appName }} anmelden.</p>
 
                     <p>
                       Sicherheitsbezogen: Diese Anfrage wurde mit {{user_agent}} gesendet. Wenn Sie sich nicht
-                      für einen {{ appName }}-Account registriert haben, ignorieren Sie bitte diese E-Mail oder Kontaktieren
+                      für einen {{ appName }}-Account registriert haben, ignorieren Sie bitte diese E-Mail oder kontaktieren
                       Sie den <a href="mailto:{{support_contact}}">Support</a>, wenn Sie Fragen haben.
                     </p>
                     <p>
-                      <br>Das {{ appName }} Team</p>
+                      <br>Das {{ appName }}-Team</p>
                     <!-- Sub copy -->
                     <table class="body-sub">
                       <tr>
