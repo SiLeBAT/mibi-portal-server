@@ -66,6 +66,7 @@ function numbersOnlyValue(value: string): boolean {
     const numbersOnly = /^\d+$/;
     return numbersOnly.test(value);
 }
+
 function matchesRegexPattern(
     value: string,
     options: MatchRegexPatternOptions,
@@ -207,7 +208,7 @@ function inCatalog(
     };
 }
 
-// Matching for ADV16 accorind to #mps53
+// Matching for ADV16 according to #mps53
 function matchADVNumberOrString(
     catalogService: CatalogService
 ): ValidatorFunction<InCatalogOptions> {
@@ -260,24 +261,40 @@ function shouldBeZoMo(
         key: SampleProperty,
         attributes: SampleDataValues
     ) => {
+        if (attributes.nrl === NRL_ID.UNKNOWN) {
+            return null;
+        }
+
         const years = getYears(options.year, attributes);
+        const advCat = catalogService.getCatalog<ZSPCatalogEntry>(options.catalog);
 
         let result = null;
         _.forEach(years, yearToCheck => {
-            const cat = catalogService.getCatalog<ZSPCatalogEntry>(
+            const zspCat = catalogService.getCatalog<ZSPCatalogEntry>(
                 'zsp' + yearToCheck.toString()
             );
-            if (cat) {
+            if (zspCat && advCat) {
                 const groupValues = options.group.map(g => attributes[g.attr]);
-                const entry = cat.getEntriesWithKeyValue(
-                    options.group[0].code,
-                    groupValues[0]
-                );
-                const filtered = _.filter(
-                    entry,
-                    e => e[options.group[2].code] === groupValues[2]
-                ).filter(m => m[options.group[1].code] === groupValues[1]);
-                if (filtered.length >= 1) {
+
+                const adv16Entry: any[] = advCat.getEntriesWithKeyValue('Text', groupValues[3]);
+                if (adv16Entry.length < 1) {
+                    return null;
+                }
+                let adv16Kode: string = adv16Entry[0]['Kode'];
+
+                const zspEntries: any[] = zspCat.dump();
+                const zspEntriesWithValues = _.filter(zspEntries, (entry: any) => {
+                    const containsKodes = (
+                        containsEntryWithValueFast(entry[options.group[0].code], groupValues[0]) &&
+                        containsEntryWithValueFast(entry[options.group[1].code], groupValues[1]) &&
+                        containsEntryWithValueFast(entry[options.group[2].code], groupValues[2]) &&
+                        containsEntryWithValueFast(entry[options.group[3].code], adv16Kode)
+                    );
+
+                    return containsKodes;
+                });
+
+                if (zspEntriesWithValues.length >= 1) {
                     result = { ...options.message };
                 }
             }
@@ -295,23 +312,40 @@ function registeredZoMo(
         key: SampleProperty,
         attributes: SampleDataValues
     ) => {
+        if (attributes.nrl === NRL_ID.UNKNOWN) {
+            return { ...options.message };
+        }
+
         const years = getYears(options.year, attributes);
+
         if (years.length > 0) {
             const yearToCheck = Math.min(...years);
-            const cat = catalogService.getCatalog<ZSPCatalogEntry>(
+            const zspCat = catalogService.getCatalog<ZSPCatalogEntry>(
                 'zsp' + yearToCheck.toString()
             );
-            if (cat) {
+            const advCat = catalogService.getCatalog<ZSPCatalogEntry>(options.catalog);
+            if (zspCat && advCat) {
                 const groupValues = options.group.map(g => attributes[g.attr]);
-                const entry = cat.getEntriesWithKeyValue(
-                    options.group[0].code,
-                    groupValues[0]
-                );
-                const filtered = _.filter(
-                    entry,
-                    e => e[options.group[2].code] === groupValues[2]
-                ).filter(m => m[options.group[1].code] === groupValues[1]);
-                if (filtered.length < 1) {
+
+                const adv16Entry: any[] = advCat.getEntriesWithKeyValue('Text', groupValues[3]);
+                if (adv16Entry.length < 1) {
+                    return { ...options.message };
+                }
+                let adv16Kode: string = adv16Entry[0]['Kode'];
+
+                const zspEntries: any[] = zspCat.dump();
+                const zspEntriesWithValues = _.filter(zspEntries, (entry: any) => {
+                    const containsKodes = (
+                        containsEntryWithValueFast(entry[options.group[0].code], groupValues[0]) &&
+                        containsEntryWithValueFast(entry[options.group[1].code], groupValues[1]) &&
+                        containsEntryWithValueFast(entry[options.group[2].code], groupValues[2]) &&
+                        containsEntryWithValueFast(entry[options.group[3].code], adv16Kode)
+                    );
+
+                    return containsKodes;
+                });
+
+                if (zspEntriesWithValues.length < 1) {
                     return { ...options.message };
                 }
             } else {
@@ -322,6 +356,23 @@ function registeredZoMo(
         }
         return null;
     };
+}
+
+function containsEntryWithValueFast (arr: string[], value: string) {
+    let start = 0;
+    let end = arr.length - 1;
+
+    while (start <= end) {
+        let middle = Math.floor((start + end) / 2);
+        if (arr[middle] === value) {
+            return true;
+        } else if (arr[middle] < value) {
+            start = middle + 1;
+        } else {
+            end = middle - 1;
+        }
+    }
+    return false;
 }
 
 function getYears(ary: string[], attributes: SampleDataValues): number[] {

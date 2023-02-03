@@ -6,6 +6,7 @@ import {
     dependentFields,
     numbersOnly,
     registeredZoMo,
+    shouldBeZoMo,
     nonUniqueEntry,
     inCatalog,
     matchADVNumberOrString,
@@ -427,31 +428,41 @@ describe('Custom Validator Functions', () => {
             const zoMoSample: Record<string, string> = {
                 ...testSample,
                 ...{
+                    sampling_date: '01.02.2023',
+                    isolation_date: '01.03.2023',
                     sampling_reason_adv: '81',
-                    sampling_reason_text: ''
+                    sampling_reason_text: '',
+                    operations_mode_adv: '1000000',
+                    matrix_adv: '522011',
+                    topic_adv: '15'
                 }
             };
 
-            const fakeEntry = {
-                'ADV8-Kode': '4010000',
-                'ADV8-Text1': 'Milcherzeuger',
-                Kodiersystem: '01',
-                'ADV3-Kode': '063502',
-                'ADV3-Text1': 'Mastschweine; Kot',
-                Programm: 'EB4',
-                Tierart: 'Mastschwein',
-                Matrix: 'Kot',
-                Probenahmeort: 'Erzeugerbetrieb',
-                Erreger: 'EC',
-                JAHR: 2017,
-                'Matrix-B': 'TNShMsKo',
-                ADV8_1digit: 1
+            const fakeAdv16Entry = {
+                Kodiersystem: '000',
+                Kode: '0801001',
+                Text: 'Escherichia coli',
             };
+
+            const fakeZspDump = {
+                "ADV8-Kode": [
+                  '1000000'
+                ],
+                "ADV3-Kode": [
+                  '522011'
+                ],
+                "ADV16-Kode": [
+                  '0801001'
+                ],
+                Kodiersystem: [
+                  "15",
+                ],
+              }
 
             // tslint:disable-next-line
             const mockCatalog: Catalog<any> = {
                 getEntriesWithKeyValue: (key: string, value: string) => [
-                    fakeEntry
+                    fakeAdv16Entry
                 ],
                 getUniqueEntryWithId: (id: string) => ({}),
                 containsUniqueEntryWithId: (id: string) => true,
@@ -459,7 +470,9 @@ describe('Custom Validator Functions', () => {
                 hasUniqueId: () => true,
                 getUniqueId: () => '',
                 getFuzzyIndex: jest.fn(),
-                dump: () => []
+                dump: () => [
+                    fakeZspDump
+                ]
             };
 
             const mockCatalogService: CatalogService = {
@@ -482,14 +495,107 @@ describe('Custom Validator Functions', () => {
                         {
                             attr: 'topic_adv',
                             code: 'Kodiersystem'
+                        },
+                        {
+                            attr: 'pathogen_adv',
+                            code: 'ADV16-Kode'
                         }
-                    ],
-                    year: ['sampling_date', 'isolation_date']
+                            ],
+                    year: ['sampling_date', 'isolation_date'],
+                    catalog: 'adv16'
                 },
                 'operations_mode_adv',
                 zoMoSample
             );
             expect(error).toBe(null);
+        });
+    });
+
+    describe('shouldBeZoMo', () => {
+        it('should validate with error because values match with ZoMo sample', () => {
+            const zoMoSample: Record<string, string> = {
+                ...testSample,
+                ...{
+                    sampling_date: '01.02.2023',
+                    isolation_date: '01.03.2023',
+                    sampling_reason_adv: '10',
+                    sampling_reason_text: '',
+                    operations_mode_adv: '1000000',
+                    matrix_adv: '522011',
+                    topic_adv: '15'
+                }
+            };
+
+            const fakeAdv16Entry = {
+                Kodiersystem: '000',
+                Kode: '0801001',
+                Text: 'Escherichia coli',
+            };
+
+            const fakeZspDump = {
+                "ADV8-Kode": [
+                  '1000000'
+                ],
+                "ADV3-Kode": [
+                  '522011'
+                ],
+                "ADV16-Kode": [
+                  '0801001'
+                ],
+                Kodiersystem: [
+                  "15",
+                ],
+              }
+
+            // tslint:disable-next-line
+            const mockCatalog: Catalog<any> = {
+                getEntriesWithKeyValue: (key: string, value: string) => [
+                    fakeAdv16Entry
+                ],
+                getUniqueEntryWithId: (id: string) => ({}),
+                containsUniqueEntryWithId: (id: string) => true,
+                containsEntryWithKeyValue: (key: string, value: string) => true,
+                hasUniqueId: () => true,
+                getUniqueId: () => '',
+                getFuzzyIndex: jest.fn(),
+                dump: () => [
+                    fakeZspDump
+                ]
+            };
+
+            const mockCatalogService: CatalogService = {
+                getCatalog: () => mockCatalog,
+                getCatalogSearchAliases: jest.fn()
+            };
+            const error = shouldBeZoMo(mockCatalogService)(
+                zoMoSample.operations_mode_adv,
+                {
+                    message: validationError,
+                    group: [
+                        {
+                            attr: 'operations_mode_adv',
+                            code: 'ADV8-Kode'
+                        },
+                        {
+                            attr: 'matrix_adv',
+                            code: 'ADV3-Kode'
+                        },
+                        {
+                            attr: 'topic_adv',
+                            code: 'Kodiersystem'
+                        },
+                        {
+                            attr: 'pathogen_adv',
+                            code: 'ADV16-Kode'
+                        }
+                            ],
+                    year: ['sampling_date', 'isolation_date'],
+                    catalog: 'adv16'
+                },
+                'operations_mode_adv',
+                zoMoSample
+            );
+            expect(error).not.toBe(null);
         });
     });
 

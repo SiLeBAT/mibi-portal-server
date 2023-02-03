@@ -17,6 +17,11 @@ interface CatalogConfig<T extends string, R> {
     uId?: string;
     csvSources: ({ fileName: string } & CSVConfig<T, R>)[];
 }
+interface ZSPColumnReadOptions {
+    header: string;
+    catalogName: string;
+    kodeLength: number;
+}
 
 type GenCatalogConfig = CatalogConfig<string, CatalogData>;
 
@@ -50,7 +55,8 @@ class FileCatalogRepository implements CatalogRepository {
             `${this.constructor.name}.${this.initialise.name}, loading Catalog data from Filesystem.`
         );
 
-        const catalogsConfig: GenCatalogConfig[] = [];
+        const advCatalogsConfig: GenCatalogConfig[] = [];
+        const zspCatalogsConfig: GenCatalogConfig[] = [];
 
         const adv2Config: CatalogConfig<
             ADVHeader | TextHeader,
@@ -77,7 +83,7 @@ class FileCatalogRepository implements CatalogRepository {
                 }
             ]
         };
-        catalogsConfig.push(adv2Config);
+        advCatalogsConfig.push(adv2Config);
 
         const adv3Config: CatalogConfig<
             ADVHeader | TextHeader,
@@ -103,7 +109,7 @@ class FileCatalogRepository implements CatalogRepository {
                 }
             ]
         };
-        catalogsConfig.push(adv3Config);
+        advCatalogsConfig.push(adv3Config);
 
         const adv4Config: CatalogConfig<ADVHeader, ADVCatalogEntry> = {
             id: 'adv4',
@@ -117,7 +123,7 @@ class FileCatalogRepository implements CatalogRepository {
                 }
             ]
         };
-        catalogsConfig.push(adv4Config);
+        advCatalogsConfig.push(adv4Config);
 
         const adv8Config: CatalogConfig<ADVHeader, ADVCatalogEntry> = {
             id: 'adv8',
@@ -131,7 +137,7 @@ class FileCatalogRepository implements CatalogRepository {
                 }
             ]
         };
-        catalogsConfig.push(adv8Config);
+        advCatalogsConfig.push(adv8Config);
 
         const adv9Config: CatalogConfig<ADVHeader | 'PLZ', ADV9CatalogEntry> = {
             id: 'adv9',
@@ -145,7 +151,7 @@ class FileCatalogRepository implements CatalogRepository {
                 }
             ]
         };
-        catalogsConfig.push(adv9Config);
+        advCatalogsConfig.push(adv9Config);
 
         const adv12Config: CatalogConfig<ADVHeader, ADVCatalogEntry> = {
             id: 'adv12',
@@ -159,7 +165,7 @@ class FileCatalogRepository implements CatalogRepository {
                 }
             ]
         };
-        catalogsConfig.push(adv12Config);
+        advCatalogsConfig.push(adv12Config);
 
         const adv16Config: CatalogConfig<ADVHeader, ADVCatalogEntry> = {
             id: 'adv16',
@@ -188,7 +194,7 @@ class FileCatalogRepository implements CatalogRepository {
                 }
             ]
         };
-        catalogsConfig.push(adv16Config);
+        advCatalogsConfig.push(adv16Config);
 
         const plzConfig: CatalogConfig<string, Record<string, string>> = {
             id: 'plz',
@@ -201,12 +207,16 @@ class FileCatalogRepository implements CatalogRepository {
                 }
             ]
         };
-        catalogsConfig.push(plzConfig);
-
-        this.addZoMoCatalogs(catalogsConfig);
+        advCatalogsConfig.push(plzConfig);
 
         await Promise.all(
-            catalogsConfig.map(config => this.addCatalog(config))
+            advCatalogsConfig.map(config => this.addCatalog(config))
+        );
+
+        this.addZoMoCatalogs(zspCatalogsConfig);
+
+        await Promise.all(
+            zspCatalogsConfig.map(config => this.addCatalog(config))
         );
 
         logger.info(
@@ -252,6 +262,10 @@ class FileCatalogRepository implements CatalogRepository {
         names.forEach(name => {
             catalogsConfig.push(this.createZoMoCatalogConfig(name));
         });
+
+
+        const result: CatalogConfig<keyof ZSPCatalogEntry, ZSPCatalogEntry> = this.createZoMoCatalogConfig('zsp' + currentYear.toString());
+        catalogsConfig.push(result);
     }
 
     private createZoMoCatalogConfig(
@@ -263,15 +277,72 @@ class FileCatalogRepository implements CatalogRepository {
                 {
                     fileName: name.toUpperCase() + '.csv',
                     headers: true,
-                    mappingFunction: e => ({
-                        'ADV8-Kode': e['ADV8-Kode'],
-                        'ADV3-Kode': e['ADV3-Kode'],
-                        'ADV3-Text1': e['ADV3-Text1'],
-                        Kodiersystem: e.Kodiersystem
-                    })
+                    mappingFunction: e => {
+                        const kodeResults: string[][] = [];
+
+                        const zspOptions: ZSPColumnReadOptions[] = [{
+                            header: 'ADV8-Kode',
+                            catalogName: 'adv8',
+                            kodeLength: 7
+                        }, {
+                            header: 'ADV3-Kode',
+                            catalogName: 'adv3',
+                            kodeLength: 6
+                        }, {
+                            header: 'ADV16-Kode',
+                            catalogName: 'adv16',
+                            kodeLength: 7
+                        }, {
+                            header: 'Kodiersystem',
+                            catalogName: 'adv2',
+                            kodeLength: 2
+                        }];
+
+                        zspOptions.forEach((option) => {
+                            kodeResults.push(this.mapAdvKodes(e, option));
+                        });
+
+                        return {
+                            'ADV8-Kode': kodeResults[0],
+                            'ADV3-Kode': kodeResults[1],
+                            'ADV16-Kode': kodeResults[2],
+                            Kodiersystem: kodeResults[3]
+                        }
+                    }
                 }
             ]
         };
+    }
+
+    private mapAdvKodes(entry: any, zspOptions: ZSPColumnReadOptions): string[] {
+        const catalog: Catalog<CatalogData> = this.getCatalog(zspOptions.catalogName);
+        const result: string[] = [];
+
+        entry[zspOptions.header]
+            .split(',')
+            .forEach((value: string) => {
+                value = value.trim();
+                if (value.includes('-')) {
+                    const startStopValues = value.split('-');
+                    const rangeStart: number = _.parseInt(startStopValues[0].trim(), 10);
+                    const rangeEnd: number = _.parseInt(startStopValues[1].trim(), 10);
+                    const ranges: string[] = [...Array(rangeEnd - rangeStart + 1)
+                        .keys()]
+                        .map(x => (x + rangeStart).toString().padStart(zspOptions.kodeLength, '0'));
+                    result.push(...ranges);
+
+                } else {
+                    result.push(value);
+                }
+            });
+
+        const filteredResult: string[] = result.filter((kode: string) =>
+            catalog.containsEntryWithKeyValue('Kode', kode)
+        )
+
+        const resultSorted: string[] = filteredResult.sort();
+
+        return resultSorted;
     }
 }
 

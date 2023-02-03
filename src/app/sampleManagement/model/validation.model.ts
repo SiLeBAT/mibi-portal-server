@@ -125,9 +125,11 @@ interface Group {
     code: keyof ZSPCatalogEntry;
     attr: SampleProperty;
 }
+
 export interface RegisteredZoMoOptions extends ValidatorFunctionOptions {
     year: string[];
     group: Group[];
+    catalog: string;
 }
 
 export interface AtLeastOneOfOptions extends ValidatorFunctionOptions {
