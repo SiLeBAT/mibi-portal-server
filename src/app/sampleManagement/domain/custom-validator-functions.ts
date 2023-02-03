@@ -285,6 +285,7 @@ function shouldBeZoMo(
 
                 // tslint:disable-next-line: no-any
                 const zspEntries: any[] = zspCat.dump();
+                // tslint:disable-next-line: no-any
                 const zspEntriesWithValues = _.filter(zspEntries, (entry: any) => {
                     const containsKodes = (
                         containsEntryWithValueFast(entry[options.group[0].code], groupValues[0]) &&
@@ -338,6 +339,7 @@ function registeredZoMo(
 
                 // tslint:disable-next-line: no-any
                 const zspEntries: any[] = zspCat.dump();
+                // tslint:disable-next-line: no-any
                 const zspEntriesWithValues = _.filter(zspEntries, (entry: any) => {
                     const containsKodes = (
                         containsEntryWithValueFast(entry[options.group[0].code], groupValues[0]) &&
