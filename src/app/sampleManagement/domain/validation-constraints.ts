@@ -33,9 +33,14 @@ export const zoMoConstraints: ValidationConstraints = {
                 {
                     attr: 'topic_adv',
                     code: 'Kodiersystem'
+                },
+                {
+                    attr: 'pathogen_adv',
+                    code: 'ADV16-Kode'
                 }
             ],
-            year: ['sampling_date', 'isolation_date']
+            year: ['sampling_date', 'isolation_date'],
+            catalog: 'adv16'
         }
     },
     isolation_date: {
@@ -57,9 +62,39 @@ export const zoMoConstraints: ValidationConstraints = {
                 {
                     attr: 'topic_adv',
                     code: 'Kodiersystem'
+                },
+                {
+                    attr: 'pathogen_adv',
+                    code: 'ADV16-Kode'
                 }
             ],
-            year: ['sampling_date', 'isolation_date']
+            year: ['sampling_date', 'isolation_date'],
+            catalog: 'adv16'
+        }
+    },
+    topic_adv: {
+        registeredZoMo: {
+            error: 49,
+            group: [
+                {
+                    attr: 'operations_mode_adv',
+                    code: 'ADV8-Kode'
+                },
+                {
+                    attr: 'matrix_adv',
+                    code: 'ADV3-Kode'
+                },
+                {
+                    attr: 'topic_adv',
+                    code: 'Kodiersystem'
+                },
+                {
+                    attr: 'pathogen_adv',
+                    code: 'ADV16-Kode'
+                }
+            ],
+            year: ['sampling_date', 'isolation_date'],
+            catalog: 'adv16'
         }
     },
     matrix_adv: {
@@ -81,9 +116,14 @@ export const zoMoConstraints: ValidationConstraints = {
                 {
                     attr: 'topic_adv',
                     code: 'Kodiersystem'
+                },
+                {
+                    attr: 'pathogen_adv',
+                    code: 'ADV16-Kode'
                 }
             ],
-            year: ['sampling_date', 'isolation_date']
+            year: ['sampling_date', 'isolation_date'],
+            catalog: 'adv16'
         }
     },
     operations_mode_adv: {
@@ -105,9 +145,14 @@ export const zoMoConstraints: ValidationConstraints = {
                 {
                     attr: 'topic_adv',
                     code: 'Kodiersystem'
+                },
+                {
+                    attr: 'pathogen_adv',
+                    code: 'ADV16-Kode'
                 }
             ],
-            year: ['sampling_date', 'isolation_date']
+            year: ['sampling_date', 'isolation_date'],
+            catalog: 'adv16'
         }
     },
     operations_mode_text: {
@@ -158,9 +203,14 @@ export const zoMoConstraints: ValidationConstraints = {
                 {
                     attr: 'topic_adv',
                     code: 'Kodiersystem'
+                },
+                {
+                    attr: 'pathogen_adv',
+                    code: 'ADV16-Kode'
                 }
             ],
-            year: ['sampling_date', 'isolation_date']
+            year: ['sampling_date', 'isolation_date'],
+            catalog: 'adv16'
         }
     },
     sampling_reason_text: {
@@ -178,9 +228,14 @@ export const zoMoConstraints: ValidationConstraints = {
                 {
                     attr: 'topic_adv',
                     code: 'Kodiersystem'
+                },
+                {
+                    attr: 'pathogen_adv',
+                    code: 'ADV16-Kode'
                 }
             ],
-            year: ['sampling_date', 'isolation_date']
+            year: ['sampling_date', 'isolation_date'],
+            catalog: 'adv16'
         }
     },
     process_state_adv: {
@@ -236,9 +291,14 @@ export const standardConstraints: ValidationConstraints = {
                 {
                     attr: 'topic_adv',
                     code: 'Kodiersystem'
+                },
+                {
+                    attr: 'pathogen_adv',
+                    code: 'ADV16-Kode'
                 }
             ],
-            year: ['sampling_date', 'isolation_date']
+            year: ['sampling_date', 'isolation_date'],
+            catalog: 'adv16'
         }
     },
     sampling_reason_text: {
@@ -256,9 +316,14 @@ export const standardConstraints: ValidationConstraints = {
                 {
                     attr: 'topic_adv',
                     code: 'Kodiersystem'
+                },
+                {
+                    attr: 'pathogen_adv',
+                    code: 'ADV16-Kode'
                 }
             ],
-            year: ['sampling_date', 'isolation_date']
+            year: ['sampling_date', 'isolation_date'],
+            catalog: 'adv16'
         }
     }
 };

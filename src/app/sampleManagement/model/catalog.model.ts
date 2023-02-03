@@ -13,10 +13,10 @@ export interface ADVCatalogEntry {
 }
 
 export interface ZSPCatalogEntry {
-    'ADV8-Kode': string;
-    Kodiersystem: string;
-    'ADV3-Kode': string;
-    'ADV3-Text1': string;
+    'ADV8-Kode': string[];
+    Kodiersystem: string[];
+    'ADV3-Kode': string[];
+    'ADV16-Kode': string[];
 }
 
 export interface ADV9CatalogEntry extends ADVCatalogEntry {
