@@ -30,7 +30,7 @@ module.exports = {
         log_date_format: "YYYY-MM-DD HH:mm:ss Z",
     }, {
         name: 'mibi-parse-proxy',
-        script: "./lib/ui/server/parse.proxy.server.js",
+        script: "./lib/ui/server/internal-proxy.server.js",
         exp_backoff_restart_delay: 500,
         out_file: process.env['MIBI_LOG'],
         error_file: process.env['MIBI_LOG'],
