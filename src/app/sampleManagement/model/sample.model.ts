@@ -17,6 +17,7 @@ export interface AnnotatedSampleDataEntry extends SampleDataEntry {
     errors: SampleValidationError[];
     correctionOffer: string[];
     oldValue?: string;
+    nrlData?: string;
 }
 
 export interface SampleData {
@@ -116,6 +117,7 @@ export interface Sample {
     isZoMo(): boolean;
     getErrorCount(level: number): number;
     applySingleCorrectionSuggestions(): void;
+    supplementADV9Data(zip: string, city: string): void;
 }
 
 interface RecipientInfo {

@@ -380,6 +380,7 @@ export class DefaultSampleService implements SampleService {
 
         nrlSampleSet.samples.forEach(sample => {
             this.replaceEmptySampleIDWithSampleIDAVV(sample);
+            this.moveADV9Data(sample);
         });
 
         return nrlSampleSet;
@@ -392,6 +393,19 @@ export class DefaultSampleService implements SampleService {
         if (!sampleID && sampleIDAVV) {
             sampleData.sample_id.value = sampleIDAVV;
             sampleData.sample_id.oldValue = '';
+        }
+    }
+
+    private moveADV9Data(sample: Sample) {
+        const sampleData = sample.getAnnotatedData();
+        const sampleZip = sampleData.sampling_location_zip.nrlData;
+        const sampleCity = sampleData.sampling_location_text.nrlData;
+
+        if (sampleZip !== undefined && sampleCity !== undefined) {
+            sampleData.sampling_location_zip.value = sampleZip;
+            sampleData.sampling_location_text.value = sampleCity;
+            delete sampleData.sampling_location_zip.nrlData;
+            delete sampleData.sampling_location_text.nrlData;
         }
     }
 }

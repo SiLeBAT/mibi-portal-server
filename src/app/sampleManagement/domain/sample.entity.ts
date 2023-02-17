@@ -129,6 +129,11 @@ export class DefaultSample implements Sample {
         return !!errors.length;
     }
 
+    supplementADV9Data(plz: string, city: string) {
+        this._data['sampling_location_zip'].nrlData = plz;
+        this._data['sampling_location_text'].nrlData = city;
+    }
+
     applySingleCorrectionSuggestions(): void {
         Object.keys(this._data).forEach(property => {
             const entry = this._data[property];

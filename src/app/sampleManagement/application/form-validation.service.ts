@@ -12,7 +12,7 @@ import {
 } from '../model/validation.model';
 import { CatalogService } from '../model/catalog.model';
 import { createValidator } from '../domain/validator.entity';
-import { Sample, SampleProperty } from '../model/sample.model';
+import { Sample, SampleProperty, AnnotatedSampleDataEntry } from '../model/sample.model';
 import {
     baseConstraints,
     zoMoConstraints,
@@ -101,6 +101,10 @@ export class DefaultFormValidatorService implements FormValidatorService {
                 sample,
                 constraintSet
             );
+
+            // Ticket #mpc514
+            this.supplementADV9Data(sample);
+
             sample.addErrors(validationErrors);
             return sample;
         });
@@ -203,5 +207,20 @@ export class DefaultFormValidatorService implements FormValidatorService {
                 this.avvFormatProvider.getFormat(options.state);
         }
         return { ...newConstraints };
+    }
+
+    private supplementADV9Data(sample: Sample) {
+        const advEntry: AnnotatedSampleDataEntry = sample.getEntryFor('sampling_location_adv');
+        const zipEntry: AnnotatedSampleDataEntry = sample.getEntryFor('sampling_location_zip');
+        const cityEntry: AnnotatedSampleDataEntry = sample.getEntryFor('sampling_location_text');
+
+        if (advEntry.value !== '' && zipEntry.value === '' && cityEntry.value === '') {
+            const adv9Cat = this.catalogService.getCatalog('adv9');
+            // tslint:disable-next-line: no-any
+            let catEntry: any = adv9Cat.getUniqueEntryWithId(advEntry.value);
+            if (catEntry !== undefined) {
+                sample.supplementADV9Data(catEntry['PLZ'], catEntry['Text']);
+            }
+        }
     }
 }
