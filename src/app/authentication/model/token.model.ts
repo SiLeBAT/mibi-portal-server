@@ -27,7 +27,7 @@ export interface TokenService extends TokenPort {
     hasTokenForUser(user: User, type?: TokenType): Promise<boolean>;
 }
 
-export interface TokenRepository {
+export interface ParseTokenRepository {
     hasTokenForUser(user: User, type?: TokenType): Promise<boolean>;
     deleteTokenForUser(user: User, type?: TokenType): Promise<boolean>;
     saveToken(token: UserToken): Promise<UserToken>;

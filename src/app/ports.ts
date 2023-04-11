@@ -20,7 +20,7 @@ export { TokenType } from './authentication/domain/enums';
 export {
     Institute,
     InstitutePort,
-    InstituteRepository
+    ParseInstituteRepository
 } from './authentication/model/institute.model';
 
 export {
@@ -39,7 +39,7 @@ export {
     User,
     UserToken,
     UserPort,
-    UserRepository
+    ParseUserRepository
 } from './authentication/model/user.model';
 
 export { createInstitution } from './authentication/domain/institute.entity';
@@ -51,7 +51,7 @@ export { AuthorizationError } from './authentication/domain/domain.error';
 export {
     TokenPort,
     TokenPayload,
-    TokenRepository
+    ParseTokenRepository
 } from './authentication/model/token.model';
 
 /**
@@ -107,10 +107,10 @@ export { createCatalog } from './sampleManagement/domain/catalog.entity';
 export { Urgency, NRL_ID, ReceiveAs } from './sampleManagement/domain/enums';
 
 export {
-    ValidationErrorRepository,
+    ParseValidationErrorRepository,
     SearchAliasRepository,
-    StateRepository,
-    NRLRepository,
+    ParseStateRepository,
+    ParseNRLRepository,
     CatalogRepository,
     FileRepository
 } from './sampleManagement/model/repository.model';

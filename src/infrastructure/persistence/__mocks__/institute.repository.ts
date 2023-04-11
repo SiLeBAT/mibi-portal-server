@@ -1,7 +1,7 @@
-import { InstituteRepository } from '../../../app/ports';
-import { genericInstitute } from './../../../app/authentication/application/__mocks__/institute.service';
+import { ParseInstituteRepository } from '../../../app/ports';
+import { genericInstitute } from '../../../app/authentication/application/__mocks__/institute.service';
 
-export function getMockInstituteRepository(): InstituteRepository {
+export function getMockInstituteRepository(): ParseInstituteRepository {
     return {
         findByInstituteId: jest.fn(() => Promise.resolve(genericInstitute)),
         findByInstituteName: jest.fn(() => Promise.resolve(genericInstitute)),

@@ -1,37 +1,24 @@
 import { PERSISTENCE_TYPES } from './persistence.types';
 import { ContainerModule, interfaces } from 'inversify';
-import { Model } from 'mongoose';
-import { ValidationErrorDocument } from './data-store/mongoose/schemas/validation-error.schema';
 import {
-    MongooseValidationErrorModel,
-    MongooseUserModel,
-    MongooseTokenModel,
-    MongooseStateModel,
-    MongooseNRLModel,
-    MongooseInstitutionModel
-} from './data-store/mongoose/mongoose.model';
-import { UserDocument } from './data-store/mongoose/schemas/user.schema';
-import { TokenDocument } from './data-store/mongoose/schemas/reset-token.schema';
-import { StateDocument } from './data-store/mongoose/schemas/state.schema';
-import { NrlDocument } from './data-store/mongoose/schemas/nrl.schema';
-import { InstitutionDocument } from './data-store/mongoose/schemas/institution.schema';
-import {
-    NRLRepository,
-    StateRepository,
-    InstituteRepository,
-    UserRepository,
-    TokenRepository,
-    ValidationErrorRepository,
     FileRepository,
     SearchAliasRepository,
-    CatalogRepository
+    CatalogRepository,
+    ParseUserRepository,
+    ParseInstituteRepository,
+    ParseNRLRepository,
+    ParseTokenRepository,
+    ParseStateRepository,
+    ParseValidationErrorRepository
 } from '../../app/ports';
-import { MongooseNRLRepository } from './repositories/nrl.repository';
-import { DefaultStateRepository } from './repositories/state.repository';
-import { MongooseInstituteRepository } from './repositories/institute.repository';
-import { DefaultUserRepository } from './repositories/user.repository';
-import { DefaultTokenRepository } from './repositories/token.repository';
-import { DefaultValidationErrorRepository } from './repositories/validation-error.repository';
+
+import { ParseDefaultUserRepository } from './repositories/parse/parse.user.repository';
+import { ParseDefaultInstituteRepository } from './repositories/parse/parse.institute.repository';
+import { ParseDefaultNRLRepository } from './repositories/parse/parse.nrl.repository';
+import { ParseDefaultTokenRepository } from './repositories/parse/parse.token.repository';
+import { ParseDefaultStateRepository } from './repositories/parse/parse.state.repository';
+import { ParseDefaultValidationErrorRepository } from './repositories/parse/parse.validation-error.repository';
+
 import { DefaultFileRepository } from './repositories/file.repository';
 import { APPLICATION_TYPES } from './../../app/application.types';
 
@@ -56,56 +43,32 @@ export function getPersistenceContainerModule({
             );
             bind(PERSISTENCE_TYPES.DataDir).toConstantValue(dataDir);
 
-            bind<Model<ValidationErrorDocument>>(
-                PERSISTENCE_TYPES.ValidationErrorModel
-            ).toConstantValue(MongooseValidationErrorModel);
-
-            bind<Model<UserDocument>>(
-                PERSISTENCE_TYPES.UserModel
-            ).toConstantValue(MongooseUserModel);
-
-            bind<Model<TokenDocument>>(
-                PERSISTENCE_TYPES.TokenModel
-            ).toConstantValue(MongooseTokenModel);
-
-            bind<Model<StateDocument>>(
-                PERSISTENCE_TYPES.StateModel
-            ).toConstantValue(MongooseStateModel);
-
-            bind<Model<NrlDocument>>(
-                PERSISTENCE_TYPES.NRLModel
-            ).toConstantValue(MongooseNRLModel);
-
-            bind<Model<InstitutionDocument>>(
-                PERSISTENCE_TYPES.InstitutionModel
-            ).toConstantValue(MongooseInstitutionModel);
-
-            bind<NRLRepository>(APPLICATION_TYPES.NRLRepository).to(
-                MongooseNRLRepository
-            );
-
-            bind<StateRepository>(APPLICATION_TYPES.StateRepository).to(
-                DefaultStateRepository
-            );
-
-            bind<InstituteRepository>(APPLICATION_TYPES.InstituteRepository).to(
-                MongooseInstituteRepository
-            );
-
-            bind<UserRepository>(APPLICATION_TYPES.UserRepository).to(
-                DefaultUserRepository
-            );
-
-            bind<TokenRepository>(APPLICATION_TYPES.TokenRepository).to(
-                DefaultTokenRepository
-            );
-
-            bind<ValidationErrorRepository>(
-                APPLICATION_TYPES.ValidationErrorRepository
-            ).to(DefaultValidationErrorRepository);
-
             bind<FileRepository>(APPLICATION_TYPES.FileRepository).to(
                 DefaultFileRepository
+            );
+
+            bind<ParseUserRepository>(APPLICATION_TYPES.ParseUserRepository).to(
+                ParseDefaultUserRepository
+            );
+
+            bind<ParseInstituteRepository>(APPLICATION_TYPES.ParseInstituteRepository).to(
+                ParseDefaultInstituteRepository
+            );
+
+            bind<ParseNRLRepository>(APPLICATION_TYPES.ParseNRLRepository).to(
+                ParseDefaultNRLRepository
+            );
+
+            bind<ParseTokenRepository>(APPLICATION_TYPES.ParseTokenRepository).to(
+                ParseDefaultTokenRepository
+            );
+
+            bind<ParseStateRepository>(APPLICATION_TYPES.ParseStateRepository).to(
+                ParseDefaultStateRepository
+            );
+
+            bind<ParseValidationErrorRepository>(APPLICATION_TYPES.ParseValidationErrorRepository).to(
+                ParseDefaultValidationErrorRepository
             );
         }
     );

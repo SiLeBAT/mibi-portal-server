@@ -6,7 +6,7 @@ import { mockPersistenceContainerModule } from '../../../../infrastructure/persi
 import { APPLICATION_TYPES } from '../../../application.types';
 import { getApplicationContainerModule } from '../../../application.module';
 import { NRLService } from '../../model/nrl.model';
-import { NRLRepository } from '../../model/repository.model';
+import { ParseNRLRepository } from '../../model/repository.model';
 
 describe('NRL Assignment Service', () => {
     let service: NRLService;
@@ -119,8 +119,8 @@ describe('NRL Assignment Service', () => {
 
     it('should assign sample to NRL-AR', () => {
         // tslint:disable-next-line: no-unnecessary-type-assertion
-        const mockRepo = container!.get<NRLRepository>(
-            APPLICATION_TYPES.NRLRepository
+        const mockRepo = container!.get<ParseNRLRepository>(
+            APPLICATION_TYPES.ParseNRLRepository
         );
         mockRepo.retrieve = jest.fn(() =>
             Promise.resolve([
@@ -147,8 +147,8 @@ describe('NRL Assignment Service', () => {
 
     it('should assign sample to unknown NRL', () => {
         // tslint:disable-next-line: no-unnecessary-type-assertion
-        const mockRepo = container!.get<NRLRepository>(
-            APPLICATION_TYPES.NRLRepository
+        const mockRepo = container!.get<ParseNRLRepository>(
+            APPLICATION_TYPES.ParseNRLRepository
         );
         mockRepo.retrieve = jest.fn(() =>
             Promise.resolve([

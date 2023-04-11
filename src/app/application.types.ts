@@ -29,12 +29,13 @@ export const APPLICATION_TYPES = {
     SampleFactory: Symbol.for('SampleFactory'),
 
     CatalogRepository: Symbol.for('CatalogRepository'),
-    NRLRepository: Symbol.for('NRLRepository'),
-    StateRepository: Symbol.for('StateRepository'),
-    InstituteRepository: Symbol.for('InstituteRepository'),
-    UserRepository: Symbol.for('UserRepository'),
-    TokenRepository: Symbol.for('TokenRepository'),
-    ValidationErrorRepository: Symbol.for('ValidationErrorRepository'),
     SearchAliasRepository: Symbol.for('SearchAliasRepository'),
-    FileRepository: Symbol.for('FileRepository')
+    FileRepository: Symbol.for('FileRepository'),
+
+    ParseUserRepository: Symbol.for('ParseUserRepository'),
+    ParseInstituteRepository: Symbol.for('ParseInstituteRepository'),
+    ParseNRLRepository: Symbol.for('ParseNRLRepository'),
+    ParseTokenRepository: Symbol.for('ParseTokenRepository'),
+    ParseStateRepository: Symbol.for('ParseStateRepository'),
+    ParseValidationErrorRepository: Symbol.for('ParseValidationErrorRepository')
 };

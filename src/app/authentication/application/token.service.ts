@@ -4,7 +4,7 @@ import {
     TokenService,
     TokenPayload,
     AdminTokenPayload,
-    TokenRepository
+    ParseTokenRepository
 } from '../model/token.model';
 import { User, UserToken } from '../model/user.model';
 import { TokenType } from '../domain/enums';
@@ -19,9 +19,9 @@ export class DefaultTokenService implements TokenService {
     constructor(
         @inject(APPLICATION_TYPES.ConfigurationService)
         private configurationService: ConfigurationService,
-        @inject(APPLICATION_TYPES.TokenRepository)
-        private tokenRepository: TokenRepository
-    ) {
+        @inject(APPLICATION_TYPES.ParseTokenRepository)
+        private parseTokenRepository: ParseTokenRepository,
+) {
         const serverConfig =
             this.configurationService.getApplicationConfiguration();
         this.jwtSecret = serverConfig.jwtSecret;
@@ -59,7 +59,7 @@ export class DefaultTokenService implements TokenService {
         type: TokenType,
         userId: string
     ): Promise<UserToken> {
-        return this.tokenRepository.saveToken({
+        return this.parseTokenRepository.saveToken({
             token,
             type,
             userId
@@ -67,20 +67,20 @@ export class DefaultTokenService implements TokenService {
     }
 
     async getUserTokenByJWT(token: string): Promise<UserToken> {
-        return this.tokenRepository.getUserTokenByJWT(token);
+        return this.parseTokenRepository.getUserTokenByJWT(token);
     }
 
     async deleteTokenForUser(
         user: User,
         type: TokenType = TokenType.ACTIVATE
     ): Promise<boolean> {
-        return this.tokenRepository.deleteTokenForUser(user, type);
+        return this.parseTokenRepository.deleteTokenForUser(user, type);
     }
 
     async hasTokenForUser(
         user: User,
         type: TokenType = TokenType.ACTIVATE
     ): Promise<boolean> {
-        return this.tokenRepository.hasTokenForUser(user, type);
+        return this.parseTokenRepository.hasTokenForUser(user, type);
     }
 }

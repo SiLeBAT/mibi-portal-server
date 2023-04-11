@@ -41,11 +41,11 @@ export interface UserService extends UserPort {
     hasUserWithEmail(email: string): Promise<boolean>;
 }
 
-export interface UserRepository {
-    findByUserId(id: string): Promise<User>;
-    getPasswordForUser(username: string): Promise<string>;
-    findByUsername(username: string): Promise<User>;
+export interface ParseUserRepository {
     hasUserWithEmail(username: string): Promise<boolean>;
     createUser(user: User): Promise<User>;
+    findByUserId(id: string): Promise<User>;
     updateUser(user: User): Promise<User>;
+    findByUsername(username: string): Promise<User>;
+    getPasswordForUser(username: string): Promise<string>;
 }

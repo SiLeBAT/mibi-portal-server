@@ -1,11 +1,11 @@
 import { ContainerModule, interfaces } from 'inversify';
 import {
-    NRLRepository,
-    StateRepository,
-    InstituteRepository,
-    UserRepository,
-    TokenRepository,
-    ValidationErrorRepository,
+    ParseNRLRepository,
+    ParseStateRepository,
+    ParseInstituteRepository,
+    ParseUserRepository,
+    ParseTokenRepository,
+    ParseValidationErrorRepository,
     FileRepository
 } from '../../../app/ports';
 import { APPLICATION_TYPES } from '../../../app/application.types';
@@ -21,28 +21,28 @@ import { getMockCatalogRepository } from './catalog.repository';
 
 export const mockPersistenceContainerModule = new ContainerModule(
     (bind: interfaces.Bind, unbind: interfaces.Unbind) => {
-        bind<NRLRepository>(APPLICATION_TYPES.NRLRepository).toConstantValue(
+        bind<ParseNRLRepository>(APPLICATION_TYPES.ParseNRLRepository).toConstantValue(
             getMockNRLRepository()
         );
 
-        bind<StateRepository>(
-            APPLICATION_TYPES.StateRepository
+        bind<ParseStateRepository>(
+            APPLICATION_TYPES.ParseStateRepository
         ).toConstantValue(getMockStateRepository());
 
-        bind<InstituteRepository>(
-            APPLICATION_TYPES.InstituteRepository
+        bind<ParseInstituteRepository>(
+            APPLICATION_TYPES.ParseInstituteRepository
         ).toConstantValue(getMockInstituteRepository());
 
-        bind<UserRepository>(APPLICATION_TYPES.UserRepository).toConstantValue(
+        bind<ParseUserRepository>(APPLICATION_TYPES.ParseUserRepository).toConstantValue(
             getMockUserRepository()
         );
 
-        bind<TokenRepository>(
-            APPLICATION_TYPES.TokenRepository
+        bind<ParseTokenRepository>(
+            APPLICATION_TYPES.ParseTokenRepository
         ).toConstantValue(getMockTokenRepository());
 
-        bind<ValidationErrorRepository>(
-            APPLICATION_TYPES.ValidationErrorRepository
+        bind<ParseValidationErrorRepository>(
+            APPLICATION_TYPES.ParseValidationErrorRepository
         ).toConstantValue(getMockValidationErrorRepository());
 
         bind<FileRepository>(APPLICATION_TYPES.FileRepository).toConstantValue(

@@ -6,14 +6,15 @@ import {
 import { Catalog, CatalogData } from './catalog.model';
 import { NRL } from './nrl.model';
 
-export interface ValidationErrorRepository {
+export interface ParseValidationErrorRepository {
     getAllErrors(): Promise<ValidationError[]>;
 }
-export interface StateRepository {
+
+export interface ParseStateRepository {
     getAllFormats(): Promise<AVVFormatCollection>;
 }
 
-export interface NRLRepository {
+export interface ParseNRLRepository {
     retrieve(): Promise<NRL[]>;
 }
 

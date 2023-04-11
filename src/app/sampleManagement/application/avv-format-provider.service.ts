@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import moment from 'moment';
 import { AVVFormatProvider } from '../model/validation.model';
-import { AVVFormatCollection, StateRepository } from '../../ports';
+import { AVVFormatCollection, ParseStateRepository } from '../../ports';
 import { injectable, inject } from 'inversify';
 import { APPLICATION_TYPES } from './../../application.types';
 
@@ -12,10 +12,10 @@ export class DefaultAVVFormatProvider implements AVVFormatProvider {
     private stateFormats: AVVFormatCollection = {};
 
     constructor(
-        @inject(APPLICATION_TYPES.StateRepository)
-        private stateRepository: StateRepository
+        @inject(APPLICATION_TYPES.ParseStateRepository)
+        private parseStateRepository: ParseStateRepository
     ) {
-        this.stateRepository
+        this.parseStateRepository
             .getAllFormats()
             .then(data => (this.stateFormats = data))
             .catch(error => {
@@ -32,6 +32,6 @@ export class DefaultAVVFormatProvider implements AVVFormatProvider {
         return usedFormats;
     }
 }
-export function createService(repository: StateRepository): AVVFormatProvider {
+export function createService(repository: ParseStateRepository): AVVFormatProvider {
     return new DefaultAVVFormatProvider(repository);
 }

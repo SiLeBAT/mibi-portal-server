@@ -7,7 +7,7 @@ import _ from 'lodash';
 import { logger } from '../../../aspects';
 import { injectable, inject } from 'inversify';
 import { APPLICATION_TYPES } from '../../application.types';
-import { NRLRepository } from '../model/repository.model';
+import { ParseNRLRepository } from '../model/repository.model';
 
 @injectable()
 export class DefaultNRLService implements NRLService {
@@ -61,10 +61,10 @@ export class DefaultNRLService implements NRLService {
 
     private nrlCache: NRL[] = [];
     constructor(
-        @inject(APPLICATION_TYPES.NRLRepository)
-        private nrlRepository: NRLRepository
+        @inject(APPLICATION_TYPES.ParseNRLRepository)
+        private parseNrlRepository: ParseNRLRepository
     ) {
-        this.nrlRepository
+        this.parseNrlRepository
             .retrieve()
             .then(data => (this.nrlCache = data))
             .catch(error => {
@@ -74,7 +74,7 @@ export class DefaultNRLService implements NRLService {
     }
 
     async retrieveNRLs(): Promise<NRL[]> {
-        return this.nrlRepository.retrieve();
+        return this.parseNrlRepository.retrieve();
     }
 
     assignNRLsToSamples(samples: Sample[]): Sample[] {

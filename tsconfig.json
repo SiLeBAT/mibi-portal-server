@@ -4,7 +4,7 @@
         "baseUrl": "./src",
         "module": "CommonJS",
         "moduleResolution":"Node",
-        "types": ["node", "jest", "mockExpressRequest", "mockExpressResponse"],
+        "types": ["node", "jest", "mockExpressRequest", "mockExpressResponse", "reflect-metadata"],
         "typeRoots": [
             "./node_modules/@types",
             "./typings"
@@ -23,6 +23,7 @@
         // Language and Environment
         "target": "ES2019",
         "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
 
         // Type Checking: strict mode
         "alwaysStrict": true,
@@ -34,7 +35,7 @@
         // "strictPropertyInitialization": true,
         // "strict": true
 
-        // Type Checking 
+        // Type Checking
         // "noImplicitReturns": true,
         "noUnusedLocals": true,
         // "noUnusedParameters": true,
