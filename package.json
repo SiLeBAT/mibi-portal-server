@@ -51,7 +51,6 @@
     "jsonwebtoken": "~9.0.0",
     "lodash": "~4.17.21",
     "moment": "~2.29.4",
-    "mongo-express": "1.0.0",
     "mongoose": "~6.4.7",
     "mongoose-unique-validator": "~3.1.0",
     "morgan": "~1.10.0",
@@ -101,40 +100,11 @@
     "typescript": "4.3.5"
   },
   "overrides": {
-    "mongo-express": {
-      "express-fileupload": "1.4.0",
-      "json2csv": "4.2.1"
-    },
-    "optimist": {
-      "minimist": "1.2.6"
-    },
-    "config": {
-      "json5": "2.2.3"
-    },
     "inversify-express-utils": {
-      "express": "4.17.3",
-      "debug": "4.3.4"
-    },
-    "express": {
-      "debug": "4.3.4"
-    },
-    "body-parser": {
-      "debug": "4.3.4"
-    },
-    "compression": {
-      "debug": "4.3.4"
-    },
-    "morgan": {
-      "debug": "4.3.4"
-    },
-    "express-session": {
-      "debug": "4.3.4"
-    },
-    "send": {
-      "debug": "4.3.4"
+      "qs": "6.5.3"
     }
   },
-  "mibiConfig": {
+    "mibiConfig": {
     "lastChange": "2019-04-16 11:25:17 +0200"
   }
 }
