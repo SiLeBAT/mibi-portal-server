@@ -14,7 +14,12 @@
         "publicAPIDoc": { }
     },
     "dataStore": {
-        "dataDir": ""
+      "host": "",
+      "dataBase": "",
+      "username": "",
+      "password": "",
+      "authDatabase": "",
+      "dataDir": ""
     },
     "parseConnection": {
       "serverURL": "",

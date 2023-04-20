@@ -106,6 +106,9 @@
   "overrides": {
     "inversify-express-utils": {
       "qs": "6.5.3"
+    },
+    "parse-server": {
+      "@graphql-yoga/node": "2.13.13"
     }
   },
     "mibiConfig": {

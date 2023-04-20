@@ -21,7 +21,12 @@
         }
     },
     "dataStore": {
-        "dataDir": "./data"
+      "host": "localhost:27017",
+      "dataBase": "",
+      "username": "",
+      "password": "",
+      "authDatabase": "",
+      "dataDir": "./data"
     },
     "parseConnection": {
       "serverURL": "",

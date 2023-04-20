@@ -11,3 +11,6 @@ export MIBI_LOG=$LOG_FILE
 
 npx pm2 kill --no-daemon
 npx pm2 start pm2.config.js
+
+# npx pm2 start pm2.config.js --only mibi-parse-server
+# npx pm2 start pm2.config.js --only mibi-parse-dashboard
