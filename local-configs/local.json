@@ -28,6 +28,16 @@
     "authDatabase": "epilab",
     "dataDir": "./data"
   },
+  "parseConnection": {
+    "serverURL": "http://127.0.0.1:3001/admin/parse",
+    "appId": "appId",
+    "masterKey": "masterKey",
+    "host": "localhost:27017",
+    "database": "mibiportal",
+    "username": "mibiPortal",
+    "password": "localPortal",
+    "authDatabase": "mibiportal"
+  },
   "mail": {
     "fromAddress": "",
     "replyToAddress": ""

@@ -1,4 +1,4 @@
-import { ValidationErrorRepository } from '../../../app/ports';
+import { ParseValidationErrorRepository } from '../../../app/ports';
 
 export const genericValidationErrors = [
     {
@@ -349,7 +349,7 @@ export const genericValidationErrors = [
             'Ihre Daten passen zum Zoonosen-Stichprobenplan. Bitte prüfen Sie noch einmal, ob Sie nicht als Grund Code 81 bzw. Text "Zoonosen-Monitoring - Planprobe" angeben sollten.'
     }
 ];
-export function getMockValidationErrorRepository(): ValidationErrorRepository {
+export function getMockValidationErrorRepository(): ParseValidationErrorRepository {
     return {
         getAllErrors: jest.fn(() => Promise.resolve(genericValidationErrors))
     };

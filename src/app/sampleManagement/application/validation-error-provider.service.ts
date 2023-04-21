@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { ValidationErrorRepository } from '../../ports';
+import { ParseValidationErrorRepository } from '../../ports';
 import {
     ValidationError,
     ValidationErrorProvider
@@ -13,10 +13,10 @@ export class DefaultValidationErrorProvider implements ValidationErrorProvider {
     private errors: ValidationError[] = [];
 
     constructor(
-        @inject(APPLICATION_TYPES.ValidationErrorRepository)
-        private validationErrorRepository: ValidationErrorRepository
+        @inject(APPLICATION_TYPES.ParseValidationErrorRepository)
+        private parseValidationErrorRepository: ParseValidationErrorRepository
     ) {
-        this.validationErrorRepository
+        this.parseValidationErrorRepository
             .getAllErrors()
             .then(data => (this.errors = data))
             .catch(error => {

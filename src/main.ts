@@ -7,7 +7,7 @@ import {
     validateToken
 } from './ui/server/ports';
 import {
-    createDataStore,
+    createParseDataStore,
     getPersistenceContainerModule,
     MailService,
     initialiseCatalogRepository,
@@ -27,7 +27,8 @@ import {
     ServerConfiguration,
     MailConfiguration,
     AppConfiguration,
-    DataStoreConfiguration
+    DataStoreConfiguration,
+    ParseConnectionConfiguration
 } from './main.model';
 import {
     createServer,
@@ -52,6 +53,10 @@ export class DefaultConfigurationService implements SystemConfigurationService {
 
     getDataStoreConfiguration(): DataStoreConfiguration {
         return config.get('dataStore');
+    }
+
+    getParseConnectionConfiguration(): ParseConnectionConfiguration {
+        return config.get('parseConnection');
     }
 
     getMailConfiguration(): MailConfiguration {
@@ -114,6 +119,8 @@ async function init() {
         configurationService.getGeneralConfiguration();
     const dataStoreConfig: DataStoreConfiguration =
         configurationService.getDataStoreConfiguration();
+    const parseConnectionConfig: ParseConnectionConfiguration =
+        configurationService.getParseConnectionConfiguration();
     const appConfiguration: AppConfiguration =
         configurationService.getApplicationConfiguration();
     const mailConfiguration: MailConfiguration =
@@ -141,12 +148,16 @@ async function init() {
         throw error;
     });
 
-    createDataStore({
-        host: dataStoreConfig.host,
-        database: dataStoreConfig.dataBase,
-        username: dataStoreConfig.username,
-        password: dataStoreConfig.password,
-        authDatabase: dataStoreConfig.authDatabase
+    await createParseDataStore({
+        serverURL: parseConnectionConfig.serverURL,
+        appId: parseConnectionConfig.appId,
+        masterKey: parseConnectionConfig.masterKey,
+        host: parseConnectionConfig.host,
+        database: parseConnectionConfig.database,
+        username: parseConnectionConfig.username,
+        password: parseConnectionConfig.password,
+        authDatabase: parseConnectionConfig.authDatabase
+
     });
 
     const container = getContainer({ defaultScope: 'Singleton' });

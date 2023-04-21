@@ -1,6 +1,6 @@
-import { StateRepository } from '../../../app/ports';
+import { ParseStateRepository } from '../../../app/ports';
 
-export function getMockStateRepository(): StateRepository {
+export function getMockStateRepository(): ParseStateRepository {
     return {
         getAllFormats: jest.fn(() => Promise.resolve({}))
     };

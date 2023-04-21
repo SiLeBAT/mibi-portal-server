@@ -1,6 +1,6 @@
-import { NRLRepository, NRL_ID } from '../../../app/ports';
+import { ParseNRLRepository, NRL_ID } from '../../../app/ports';
 
-export function getMockNRLRepository(): NRLRepository {
+export function getMockNRLRepository(): ParseNRLRepository {
     return {
         retrieve: jest.fn(() =>
             Promise.resolve([

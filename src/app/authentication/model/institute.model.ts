@@ -20,9 +20,9 @@ export interface InstituteService extends InstitutePort {
     createInstitute(institute: Institute): Promise<Institute>;
 }
 
-export interface InstituteRepository {
+export interface ParseInstituteRepository {
     retrieve(): Promise<Institute[]>;
     findByInstituteId(id: string): Promise<Institute>;
-    createInstitute(institution: Institute): Promise<Institute>;
     findByInstituteName(name: string): Promise<Institute>;
+    createInstitute(institution: Institute): Promise<Institute>;
 }

@@ -14,12 +14,22 @@
         "publicAPIDoc": { }
     },
     "dataStore": {
-        "host": "",
-        "dataBase": "",
-        "username": "",
-        "password": "",
-        "authDatabase": "",
-        "dataDir": ""
+      "host": "",
+      "dataBase": "",
+      "username": "",
+      "password": "",
+      "authDatabase": "",
+      "dataDir": ""
+    },
+    "parseConnection": {
+      "serverURL": "",
+      "appId": "",
+      "masterKey": "",
+      "host": "",
+      "database": "",
+      "username": "",
+      "password": "",
+      "authDatabase": ""
     },
     "mail": {
         "fromAddress": "",

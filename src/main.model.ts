@@ -7,12 +7,18 @@ export interface ServerConfiguration {
 }
 
 export interface DataStoreConfiguration {
+    dataDir: string;
+}
+
+export interface ParseConnectionConfiguration {
+    serverURL: string;
+    appId: string;
+    masterKey: string;
     host: string;
-    dataBase: string;
+    database: string;
     username: string;
     password: string;
     authDatabase: string;
-    dataDir: string;
 }
 
 export interface GeneralConfiguration {

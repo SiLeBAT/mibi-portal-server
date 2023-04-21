@@ -1,5 +1,5 @@
 import { sign } from 'jsonwebtoken';
-import { TokenRepository, TokenType, UserToken } from '../../../app/ports';
+import { ParseTokenRepository, TokenType, UserToken } from '../../../app/ports';
 
 export const genericUserToken: UserToken = {
     token: sign({ subject: 'test' }, 'test', { subject: 'test' }),
@@ -7,7 +7,7 @@ export const genericUserToken: UserToken = {
     userId: 'test'
 };
 
-export function getMockTokenRepository(): TokenRepository {
+export function getMockTokenRepository(): ParseTokenRepository {
     return {
         hasTokenForUser: jest.fn(() => Promise.resolve(true)),
         deleteTokenForUser: jest.fn(() => Promise.resolve(true)),
