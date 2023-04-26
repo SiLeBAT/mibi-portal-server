@@ -1,9 +1,7 @@
 import path from 'path';
 import fs from 'fs';
-import { parseFile } from 'fast-csv';
 import { logger } from '../../../../aspects';
 import { FileNotFoundError } from '../../model/domain.error';
-import { CSVConfig } from '../../model/file-loader.model';
 import _ from 'lodash';
 
 async function loadBinaryFile(
@@ -17,62 +15,12 @@ async function loadBinaryFile(
     return importBinaryFile(filePath);
 }
 
-async function loadCSVFile<T extends string, R>(
-    fileName: string,
-    dataDir: string,
-    config: CSVConfig<T, R>
-): Promise<R[]> {
-    logger.verbose(
-        `Loading data from Filesystem. fileName=${fileName} dataDir=${dataDir}`
-    );
-    const filePath = resolveFilePath(fileName, dataDir);
-    return importCSVFile<T, R>(filePath, config);
-}
-
 async function loadJSONFile(fileName: string, dataDir: string): Promise<{}> {
     logger.verbose(
         `Loading data from Filesystem. fileName=${fileName} dataDir=${dataDir}`
     );
     const filePath = resolveFilePath(fileName, dataDir);
     return importJSONFile(filePath);
-}
-
-async function importCSVFile<T extends string, R>(
-    filePath: string,
-    options: CSVConfig<T, R>
-): Promise<R[]> {
-    const data: R[] = [];
-
-    const headers =
-        options.headers === true ? true : prepareCSVHeaders(options.headers);
-
-    return new Promise<R[]>(resolve => {
-        parseFile(filePath, {
-            headers: headers,
-            delimiter: options.delimiter || ',',
-            ignoreEmpty: true,
-            discardUnmappedColumns: true
-        })
-            .on('data', function (entry) {
-                if (!options.filterFunction || options.filterFunction(entry)) {
-                    data.push(options.mappingFunction(entry));
-                }
-            })
-            .on('end', function () {
-                resolve(data);
-            });
-    });
-}
-
-function prepareCSVHeaders(headers: Record<string, number>): string[] {
-    return _.reduce(
-        _.entries(headers),
-        (acc, [name, index]) => {
-            acc[index] = name;
-            return acc;
-        },
-        new Array<string>()
-    );
 }
 
 async function importJSONFile(filePath: string): Promise<{}> {
@@ -110,4 +58,7 @@ function resolveFilePath(fileName: string, dataDir: string) {
     }
 }
 
-export { loadCSVFile, loadJSONFile, loadBinaryFile };
+export {
+    loadJSONFile,
+    loadBinaryFile
+};

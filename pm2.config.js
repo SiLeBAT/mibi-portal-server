@@ -33,7 +33,7 @@ module.exports = {
         error_file: process.env['MIBI_LOG'],
         log_date_format: "YYYY-MM-DD HH:mm:ss Z",
         wait_ready: true,
-        listen_timeout: 40000,
+        listen_timeout: 5000,
         env: {
             NODE_APP_INSTANCE: ""
         }
