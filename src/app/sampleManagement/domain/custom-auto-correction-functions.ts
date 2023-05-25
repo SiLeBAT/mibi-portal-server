@@ -12,7 +12,7 @@ import {
 import {
     CatalogService,
     ADVCatalogEntry,
-    ADV9CatalogEntry
+    AVV313CatalogEntry
 } from '../model/catalog.model';
 
 function autoCorrectADV2(catalogService: CatalogService): CorrectionFunction {
@@ -269,10 +269,10 @@ function autoCorrectADV8(catalogService: CatalogService): CorrectionFunction {
     };
 }
 
-function autoCorrectADV9(catalogService: CatalogService): CorrectionFunction {
-    const catalogName = 'adv9';
+function autoCorrectAVV313(catalogService: CatalogService): CorrectionFunction {
+    const catalogName = 'avv313';
     const property: SampleProperty = 'sampling_location_adv';
-    const catalog = catalogService.getCatalog<ADV9CatalogEntry>(catalogName);
+    const catalog = catalogService.getCatalog<AVV313CatalogEntry>(catalogName);
     logger.debug(
         'Initializing auto-correction: Sampling location (ADV-9) & creating closure'
     );
@@ -544,7 +544,7 @@ function createCatalogEnhancements(
 
 export {
     autoCorrectADV16,
-    autoCorrectADV9,
+    autoCorrectAVV313,
     autoCorrectADV8,
     autoCorrectADV3,
     autoCorrectADV12,

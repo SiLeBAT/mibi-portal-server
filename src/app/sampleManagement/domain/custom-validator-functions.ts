@@ -193,15 +193,21 @@ function inCatalog(
     ) => {
         const trimmedValue = value.trim();
         if (attributes[key]) {
-            const cat = catalogService.getCatalog(options.catalog);
+            const catalogs = options.catalog.split(',');
 
-            if (cat) {
-                const key: string = options.key
-                    ? options.key
-                    : cat.getUniqueId();
-                if (key && !cat.containsEntryWithKeyValue(key, trimmedValue)) {
-                    return { ...options.message };
+            const catalogWithKode = _.filter(catalogs, (catalog) => {
+                const cat = catalogService.getCatalog(catalog);
+
+                if (cat) {
+                    const key: string = options.key
+                        ? options.key
+                        : cat.getUniqueId();
+                    return (key && cat.containsEntryWithKeyValue(key, trimmedValue));
                 }
+            });
+
+            if (catalogWithKode.length === 0) {
+                return { ...options.message };
             }
         }
         return null;

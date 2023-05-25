@@ -3,7 +3,7 @@ import Fuse from 'fuse.js';
 import {
     autoCorrectADV16,
     autoCorrectADV8,
-    autoCorrectADV9,
+    autoCorrectAVV313,
     autoCorrectADV3,
     autoCorrectADV12,
     autoCorrectADV2
@@ -446,7 +446,7 @@ describe('Custom Auto-correction Functions', () => {
         });
     });
 
-    describe('autoCorrectADV9', () => {
+    describe('autoCorrectAVV313', () => {
         // tslint:disable-next-line
         let mockCatalogService: any;
 
@@ -490,7 +490,7 @@ describe('Custom Auto-correction Functions', () => {
             };
 
             const correctionFunction: CorrectionFunction =
-                autoCorrectADV9(mockCatalogService);
+                autoCorrectAVV313(mockCatalogService);
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual(null);
@@ -509,7 +509,7 @@ describe('Custom Auto-correction Functions', () => {
             };
 
             const correctionFunction: CorrectionFunction =
-                autoCorrectADV9(mockCatalogService);
+                autoCorrectAVV313(mockCatalogService);
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual(null);
@@ -528,7 +528,7 @@ describe('Custom Auto-correction Functions', () => {
             };
 
             const correctionFunction: CorrectionFunction =
-                autoCorrectADV9(mockCatalogService);
+                autoCorrectAVV313(mockCatalogService);
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual(null);
@@ -547,7 +547,7 @@ describe('Custom Auto-correction Functions', () => {
             };
 
             const correctionFunction: CorrectionFunction =
-                autoCorrectADV9(mockCatalogService);
+                autoCorrectAVV313(mockCatalogService);
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual({
@@ -571,7 +571,7 @@ describe('Custom Auto-correction Functions', () => {
             };
 
             const correctionFunction: CorrectionFunction =
-                autoCorrectADV9(mockCatalogService);
+                autoCorrectAVV313(mockCatalogService);
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual({

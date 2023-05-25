@@ -117,7 +117,7 @@ export interface Sample {
     isZoMo(): boolean;
     getErrorCount(level: number): number;
     applySingleCorrectionSuggestions(): void;
-    supplementADV9Data(zip: string, city: string): void;
+    supplementAVV313Data(zip: string, city: string): void;
 }
 
 interface RecipientInfo {

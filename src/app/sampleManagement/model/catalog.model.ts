@@ -19,7 +19,7 @@ export interface ZSPCatalogEntry {
     'ADV16-Kode': string[];
 }
 
-export interface ADV9CatalogEntry extends ADVCatalogEntry {
+export interface AVV313CatalogEntry extends ADVCatalogEntry {
     PLZ: string;
 }
 

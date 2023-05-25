@@ -103,7 +103,7 @@ export class DefaultFormValidatorService implements FormValidatorService {
             );
 
             // Ticket #mpc514
-            this.supplementADV9Data(sample);
+            this.supplementAVV313Data(sample);
 
             sample.addErrors(validationErrors);
             return sample;
@@ -209,17 +209,17 @@ export class DefaultFormValidatorService implements FormValidatorService {
         return { ...newConstraints };
     }
 
-    private supplementADV9Data(sample: Sample) {
+    private supplementAVV313Data(sample: Sample) {
         const advEntry: AnnotatedSampleDataEntry = sample.getEntryFor('sampling_location_adv');
         const zipEntry: AnnotatedSampleDataEntry = sample.getEntryFor('sampling_location_zip');
         const cityEntry: AnnotatedSampleDataEntry = sample.getEntryFor('sampling_location_text');
 
         if (advEntry.value !== '' && zipEntry.value === '' && cityEntry.value === '') {
-            const adv9Cat = this.catalogService.getCatalog('adv9');
+            const avv313Cat = this.catalogService.getCatalog('avv313');
             // tslint:disable-next-line: no-any
-            let catEntry: any = adv9Cat.getUniqueEntryWithId(advEntry.value);
+            let catEntry: any = avv313Cat.getUniqueEntryWithId(advEntry.value);
             if (catEntry !== undefined) {
-                sample.supplementADV9Data(catEntry['PLZ'], catEntry['Text']);
+                sample.supplementAVV313Data(catEntry['PLZ'], catEntry['Text']);
             }
         }
     }

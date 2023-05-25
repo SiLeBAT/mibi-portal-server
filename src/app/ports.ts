@@ -88,7 +88,7 @@ export {
     Catalog,
     CatalogData,
     ADVCatalogEntry,
-    ADV9CatalogEntry,
+    AVV313CatalogEntry,
     ZSPCatalogEntry
 } from './sampleManagement/model/catalog.model';
 

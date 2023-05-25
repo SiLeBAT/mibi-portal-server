@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { logger } from '../../../aspects';
 import {
     autoCorrectADV16,
-    autoCorrectADV9,
+    autoCorrectAVV313,
     autoCorrectADV8,
     autoCorrectADV12,
     autoCorrectADV3,
@@ -69,7 +69,7 @@ export class DefaultFormAutoCorrectionService
 
     private registerCorrectionFunctions() {
         this.correctionFunctions.push(autoCorrectADV16(this.catalogService));
-        this.correctionFunctions.push(autoCorrectADV9(this.catalogService));
+        this.correctionFunctions.push(autoCorrectAVV313(this.catalogService));
         this.correctionFunctions.push(autoCorrectADV8(this.catalogService));
         this.correctionFunctions.push(autoCorrectADV3(this.catalogService));
         this.correctionFunctions.push(autoCorrectADV12(this.catalogService));

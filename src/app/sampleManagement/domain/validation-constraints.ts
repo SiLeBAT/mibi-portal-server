@@ -424,13 +424,9 @@ export const baseConstraints: ValidationConstraints = {
                 'sampling_location_text'
             ]
         },
-        length: {
-            error: 74,
-            maximum: 8
-        },
         inCatalog: {
             error: 24,
-            catalog: 'adv9'
+            catalog: 'avv313'
         }
     },
     sampling_location_zip: {
@@ -552,20 +548,9 @@ export const baseConstraints: ValidationConstraints = {
             error: 44,
             additionalMembers: ['sampling_reason_text']
         },
-        length: {
-            error: 82,
-            is: 2,
-            tokenizer: function (value: string) {
-                // Necessary to deal with empty strings
-                return value ? value : 'XX';
-            }
-        },
-        numbersOnly: {
-            error: 83
-        },
         inCatalog: {
             error: 42,
-            catalog: 'adv4'
+            catalog: 'avv322,avv326'
         },
         noPlanprobeForNRL_AR: {
             error: 95
