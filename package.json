@@ -1,6 +1,6 @@
 {
   "name": "mibi-portal-server",
-  "version": "4.1.4",
+  "version": "4.1.5",
   "license": "MIT",
   "private": true,
   "type": "commonjs",
