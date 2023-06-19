@@ -37,8 +37,6 @@ module.exports = {
         env: {
             NODE_APP_INSTANCE: ""
         }
-    }
-
-    ]
+    }]
 }
 
