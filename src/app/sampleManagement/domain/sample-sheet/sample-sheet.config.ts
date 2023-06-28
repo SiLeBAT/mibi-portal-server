@@ -1,5 +1,5 @@
 export const sampleSheetConfig = {
-    version: 15,
+    version: 16,
     svgLogoPath: './assets/BfR_Logo_de_RGB_pdf.svg',
     page: {
         size: 'A4',

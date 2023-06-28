@@ -526,12 +526,15 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                         { text: strings.sendInstructionsPre },
                         {
                             text: strings.sendInstructionsLink,
+                            link: strings.sendInstructionsLink,
                             style: 'link'
                         },
                         { text: strings.sendInstructionsPost }
                     ]
                 },
-                { text: strings.printInstructions }
+                { text: strings.printInstructions },
+                { text: strings.cellProtectionInstruction1 },
+                { text: strings.cellProtectionInstruction2 }
             ]
         };
     }
