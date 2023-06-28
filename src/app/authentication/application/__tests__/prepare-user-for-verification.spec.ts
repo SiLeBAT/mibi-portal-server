@@ -1,15 +1,15 @@
-import { getContainer } from '../../../../aspects/container/container';
-import { RegistrationService } from '../../model/registration.model';
-import { User } from '../../model/user.model';
-import { RecoveryData } from '../../model/login.model';
-import { createUser } from '../../domain/user.entity';
-import { getMockNotificationService } from '../../../core/application/__mocks__/notification.service';
-import { getMockTokenService } from '../__mocks__/token.service';
 import { Container } from 'inversify';
-import { getApplicationContainerModule } from '../../../ports';
+import { rebindMocks } from '../../../../__mocks__/util';
+import { createContainer } from '../../../../aspects/container/container';
 import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
 import { APPLICATION_TYPES } from '../../../application.types';
-import { rebindMocks } from '../../../../__mocks__/util';
+import { getMockNotificationService } from '../../../core/application/__mocks__/notification.service';
+import { getApplicationContainerModule } from '../../../ports';
+import { createUser } from '../../domain/user.entity';
+import { RecoveryData } from '../../model/login.model';
+import { RegistrationService } from '../../model/registration.model';
+import { User } from '../../model/user.model';
+import { getMockTokenService } from '../__mocks__/token.service';
 import { genericUser } from '../__mocks__/user.service';
 
 jest.mock('./../../domain/user.entity', () => ({
@@ -24,7 +24,7 @@ describe('Prepare User for Activation Use Case', () => {
     let recoveryData: RecoveryData;
     let container: Container | null;
     beforeEach(() => {
-        container = getContainer();
+        container = createContainer();
         container.load(
             getApplicationContainerModule({
                 appName: 'test',

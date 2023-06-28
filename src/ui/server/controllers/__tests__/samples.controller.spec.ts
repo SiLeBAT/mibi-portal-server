@@ -2,16 +2,16 @@
 
 var mockReq = require('mock-express-request');
 var mockRes = require('mock-express-response');
-import { SamplesController } from '../../model/controller.model';
-import { SampleSetDTO } from '../../model/shared-dto.model';
 import { Container } from 'inversify';
-import { getServerContainerModule } from '../../server.module';
-import { getApplicationContainerModule } from '../../../../app/ports';
-import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
-import { SERVER_TYPES } from '../../server.types';
 import { rebindMocks } from '../../../../__mocks__/util';
 import { APPLICATION_TYPES } from '../../../../app/application.types';
-import { getContainer } from '../../../../aspects/container/container';
+import { getApplicationContainerModule } from '../../../../app/ports';
+import { createContainer } from '../../../../aspects/container/container';
+import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
+import { SamplesController } from '../../model/controller.model';
+import { SampleSetDTO } from '../../model/shared-dto.model';
+import { getServerContainerModule } from '../../server.module';
+import { SERVER_TYPES } from '../../server.types';
 
 // tslint:disable
 describe('Sample controller', () => {
@@ -19,7 +19,7 @@ describe('Sample controller', () => {
     let controller: SamplesController;
     let container: Container;
     beforeEach(() => {
-        container = getContainer();
+        container = createContainer();
         container.load(
             getServerContainerModule({
                 port: 1,

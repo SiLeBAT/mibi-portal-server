@@ -1,21 +1,21 @@
-import { getContainer } from '../../../../aspects/container/container';
+import { Container } from 'inversify';
+import { sign } from 'jsonwebtoken';
+import { rebindMocks } from '../../../../__mocks__/util';
+import { createContainer } from '../../../../aspects/container/container';
+import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
+import { APPLICATION_TYPES } from '../../../application.types';
+import { getMockNotificationService } from '../../../core/application/__mocks__/notification.service';
+import { getApplicationContainerModule } from '../../../ports';
 import { RegistrationService } from '../../model/registration.model';
 import { getMockTokenService } from '../__mocks__/token.service';
 import { getMockUserService } from '../__mocks__/user.service';
-import { getMockNotificationService } from '../../../core/application/__mocks__/notification.service';
-import { Container } from 'inversify';
-import { getApplicationContainerModule } from '../../../ports';
-import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
-import { APPLICATION_TYPES } from '../../../application.types';
-import { rebindMocks } from '../../../../__mocks__/util';
-import { sign } from 'jsonwebtoken';
 
 describe('Activate User Use Case', () => {
     let service: RegistrationService;
     let token: string;
     let container: Container | null;
     beforeEach(() => {
-        container = getContainer();
+        container = createContainer();
         container.load(
             getApplicationContainerModule({
                 appName: 'test',

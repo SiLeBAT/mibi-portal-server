@@ -1,13 +1,13 @@
 /// <reference types='jest' />
 
-import { getContainer } from '../../../../aspects/container/container';
+import { Container } from 'inversify';
 import mockReq from 'mock-express-request';
 import mockRes from 'mock-express-response';
 import { getApplicationContainerModule } from '../../../../app/ports';
-import { InstitutesController } from '../../model/controller.model';
-import { Container } from 'inversify';
-import { getServerContainerModule } from '../../server.module';
+import { createContainer } from '../../../../aspects/container/container';
 import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
+import { InstitutesController } from '../../model/controller.model';
+import { getServerContainerModule } from '../../server.module';
 import { SERVER_TYPES } from '../../server.types';
 
 // tslint:disable
@@ -16,7 +16,7 @@ describe('Institution controller', () => {
 
     let container: Container | null;
     beforeEach(() => {
-        container = getContainer();
+        container = createContainer();
         container.load(
             getServerContainerModule({
                 port: 1,

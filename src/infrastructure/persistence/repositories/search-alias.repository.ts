@@ -1,13 +1,13 @@
+import { SearchAlias, SearchAliasRepository } from '../../../app/ports';
 import { logger } from '../../../aspects';
 import { loadJSONFile } from '../data-store/file/file-loader';
-import { SearchAliasRepository, SearchAlias } from '../../../app/ports';
 
 class FileSearchAliasRepository implements SearchAliasRepository {
     private fileName = 'search-alias.json';
 
     private aliases: SearchAlias[] = [];
 
-    constructor(private dataDir: string) {}
+    constructor(private dataDir: string) { }
 
     async initialise(): Promise<void> {
         logger.verbose(
@@ -37,10 +37,15 @@ class FileSearchAliasRepository implements SearchAliasRepository {
 }
 let repo: FileSearchAliasRepository;
 
-export async function initialiseRepository(
+export async function getRepository(
     dataDir: string
 ): Promise<SearchAliasRepository> {
-    const repository = repo ? repo : new FileSearchAliasRepository(dataDir);
-    repo = repository;
-    return repository.initialise().then(() => repository);
+
+    if (repo) {
+        return repo;
+    }
+
+    repo = new FileSearchAliasRepository(dataDir);
+
+    return repo.initialise().then(() => repo);
 }

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-export interface Controller {}
+export interface Controller { }
 
 export interface ControllerFactory {
     // tslint:disable-next-line: no-any

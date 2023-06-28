@@ -1,18 +1,18 @@
 import { Request, Response } from 'express';
-import { Institute, InstitutePort } from '../../../app/ports';
-import { logger } from '../../../aspects';
-import { InstitutesController } from '../model/controller.model';
-import { InstituteDTO, InstituteCollectionDTO } from '../model/response.model';
-import { AbstractController } from './abstract.controller';
+import { inject } from 'inversify';
 import {
     controller,
     httpGet,
     request,
     response
 } from 'inversify-express-utils';
-import { inject } from 'inversify';
+import { Institute, InstitutePort } from '../../../app/ports';
+import { logger } from '../../../aspects';
+import { InstitutesController } from '../model/controller.model';
 import { API_ROUTE } from '../model/enums';
+import { InstituteCollectionDTO, InstituteDTO } from '../model/response.model';
 import { APPLICATION_TYPES } from './../../../app/application.types';
+import { AbstractController } from './abstract.controller';
 
 enum INSTITUTES_ROUTE {
     ROOT = '/institutes'
@@ -20,20 +20,20 @@ enum INSTITUTES_ROUTE {
 @controller(API_ROUTE.V2 + INSTITUTES_ROUTE.ROOT)
 export class DefaultInstituteController
     extends AbstractController
-    implements InstitutesController
-{
+    implements InstitutesController {
     constructor(
         @inject(APPLICATION_TYPES.InstituteService)
-        private instiuteService: InstitutePort
+        private instituteService: InstitutePort
     ) {
         super();
     }
+
     @httpGet('/')
     async getInstitutes(@request() req: Request, @response() res: Response) {
         logger.info(
             `${this.constructor.name}.${this.getInstitutes.name}, Request received`
         );
-        await this.instiuteService
+        await this.instituteService
             .retrieveInstitutes()
             .then((institutions: Institute[]) => {
                 const institutes: InstituteDTO[] = institutions.map(i =>

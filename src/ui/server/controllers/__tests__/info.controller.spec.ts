@@ -1,13 +1,13 @@
 /// <reference types='jest' />
 
+import { Container } from 'inversify';
 import mockRes from 'mock-express-response';
+import { getApplicationContainerModule } from '../../../../app/ports';
+import { createContainer } from '../../../../aspects/container/container';
+import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
 import { SystemInfoController } from '../../model/controller.model';
 import { getServerContainerModule } from '../../server.module';
-import { Container } from 'inversify';
-import { getApplicationContainerModule } from '../../../../app/ports';
-import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
 import { SERVER_TYPES } from '../../server.types';
-import { getContainer } from '../../../../aspects/container/container';
 
 // tslint:disable
 describe('Info controller', () => {
@@ -15,7 +15,7 @@ describe('Info controller', () => {
 
     let container: Container | null;
     beforeEach(() => {
-        container = getContainer();
+        container = createContainer();
         container.load(
             getServerContainerModule({
                 port: 1,

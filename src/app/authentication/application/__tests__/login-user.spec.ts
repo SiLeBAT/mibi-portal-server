@@ -1,18 +1,18 @@
-import { getContainer } from '../../../../aspects/container/container';
-import { LoginService } from '../../model/login.model';
-import { getApplicationContainerModule } from '../../../ports';
-import { genericUser, getMockUserService } from '../__mocks__/user.service';
-import { getMockTokenService } from '../__mocks__/token.service';
 import { Container } from 'inversify';
+import { rebindMocks } from '../../../../__mocks__/util';
+import { createContainer } from '../../../../aspects/container/container';
 import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
 import { APPLICATION_TYPES } from '../../../application.types';
-import { rebindMocks } from '../../../../__mocks__/util';
+import { getApplicationContainerModule } from '../../../ports';
+import { LoginService } from '../../model/login.model';
+import { getMockTokenService } from '../__mocks__/token.service';
+import { genericUser, getMockUserService } from '../__mocks__/user.service';
 
 describe('Login User Use Case', () => {
     let service: LoginService;
     let container: Container | null;
     beforeEach(() => {
-        container = getContainer();
+        container = createContainer();
         container.load(
             getApplicationContainerModule({
                 appName: 'test',

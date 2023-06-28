@@ -1,2 +1,3 @@
+export { MiBiContainer, createContainer } from './container/container';
 export { logger } from './logging';
-export { getContainer } from './container/container';
+
