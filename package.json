@@ -105,6 +105,24 @@
     },
     "degenerator": {
       "vm2": "3.9.19"
+    },
+    "make-dir": {
+      "semver": "7.5.2"
+    },
+    "@pm2/agent": {
+      "semver": "7.5.2"
+    },
+    "async-listener": {
+      "semver": "7.5.2"
+    },
+    "@opencensus/core": {
+      "semver": "7.5.2"
+    },
+    "@pm2/io": {
+      "semver": "7.5.2"
+    },
+    "escodegen": {
+      "optionator": "0.9.3"
     }
   },
   "mibiConfig": {
