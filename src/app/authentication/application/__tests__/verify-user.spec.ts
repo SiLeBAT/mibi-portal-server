@@ -1,14 +1,14 @@
-import { getContainer } from '../../../../aspects/container/container';
-import { User } from '../../model/user.model';
-import { RegistrationService } from '../../model/registration.model';
-import { genericUser, getMockUserService } from '../__mocks__/user.service';
-import { getMockTokenService } from '../__mocks__/token.service';
 import { Container } from 'inversify';
-import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
-import { APPLICATION_TYPES } from '../../../application.types';
-import { rebindMocks } from '../../../../__mocks__/util';
-import { getApplicationContainerModule } from '../../../application.module';
 import { sign } from 'jsonwebtoken';
+import { rebindMocks } from '../../../../__mocks__/util';
+import { createContainer } from '../../../../aspects/container/container';
+import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
+import { getApplicationContainerModule } from '../../../application.module';
+import { APPLICATION_TYPES } from '../../../application.types';
+import { RegistrationService } from '../../model/registration.model';
+import { User } from '../../model/user.model';
+import { getMockTokenService } from '../__mocks__/token.service';
+import { genericUser, getMockUserService } from '../__mocks__/user.service';
 
 describe('Verify User Use Case', () => {
     let service: RegistrationService;
@@ -16,7 +16,7 @@ describe('Verify User Use Case', () => {
     let user: User;
     let container: Container | null;
     beforeEach(() => {
-        container = getContainer();
+        container = createContainer();
         container.load(
             getApplicationContainerModule({
                 appName: 'test',

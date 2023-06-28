@@ -1,14 +1,13 @@
-import { logger } from '../../../aspects';
 import {
-    CatalogRepository,
     Catalog,
-    createCatalog,
     CatalogData,
+    CatalogRepository,
+    createCatalog,
 } from '../../../app/ports';
+import { logger } from '../../../aspects';
 import {
     loadJSONFile
 } from '../data-store/file/file-loader';
-import _ from 'lodash';
 
 class FileCatalogRepository implements CatalogRepository {
     private catalogs: {
@@ -69,10 +68,14 @@ class FileCatalogRepository implements CatalogRepository {
 
 let repo: FileCatalogRepository;
 
-export async function initialiseRepository(
+export async function getRepository(
     dataDir: string
 ): Promise<CatalogRepository> {
-    const repository = repo ? repo : new FileCatalogRepository(dataDir);
-    repo = repository;
-    return repository.initialise().then(() => repository);
+    if (repo) {
+        return repo;
+    }
+
+    repo = new FileCatalogRepository(dataDir);
+
+    return repo.initialise().then(() => repo);
 }

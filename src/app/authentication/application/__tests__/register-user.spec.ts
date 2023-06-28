@@ -1,14 +1,14 @@
-import { getContainer } from '../../../../aspects/container/container';
+import { Container } from 'inversify';
+import { rebindMocks } from '../../../../__mocks__/util';
+import { createContainer } from '../../../../aspects/container/container';
+import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
+import { APPLICATION_TYPES } from '../../../application.types';
+import { getApplicationContainerModule } from '../../../ports';
+import { createUser } from '../../domain/user.entity';
 import {
     RegistrationService,
     UserRegistration
 } from '../../model/registration.model';
-import { createUser } from '../../domain/user.entity';
-import { Container } from 'inversify';
-import { getApplicationContainerModule } from '../../../ports';
-import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
-import { APPLICATION_TYPES } from '../../../application.types';
-import { rebindMocks } from '../../../../__mocks__/util';
 import { getMockInstituteService } from '../__mocks__/institute.service';
 
 jest.mock('./../../domain/user.entity', () => ({
@@ -22,7 +22,7 @@ describe('Register User Use Case', () => {
     let credentials: UserRegistration;
     let container: Container | null;
     beforeEach(() => {
-        container = getContainer();
+        container = createContainer();
         container.load(
             getApplicationContainerModule({
                 appName: 'test',

@@ -1,10 +1,10 @@
-import { NRL_ID } from '../../domain/enums';
-import { getContainer } from '../../../../aspects/container/container';
-import { Sample, SampleData, SampleFactory } from '../../../ports';
 import { Container } from 'inversify';
+import { createContainer } from '../../../../aspects/container/container';
 import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
-import { APPLICATION_TYPES } from '../../../application.types';
 import { getApplicationContainerModule } from '../../../application.module';
+import { APPLICATION_TYPES } from '../../../application.types';
+import { Sample, SampleData, SampleFactory } from '../../../ports';
+import { NRL_ID } from '../../domain/enums';
 import { NRLService } from '../../model/nrl.model';
 import { ParseNRLRepository } from '../../model/repository.model';
 
@@ -17,7 +17,7 @@ describe('NRL Assignment Service', () => {
     let container: Container | null;
     let factory: SampleFactory;
     beforeEach(() => {
-        container = getContainer();
+        container = createContainer();
         container.load(
             getApplicationContainerModule({
                 appName: 'test',

@@ -1,14 +1,14 @@
-import { getContainer } from './../../../../aspects/container/container';
+import { Container } from 'inversify';
+import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
+import { genericValidationErrors } from '../../../../infrastructure/persistence/__mocks__/validation-error.repository';
+import { getApplicationContainerModule } from '../../../application.module';
+import { APPLICATION_TYPES } from '../../../application.types';
+import { Sample, SampleData, SampleFactory } from '../../../ports';
 import {
     FormValidatorService,
     ValidationError
 } from '../../model/validation.model';
-import { Sample, SampleData, SampleFactory } from '../../../ports';
-import { genericValidationErrors } from '../../../../infrastructure/persistence/__mocks__/validation-error.repository';
-import { Container } from 'inversify';
-import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
-import { APPLICATION_TYPES } from '../../../application.types';
-import { getApplicationContainerModule } from '../../../application.module';
+import { createContainer } from './../../../../aspects/container/container';
 
 jest.mock('./../../domain/validator.entity', () => ({
     createValidator: () => ({
@@ -26,7 +26,7 @@ describe('Validate Sample Use Case', () => {
     let container: Container | null;
     let factory: SampleFactory;
     beforeEach(() => {
-        container = getContainer();
+        container = createContainer();
         container.load(
             getApplicationContainerModule({
                 appName: 'test',
