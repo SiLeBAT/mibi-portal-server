@@ -14,10 +14,10 @@ import {
 } from './ports';
 
 import { Container } from 'inversify';
-import { configurationService } from '../../ConfigurationService';
+import { configurationService } from '../../configuratioin.service';
 
 
-export async function initialiseExpress(container: Container) {
+export function initialiseExpress(container: Container) {
 
     const serverConfig: ServerConfiguration =
         configurationService.getServerConfiguration();

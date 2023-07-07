@@ -3,11 +3,13 @@ import 'reflect-metadata';
 
 class MiBiContainer extends Container {
 
+    // tslint:disable-next-line: no-any
     constructor(...args: any[]) {
         super(...args);
     }
 
-    public bindDependencies(func: Function, dependencies: any[]) {
+    // tslint:disable-next-line: no-any
+    bindDependencies(func: Function, dependencies: any[]) {
         let injections = dependencies.map((dependency) => {
             return this.get(dependency);
         });

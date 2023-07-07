@@ -1,8 +1,8 @@
-import { configurationService } from './ConfigurationService';
+import { configurationService } from './configuratioin.service';
 import { logger } from './aspects';
-import { initialiseRepositories } from './repositorySetup';
-import { initialiseContainer } from './ui/server/containerSetup';
-import { initialiseExpress } from './ui/server/expressSetup';
+import { initialiseRepositories } from './repository.setup';
+import { initialiseContainer } from './ui/server/container.setup';
+import { initialiseExpress } from './ui/server/express.setup';
 
 
 async function init() {

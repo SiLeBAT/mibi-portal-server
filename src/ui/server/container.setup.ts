@@ -1,4 +1,4 @@
-import { configurationService } from '../../ConfigurationService';
+import { configurationService } from '../../configuratioin.service';
 import {
     MiBiApplication,
     createApplication,
@@ -25,8 +25,12 @@ import {
 } from './ports';
 
 
-export async function initialiseContainer(searchAliasRepository: any,
-    catalogRepository: any) {
+export async function initialiseContainer(
+    // tslint:disable-next-line: no-any
+    searchAliasRepository: any,
+    // tslint:disable-next-line: no-any
+    catalogRepository: any
+) {
     const serverConfig: ServerConfiguration =
         configurationService.getServerConfiguration();
     const generalConfig: GeneralConfiguration =

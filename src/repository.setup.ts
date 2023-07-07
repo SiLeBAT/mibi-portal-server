@@ -1,4 +1,4 @@
-import { configurationService } from './ConfigurationService';
+import { configurationService } from './configuratioin.service';
 import { logger } from './aspects';
 import {
     initialiseCatalogRepository,
@@ -38,7 +38,7 @@ export async function initialiseRepositories() {
 
     return {
         searchAliasRepository, catalogRepository
-    }
+    };
 
 }
 
