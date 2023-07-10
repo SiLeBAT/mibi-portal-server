@@ -41,7 +41,7 @@ export function initialiseExpress(container: Container) {
             validator: validateToken,
             jwtSecret: generalConfig.jwtSecret
         },
-        publicDir: path.join(__dirname + '/ui/server/public/de')
+        publicDir: path.join(__dirname + '/public/de')
     };
     const server = createServer(expressServerConfig);
     server.startServer();
