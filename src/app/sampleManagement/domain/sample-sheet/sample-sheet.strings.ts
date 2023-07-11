@@ -73,11 +73,16 @@ export const sampleSheetMetaStrings = {
         sendInstructionsPost:
             ') prüfen und senden Sie die Probendaten über die dort vorhandene Senden-Funktion an das BfR.',
         printInstructions:
-            'Sie erhalten die geprüften Untersuchungsaufträge vom Portal per E-Mail. Drucken Sie diese bitte aus und legen Sie diese unterschrieben den Proben als Begleitschein bei.'
+            'Sie erhalten die geprüften Untersuchungsaufträge vom Portal per E-Mail. Drucken Sie diese bitte aus und legen Sie diese unterschrieben den Proben als Begleitschein bei.',
+        cellProtectionInstruction1:
+            'Felder im Einsendebogen sind ohne Schreibschutz zur erleichterten Nutzung/Einbindung in unterschiedliche Laborinformationsmanagement-Systeme. Änderungen von Zellinhalten außerhalb der Ausfüllfelder',
+        cellProtectionInstruction2:
+            'sind nicht zielführend und werden beim Einlesen der Daten durch das BfR nicht berücksichtigt.'
+
     },
     footer: {
         validated:
-            'OE-Mibi-SOP-059_FB_A01_elektronischer Einsendebogen_V15 gültig ab 02.09.2020',
+            'OE-Mibi-SOP-059_FB_A01_Elektronischer Einsendebogen_V16 gültig ab 26.06.2023',
         page: 'Seite',
         pageOf: 'von'
     }
