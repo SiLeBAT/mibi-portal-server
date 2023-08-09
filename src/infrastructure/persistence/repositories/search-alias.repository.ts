@@ -37,15 +37,10 @@ class FileSearchAliasRepository implements SearchAliasRepository {
 }
 let repo: FileSearchAliasRepository;
 
-export async function getRepository(
+export async function initialiseRepository(
     dataDir: string
 ): Promise<SearchAliasRepository> {
-
-    if (repo) {
-        return repo;
-    }
-
-    repo = new FileSearchAliasRepository(dataDir);
-
-    return repo.initialise().then(() => repo);
+    const repository = repo ? repo : new FileSearchAliasRepository(dataDir);
+    repo = repository;
+    return repository.initialise().then(() => repository);
 }

@@ -129,7 +129,7 @@ export class DefaultSample implements Sample {
         return !!errors.length;
     }
 
-    supplementADV9Data(plz: string, city: string) {
+    supplementAVV313Data(plz: string, city: string) {
         this._data['sampling_location_zip'].nrlData = plz;
         this._data['sampling_location_text'].nrlData = city;
     }

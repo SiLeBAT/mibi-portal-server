@@ -56,17 +56,17 @@ describe('Validate Sample Use Case', () => {
             },
             pathogen_text: { value: '', errors: [], correctionOffer: [] },
             sampling_date: {
-                value: '01.02.2017',
+                value: '01.02.2023',
                 errors: [],
                 correctionOffer: []
             },
             isolation_date: {
-                value: '01.03.2017',
+                value: '01.03.2023',
                 errors: [],
                 correctionOffer: []
             },
             sampling_location_adv: {
-                value: '11000000',
+                value: '45397|169446|',
                 errors: [],
                 correctionOffer: []
             },
@@ -80,41 +80,43 @@ describe('Validate Sample Use Case', () => {
                 errors: [],
                 correctionOffer: []
             },
-            topic_adv: { value: '01', errors: [], correctionOffer: [] },
-            matrix_adv: { value: '063502', errors: [], correctionOffer: [] },
+            topic_adv: { value: '706|57678|', errors: [], correctionOffer: [] },
+            matrix_adv: { value: '187036|183974|8871-8874,183670-1086', errors: [], correctionOffer: [] },
             matrix_text: {
-                value: 'Hähnchen auch tiefgefroren',
+                value: 'Kot (Hygieneproben (LFGB-Bereich)); Kontakt - LM-Kontakt; Pflanze/Tier/Stoff/relevante Zutat - Schwein',
                 errors: [],
                 correctionOffer: []
             },
             process_state_adv: {
-                value: '999',
+                value: '',
                 errors: [],
                 correctionOffer: []
             },
             sampling_reason_adv: {
-                value: '10',
+                value: '22564|126366|',
                 errors: [],
                 correctionOffer: []
             },
             sampling_reason_text: {
-                value: 'Planprobe',
+                value: 'Verdachtsprobe',
                 errors: [],
                 correctionOffer: []
             },
             operations_mode_adv: {
-                value: '4010000',
+                value: '10469|57619|63422-10492,63423-10563|BG:FM:KM:LM:TAM:TNP:TT:Tabak:Wein',
                 errors: [],
                 correctionOffer: []
             },
             operations_mode_text: {
-                value: 'Lebensmitteleinzelhandel',
+                value: 'Inverkehrbringen; Prozessdetails - Abgeben an Endverbraucher; Verschiedene Eigenschaften zum Betrieb - Verkaufsabteilung',
                 errors: [],
                 correctionOffer: []
             },
             vvvo: { value: '', errors: [], correctionOffer: [] },
             comment: { value: '', errors: [], correctionOffer: [] }
         };
+
+
         genericTestSample = factory.createSample(testSampleData);
         genericTestSampleCollection = [];
     });

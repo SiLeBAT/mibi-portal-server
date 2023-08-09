@@ -14,13 +14,6 @@ class FileCatalogRepository implements CatalogRepository {
         [key: string]: Catalog<CatalogData>;
     };
     private catalogNames: string[] = [
-        'adv2',
-        'adv3',
-        'adv4',
-        'adv8',
-        'adv9',
-        'adv12',
-        'adv16',
         'plz',
         `zsp${new Date().getFullYear().toString()}`,
         `zsp${(new Date().getFullYear() + 1).toString()}`,
@@ -68,14 +61,10 @@ class FileCatalogRepository implements CatalogRepository {
 
 let repo: FileCatalogRepository;
 
-export async function getRepository(
+export async function initialiseRepository(
     dataDir: string
 ): Promise<CatalogRepository> {
-    if (repo) {
-        return repo;
-    }
-
-    repo = new FileCatalogRepository(dataDir);
-
-    return repo.initialise().then(() => repo);
+    const repository = repo ? repo : new FileCatalogRepository(dataDir);
+    repo = repository;
+    return repository.initialise().then(() => repository);
 }

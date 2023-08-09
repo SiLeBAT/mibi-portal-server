@@ -2,7 +2,8 @@ import { configurationService } from './configuratioin.service';
 import { logger } from './aspects';
 import {
     initialiseCatalogRepository,
-    initialiseSearchAliasRepository
+    initialiseSearchAliasRepository,
+    initialiseAVVCatalogRepository
 } from './infrastructure/ports';
 import {
     DataStoreConfiguration
@@ -25,6 +26,15 @@ export async function initialiseRepositories() {
         throw error;
     });
 
+    const avvCatalogRepository = await initialiseAVVCatalogRepository(
+        dataStoreConfig.dataDir
+    ).catch((error: Error) => {
+        logger.error(
+            `Failed to initialize AVVCatalog Repository. error=${String(error)}`
+        );
+        throw error;
+    });
+
     const searchAliasRepository = await initialiseSearchAliasRepository(
         dataStoreConfig.dataDir
     ).catch((error: Error) => {
@@ -37,7 +47,7 @@ export async function initialiseRepositories() {
     });
 
     return {
-        searchAliasRepository, catalogRepository
+        searchAliasRepository, catalogRepository, avvCatalogRepository
     };
 
 }

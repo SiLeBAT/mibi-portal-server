@@ -69,6 +69,6 @@ export const EMPTY_ANALYSIS: Analysis = {
 };
 
 export const ZOMO_ID = {
-    code: 81,
-    string: 'Zoonosen-Monitoring - Planprobe'
+    code: '70564|53075|',
+    string: 'Zoonosen-Monitoring'
 };

@@ -7,7 +7,7 @@ module.exports = {
         out_file: process.env['MIBI_LOG'],
         error_file: process.env['MIBI_LOG'],
         log_date_format: "YYYY-MM-DD HH:mm:ss Z",
-            env: {
+        env: {
             PARSE_SERVER_MOUNT_PATH: '/admin/parse'
         }
     }, {
@@ -39,4 +39,3 @@ module.exports = {
         }
     }]
 }
-

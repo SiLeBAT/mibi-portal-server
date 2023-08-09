@@ -380,7 +380,7 @@ export class DefaultSampleService implements SampleService {
 
         nrlSampleSet.samples.forEach(sample => {
             this.replaceEmptySampleIDWithSampleIDAVV(sample);
-            this.moveADV9Data(sample);
+            this.moveAVV313Data(sample);
         });
 
         return nrlSampleSet;
@@ -396,7 +396,7 @@ export class DefaultSampleService implements SampleService {
         }
     }
 
-    private moveADV9Data(sample: Sample) {
+    private moveAVV313Data(sample: Sample) {
         const sampleData = sample.getAnnotatedData();
         const sampleZip = sampleData.sampling_location_zip.nrlData;
         const sampleCity = sampleData.sampling_location_text.nrlData;

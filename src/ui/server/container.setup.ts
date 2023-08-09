@@ -29,7 +29,9 @@ export async function initialiseContainer(
     // tslint:disable-next-line: no-any
     searchAliasRepository: any,
     // tslint:disable-next-line: no-any
-    catalogRepository: any
+    catalogRepository: any,
+    // tslint:disable-next-line: no-any
+    avvCatalogRepository: any
 ) {
     const serverConfig: ServerConfiguration =
         configurationService.getServerConfiguration();
@@ -66,6 +68,7 @@ export async function initialiseContainer(
         getPersistenceContainerModule({
             searchAliasRepository,
             catalogRepository,
+            avvCatalogRepository,
             dataDir: dataStoreConfig.dataDir
         }),
         getServerContainerModule({

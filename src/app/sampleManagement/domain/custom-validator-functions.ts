@@ -1,19 +1,16 @@
-import { ADVCatalogEntry, ZSPCatalogEntry } from './../model/catalog.model';
+import { AVVCatalog, AVVCatalogData, MibiCatalogData, MibiCatalogFacettenData, ZSPCatalogEntry } from './../model/catalog.model';
 import moment from 'moment';
 import _ from 'lodash';
 import {
-    ValidationError,
     RequiredIfOtherOptions,
     MatchRegexPatternOptions,
     MatchIdToYearOptions,
     ValidatorFunction,
-    NonUniqueEntryOptions,
     InCatalogOptions,
     MatchADVNumberOrStringOptions,
     RegisteredZoMoOptions,
     AtLeastOneOfOptions,
     DependentFieldsOptions,
-    NumbersOnlyOptions,
     ReferenceDateOptions,
     ValidatorFunctionOptions
 } from '../model/validation.model';
@@ -148,40 +145,6 @@ function matchesIdToSpecificYear(
     );
 }
 
-function nonUniqueEntry(
-    catalogService: CatalogService
-): ValidatorFunction<NonUniqueEntryOptions> {
-    return (
-        value: string,
-        options: NonUniqueEntryOptions,
-        key: SampleProperty,
-        attributes: SampleDataValues
-    ) => {
-        if (attributes[key]) {
-            const cat = catalogService.getCatalog<ADVCatalogEntry>(
-                options.catalog
-            );
-            if (cat && options.key) {
-                const entries = cat.getEntriesWithKeyValue(options.key, value);
-                if (entries.length < 2) return null;
-                if (attributes[options.differentiator[1]]) {
-                    const n = _.filter(
-                        entries,
-                        (e: ADVCatalogEntry) =>
-                            e[options.differentiator[0]] ===
-                            attributes[options.differentiator[1]]
-                    );
-                    if (n.length === 1) return null;
-                }
-                const newMessage: ValidationError = { ...options.message };
-                newMessage.message += ` Entweder '${entries[0].Kodiersystem}' für '${entries[0].Text}' oder '${entries[1].Kodiersystem}' für '${entries[1].Text}'.`;
-                return newMessage;
-            }
-        }
-        return null;
-    };
-}
-
 function inCatalog(
     catalogService: CatalogService
 ): ValidatorFunction<InCatalogOptions> {
@@ -193,19 +156,122 @@ function inCatalog(
     ) => {
         const trimmedValue = value.trim();
         if (attributes[key]) {
-            const cat = catalogService.getCatalog(options.catalog);
+            const catalogs = options.catalog.split(',');
 
-            if (cat) {
-                const key: string = options.key
-                    ? options.key
-                    : cat.getUniqueId();
-                if (key && !cat.containsEntryWithKeyValue(key, trimmedValue)) {
-                    return { ...options.message };
+            const catalogWithKode = _.filter(catalogs, (catalog) => {
+                const cat = catalogService.getCatalog(catalog);
+
+                if (cat) {
+                    const key: string = options.key
+                        ? options.key
+                        : cat.getUniqueId();
+                    return (key && cat.containsEntryWithKeyValue(key, trimmedValue));
                 }
+            });
+
+            if (catalogWithKode.length === 0) {
+                return { ...options.message };
             }
         }
         return null;
     };
+}
+
+function inAVVCatalog(
+    catalogService: CatalogService
+): ValidatorFunction<InCatalogOptions> {
+    return (
+        value: string,
+        options: InCatalogOptions,
+        key: SampleProperty,
+        attributes: SampleDataValues
+    ) => {
+        const trimmedValue = value.trim();
+        if (attributes[key]) {
+            const catalogs = options.catalog.split(',');
+
+            const catalogWithKode = _.filter(catalogs, (catalog) => {
+                const cat = catalogService.getAVVCatalog<AVVCatalogData>(catalog);
+
+                if (cat) {
+                    return cat.containsEintragWithAVVKode(trimmedValue);
+                }
+            });
+
+            if (catalogWithKode.length === 0) {
+                return { ...options.message };
+            }
+        }
+        return null;
+    };
+}
+
+function inAVVFacettenCatalog(
+    catalogService: CatalogService
+): ValidatorFunction<InCatalogOptions> {
+    return (
+        value: string,
+        options: InCatalogOptions,
+        key: SampleProperty,
+        attributes: SampleDataValues
+    ) => {
+        const trimmedValue = value.trim();
+        if (attributes[key]) {
+
+            const [begriffsIdEintrag, id, facettenValues, currentAttributes] = trimmedValue.split('|');
+            const catalogName = options.catalog;
+            const catalog = catalogService.getAVVCatalog<MibiCatalogFacettenData>(catalogName);
+            if (catalog) {
+                if (!(begriffsIdEintrag && id)) {
+                    return { ...options.message };
+                }
+
+                const avvKode = catalog.assembleAVVKode(begriffsIdEintrag, id);
+                let found = catalog.containsEintragWithAVVKode(avvKode);
+                found = found && checkEintragAttributes(currentAttributes, avvKode, catalog);
+
+                const facettenIds = catalog.getFacettenIdsWithKode(avvKode);
+                if (facettenIds && facettenValues) {
+                    const currentFacetten = facettenValues.split(',');
+                    found = found && currentFacetten.every((facettenValue) => {
+                        const [facettenBeginnId, facettenEndeIds] = facettenValue.split('-');
+                        const facettenEndeIdList = facettenEndeIds.split(':');
+                        const facette = catalog.getFacetteWithBegriffsId(facettenBeginnId);
+                        let facettenWertPresent: boolean = false;
+                        if (facette && facettenIds.includes(facette.FacettenId)) {
+                            facettenWertPresent = facettenEndeIdList.every((facettenEndeId) => {
+                                const facettenWert = catalog.getFacettenWertWithBegriffsId(facettenEndeId, facettenBeginnId);
+                                return !!facettenWert;
+                            });
+                        }
+                        return facettenWertPresent;
+                    });
+                }
+                if (!found) {
+                    return { ...options.message };
+                }
+            }
+        }
+
+        return null;
+    };
+}
+
+function checkEintragAttributes<T extends MibiCatalogData | MibiCatalogFacettenData>(
+    currentAttributes: string,
+    avvKode: string,
+    catalog: AVVCatalog<T>
+) {
+    if (currentAttributes) {
+        const eintragAttributes = catalog.getAttributeWithAVVKode(avvKode);
+        if (eintragAttributes) {
+            return currentAttributes
+                .split(':')
+                .every((attr) => eintragAttributes.includes(attr));
+        }
+    }
+
+    return true;
 }
 
 // Matching for ADV16 according to #mps53
@@ -283,8 +349,8 @@ function shouldBeZoMo(
                 }
                 let adv16Kode: string = adv16Entry[0]['Kode'];
 
-                // tslint:disable-next-line: no-any
-                const zspEntries: any[] = zspCat.dump();
+                // tslint:disable-next-line
+                const zspEntries: any[] = zspCat.dump() as any[];
                 // tslint:disable-next-line: no-any
                 const zspEntriesWithValues = _.filter(zspEntries, (entry: any) => {
                     const containsKodes = (
@@ -338,7 +404,7 @@ function registeredZoMo(
                 let adv16Kode: string = adv16Entry[0]['Kode'];
 
                 // tslint:disable-next-line: no-any
-                const zspEntries: any[] = zspCat.dump();
+                const zspEntries: any[] = zspCat.dump() as any[];
                 // tslint:disable-next-line: no-any
                 const zspEntriesWithValues = _.filter(zspEntries, (entry: any) => {
                     const containsKodes = (
@@ -451,20 +517,6 @@ function dependentFields(
     return null;
 }
 
-function numbersOnly(
-    value: string,
-    options: NumbersOnlyOptions,
-    key: SampleProperty,
-    attributes: SampleDataValues
-) {
-    if (attributes[key]) {
-        if (!numbersOnlyValue(value)) {
-            return { ...options.message };
-        }
-    }
-    return null;
-}
-
 function referenceDate(
     value: string,
     options: ReferenceDateOptions,
@@ -552,11 +604,11 @@ export {
     dateAllowEmpty,
     dependentFields,
     requiredIfOther,
-    numbersOnly,
     inCatalog,
+    inAVVCatalog,
+    inAVVFacettenCatalog,
     registeredZoMo,
     shouldBeZoMo,
-    nonUniqueEntry,
     matchADVNumberOrString,
     matchesRegexPattern,
     matchesIdToSpecificYear,

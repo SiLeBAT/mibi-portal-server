@@ -18,6 +18,7 @@ import { getMockFileRepository } from './file.repository';
 import { getMockUserRepository } from './user.repository';
 import { getMockSearchAliasRepository } from './search-alias.repository';
 import { getMockCatalogRepository } from './catalog.repository';
+import { getMockAVVCatalogRepository } from './avvcatalog.repository';
 
 export const mockPersistenceContainerModule = new ContainerModule(
     (bind: interfaces.Bind, unbind: interfaces.Unbind) => {
@@ -53,6 +54,9 @@ export const mockPersistenceContainerModule = new ContainerModule(
         );
         bind(APPLICATION_TYPES.CatalogRepository).toConstantValue(
             getMockCatalogRepository()
+        );
+        bind(APPLICATION_TYPES.AVVCatalogRepository).toConstantValue(
+            getMockAVVCatalogRepository()
         );
     }
 );

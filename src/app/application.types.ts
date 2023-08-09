@@ -29,6 +29,7 @@ export const APPLICATION_TYPES = {
     SampleFactory: Symbol.for('SampleFactory'),
 
     CatalogRepository: Symbol.for('CatalogRepository'),
+    AVVCatalogRepository: Symbol.for('AVVCatalogRepository'),
     SearchAliasRepository: Symbol.for('SearchAliasRepository'),
     FileRepository: Symbol.for('FileRepository'),
 

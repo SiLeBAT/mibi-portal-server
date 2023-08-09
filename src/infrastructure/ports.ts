@@ -12,6 +12,6 @@ export { getPersistenceContainerModule } from './persistence/persistence.module'
 
 export { DataStore } from './persistence/model/data-store.model';
 
-export { getRepository as initialiseCatalogRepository } from './persistence/repositories/catalog.repository';
-export { getRepository as initialiseSearchAliasRepository } from './persistence/repositories/search-alias.repository';
-
+export { initialiseRepository as initialiseCatalogRepository } from './persistence/repositories/catalog.repository';
+export { initialiseRepository as initialiseSearchAliasRepository } from './persistence/repositories/search-alias.repository';
+export { initialiseRepository as initialiseAVVCatalogRepository } from './persistence/repositories/avvcatalog.repository';
