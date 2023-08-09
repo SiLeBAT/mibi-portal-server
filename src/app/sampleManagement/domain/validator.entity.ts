@@ -8,10 +8,10 @@ import {
     dateAllowEmpty,
     dependentFields,
     requiredIfOther,
-    numbersOnly,
     inCatalog,
+    inAVVCatalog,
+    inAVVFacettenCatalog,
     registeredZoMo,
-    nonUniqueEntry,
     matchADVNumberOrString,
     matchesRegexPattern,
     matchesIdToSpecificYear,
@@ -85,10 +85,11 @@ class SampleValidator implements Validator {
         validate.validators.timeBetween = referenceDate;
         validate.validators.dependentFields = dependentFields;
         validate.validators.requiredIfOther = requiredIfOther;
-        validate.validators.numbersOnly = numbersOnly;
         validate.validators.matchesRegexPattern = matchesRegexPattern;
         validate.validators.matchesIdToSpecificYear = matchesIdToSpecificYear;
         validate.validators.inCatalog = inCatalog(this.catalogService);
+        validate.validators.inAVVCatalog = inAVVCatalog(this.catalogService);
+        validate.validators.inAVVFacettenCatalog = inAVVFacettenCatalog(this.catalogService);
         validate.validators.matchADVNumberOrString = matchADVNumberOrString(
             this.catalogService
         );
@@ -96,9 +97,6 @@ class SampleValidator implements Validator {
             this.catalogService
         );
         validate.validators.shouldBeZoMo = shouldBeZoMo(this.catalogService);
-        validate.validators.nonUniqueEntry = nonUniqueEntry(
-            this.catalogService
-        );
     }
 }
 

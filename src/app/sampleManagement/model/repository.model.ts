@@ -3,7 +3,12 @@ import {
     ValidationError,
     SearchAlias
 } from './validation.model';
-import { Catalog, CatalogData } from './catalog.model';
+import {
+    Catalog,
+    CatalogData,
+    AVVCatalog,
+    AVVCatalogData
+} from './catalog.model';
 import { NRL } from './nrl.model';
 
 export interface ParseValidationErrorRepository {
@@ -20,6 +25,10 @@ export interface ParseNRLRepository {
 
 export interface CatalogRepository {
     getCatalog<T extends CatalogData>(catalogName: string): Catalog<T>;
+}
+
+export interface AVVCatalogRepository {
+    getAVVCatalog<T extends AVVCatalogData>(catalogName: string): AVVCatalog<T>;
 }
 
 export interface SearchAliasRepository {

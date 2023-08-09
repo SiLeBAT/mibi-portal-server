@@ -11,6 +11,7 @@ import {
     getPersistenceContainerModule,
     MailService,
     initialiseCatalogRepository,
+    initialiseAVVCatalogRepository,
     initialiseSearchAliasRepository,
     getMailContainerModule,
     MAIL_TYPES
@@ -137,6 +138,15 @@ async function init() {
         throw error;
     });
 
+    const avvCatalogRepository = await initialiseAVVCatalogRepository(
+        dataStoreConfig.dataDir
+    ).catch((error: Error) => {
+        logger.error(
+            `Failed to initialize AVVCatalog Repository. error=${String(error)}`
+        );
+        throw error;
+    });
+
     const searchAliasRepository = await initialiseSearchAliasRepository(
         dataStoreConfig.dataDir
     ).catch((error: Error) => {
@@ -171,6 +181,7 @@ async function init() {
         getPersistenceContainerModule({
             searchAliasRepository,
             catalogRepository,
+            avvCatalogRepository,
             dataDir: dataStoreConfig.dataDir
         }),
         getServerContainerModule({

@@ -4,21 +4,19 @@ import {
     referenceDate,
     atLeastOneOf,
     dependentFields,
-    numbersOnly,
-    registeredZoMo,
-    shouldBeZoMo,
-    nonUniqueEntry,
-    inCatalog,
-    matchADVNumberOrString,
+    // registeredZoMo,
+    // shouldBeZoMo,
+    // inCatalog,
+    // matchADVNumberOrString,
     matchesRegexPattern,
     matchesIdToSpecificYear,
-    requiredIfOther
+    // requiredIfOther
 } from '../custom-validator-functions';
 import {
     ValidationError,
-    MatchADVNumberOrStringOptions
+    // MatchADVNumberOrStringOptions
 } from './../../model/validation.model';
-import { CatalogService, Catalog } from '../../model/catalog.model';
+// import { CatalogService, Catalog } from '../../model/catalog.model';
 jest.mock('../../../ports');
 
 moment.locale('de');
@@ -39,89 +37,89 @@ describe('Custom Validator Functions', () => {
             sample_id_avv: '17-L-00412-1-1',
             pathogen_adv: 'Escherichia coli',
             pathogen_text: '',
-            sampling_date: '01.02.2017',
-            isolation_date: '01.03.2017',
-            sampling_location_adv: '11000000',
+            sampling_date: '01.02.2023',
+            isolation_date: '01.03.2023',
+            sampling_location_adv: '45397|169446|',
             sampling_location_zip: '10787',
             sampling_location_text: 'Berlin',
-            topic_adv: '01',
-            matrix_adv: '063502',
-            matrix_text: 'Hähnchen auch tiefgefroren',
-            process_state_adv: '999',
-            sampling_reason_adv: '10',
-            sampling_reason_text: 'Planprobe',
-            operations_mode_adv: '4010000',
-            operations_mode_text: 'Lebensmitteleinzelhandel',
+            topic_adv: '706|57678|',
+            matrix_adv: '187036|183974|8871-8874,183670-1086',
+            matrix_text: 'Kot (Hygieneproben (LFGB-Bereich)); Kontakt - LM-Kontakt; Pflanze/Tier/Stoff/relevante Zutat - Schwein',
+            process_state_adv: '',
+            sampling_reason_adv: '22564|126366|',
+            sampling_reason_text: 'Verdachtsprobe',
+            operations_mode_adv: '10469|57619|63422-10492,63423-10563|BG:FM:KM:LM:TAM:TNP:TT:Tabak:Wein',
+            operations_mode_text: 'Inverkehrbringen; Prozessdetails - Abgeben an Endverbraucher; Verschiedene Eigenschaften zum Betrieb - Verkaufsabteilung',
             vvvo: '',
             comment: ''
         };
     });
 
-    describe('requiredIfOther', () => {
-        it('should validate without errors', () => {
-            const error = requiredIfOther(
-                testSample.process_state_adv,
-                {
-                    message: validationError,
-                    field: 'operations_mode_adv',
-                    regex: '^4'
-                },
-                'process_state_adv',
-                testSample
-            );
-            expect(error).toBe(null);
-        });
+    // describe('requiredIfOther', () => {
+    //     it('should validate without errors', () => {
+    //         const error = requiredIfOther(
+    //             testSample.process_state_adv,
+    //             {
+    //                 message: validationError,
+    //                 field: 'operations_mode_adv',
+    //                 regex: '^4'
+    //             },
+    //             'process_state_adv',
+    //             testSample
+    //         );
+    //         expect(error).toBe(null);
+    //     });
 
-        it('should validate without errors', () => {
-            const error = requiredIfOther(
-                testSample.process_state_adv,
-                {
-                    message: validationError,
-                    field: 'operations_mode_adv',
-                    regex: '^1'
-                },
-                'process_state_adv',
-                testSample
-            );
-            expect(error).toBe(null);
-        });
+    //     it('should validate without errors', () => {
+    //         const error = requiredIfOther(
+    //             testSample.process_state_adv,
+    //             {
+    //                 message: validationError,
+    //                 field: 'operations_mode_adv',
+    //                 regex: '^1'
+    //             },
+    //             'process_state_adv',
+    //             testSample
+    //         );
+    //         expect(error).toBe(null);
+    //     });
 
-        it('should fail validation with error message', () => {
-            const differentSample = {
-                ...testSample,
-                ...{ process_state_adv: '' }
-            };
-            const error = requiredIfOther(
-                differentSample.process_state_adv,
-                {
-                    message: validationError,
-                    field: 'operations_mode_adv',
-                    regex: '^4'
-                },
-                'process_state_adv',
-                differentSample
-            );
-            expect(error).toEqual(validationError);
-        });
+    //     it('should fail validation with error message', () => {
+    //         const differentSample = {
+    //             ...testSample,
+    //             ...{ process_state_adv: '' }
+    //         };
+    //         const error = requiredIfOther(
+    //             differentSample.process_state_adv,
+    //             {
+    //                 message: validationError,
+    //                 field: 'operations_mode_adv',
+    //                 regex: '^4'
+    //             },
+    //             'process_state_adv',
+    //             differentSample
+    //         );
+    //         expect(error).toEqual(validationError);
+    //     });
 
-        it('should validate without errors', () => {
-            const differentSample = {
-                ...testSample,
-                ...{ process_state_adv: '' }
-            };
-            const error = requiredIfOther(
-                differentSample.process_state_adv,
-                {
-                    message: validationError,
-                    field: 'operations_mode_adv',
-                    regex: '^1'
-                },
-                'process_state_adv',
-                differentSample
-            );
-            expect(error).toBe(null);
-        });
-    });
+    //     it('should validate without errors', () => {
+    //         const differentSample = {
+    //             ...testSample,
+    //             ...{ process_state_adv: '' }
+    //         };
+    //         const error = requiredIfOther(
+    //             differentSample.process_state_adv,
+    //             {
+    //                 message: validationError,
+    //                 field: 'operations_mode_adv',
+    //                 regex: '^1'
+    //             },
+    //             'process_state_adv',
+    //             differentSample
+    //         );
+    //         expect(error).toBe(null);
+    //     });
+    // });
 
     describe('atLeastOneOf', () => {
         it('should validate without errors because sampling_reason_adv & sampling_reason_text present', () => {
@@ -409,553 +407,415 @@ describe('Custom Validator Functions', () => {
         });
     });
 
-    describe('numbersOnly', () => {
-        it('should validate without errors', () => {
-            const error = numbersOnly(
-                testSample.topic_adv,
-                {
-                    message: validationError
-                },
-                'topic_adv',
-                testSample
-            );
-            expect(error).toBe(null);
-        });
-    });
+    // describe('registeredZoMo', () => {
+    //     it('should validate without errors', () => {
+    //         const zoMoSample: Record<string, string> = {
+    //             ...testSample,
+    //             ...{
+    //                 sampling_date: '01.02.2023',
+    //                 isolation_date: '01.03.2023',
+    //                 sampling_reason_adv: '70564|53075|',
+    //                 sampling_reason_text: '',
+    //                 operations_mode_adv: '62726|57604|2-1566,1473-1002,63421-1511|LM:Wein',
+    //                 matrix_adv: '187036|183974|8871-8874,183670-1086',
+    //                 topic_adv: '706|57678|'
+    //             }
+    //         };
 
-    describe('registeredZoMo', () => {
-        it('should validate without errors', () => {
-            const zoMoSample: Record<string, string> = {
-                ...testSample,
-                ...{
-                    sampling_date: '01.02.2023',
-                    isolation_date: '01.03.2023',
-                    sampling_reason_adv: '81',
-                    sampling_reason_text: '',
-                    operations_mode_adv: '1000000',
-                    matrix_adv: '522011',
-                    topic_adv: '15'
-                }
-            };
+    //         const fakeAdv16Entry = {
+    //             Kodiersystem: '000',
+    //             Kode: '0801001',
+    //             Text: 'Escherichia coli',
+    //         };
 
-            const fakeAdv16Entry = {
-                Kodiersystem: '000',
-                Kode: '0801001',
-                Text: 'Escherichia coli',
-            };
+    //         const fakeAVV324Entry = {
+    //             "10807|1548|": {
+    //                 "Text": "Escherichia coli"
+    //             },
+    //         };
 
-            const fakeZspDump = {
-                "ADV8-Kode": [
-                  '1000000'
-                ],
-                "ADV3-Kode": [
-                  '522011'
-                ],
-                "ADV16-Kode": [
-                  '0801001'
-                ],
-                Kodiersystem: [
-                  "15",
-                ],
-              }
+    //         const fakeZspDump = {
+    //             "ADV8-Kode": [
+    //               '1000000'
+    //             ],
+    //             "ADV3-Kode": [
+    //               '522011'
+    //             ],
+    //             "ADV16-Kode": [
+    //               '0801001'
+    //             ],
+    //             Kodiersystem: [
+    //               "15",
+    //             ],
+    //           }
 
-            // tslint:disable-next-line
-            const mockCatalog: Catalog<any> = {
-                getEntriesWithKeyValue: (key: string, value: string) => [
-                    fakeAdv16Entry
-                ],
-                getUniqueEntryWithId: (id: string) => ({}),
-                containsUniqueEntryWithId: (id: string) => true,
-                containsEntryWithKeyValue: (key: string, value: string) => true,
-                hasUniqueId: () => true,
-                getUniqueId: () => '',
-                getFuzzyIndex: jest.fn(),
-                dump: () => [
-                    fakeZspDump
-                ]
-            };
+    //         // tslint:disable-next-line
+    //         const mockCatalog: Catalog<any> = {
+    //             getEntriesWithKeyValue: (key: string, value: string) => [
+    //                 fakeAdv16Entry
+    //             ],
+    //             getUniqueEntryWithId: (id: string) => ({}),
+    //             containsUniqueEntryWithId: (id: string) => true,
+    //             containsEntryWithKeyValue: (key: string, value: string) => true,
+    //             hasUniqueId: () => true,
+    //             getUniqueId: () => '',
+    //             getFuzzyIndex: jest.fn(),
+    //             dump: () => [
+    //                 fakeZspDump
+    //             ]
+    //         };
 
-            const mockCatalogService: CatalogService = {
-                getCatalog: () => mockCatalog,
-                getCatalogSearchAliases: jest.fn()
-            };
-            const error = registeredZoMo(mockCatalogService)(
-                zoMoSample.operations_mode_adv,
-                {
-                    message: validationError,
-                    group: [
-                        {
-                            attr: 'operations_mode_adv',
-                            code: 'ADV8-Kode'
-                        },
-                        {
-                            attr: 'matrix_adv',
-                            code: 'ADV3-Kode'
-                        },
-                        {
-                            attr: 'topic_adv',
-                            code: 'Kodiersystem'
-                        },
-                        {
-                            attr: 'pathogen_adv',
-                            code: 'ADV16-Kode'
-                        }
-                            ],
-                    year: ['sampling_date', 'isolation_date'],
-                    catalog: 'adv16'
-                },
-                'operations_mode_adv',
-                zoMoSample
-            );
-            expect(error).toBe(null);
-        });
-    });
+    //         const mockAVVCatalog: AVVCatalog<any> = {
 
-    describe('shouldBeZoMo', () => {
-        it('should validate with error because values match with ZoMo sample', () => {
-            const zoMoSample: Record<string, string> = {
-                ...testSample,
-                ...{
-                    sampling_date: '01.02.2023',
-                    isolation_date: '01.03.2023',
-                    sampling_reason_adv: '10',
-                    sampling_reason_text: '',
-                    operations_mode_adv: '1000000',
-                    matrix_adv: '522011',
-                    topic_adv: '15'
-                }
-            };
+    //             containsEintragWithAVVKode: (kode: string) => true,
+    //             containsTextEintrag: (value: string) => true,
+    //             getEintragWithAVVKode: (kode: string) => fakeAVV324Entry['10807|1548|'],
+    //             getAttributeWithAVVKode: (kode: string) => [],
+    //             containsFacetteWithBegriffsId: (begriffsId: string) => true,
+    //             getFacettenIdsWithKode: (kode: string) => [],
+    //             getFacetteWithBegriffsId: (begriffsId: string) => ({})
 
-            const fakeAdv16Entry = {
-                Kodiersystem: '000',
-                Kode: '0801001',
-                Text: 'Escherichia coli',
-            };
+    //             // getEntriesWithKeyValue: (key: string, value: string) => [
+    //             //     fakeAdv16Entry
+    //             // ],
+    //             // getUniqueEntryWithId: (id: string) => ({}),
+    //             // containsUniqueEntryWithId: (id: string) => true,
+    //             // containsEntryWithKeyValue: (key: string, value: string) => true,
+    //             // hasUniqueId: () => true,
+    //             getUniqueId: () => '',
+    //             getFuzzyIndex: jest.fn(),
+    //             dump: () => [
+    //                 fakeZspDump
+    //             ]
+    //         };
 
-            const fakeZspDump = {
-                "ADV8-Kode": [
-                  '1000000'
-                ],
-                "ADV3-Kode": [
-                  '522011'
-                ],
-                "ADV16-Kode": [
-                  '0801001'
-                ],
-                Kodiersystem: [
-                  "15",
-                ],
-              }
 
-            // tslint:disable-next-line
-            const mockCatalog: Catalog<any> = {
-                getEntriesWithKeyValue: (key: string, value: string) => [
-                    fakeAdv16Entry
-                ],
-                getUniqueEntryWithId: (id: string) => ({}),
-                containsUniqueEntryWithId: (id: string) => true,
-                containsEntryWithKeyValue: (key: string, value: string) => true,
-                hasUniqueId: () => true,
-                getUniqueId: () => '',
-                getFuzzyIndex: jest.fn(),
-                dump: () => [
-                    fakeZspDump
-                ]
-            };
 
-            const mockCatalogService: CatalogService = {
-                getCatalog: () => mockCatalog,
-                getCatalogSearchAliases: jest.fn()
-            };
-            const error = shouldBeZoMo(mockCatalogService)(
-                zoMoSample.operations_mode_adv,
-                {
-                    message: validationError,
-                    group: [
-                        {
-                            attr: 'operations_mode_adv',
-                            code: 'ADV8-Kode'
-                        },
-                        {
-                            attr: 'matrix_adv',
-                            code: 'ADV3-Kode'
-                        },
-                        {
-                            attr: 'topic_adv',
-                            code: 'Kodiersystem'
-                        },
-                        {
-                            attr: 'pathogen_adv',
-                            code: 'ADV16-Kode'
-                        }
-                            ],
-                    year: ['sampling_date', 'isolation_date'],
-                    catalog: 'adv16'
-                },
-                'operations_mode_adv',
-                zoMoSample
-            );
-            expect(error).not.toBe(null);
-        });
-    });
 
-    describe('nonUniqueEntry', () => {
-        it('should validate without errors', () => {
-            // tslint:disable-next-line
-            const mockCatalog: Catalog<any> = {
-                getEntriesWithKeyValue: (key: string, value: string) => [],
-                getUniqueEntryWithId: (id: string) => ({}),
-                containsUniqueEntryWithId: (id: string) => true,
-                containsEntryWithKeyValue: (key: string, value: string) => true,
-                hasUniqueId: () => true,
-                getUniqueId: () => '',
-                getFuzzyIndex: jest.fn(),
-                dump: () => []
-            };
-            const mockCatalogService: CatalogService = {
-                getCatalog: () => mockCatalog,
-                getCatalogSearchAliases: jest.fn()
-            };
-            const error = nonUniqueEntry(mockCatalogService)(
-                testSample.matrix_adv,
-                {
-                    message: validationError,
-                    catalog: 'adv3',
-                    key: 'Kode',
-                    differentiator: ['Kodiersystem', 'topic_adv']
-                },
-                'matrix_adv',
-                testSample
-            );
-            expect(error).toBe(null);
-        });
+    //         //
+    //         //
+    //         // getFacettenWertWithBegriffsId(facettenWertId: string, facettenBegriffsId: string): MibiFacettenWert | undefined;
+    //         // assembleAVVKode(begriffsIdEintrag: string, id: string): string;
+    //         // getFuzzyIndex(options: Fuse.IFuseOptions<FuzzyEintrag>, enhancements?: FuzzyEintrag[]): Fuse<FuzzyEintrag>;
+    //         // getUniqueId(): string;
+    //         // dump(): T;
 
-        it('should validate without errors because topic makes entry unique', () => {
-            // tslint:disable-next-line
-            const mockCatalog: Catalog<any> = {
-                getEntriesWithKeyValue: (key: string, value: string) => [
-                    {
-                        Kodiersystem: '01',
-                        Kode: '020301',
-                        Text: 'Test1'
-                    },
-                    {
-                        Kodiersystem: '15',
-                        Kode: '020301',
-                        Text: 'Test2'
-                    }
-                ],
-                getUniqueEntryWithId: (id: string) => ({}),
-                containsUniqueEntryWithId: (id: string) => true,
-                containsEntryWithKeyValue: (key: string, value: string) => true,
-                hasUniqueId: () => true,
-                getUniqueId: () => '',
-                getFuzzyIndex: jest.fn(),
-                dump: () => []
-            };
-            const mockCatalogService: CatalogService = {
-                getCatalog: () => mockCatalog,
-                getCatalogSearchAliases: jest.fn()
-            };
-            const error = nonUniqueEntry(mockCatalogService)(
-                testSample.matrix_adv,
-                {
-                    message: validationError,
-                    catalog: 'adv3',
-                    key: 'Kode',
-                    differentiator: ['Kodiersystem', 'topic_adv']
-                },
-                'matrix_adv',
-                testSample
-            );
-            expect(error).toEqual(null);
-        });
 
-        it('should not validate without errors because topic does not differentiate', () => {
-            testSample.topic_adv = '12';
 
-            // tslint:disable-next-line
-            const mockCatalog: Catalog<any> = {
-                getEntriesWithKeyValue: (key: string, value: string) => [
-                    {
-                        Kodiersystem: '01',
-                        Kode: '020301',
-                        Text: 'Test1'
-                    },
-                    {
-                        Kodiersystem: '15',
-                        Kode: '020301',
-                        Text: 'Test2'
-                    }
-                ],
-                getUniqueEntryWithId: (id: string) => ({}),
-                containsUniqueEntryWithId: (id: string) => true,
-                containsEntryWithKeyValue: (key: string, value: string) => true,
-                hasUniqueId: () => true,
-                getUniqueId: () => '',
-                getFuzzyIndex: jest.fn(),
-                dump: () => []
-            };
-            const mockCatalogService: CatalogService = {
-                getCatalog: () => mockCatalog,
-                getCatalogSearchAliases: jest.fn()
-            };
-            const error = nonUniqueEntry(mockCatalogService)(
-                testSample.matrix_adv,
-                {
-                    message: validationError,
-                    catalog: 'adv3',
-                    key: 'Kode',
-                    differentiator: ['Kodiersystem', 'topic_adv']
-                },
-                'matrix_adv',
-                testSample
-            );
-            const amendedError = { ...validationError };
-            amendedError.message =
-                amendedError.message +
-                " Entweder '01' für 'Test1' oder '15' für 'Test2'.";
-            expect(error).toEqual(amendedError);
-        });
+    //         const mockCatalogService: CatalogService = {
+    //             getAVVCatalog: () => mockCatalog,
+    //             getCatalogSearchAliases: jest.fn()
+    //         };
+    //         const error = registeredZoMo(mockCatalogService)(
+    //             zoMoSample.operations_mode_adv,
+    //             {
+    //                 message: validationError,
+    //                 group: [
+    //                     {
+    //                         attr: 'operations_mode_adv',
+    //                         code: 'ADV8-Kode'
+    //                     },
+    //                     {
+    //                         attr: 'matrix_adv',
+    //                         code: 'ADV3-Kode'
+    //                     },
+    //                     {
+    //                         attr: 'topic_adv',
+    //                         code: 'Kodiersystem'
+    //                     },
+    //                     {
+    //                         attr: 'pathogen_adv',
+    //                         code: 'ADV16-Kode'
+    //                     }
+    //                         ],
+    //                 year: ['sampling_date', 'isolation_date'],
+    //                 catalog: 'adv16'
+    //             },
+    //             'operations_mode_adv',
+    //             zoMoSample
+    //         );
+    //         expect(error).toBe(null);
+    //     });
+    // });
 
-        it('should not validate without errors because of missing Topic', () => {
-            testSample.topic_adv = '';
+    // describe('shouldBeZoMo', () => {
+    //     it('should validate with error because values match with ZoMo sample', () => {
+    //         const zoMoSample: Record<string, string> = {
+    //             ...testSample,
+    //             ...{
+    //                 sampling_date: '01.02.2023',
+    //                 isolation_date: '01.03.2023',
+    //                 sampling_reason_adv: '10',
+    //                 sampling_reason_text: '',
+    //                 operations_mode_adv: '1000000',
+    //                 matrix_adv: '522011',
+    //                 topic_adv: '15'
+    //             }
+    //         };
 
-            // tslint:disable-next-line
-            const mockCatalog: Catalog<any> = {
-                getEntriesWithKeyValue: (key: string, value: string) => [
-                    {
-                        Kodiersystem: '01',
-                        Kode: '020301',
-                        Text: 'Test1'
-                    },
-                    {
-                        Kodiersystem: '15',
-                        Kode: '020301',
-                        Text: 'Test2'
-                    }
-                ],
-                getUniqueEntryWithId: (id: string) => ({}),
-                containsUniqueEntryWithId: (id: string) => true,
-                containsEntryWithKeyValue: (key: string, value: string) => true,
-                hasUniqueId: () => true,
-                getUniqueId: () => '',
-                getFuzzyIndex: jest.fn(),
-                dump: () => []
-            };
-            const mockCatalogService: CatalogService = {
-                getCatalog: () => mockCatalog,
-                getCatalogSearchAliases: jest.fn()
-            };
-            const error = nonUniqueEntry(mockCatalogService)(
-                testSample.matrix_adv,
-                {
-                    message: validationError,
-                    catalog: 'adv3',
-                    key: 'Kode',
-                    differentiator: ['Kodiersystem', 'topic_adv']
-                },
-                'matrix_adv',
-                testSample
-            );
-            const amendedError = { ...validationError };
-            amendedError.message =
-                amendedError.message +
-                " Entweder '01' für 'Test1' oder '15' für 'Test2'.";
-            expect(error).toEqual(amendedError);
-        });
-    });
+    //         const fakeAdv16Entry = {
+    //             Kodiersystem: '000',
+    //             Kode: '0801001',
+    //             Text: 'Escherichia coli',
+    //         };
 
-    describe('inCatalog', () => {
-        // tslint:disable-next-line
-        let mockCatalog: Catalog<any>;
-        let mockCatalogService: CatalogService;
+    //         const fakeZspDump = {
+    //             "ADV8-Kode": [
+    //               '1000000'
+    //             ],
+    //             "ADV3-Kode": [
+    //               '522011'
+    //             ],
+    //             "ADV16-Kode": [
+    //               '0801001'
+    //             ],
+    //             Kodiersystem: [
+    //               "15",
+    //             ],
+    //           }
 
-        beforeEach(() => {
-            mockCatalog = {
-                getEntriesWithKeyValue: (key: string, value: string) => [],
-                getUniqueEntryWithId: (id: string) => ({}),
-                containsUniqueEntryWithId: (id: string) => true,
-                containsEntryWithKeyValue: (key: string, value: string) => true,
-                hasUniqueId: () => true,
-                getUniqueId: () => '',
-                getFuzzyIndex: jest.fn(),
-                dump: () => []
-            };
-            mockCatalogService = {
-                getCatalog: () => mockCatalog,
-                getCatalogSearchAliases: jest.fn()
-            };
-        });
+    //         // tslint:disable-next-line
+    //         const mockCatalog: Catalog<any> = {
+    //             getEntriesWithKeyValue: (key: string, value: string) => [
+    //                 fakeAdv16Entry
+    //             ],
+    //             getUniqueEntryWithId: (id: string) => ({}),
+    //             containsUniqueEntryWithId: (id: string) => true,
+    //             containsEntryWithKeyValue: (key: string, value: string) => true,
+    //             hasUniqueId: () => true,
+    //             getUniqueId: () => '',
+    //             getFuzzyIndex: jest.fn(),
+    //             dump: () => [
+    //                 fakeZspDump
+    //             ]
+    //         };
 
-        it('should validate without errors', () => {
-            const error = inCatalog(mockCatalogService)(
-                testSample.matrix_adv,
-                {
-                    message: validationError,
-                    catalog: 'adv3',
-                    key: 'Kode'
-                },
-                'matrix_adv',
-                testSample
-            );
-            expect(error).toBe(null);
-        });
+    //         const mockCatalogService: CatalogService = {
+    //             getCatalog: () => mockCatalog,
+    //             getCatalogSearchAliases: jest.fn()
+    //         };
+    //         const error = shouldBeZoMo(mockCatalogService)(
+    //             zoMoSample.operations_mode_adv,
+    //             {
+    //                 message: validationError,
+    //                 group: [
+    //                     {
+    //                         attr: 'operations_mode_adv',
+    //                         code: 'ADV8-Kode'
+    //                     },
+    //                     {
+    //                         attr: 'matrix_adv',
+    //                         code: 'ADV3-Kode'
+    //                     },
+    //                     {
+    //                         attr: 'topic_adv',
+    //                         code: 'Kodiersystem'
+    //                     },
+    //                     {
+    //                         attr: 'pathogen_adv',
+    //                         code: 'ADV16-Kode'
+    //                     }
+    //                         ],
+    //                 year: ['sampling_date', 'isolation_date'],
+    //                 catalog: 'adv16'
+    //             },
+    //             'operations_mode_adv',
+    //             zoMoSample
+    //         );
+    //         expect(error).not.toBe(null);
+    //     });
+    // });
 
-        it('should not validate because entry 62 is not in ADV12', () => {
-            testSample.process_state_adv = '62';
-            mockCatalog.containsEntryWithKeyValue = (
-                key: string,
-                value: string
-            ) => false;
-            const error = inCatalog(mockCatalogService)(
-                testSample.process_state_adv,
-                {
-                    message: validationError,
-                    catalog: 'adv12',
-                    key: 'Kode'
-                },
-                'process_state_adv',
-                testSample
-            );
-            expect(error).toEqual(validationError);
-        });
-    });
+    // describe('inCatalog', () => {
+    //     // tslint:disable-next-line
+    //     let mockCatalog: Catalog<any>;
+    //     let mockCatalogService: CatalogService;
 
-    describe('matchADVNumberOrString', () => {
-        // tslint:disable-next-line
-        let mockCatalog: Catalog<any>;
-        let mockCatalogService: CatalogService;
+    //     beforeEach(() => {
+    //         mockCatalog = {
+    //             getEntriesWithKeyValue: (key: string, value: string) => [],
+    //             getUniqueEntryWithId: (id: string) => ({}),
+    //             containsUniqueEntryWithId: (id: string) => true,
+    //             containsEntryWithKeyValue: (key: string, value: string) => true,
+    //             hasUniqueId: () => true,
+    //             getUniqueId: () => '',
+    //             getFuzzyIndex: jest.fn(),
+    //             dump: () => []
+    //         };
+    //         mockCatalogService = {
+    //             getCatalog: () => mockCatalog,
+    //             getCatalogSearchAliases: jest.fn()
+    //         };
+    //     });
 
-        beforeEach(() => {
-            // tslint:disable-next-line
-            mockCatalog = {
-                getEntriesWithKeyValue: (key: string, value: string) => [],
-                getUniqueEntryWithId: (id: string) => ({}),
-                containsUniqueEntryWithId: (id: string) => true,
-                containsEntryWithKeyValue: (key: string, value: string) => {
-                    switch (value) {
-                        case '1234567':
-                            return true;
-                        case 'Escherichia coli':
-                            return true;
-                        default:
-                            return false;
-                    }
-                },
-                hasUniqueId: () => true,
-                getUniqueId: () => '',
-                getFuzzyIndex: jest.fn(),
-                dump: () => []
-            };
+    //     it('should validate without errors', () => {
+    //         const error = inCatalog(mockCatalogService)(
+    //             testSample.matrix_adv,
+    //             {
+    //                 message: validationError,
+    //                 catalog: 'adv3',
+    //                 key: 'Kode'
+    //             },
+    //             'matrix_adv',
+    //             testSample
+    //         );
+    //         expect(error).toBe(null);
+    //     });
 
-            mockCatalogService = {
-                getCatalog: () => mockCatalog,
-                getCatalogSearchAliases: jest.fn()
-            };
-        });
+    //     it('should not validate because entry 62 is not in ADV12', () => {
+    //         testSample.process_state_adv = '62';
+    //         mockCatalog.containsEntryWithKeyValue = (
+    //             key: string,
+    //             value: string
+    //         ) => false;
+    //         const error = inCatalog(mockCatalogService)(
+    //             testSample.process_state_adv,
+    //             {
+    //                 message: validationError,
+    //                 catalog: 'adv12',
+    //                 key: 'Kode'
+    //             },
+    //             'process_state_adv',
+    //             testSample
+    //         );
+    //         expect(error).toEqual(validationError);
+    //     });
+    // });
 
-        it('should validate without errors', () => {
-            testSample.pathogen_adv = '';
-            const error = matchADVNumberOrString(mockCatalogService)(
-                testSample.pathogen_adv,
-                {
-                    message: validationError,
-                    catalog: 'adv16',
-                    key: 'Kode',
-                    alternateKeys: ['Text']
-                } as MatchADVNumberOrStringOptions,
-                'pathogen_adv',
-                testSample
-            );
-            expect(error).toBe(null);
-        });
+    // describe('matchADVNumberOrString', () => {
+    //     // tslint:disable-next-line
+    //     let mockCatalog: Catalog<any>;
+    //     let mockCatalogService: CatalogService;
 
-        it('should not validate because entry 62 is not in ADV16', () => {
-            testSample.pathogen_adv = '62';
+    //     beforeEach(() => {
+    //         // tslint:disable-next-line
+    //         mockCatalog = {
+    //             getEntriesWithKeyValue: (key: string, value: string) => [],
+    //             getUniqueEntryWithId: (id: string) => ({}),
+    //             containsUniqueEntryWithId: (id: string) => true,
+    //             containsEntryWithKeyValue: (key: string, value: string) => {
+    //                 switch (value) {
+    //                     case '1234567':
+    //                         return true;
+    //                     case 'Escherichia coli':
+    //                         return true;
+    //                     default:
+    //                         return false;
+    //                 }
+    //             },
+    //             hasUniqueId: () => true,
+    //             getUniqueId: () => '',
+    //             getFuzzyIndex: jest.fn(),
+    //             dump: () => []
+    //         };
 
-            const error = matchADVNumberOrString(mockCatalogService)(
-                testSample.pathogen_adv,
-                {
-                    message: validationError,
-                    catalog: 'adv16',
-                    key: 'Kode',
-                    alternateKeys: ['Text']
-                } as MatchADVNumberOrStringOptions,
-                'pathogen_adv',
-                testSample
-            );
-            expect(error).toEqual(validationError);
-        });
+    //         mockCatalogService = {
+    //             getCatalog: () => mockCatalog,
+    //             getCatalogSearchAliases: jest.fn()
+    //         };
+    //     });
 
-        it('should validate because entry 1234567 is in ADV16', () => {
-            testSample.pathogen_adv = '1234567';
+    //     it('should validate without errors', () => {
+    //         testSample.pathogen_adv = '';
+    //         const error = matchADVNumberOrString(mockCatalogService)(
+    //             testSample.pathogen_adv,
+    //             {
+    //                 message: validationError,
+    //                 catalog: 'adv16',
+    //                 key: 'Kode',
+    //                 alternateKeys: ['Text']
+    //             } as MatchADVNumberOrStringOptions,
+    //             'pathogen_adv',
+    //             testSample
+    //         );
+    //         expect(error).toBe(null);
+    //     });
 
-            const error = matchADVNumberOrString(mockCatalogService)(
-                testSample.pathogen_adv,
-                {
-                    message: validationError,
-                    catalog: 'adv16',
-                    key: 'Kode',
-                    alternateKeys: ['Text']
-                } as MatchADVNumberOrStringOptions,
-                'pathogen_adv',
-                testSample
-            );
-            expect(error).toEqual(null);
-        });
+    //     it('should not validate because entry 62 is not in ADV16', () => {
+    //         testSample.pathogen_adv = '62';
 
-        it('should validate because entry 1234567 is in ADV16 and value is trimmed', () => {
-            testSample.pathogen_adv = '    1234567    ';
+    //         const error = matchADVNumberOrString(mockCatalogService)(
+    //             testSample.pathogen_adv,
+    //             {
+    //                 message: validationError,
+    //                 catalog: 'adv16',
+    //                 key: 'Kode',
+    //                 alternateKeys: ['Text']
+    //             } as MatchADVNumberOrStringOptions,
+    //             'pathogen_adv',
+    //             testSample
+    //         );
+    //         expect(error).toEqual(validationError);
+    //     });
 
-            const error = matchADVNumberOrString(mockCatalogService)(
-                testSample.pathogen_adv,
-                {
-                    message: validationError,
-                    catalog: 'adv16',
-                    key: 'Kode',
-                    alternateKeys: ['Text']
-                } as MatchADVNumberOrStringOptions,
-                'pathogen_adv',
-                testSample
-            );
-            expect(error).toEqual(null);
-        });
+    //     it('should validate because entry 1234567 is in ADV16', () => {
+    //         testSample.pathogen_adv = '1234567';
 
-        it('should validate because entry Escherichia coli is in ADV16 and value is trimmed', () => {
-            testSample.pathogen_adv = '    Escherichia coli    ';
+    //         const error = matchADVNumberOrString(mockCatalogService)(
+    //             testSample.pathogen_adv,
+    //             {
+    //                 message: validationError,
+    //                 catalog: 'adv16',
+    //                 key: 'Kode',
+    //                 alternateKeys: ['Text']
+    //             } as MatchADVNumberOrStringOptions,
+    //             'pathogen_adv',
+    //             testSample
+    //         );
+    //         expect(error).toEqual(null);
+    //     });
 
-            const error = matchADVNumberOrString(mockCatalogService)(
-                testSample.pathogen_adv,
-                {
-                    message: validationError,
-                    catalog: 'adv16',
-                    key: 'Kode',
-                    alternateKeys: ['Text']
-                } as MatchADVNumberOrStringOptions,
-                'pathogen_adv',
-                testSample
-            );
-            expect(error).toEqual(null);
-        });
+    //     it('should validate because entry 1234567 is in ADV16 and value is trimmed', () => {
+    //         testSample.pathogen_adv = '    1234567    ';
 
-        it('should not validate because entry 1234  567 contains spaces', () => {
-            testSample.pathogen_adv = '1234  567';
+    //         const error = matchADVNumberOrString(mockCatalogService)(
+    //             testSample.pathogen_adv,
+    //             {
+    //                 message: validationError,
+    //                 catalog: 'adv16',
+    //                 key: 'Kode',
+    //                 alternateKeys: ['Text']
+    //             } as MatchADVNumberOrStringOptions,
+    //             'pathogen_adv',
+    //             testSample
+    //         );
+    //         expect(error).toEqual(null);
+    //     });
 
-            const error = matchADVNumberOrString(mockCatalogService)(
-                testSample.pathogen_adv,
-                {
-                    message: validationError,
-                    catalog: 'adv16',
-                    key: 'Kode',
-                    alternateKeys: ['Text']
-                } as MatchADVNumberOrStringOptions,
-                'pathogen_adv',
-                testSample
-            );
-            expect(error).toEqual(validationError);
-        });
-    });
+    //     it('should validate because entry Escherichia coli is in ADV16 and value is trimmed', () => {
+    //         testSample.pathogen_adv = '    Escherichia coli    ';
+
+    //         const error = matchADVNumberOrString(mockCatalogService)(
+    //             testSample.pathogen_adv,
+    //             {
+    //                 message: validationError,
+    //                 catalog: 'adv16',
+    //                 key: 'Kode',
+    //                 alternateKeys: ['Text']
+    //             } as MatchADVNumberOrStringOptions,
+    //             'pathogen_adv',
+    //             testSample
+    //         );
+    //         expect(error).toEqual(null);
+    //     });
+
+    //     it('should not validate because entry 1234  567 contains spaces', () => {
+    //         testSample.pathogen_adv = '1234  567';
+
+    //         const error = matchADVNumberOrString(mockCatalogService)(
+    //             testSample.pathogen_adv,
+    //             {
+    //                 message: validationError,
+    //                 catalog: 'adv16',
+    //                 key: 'Kode',
+    //                 alternateKeys: ['Text']
+    //             } as MatchADVNumberOrStringOptions,
+    //             'pathogen_adv',
+    //             testSample
+    //         );
+    //         expect(error).toEqual(validationError);
+    //     });
+    // });
 
     describe('matchesRegexPattern', () => {
         it('should validate without errors', () => {

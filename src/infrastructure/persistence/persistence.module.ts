@@ -4,6 +4,7 @@ import {
     FileRepository,
     SearchAliasRepository,
     CatalogRepository,
+    AVVCatalogRepository,
     ParseUserRepository,
     ParseInstituteRepository,
     ParseNRLRepository,
@@ -25,12 +26,14 @@ import { APPLICATION_TYPES } from './../../app/application.types';
 export interface PersistenceContainerModuleConfig {
     searchAliasRepository: SearchAliasRepository;
     catalogRepository: CatalogRepository;
+    avvCatalogRepository: AVVCatalogRepository;
     dataDir: string;
 }
 
 export function getPersistenceContainerModule({
     searchAliasRepository,
     catalogRepository,
+    avvCatalogRepository,
     dataDir
 }: PersistenceContainerModuleConfig): ContainerModule {
     return new ContainerModule(
@@ -40,6 +43,9 @@ export function getPersistenceContainerModule({
             );
             bind(APPLICATION_TYPES.CatalogRepository).toConstantValue(
                 catalogRepository
+            );
+            bind(APPLICATION_TYPES.AVVCatalogRepository).toConstantValue(
+                avvCatalogRepository
             );
             bind(PERSISTENCE_TYPES.DataDir).toConstantValue(dataDir);
 

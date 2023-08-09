@@ -89,7 +89,13 @@ export {
     CatalogData,
     ADVCatalogEntry,
     AVV313CatalogEntry,
-    ZSPCatalogEntry
+    ZSPCatalogEntry,
+    AVVCatalog,
+    AVVCatalogData,
+    MibiCatalog,
+    MibiCatalogData,
+    MibiCatalogFacettenData,
+    AVV324Data
 } from './sampleManagement/model/catalog.model';
 
 export {
@@ -104,6 +110,8 @@ export {
 
 export { createCatalog } from './sampleManagement/domain/catalog.entity';
 
+export { createAVVCatalog } from './sampleManagement/domain/avvcatalog.entity';
+
 export { Urgency, NRL_ID, ReceiveAs } from './sampleManagement/domain/enums';
 
 export {
@@ -112,5 +120,6 @@ export {
     ParseStateRepository,
     ParseNRLRepository,
     CatalogRepository,
+    AVVCatalogRepository,
     FileRepository
 } from './sampleManagement/model/repository.model';

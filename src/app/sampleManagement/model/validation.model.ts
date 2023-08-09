@@ -1,7 +1,6 @@
 import { Sample, SampleProperty, SampleDataValues } from './sample.model';
 import {
     CatalogService,
-    ADVCatalogEntry,
     ZSPCatalogEntry
 } from './catalog.model';
 
@@ -106,12 +105,6 @@ export interface RequiredIfOtherOptions extends ValidatorFunctionOptions {
     field: SampleProperty;
 }
 
-export interface NonUniqueEntryOptions extends ValidatorFunctionOptions {
-    catalog: string;
-    key: string;
-    differentiator: [keyof ADVCatalogEntry, SampleProperty];
-}
-
 export interface InCatalogOptions extends ValidatorFunctionOptions {
     catalog: string;
     key: string;
@@ -139,8 +132,6 @@ export interface AtLeastOneOfOptions extends ValidatorFunctionOptions {
 export interface DependentFieldsOptions extends ValidatorFunctionOptions {
     dependents: SampleProperty[];
 }
-
-export interface NumbersOnlyOptions extends ValidatorFunctionOptions {}
 
 export interface ReferenceDateOptions extends ValidatorFunctionOptions {
     earliest?: SampleProperty | string;
