@@ -33,19 +33,19 @@ export const zoMoConstraints: ValidationConstraints = {
             error: 49,
             group: [
                 {
-                    attr: 'operations_mode_adv',
+                    attr: 'operations_mode_avv',
                     code: 'ADV8-Kode'
                 },
                 {
-                    attr: 'matrix_adv',
+                    attr: 'matrix_avv',
                     code: 'ADV3-Kode'
                 },
                 {
-                    attr: 'topic_adv',
+                    attr: 'animal_avv',
                     code: 'Kodiersystem'
                 },
                 {
-                    attr: 'pathogen_adv',
+                    attr: 'pathogen_avv',
                     code: 'ADV16-Kode'
                 }
             ],
@@ -67,19 +67,19 @@ export const zoMoConstraints: ValidationConstraints = {
             error: 49,
             group: [
                 {
-                    attr: 'operations_mode_adv',
+                    attr: 'operations_mode_avv',
                     code: 'ADV8-Kode'
                 },
                 {
-                    attr: 'matrix_adv',
+                    attr: 'matrix_avv',
                     code: 'ADV3-Kode'
                 },
                 {
-                    attr: 'topic_adv',
+                    attr: 'animal_avv',
                     code: 'Kodiersystem'
                 },
                 {
-                    attr: 'pathogen_adv',
+                    attr: 'pathogen_avv',
                     code: 'ADV16-Kode'
                 }
             ],
@@ -89,26 +89,26 @@ export const zoMoConstraints: ValidationConstraints = {
 
     },
 
-    topic_adv: {
+    animal_avv: {
 
         // new text
         registeredZoMo: {
             error: 49,
             group: [
                 {
-                    attr: 'operations_mode_adv',
+                    attr: 'operations_mode_avv',
                     code: 'ADV8-Kode'
                 },
                 {
-                    attr: 'matrix_adv',
+                    attr: 'matrix_avv',
                     code: 'ADV3-Kode'
                 },
                 {
-                    attr: 'topic_adv',
+                    attr: 'animal_avv',
                     code: 'Kodiersystem'
                 },
                 {
-                    attr: 'pathogen_adv',
+                    attr: 'pathogen_avv',
                     code: 'ADV16-Kode'
                 }
             ],
@@ -118,7 +118,7 @@ export const zoMoConstraints: ValidationConstraints = {
 
     },
 
-    matrix_adv: {
+    matrix_avv: {
 
         presence: {
             error: 34,
@@ -130,19 +130,19 @@ export const zoMoConstraints: ValidationConstraints = {
             error: 49,
             group: [
                 {
-                    attr: 'operations_mode_adv',
+                    attr: 'operations_mode_avv',
                     code: 'ADV8-Kode'
                 },
                 {
-                    attr: 'matrix_adv',
+                    attr: 'matrix_avv',
                     code: 'ADV3-Kode'
                 },
                 {
-                    attr: 'topic_adv',
+                    attr: 'animal_avv',
                     code: 'Kodiersystem'
                 },
                 {
-                    attr: 'pathogen_adv',
+                    attr: 'pathogen_avv',
                     code: 'ADV16-Kode'
                 }
             ],
@@ -152,7 +152,7 @@ export const zoMoConstraints: ValidationConstraints = {
 
     },
 
-    operations_mode_adv: {
+    operations_mode_avv: {
 
         atLeastOneOf: {
             error: 48,
@@ -164,19 +164,19 @@ export const zoMoConstraints: ValidationConstraints = {
             error: 49,
             group: [
                 {
-                    attr: 'operations_mode_adv',
+                    attr: 'operations_mode_avv',
                     code: 'ADV8-Kode'
                 },
                 {
-                    attr: 'matrix_adv',
+                    attr: 'matrix_avv',
                     code: 'ADV3-Kode'
                 },
                 {
-                    attr: 'topic_adv',
+                    attr: 'animal_avv',
                     code: 'Kodiersystem'
                 },
                 {
-                    attr: 'pathogen_adv',
+                    attr: 'pathogen_avv',
                     code: 'ADV16-Kode'
                 }
             ],
@@ -190,12 +190,12 @@ export const zoMoConstraints: ValidationConstraints = {
 
         atLeastOneOf: {
             error: 48,
-            additionalMembers: ['operations_mode_adv']
+            additionalMembers: ['operations_mode_avv']
         }
 
     },
 
-    sampling_location_adv: {
+    sampling_location_avv: {
 
         atLeastOneOf: {
             error: 86,
@@ -212,7 +212,7 @@ export const zoMoConstraints: ValidationConstraints = {
         atLeastOneOf: {
             error: 86,
             additionalMembers: [
-                'sampling_location_adv',
+                'sampling_location_avv',
                 'sampling_location_text'
             ]
         }
@@ -224,78 +224,103 @@ export const zoMoConstraints: ValidationConstraints = {
         atLeastOneOf: {
             error: 86,
             additionalMembers: [
-                'sampling_location_adv',
+                'sampling_location_avv',
                 'sampling_location_zip'
             ]
         }
 
     },
 
-    sampling_reason_adv: {
-
-        // new text
-        registeredZoMo: {
-            error: 49,
-            group: [
-                {
-                    attr: 'operations_mode_adv',
-                    code: 'ADV8-Kode'
-                },
-                {
-                    attr: 'matrix_adv',
-                    code: 'ADV3-Kode'
-                },
-                {
-                    attr: 'topic_adv',
-                    code: 'Kodiersystem'
-                },
-                {
-                    attr: 'pathogen_adv',
-                    code: 'ADV16-Kode'
-                }
-            ],
-            year: ['sampling_date', 'isolation_date'],
-            catalog: 'adv16'
-        }
-
-    },
-
-    sampling_reason_text: {
-
-        // new text
-        registeredZoMo: {
-            error: 49,
-            group: [
-                {
-                    attr: 'operations_mode_adv',
-                    code: 'ADV8-Kode'
-                },
-                {
-                    attr: 'matrix_adv',
-                    code: 'ADV3-Kode'
-                },
-                {
-                    attr: 'topic_adv',
-                    code: 'Kodiersystem'
-                },
-                {
-                    attr: 'pathogen_adv',
-                    code: 'ADV16-Kode'
-                }
-            ],
-            year: ['sampling_date', 'isolation_date'],
-            catalog: 'adv16'
-        }
-
-    },
-
-    process_state_adv: {
+    primary_production_avv: {
 
         // prüfen
         requiredIfOther: {
             error: 39,
-            field: 'operations_mode_adv',
+            field: 'operations_mode_avv',
             regex: '^4'
+        },
+
+        // new text
+        registeredZoMo: {
+            error: 49,
+            group: [
+                {
+                    attr: 'operations_mode_avv',
+                    code: 'ADV8-Kode'
+                },
+                {
+                    attr: 'matrix_avv',
+                    code: 'ADV3-Kode'
+                },
+                {
+                    attr: 'animal_avv',
+                    code: 'Kodiersystem'
+                },
+                {
+                    attr: 'pathogen_avv',
+                    code: 'ADV16-Kode'
+                }
+            ],
+            year: ['sampling_date', 'isolation_date'],
+            catalog: 'adv16'
+        }
+
+    },
+
+    control_program_avv: {
+
+        // new text
+        registeredZoMo: {
+            error: 49,
+            group: [
+                {
+                    attr: 'operations_mode_avv',
+                    code: 'ADV8-Kode'
+                },
+                {
+                    attr: 'matrix_avv',
+                    code: 'ADV3-Kode'
+                },
+                {
+                    attr: 'animal_avv',
+                    code: 'Kodiersystem'
+                },
+                {
+                    attr: 'pathogen_avv',
+                    code: 'ADV16-Kode'
+                }
+            ],
+            year: ['sampling_date', 'isolation_date'],
+            catalog: 'adv16'
+        }
+
+    },
+
+    program_reason_text: {
+
+        // new text
+        registeredZoMo: {
+            error: 49,
+            group: [
+                {
+                    attr: 'operations_mode_avv',
+                    code: 'ADV8-Kode'
+                },
+                {
+                    attr: 'matrix_avv',
+                    code: 'ADV3-Kode'
+                },
+                {
+                    attr: 'animal_avv',
+                    code: 'Kodiersystem'
+                },
+                {
+                    attr: 'pathogen_avv',
+                    code: 'ADV16-Kode'
+                }
+            ],
+            year: ['sampling_date', 'isolation_date'],
+            catalog: 'adv16'
         }
 
     }
@@ -345,26 +370,26 @@ export const standardConstraints: ValidationConstraints = {
 
     },
 
-    sampling_reason_adv: {
+    control_program_avv: {
 
         // new text
         shouldBeZoMo: {
             error: 97,
             group: [
                 {
-                    attr: 'operations_mode_adv',
+                    attr: 'operations_mode_avv',
                     code: 'ADV8-Kode'
                 },
                 {
-                    attr: 'matrix_adv',
+                    attr: 'matrix_avv',
                     code: 'ADV3-Kode'
                 },
                 {
-                    attr: 'topic_adv',
+                    attr: 'animal_avv',
                     code: 'Kodiersystem'
                 },
                 {
-                    attr: 'pathogen_adv',
+                    attr: 'pathogen_avv',
                     code: 'ADV16-Kode'
                 }
             ],
@@ -374,26 +399,26 @@ export const standardConstraints: ValidationConstraints = {
 
     },
 
-    sampling_reason_text: {
+    program_reason_text: {
 
         // new text
         shouldBeZoMo: {
             error: 97,
             group: [
                 {
-                    attr: 'operations_mode_adv',
+                    attr: 'operations_mode_avv',
                     code: 'ADV8-Kode'
                 },
                 {
-                    attr: 'matrix_adv',
+                    attr: 'matrix_avv',
                     code: 'ADV3-Kode'
                 },
                 {
-                    attr: 'topic_adv',
+                    attr: 'animal_avv',
                     code: 'Kodiersystem'
                 },
                 {
-                    attr: 'pathogen_adv',
+                    attr: 'pathogen_avv',
                     code: 'ADV16-Kode'
                 }
             ],
@@ -417,7 +442,7 @@ export const baseConstraints: ValidationConstraints = {
 
     },
 
-    pathogen_adv: {
+    pathogen_avv: {
 
         presence: {
             error: 10,
@@ -516,7 +541,7 @@ export const baseConstraints: ValidationConstraints = {
 
     },
 
-    sampling_location_adv: {
+    sampling_location_avv: {
         atLeastOneOf: {
             error: 64,
             additionalMembers: [
@@ -538,7 +563,7 @@ export const baseConstraints: ValidationConstraints = {
         atLeastOneOf: {
             error: 64,
             additionalMembers: [
-                'sampling_location_adv',
+                'sampling_location_avv',
                 'sampling_location_text'
             ]
         },
@@ -569,7 +594,7 @@ export const baseConstraints: ValidationConstraints = {
         atLeastOneOf: {
             error: 64,
             additionalMembers: [
-                'sampling_location_adv',
+                'sampling_location_avv',
                 'sampling_location_zip'
             ]
         },
@@ -581,11 +606,11 @@ export const baseConstraints: ValidationConstraints = {
 
     },
 
-    topic_adv: {
+    animal_avv: {
 
         atLeastOneOf: {
             error: 37,
-            additionalMembers: ['matrix_adv', 'matrix_text']
+            additionalMembers: ['matrix_avv', 'animal_matrix_text']
         },
 
         inAVVFacettenCatalog: {
@@ -595,11 +620,11 @@ export const baseConstraints: ValidationConstraints = {
 
     },
 
-    matrix_adv: {
+    matrix_avv: {
 
         atLeastOneOf: {
             error: 37,
-            additionalMembers: ['matrix_text', 'topic_adv']
+            additionalMembers: ['animal_matrix_text', 'animal_avv']
         },
 
         presence: {
@@ -615,30 +640,30 @@ export const baseConstraints: ValidationConstraints = {
 
     },
 
-    matrix_text: {
+    animal_matrix_text: {
 
         atLeastOneOf: {
             error: 37,
-            additionalMembers: ['matrix_adv', 'topic_adv']
+            additionalMembers: ['matrix_avv', 'animal_avv']
         }
 
     },
 
-    process_state_adv: {
+    primary_production_avv: {
 
     },
 
-    sampling_reason_adv: {
+    control_program_avv: {
 
         atLeastOneOf: {
             error: 44,
-            additionalMembers: ['sampling_reason_text']
+            additionalMembers: ['program_reason_text']
         },
 
         // new text
         inAVVCatalog: {
             error: 42,
-            catalog: 'avv322,avv326'
+            catalog: 'avv322'
         },
 
         noPlanprobeForNRL_AR: {
@@ -647,11 +672,17 @@ export const baseConstraints: ValidationConstraints = {
 
     },
 
-    sampling_reason_text: {
+    sampling_reason_avv: {
 
         atLeastOneOf: {
             error: 44,
-            additionalMembers: ['sampling_reason_adv']
+            additionalMembers: ['program_reason_text']
+        },
+
+        // new text
+        inAVVCatalog: {
+            error: 42,
+            catalog: 'avv326'
         },
 
         noPlanprobeForNRL_AR: {
@@ -660,7 +691,20 @@ export const baseConstraints: ValidationConstraints = {
 
     },
 
-    operations_mode_adv: {
+    program_reason_text: {
+
+        atLeastOneOf: {
+            error: 44,
+            additionalMembers: ['sampling_reason_avv']
+        },
+
+        noPlanprobeForNRL_AR: {
+            error: 95
+        }
+
+    },
+
+    operations_mode_avv: {
 
         atLeastOneOf: {
             error: 71,
@@ -679,7 +723,7 @@ export const baseConstraints: ValidationConstraints = {
 
         atLeastOneOf: {
             error: 71,
-            additionalMembers: ['operations_mode_adv']
+            additionalMembers: ['operations_mode_avv']
         }
 
     },

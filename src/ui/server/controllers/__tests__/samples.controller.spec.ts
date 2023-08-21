@@ -58,7 +58,11 @@ describe('Sample controller', () => {
                             value: 'string',
                             oldValue: 'string'
                         },
-                        pathogen_adv: {
+                        partial_sample_id: {
+                            value: 'string',
+                            oldValue: 'string'
+                        },
+                        pathogen_avv: {
                             value: 'string',
                             oldValue: 'string'
                         },
@@ -74,7 +78,7 @@ describe('Sample controller', () => {
                             value: 'string',
                             oldValue: 'string'
                         },
-                        sampling_location_adv: {
+                        sampling_location_avv: {
                             value: 'string',
                             oldValue: 'string'
                         },
@@ -86,31 +90,35 @@ describe('Sample controller', () => {
                             value: 'string',
                             oldValue: 'string'
                         },
-                        topic_adv: {
+                        animal_avv: {
                             value: 'string',
                             oldValue: 'string'
                         },
-                        matrix_adv: {
+                        matrix_avv: {
                             value: 'string',
                             oldValue: 'string'
                         },
-                        matrix_text: {
+                        animal_matrix_text: {
                             value: 'string',
                             oldValue: 'string'
                         },
-                        process_state_adv: {
+                        primary_production_avv: {
                             value: 'string',
                             oldValue: 'string'
                         },
-                        sampling_reason_adv: {
+                        control_program_avv: {
                             value: 'string',
                             oldValue: 'string'
                         },
-                        sampling_reason_text: {
+                        sampling_reason_avv: {
                             value: 'string',
                             oldValue: 'string'
                         },
-                        operations_mode_adv: {
+                        program_reason_text: {
+                            value: 'string',
+                            oldValue: 'string'
+                        },
+                        operations_mode_avv: {
                             value: 'string',
                             oldValue: 'string'
                         },
@@ -214,7 +222,10 @@ describe('Sample controller', () => {
                                         sample_id_avv: {
                                             value: 'string'
                                         },
-                                        pathogen_adv: {
+                                        partial_sample_id: {
+                                            value: 'string'
+                                        },
+                                        pathogen_avv: {
                                             value: 'string'
                                         },
                                         pathogen_text: {
@@ -226,7 +237,7 @@ describe('Sample controller', () => {
                                         isolation_date: {
                                             value: 'string'
                                         },
-                                        sampling_location_adv: {
+                                        sampling_location_avv: {
                                             value: 'string'
                                         },
                                         sampling_location_zip: {
@@ -235,25 +246,28 @@ describe('Sample controller', () => {
                                         sampling_location_text: {
                                             value: 'string'
                                         },
-                                        topic_adv: {
+                                        animal_avv: {
                                             value: 'string'
                                         },
-                                        matrix_adv: {
+                                        matrix_avv: {
                                             value: 'string'
                                         },
-                                        matrix_text: {
+                                        animal_matrix_text: {
                                             value: 'string'
                                         },
-                                        process_state_adv: {
+                                        primary_production_avv: {
                                             value: 'string'
                                         },
-                                        sampling_reason_adv: {
+                                        control_program_avv: {
                                             value: 'string'
                                         },
-                                        sampling_reason_text: {
+                                        sampling_reason_avv: {
                                             value: 'string'
                                         },
-                                        operations_mode_adv: {
+                                        program_reason_text: {
+                                            value: 'string'
+                                        },
+                                        operations_mode_avv: {
                                             value: 'string'
                                         },
                                         operations_mode_text: {
@@ -326,7 +340,10 @@ describe('Sample controller', () => {
                                         sample_id_avv: {
                                             value: 'string'
                                         },
-                                        pathogen_adv: {
+                                        partial_sample_id: {
+                                            value: 'string'
+                                        },
+                                        pathogen_avv: {
                                             value: 'string'
                                         },
                                         pathogen_text: {
@@ -338,7 +355,7 @@ describe('Sample controller', () => {
                                         isolation_date: {
                                             value: 'string'
                                         },
-                                        sampling_location_adv: {
+                                        sampling_location_avv: {
                                             value: 'string'
                                         },
                                         sampling_location_zip: {
@@ -347,25 +364,28 @@ describe('Sample controller', () => {
                                         sampling_location_text: {
                                             value: 'string'
                                         },
-                                        topic_adv: {
+                                        animal_avv: {
                                             value: 'string'
                                         },
-                                        matrix_adv: {
+                                        matrix_avv: {
                                             value: 'string'
                                         },
-                                        matrix_text: {
+                                        animal_matrix_text: {
                                             value: 'string'
                                         },
-                                        process_state_adv: {
+                                        primary_production_avv: {
                                             value: 'string'
                                         },
-                                        sampling_reason_adv: {
+                                        control_program_avv: {
                                             value: 'string'
                                         },
-                                        sampling_reason_text: {
+                                        sampling_reason_avv: {
                                             value: 'string'
                                         },
-                                        operations_mode_adv: {
+                                        program_reason_text: {
+                                            value: 'string'
+                                        },
+                                        operations_mode_avv: {
                                             value: 'string'
                                         },
                                         operations_mode_text: {
@@ -432,7 +452,10 @@ describe('Sample controller', () => {
                                         sample_id_avv: {
                                             value: 'string'
                                         },
-                                        pathogen_adv: {
+                                        partial_sample_id: {
+                                            value: 'string'
+                                        },
+                                        pathogen_avv: {
                                             value: 'string'
                                         },
                                         pathogen_text: {
@@ -444,7 +467,7 @@ describe('Sample controller', () => {
                                         isolation_date: {
                                             value: 'string'
                                         },
-                                        sampling_location_adv: {
+                                        sampling_location_avv: {
                                             value: 'string'
                                         },
                                         sampling_location_zip: {
@@ -453,25 +476,28 @@ describe('Sample controller', () => {
                                         sampling_location_text: {
                                             value: 'string'
                                         },
-                                        topic_adv: {
+                                        animal_avv: {
                                             value: 'string'
                                         },
-                                        matrix_adv: {
+                                        matrix_avv: {
                                             value: 'string'
                                         },
-                                        matrix_text: {
+                                        animal_matrix_text: {
                                             value: 'string'
                                         },
-                                        process_state_adv: {
+                                        primary_production_avv: {
                                             value: 'string'
                                         },
-                                        sampling_reason_adv: {
+                                        control_program_avv: {
                                             value: 'string'
                                         },
-                                        sampling_reason_text: {
+                                        sampling_reason_avv: {
                                             value: 'string'
                                         },
-                                        operations_mode_adv: {
+                                        program_reason_text: {
+                                            value: 'string'
+                                        },
+                                        operations_mode_avv: {
                                             value: 'string'
                                         },
                                         operations_mode_text: {

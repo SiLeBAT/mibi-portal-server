@@ -17,7 +17,7 @@ export class DefaultSampleFactory implements SampleFactory {
         private nrlService: NRLService
     ) {}
     createSample(data: SampleData): Sample {
-        const pathogen = data['pathogen_adv'].value;
+        const pathogen = data['pathogen_avv'].value;
         const nrl = this.nrlService.getNRLForPathogen(pathogen);
         const defaultAnalysis: Partial<Analysis> = {
             ...this.nrlService.getStandardAnalysisFor(nrl),

@@ -18,7 +18,7 @@ import {
 
 function autoCorrectAVV324(catalogService: CatalogService): CorrectionFunction {
     const catalogName = 'avv324';
-    const property: SampleProperty = 'pathogen_adv';
+    const property: SampleProperty = 'pathogen_avv';
     const catalog = catalogService.getAVVCatalog<AVV324Data>(catalogName);
     logger.debug(
         'Initializing auto-correction: Pathogen (AVV-324) & creating closure'

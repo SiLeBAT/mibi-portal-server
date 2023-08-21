@@ -210,14 +210,14 @@ export class DefaultFormValidatorService implements FormValidatorService {
     }
 
     private supplementAVV313Data(sample: Sample) {
-        const advEntry: AnnotatedSampleDataEntry = sample.getEntryFor('sampling_location_adv');
+        const avvEntry: AnnotatedSampleDataEntry = sample.getEntryFor('sampling_location_avv');
         const zipEntry: AnnotatedSampleDataEntry = sample.getEntryFor('sampling_location_zip');
         const cityEntry: AnnotatedSampleDataEntry = sample.getEntryFor('sampling_location_text');
 
-        if (advEntry.value !== '' && zipEntry.value === '' && cityEntry.value === '') {
+        if (avvEntry.value !== '' && zipEntry.value === '' && cityEntry.value === '') {
             const avv313Cat = this.catalogService.getCatalog('avv313');
             // tslint:disable-next-line: no-any
-            let catEntry: any = avv313Cat.getUniqueEntryWithId(advEntry.value);
+            let catEntry: any = avv313Cat.getUniqueEntryWithId(avvEntry.value);
             if (catEntry !== undefined) {
                 sample.supplementAVV313Data(catEntry['PLZ'], catEntry['Text']);
             }

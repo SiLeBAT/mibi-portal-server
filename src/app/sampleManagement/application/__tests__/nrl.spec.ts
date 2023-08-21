@@ -38,7 +38,12 @@ describe('NRL Assignment Service', () => {
         testSampleData = {
             sample_id: { value: '1', errors: [], correctionOffer: [] },
             sample_id_avv: { value: '1-ABC', errors: [], correctionOffer: [] },
-            pathogen_adv: {
+            partial_sample_id: {
+                value: '0',
+                errors: [],
+                correctionOffer: []
+            },
+            pathogen_avv: {
                 value: 'Escherichia coli',
                 errors: [],
                 correctionOffer: []
@@ -54,8 +59,8 @@ describe('NRL Assignment Service', () => {
                 errors: [],
                 correctionOffer: []
             },
-            sampling_location_adv: {
-                value: '11000000',
+            sampling_location_avv: {
+                value: '42342|175490|',
                 errors: [],
                 correctionOffer: []
             },
@@ -69,35 +74,40 @@ describe('NRL Assignment Service', () => {
                 errors: [],
                 correctionOffer: []
             },
-            topic_adv: { value: '01', errors: [], correctionOffer: [] },
-            matrix_adv: { value: '063502', errors: [], correctionOffer: [] },
-            matrix_text: {
-                value: 'Hähnchen auch tiefgefroren',
+            animal_avv: { value: '2464|57755|1212-905,1334-1356,63421-1512', errors: [], correctionOffer: [] },
+            matrix_avv: { value: '187036|183974|', errors: [], correctionOffer: [] },
+            animal_matrix_text: {
+                value: 'Tier: Hühner; Art/ Quelle/ Stoff - Haushuhn; Alter - <=16 Wo; Nutzungs- und Produktionsrichtung - Zur Mast',
                 errors: [],
                 correctionOffer: []
             },
-            process_state_adv: {
-                value: '999',
+            primary_production_avv: {
+                value: '75684|50585|',
                 errors: [],
                 correctionOffer: []
             },
-            sampling_reason_adv: {
-                value: '10',
+            control_program_avv: {
+                value: '70564|53075|',
                 errors: [],
                 correctionOffer: []
             },
-            sampling_reason_text: {
+            sampling_reason_avv: {
+                value: '22562|126354|',
+                errors: [],
+                correctionOffer: []
+            },
+            program_reason_text: {
                 value: 'Planprobe',
                 errors: [],
                 correctionOffer: []
             },
-            operations_mode_adv: {
-                value: '4010000',
+            operations_mode_avv: {
+                value: '10469|57619|63420-4010,63422-10492',
                 errors: [],
                 correctionOffer: []
             },
             operations_mode_text: {
-                value: 'Lebensmitteleinzelhandel',
+                value: 'Inverkehrbringen; Endprodukte - Kakao, Schokolade, Schokoladenwaren und Süßwaren; Prozessdetails - Abgeben an Endverbraucher',
                 errors: [],
                 correctionOffer: []
             },
@@ -170,7 +180,7 @@ describe('NRL Assignment Service', () => {
             ])
         );
         const specificTestData = { ...testSampleData };
-        specificTestData.pathogen_adv = {
+        specificTestData.pathogen_avv = {
             value: 'No idea what this is',
             errors: [],
             correctionOffer: []

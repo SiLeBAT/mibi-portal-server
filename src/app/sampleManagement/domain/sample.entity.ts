@@ -66,19 +66,19 @@ export class DefaultSample implements Sample {
     }
 
     get pathogenId(): string | undefined {
-        if (!this._data.sample_id.value || !this._data.pathogen_adv.value) {
+        if (!this._data.sample_id.value || !this._data.pathogen_avv.value) {
             return undefined;
         }
-        return this._data.sample_id.value + this._data.pathogen_adv.value;
+        return this._data.sample_id.value + this._data.pathogen_avv.value;
     }
 
     get pathogenIdAVV(): string | undefined {
-        if (!this._data.sample_id_avv.value || !this._data.pathogen_adv.value) {
+        if (!this._data.sample_id_avv.value || !this._data.pathogen_avv.value) {
             return undefined;
         }
         return (
             this._data.sample_id_avv.value +
-            this._data.pathogen_adv.value +
+            this._data.pathogen_avv.value +
             (this._data.sample_id.value ? this._data.sample_id.value : '')
         );
     }
@@ -107,8 +107,8 @@ export class DefaultSample implements Sample {
 
     isZoMo(): boolean {
         return (
-            this._data.sampling_reason_adv.value === ZOMO_ID.code.toString() ||
-            this._data.sampling_reason_text.value === ZOMO_ID.string
+            this._data.control_program_avv.value === ZOMO_ID.code.toString() ||
+            this._data.program_reason_text.value.includes(ZOMO_ID.string)
         );
     }
 

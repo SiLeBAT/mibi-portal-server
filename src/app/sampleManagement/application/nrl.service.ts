@@ -80,7 +80,7 @@ export class DefaultNRLService implements NRLService {
     assignNRLsToSamples(samples: Sample[]): Sample[] {
         return samples.map(sample => {
             const newSample = sample.clone();
-            const pathogen = newSample.getValueFor('pathogen_adv');
+            const pathogen = newSample.getValueFor('pathogen_avv');
             const nrl = this.getNRLForPathogen(pathogen);
             newSample.setNRL(this, nrl);
             return newSample;

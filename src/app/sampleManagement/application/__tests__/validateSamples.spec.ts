@@ -49,7 +49,12 @@ describe('Validate Sample Use Case', () => {
         testSampleData = {
             sample_id: { value: '1', errors: [], correctionOffer: [] },
             sample_id_avv: { value: '1-ABC', errors: [], correctionOffer: [] },
-            pathogen_adv: {
+            partial_sample_id: {
+                value: '0',
+                errors: [],
+                correctionOffer: []
+            },
+            pathogen_avv: {
                 value: 'Escherichia coli',
                 errors: [],
                 correctionOffer: []
@@ -65,7 +70,7 @@ describe('Validate Sample Use Case', () => {
                 errors: [],
                 correctionOffer: []
             },
-            sampling_location_adv: {
+            sampling_location_avv: {
                 value: '45397|169446|',
                 errors: [],
                 correctionOffer: []
@@ -80,29 +85,34 @@ describe('Validate Sample Use Case', () => {
                 errors: [],
                 correctionOffer: []
             },
-            topic_adv: { value: '706|57678|', errors: [], correctionOffer: [] },
-            matrix_adv: { value: '187036|183974|8871-8874,183670-1086', errors: [], correctionOffer: [] },
-            matrix_text: {
+            animal_avv: { value: '706|57678|', errors: [], correctionOffer: [] },
+            matrix_avv: { value: '187036|183974|8871-8874,183670-1086', errors: [], correctionOffer: [] },
+            animal_matrix_text: {
                 value: 'Kot (Hygieneproben (LFGB-Bereich)); Kontakt - LM-Kontakt; Pflanze/Tier/Stoff/relevante Zutat - Schwein',
                 errors: [],
                 correctionOffer: []
             },
-            process_state_adv: {
+            primary_production_avv: {
                 value: '',
                 errors: [],
                 correctionOffer: []
             },
-            sampling_reason_adv: {
+            control_program_avv: {
+                value: '70555|59517|',
+                errors: [],
+                correctionOffer: []
+            },
+            sampling_reason_avv: {
                 value: '22564|126366|',
                 errors: [],
                 correctionOffer: []
             },
-            sampling_reason_text: {
+            program_reason_text: {
                 value: 'Verdachtsprobe',
                 errors: [],
                 correctionOffer: []
             },
-            operations_mode_adv: {
+            operations_mode_avv: {
                 value: '10469|57619|63422-10492,63423-10563|BG:FM:KM:LM:TAM:TNP:TT:Tabak:Wein',
                 errors: [],
                 correctionOffer: []
@@ -115,8 +125,6 @@ describe('Validate Sample Use Case', () => {
             vvvo: { value: '', errors: [], correctionOffer: [] },
             comment: { value: '', errors: [], correctionOffer: [] }
         };
-
-
         genericTestSample = factory.createSample(testSampleData);
         genericTestSampleCollection = [];
     });
@@ -170,9 +178,9 @@ describe('Validate Sample Use Case', () => {
         );
     });
 
-    it('should not cause error because of different pathogen_adv', async () => {
+    it('should not cause error because of different pathogen_avv', async () => {
         const specificSample = { ...testSampleData };
-        specificSample.pathogen_adv = {
+        specificSample.pathogen_avv = {
             value: 'Listeria monocytogenes',
             errors: [],
             correctionOffer: []

@@ -11,7 +11,12 @@ describe('Custom Auto-correction Functions', () => {
     const genericSampleData: SampleData = {
         sample_id: { value: '1', errors: [], correctionOffer: [] },
         sample_id_avv: { value: '1-ABC', errors: [], correctionOffer: [] },
-        pathogen_adv: {
+        partial_sample_id: {
+            value: '0',
+            errors: [],
+            correctionOffer: []
+        },
+        pathogen_avv: {
             value: 'Escherichia coli',
             errors: [],
             correctionOffer: []
@@ -23,7 +28,7 @@ describe('Custom Auto-correction Functions', () => {
             errors: [],
             correctionOffer: []
         },
-        sampling_location_adv: {
+        sampling_location_avv: {
             value: '45397|169446|',
             errors: [],
             correctionOffer: []
@@ -38,21 +43,26 @@ describe('Custom Auto-correction Functions', () => {
             errors: [],
             correctionOffer: []
         },
-        topic_adv: { value: '706|57678|', errors: [], correctionOffer: [] },
-        matrix_adv: { value: '187036|183974|8871-8874,183670-1086', errors: [], correctionOffer: [] },
-        matrix_text: {
+        animal_avv: { value: '706|57678|', errors: [], correctionOffer: [] },
+        matrix_avv: { value: '187036|183974|8871-8874,183670-1086', errors: [], correctionOffer: [] },
+        animal_matrix_text: {
             value: 'Kot (Hygieneproben (LFGB-Bereich)); Kontakt - LM-Kontakt; Pflanze/Tier/Stoff/relevante Zutat - Schwein',
             errors: [],
             correctionOffer: []
         },
-        process_state_adv: { value: '', errors: [], correctionOffer: [] },
-        sampling_reason_adv: { value: '22564|126366|', errors: [], correctionOffer: [] },
-        sampling_reason_text: {
+        primary_production_avv: { value: '', errors: [], correctionOffer: [] },
+        sampling_reason_avv: { value: '22564|126366|', errors: [], correctionOffer: [] },
+        control_program_avv: {
+            value: '70564|53075|',
+            errors: [],
+            correctionOffer: []
+        },
+        program_reason_text: {
             value: 'Verdachtsprobe',
             errors: [],
             correctionOffer: []
         },
-        operations_mode_adv: {
+        operations_mode_avv: {
             value: '10469|57619|63422-10492,63423-10563|BG:FM:KM:LM:TAM:TNP:TT:Tabak:Wein',
             errors: [],
             correctionOffer: []
@@ -111,7 +121,7 @@ describe('Custom Auto-correction Functions', () => {
             };
         });
 
-        it('should not attempt to correct string Escherichia coli in pathogen_adv', () => {
+        it('should not attempt to correct string Escherichia coli in pathogen_avv', () => {
             const specificSampleData = {
                 ...genericSampleData
             };
@@ -123,11 +133,11 @@ describe('Custom Auto-correction Functions', () => {
             expect(autoCorrection).toEqual(null);
         });
 
-        it('should successfully autocorrect Escherigia coli in pathogen_adv', () => {
+        it('should successfully autocorrect Escherigia coli in pathogen_avv', () => {
             const specificSampleData = {
                 ...genericSampleData,
                 ...{
-                    pathogen_adv: {
+                    pathogen_avv: {
                         value: 'Escherigia coli',
                         errors: [],
                         correctionOffer: []
@@ -140,7 +150,7 @@ describe('Custom Auto-correction Functions', () => {
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual({
-                field: 'pathogen_adv',
+                field: 'pathogen_avv',
                 original: 'Escherigia coli',
                 correctionOffer: [
                     'Escherichia coli',
@@ -150,11 +160,11 @@ describe('Custom Auto-correction Functions', () => {
             });
         });
 
-        it('should offer corrections for 66684|57386| in pathogen_adv', () => {
+        it('should offer corrections for 66684|57386| in pathogen_avv', () => {
             const specificSampleData = {
                 ...genericSampleData,
                 ...{
-                    pathogen_adv: {
+                    pathogen_avv: {
                         value: '66684|57386|',
                         errors: [],
                         correctionOffer: []
@@ -167,18 +177,18 @@ describe('Custom Auto-correction Functions', () => {
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual({
-                field: 'pathogen_adv',
+                field: 'pathogen_avv',
                 original: '66684|57386|',
                 correctionOffer: ['Escherichia coli Carbapenemase-bildend'],
                 code: 87
             });
         });
 
-        it('should offer corrections for 0801014 in pathogen_adv', () => {
+        it('should offer corrections for 0801014 in pathogen_avv', () => {
             const specificSampleData = {
                 ...genericSampleData,
                 ...{
-                    pathogen_adv: {
+                    pathogen_avv: {
                         value: '66684|57386|',
                         errors: [],
                         correctionOffer: []
@@ -191,18 +201,18 @@ describe('Custom Auto-correction Functions', () => {
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual({
-                field: 'pathogen_adv',
+                field: 'pathogen_avv',
                 original: '66684|57386|',
                 correctionOffer: ['Escherichia coli Carbapenemase-bildend'],
                 code: 87
             });
         });
 
-        it('should successfully offer corrections for E. coli in pathogen_adv', () => {
+        it('should successfully offer corrections for E. coli in pathogen_avv', () => {
             const specificSampleData = {
                 ...genericSampleData,
                 ...{
-                    pathogen_adv: {
+                    pathogen_avv: {
                         value: 'E. coli',
                         errors: [],
                         correctionOffer: []
@@ -215,7 +225,7 @@ describe('Custom Auto-correction Functions', () => {
 
             const autoCorrection = correctionFunction(specificSampleData);
             expect(autoCorrection).toEqual({
-                field: 'pathogen_adv',
+                field: 'pathogen_avv',
                 original: 'E. coli',
                 correctionOffer: [
                     'Salmonella Colindale',
@@ -227,11 +237,11 @@ describe('Custom Auto-correction Functions', () => {
             });
         });
 
-        it('should not attempt to correct empty string pathogen_adv', () => {
+        it('should not attempt to correct empty string pathogen_avv', () => {
             const specificSampleData = {
                 ...genericSampleData,
                 ...{
-                    pathogen_adv: {
+                    pathogen_avv: {
                         value: '',
                         errors: [],
                         correctionOffer: []
@@ -246,11 +256,11 @@ describe('Custom Auto-correction Functions', () => {
             expect(autoCorrection).toEqual(null);
         });
 
-        it('should not attempt to correct white space only pathogen_adv', () => {
+        it('should not attempt to correct white space only pathogen_avv', () => {
             const specificSampleData = {
                 ...genericSampleData,
                 ...{
-                    pathogen_adv: {
+                    pathogen_avv: {
                         value: ' ',
                         errors: [],
                         correctionOffer: []

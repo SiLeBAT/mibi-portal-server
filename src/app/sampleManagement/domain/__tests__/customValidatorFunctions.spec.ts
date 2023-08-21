@@ -35,20 +35,20 @@ describe('Custom Validator Functions', () => {
         testSample = {
             sample_id: '1',
             sample_id_avv: '17-L-00412-1-1',
-            pathogen_adv: 'Escherichia coli',
+            pathogen_avv: 'Escherichia coli',
             pathogen_text: '',
             sampling_date: '01.02.2023',
             isolation_date: '01.03.2023',
-            sampling_location_adv: '45397|169446|',
+            sampling_location_avv: '45397|169446|',
             sampling_location_zip: '10787',
             sampling_location_text: 'Berlin',
-            topic_adv: '706|57678|',
-            matrix_adv: '187036|183974|8871-8874,183670-1086',
-            matrix_text: 'Kot (Hygieneproben (LFGB-Bereich)); Kontakt - LM-Kontakt; Pflanze/Tier/Stoff/relevante Zutat - Schwein',
-            process_state_adv: '',
-            sampling_reason_adv: '22564|126366|',
-            sampling_reason_text: 'Verdachtsprobe',
-            operations_mode_adv: '10469|57619|63422-10492,63423-10563|BG:FM:KM:LM:TAM:TNP:TT:Tabak:Wein',
+            animal_avv: '706|57678|',
+            matrix_avv: '187036|183974|8871-8874,183670-1086',
+            animal_matrix_text: 'Kot (Hygieneproben (LFGB-Bereich)); Kontakt - LM-Kontakt; Pflanze/Tier/Stoff/relevante Zutat - Schwein',
+            primary_production_avv: '',
+            sampling_reason_avv: '22564|126366|',
+            program_reason_text: 'Verdachtsprobe',
+            operations_mode_avv: '10469|57619|63422-10492,63423-10563|BG:FM:KM:LM:TAM:TNP:TT:Tabak:Wein',
             operations_mode_text: 'Inverkehrbringen; Prozessdetails - Abgeben an Endverbraucher; Verschiedene Eigenschaften zum Betrieb - Verkaufsabteilung',
             vvvo: '',
             comment: ''
@@ -58,13 +58,13 @@ describe('Custom Validator Functions', () => {
     // describe('requiredIfOther', () => {
     //     it('should validate without errors', () => {
     //         const error = requiredIfOther(
-    //             testSample.process_state_adv,
+    //             testSample.primary_production_avv,
     //             {
     //                 message: validationError,
-    //                 field: 'operations_mode_adv',
+    //                 field: 'operations_mode_avv',
     //                 regex: '^4'
     //             },
-    //             'process_state_adv',
+    //             'primary_production_avv',
     //             testSample
     //         );
     //         expect(error).toBe(null);
@@ -72,13 +72,13 @@ describe('Custom Validator Functions', () => {
 
     //     it('should validate without errors', () => {
     //         const error = requiredIfOther(
-    //             testSample.process_state_adv,
+    //             testSample.primary_production_avv,
     //             {
     //                 message: validationError,
-    //                 field: 'operations_mode_adv',
+    //                 field: 'operations_mode_avv',
     //                 regex: '^1'
     //             },
-    //             'process_state_adv',
+    //             'primary_production_avv',
     //             testSample
     //         );
     //         expect(error).toBe(null);
@@ -87,16 +87,16 @@ describe('Custom Validator Functions', () => {
     //     it('should fail validation with error message', () => {
     //         const differentSample = {
     //             ...testSample,
-    //             ...{ process_state_adv: '' }
+    //             ...{ primary_production_avv: '' }
     //         };
     //         const error = requiredIfOther(
-    //             differentSample.process_state_adv,
+    //             differentSample.primary_production_avv,
     //             {
     //                 message: validationError,
-    //                 field: 'operations_mode_adv',
+    //                 field: 'operations_mode_avv',
     //                 regex: '^4'
     //             },
-    //             'process_state_adv',
+    //             'primary_production_avv',
     //             differentSample
     //         );
     //         expect(error).toEqual(validationError);
@@ -105,16 +105,16 @@ describe('Custom Validator Functions', () => {
     //     it('should validate without errors', () => {
     //         const differentSample = {
     //             ...testSample,
-    //             ...{ process_state_adv: '' }
+    //             ...{ primary_production_avv: '' }
     //         };
     //         const error = requiredIfOther(
-    //             differentSample.process_state_adv,
+    //             differentSample.primary_production_avv,
     //             {
     //                 message: validationError,
-    //                 field: 'operations_mode_adv',
+    //                 field: 'operations_mode_avv',
     //                 regex: '^1'
     //             },
-    //             'process_state_adv',
+    //             'primary_production_avv',
     //             differentSample
     //         );
     //         expect(error).toBe(null);
@@ -122,27 +122,27 @@ describe('Custom Validator Functions', () => {
     // });
 
     describe('atLeastOneOf', () => {
-        it('should validate without errors because sampling_reason_adv & sampling_reason_text present', () => {
+        it('should validate without errors because sampling_reason_avv & program_reason_text present', () => {
             const error = atLeastOneOf(
-                testSample.sampling_reason_adv,
+                testSample.sampling_reason_avv,
                 {
                     message: validationError,
-                    additionalMembers: ['sampling_reason_text']
+                    additionalMembers: ['program_reason_text']
                 },
-                'sampling_reason_adv',
+                'sampling_reason_avv',
                 testSample
             );
             expect(error).toBe(null);
         });
 
-        it('should validate without errors because sampling_reason_adv present', () => {
+        it('should validate without errors because sampling_reason_avv present', () => {
             const error = atLeastOneOf(
-                testSample.sampling_reason_adv,
+                testSample.sampling_reason_avv,
                 {
                     message: validationError,
                     additionalMembers: ['comment']
                 },
-                'sampling_reason_adv',
+                'sampling_reason_avv',
                 testSample
             );
             expect(error).toBe(null);
@@ -172,38 +172,38 @@ describe('Custom Validator Functions', () => {
             );
             expect(error).toEqual(validationError);
         });
-        it('should validate without errors because sampling_reason_adv present', () => {
+        it('should validate without errors because sampling_reason_avv present', () => {
             const error = atLeastOneOf(
                 testSample.comment,
                 {
                     message: validationError,
-                    additionalMembers: ['sampling_reason_adv']
+                    additionalMembers: ['sampling_reason_avv']
                 },
-                'sampling_reason_adv',
+                'sampling_reason_avv',
                 testSample
             );
             expect(error).toBe(null);
         });
-        it('should validate without errors because sampling_reason_adv present', () => {
+        it('should validate without errors because sampling_reason_avv present', () => {
             const error = atLeastOneOf(
                 testSample.comment,
                 {
                     message: validationError,
-                    additionalMembers: ['sampling_reason_adv', 'pathogen_text']
+                    additionalMembers: ['sampling_reason_avv', 'pathogen_text']
                 },
-                'sampling_reason_adv',
+                'sampling_reason_avv',
                 testSample
             );
             expect(error).toBe(null);
         });
-        it('should validate without errors because sampling_reason_adv present', () => {
+        it('should validate without errors because sampling_reason_avv present', () => {
             const error = atLeastOneOf(
                 testSample.comment,
                 {
                     message: validationError,
-                    additionalMembers: ['pathogen_text', 'sampling_reason_adv']
+                    additionalMembers: ['pathogen_text', 'sampling_reason_avv']
                 },
-                'sampling_reason_adv',
+                'sampling_reason_avv',
                 testSample
             );
             expect(error).toBe(null);
@@ -414,11 +414,11 @@ describe('Custom Validator Functions', () => {
     //             ...{
     //                 sampling_date: '01.02.2023',
     //                 isolation_date: '01.03.2023',
-    //                 sampling_reason_adv: '70564|53075|',
-    //                 sampling_reason_text: '',
-    //                 operations_mode_adv: '62726|57604|2-1566,1473-1002,63421-1511|LM:Wein',
-    //                 matrix_adv: '187036|183974|8871-8874,183670-1086',
-    //                 topic_adv: '706|57678|'
+    //                 sampling_reason_avv: '70564|53075|',
+    //                 program_reason_text: '',
+    //                 operations_mode_avv: '62726|57604|2-1566,1473-1002,63421-1511|LM:Wein',
+    //                 matrix_avv: '187036|183974|8871-8874,183670-1086',
+    //                 animal_avv: '706|57678|'
     //             }
     //         };
 
@@ -507,31 +507,31 @@ describe('Custom Validator Functions', () => {
     //             getCatalogSearchAliases: jest.fn()
     //         };
     //         const error = registeredZoMo(mockCatalogService)(
-    //             zoMoSample.operations_mode_adv,
+    //             zoMoSample.operations_mode_avv,
     //             {
     //                 message: validationError,
     //                 group: [
     //                     {
-    //                         attr: 'operations_mode_adv',
+    //                         attr: 'operations_mode_avv',
     //                         code: 'ADV8-Kode'
     //                     },
     //                     {
-    //                         attr: 'matrix_adv',
+    //                         attr: 'matrix_avv',
     //                         code: 'ADV3-Kode'
     //                     },
     //                     {
-    //                         attr: 'topic_adv',
+    //                         attr: 'animal_avv',
     //                         code: 'Kodiersystem'
     //                     },
     //                     {
-    //                         attr: 'pathogen_adv',
+    //                         attr: 'pathogen_avv',
     //                         code: 'ADV16-Kode'
     //                     }
     //                         ],
     //                 year: ['sampling_date', 'isolation_date'],
     //                 catalog: 'adv16'
     //             },
-    //             'operations_mode_adv',
+    //             'operations_mode_avv',
     //             zoMoSample
     //         );
     //         expect(error).toBe(null);
@@ -545,11 +545,11 @@ describe('Custom Validator Functions', () => {
     //             ...{
     //                 sampling_date: '01.02.2023',
     //                 isolation_date: '01.03.2023',
-    //                 sampling_reason_adv: '10',
-    //                 sampling_reason_text: '',
-    //                 operations_mode_adv: '1000000',
-    //                 matrix_adv: '522011',
-    //                 topic_adv: '15'
+    //                 sampling_reason_avv: '10',
+    //                 program_reason_text: '',
+    //                 operations_mode_avv: '1000000',
+    //                 matrix_avv: '522011',
+    //                 animal_avv: '15'
     //             }
     //         };
 
@@ -595,31 +595,31 @@ describe('Custom Validator Functions', () => {
     //             getCatalogSearchAliases: jest.fn()
     //         };
     //         const error = shouldBeZoMo(mockCatalogService)(
-    //             zoMoSample.operations_mode_adv,
+    //             zoMoSample.operations_mode_avv,
     //             {
     //                 message: validationError,
     //                 group: [
     //                     {
-    //                         attr: 'operations_mode_adv',
+    //                         attr: 'operations_mode_avv',
     //                         code: 'ADV8-Kode'
     //                     },
     //                     {
-    //                         attr: 'matrix_adv',
+    //                         attr: 'matrix_avv',
     //                         code: 'ADV3-Kode'
     //                     },
     //                     {
-    //                         attr: 'topic_adv',
+    //                         attr: 'animal_avv',
     //                         code: 'Kodiersystem'
     //                     },
     //                     {
-    //                         attr: 'pathogen_adv',
+    //                         attr: 'pathogen_avv',
     //                         code: 'ADV16-Kode'
     //                     }
     //                         ],
     //                 year: ['sampling_date', 'isolation_date'],
     //                 catalog: 'adv16'
     //             },
-    //             'operations_mode_adv',
+    //             'operations_mode_avv',
     //             zoMoSample
     //         );
     //         expect(error).not.toBe(null);
@@ -650,32 +650,32 @@ describe('Custom Validator Functions', () => {
 
     //     it('should validate without errors', () => {
     //         const error = inCatalog(mockCatalogService)(
-    //             testSample.matrix_adv,
+    //             testSample.matrix_avv,
     //             {
     //                 message: validationError,
     //                 catalog: 'adv3',
     //                 key: 'Kode'
     //             },
-    //             'matrix_adv',
+    //             'matrix_avv',
     //             testSample
     //         );
     //         expect(error).toBe(null);
     //     });
 
     //     it('should not validate because entry 62 is not in ADV12', () => {
-    //         testSample.process_state_adv = '62';
+    //         testSample.primary_production_avv = '62';
     //         mockCatalog.containsEntryWithKeyValue = (
     //             key: string,
     //             value: string
     //         ) => false;
     //         const error = inCatalog(mockCatalogService)(
-    //             testSample.process_state_adv,
+    //             testSample.primary_production_avv,
     //             {
     //                 message: validationError,
     //                 catalog: 'adv12',
     //                 key: 'Kode'
     //             },
-    //             'process_state_adv',
+    //             'primary_production_avv',
     //             testSample
     //         );
     //         expect(error).toEqual(validationError);
@@ -716,101 +716,101 @@ describe('Custom Validator Functions', () => {
     //     });
 
     //     it('should validate without errors', () => {
-    //         testSample.pathogen_adv = '';
+    //         testSample.pathogen_avv = '';
     //         const error = matchADVNumberOrString(mockCatalogService)(
-    //             testSample.pathogen_adv,
+    //             testSample.pathogen_avv,
     //             {
     //                 message: validationError,
     //                 catalog: 'adv16',
     //                 key: 'Kode',
     //                 alternateKeys: ['Text']
     //             } as MatchADVNumberOrStringOptions,
-    //             'pathogen_adv',
+    //             'pathogen_avv',
     //             testSample
     //         );
     //         expect(error).toBe(null);
     //     });
 
     //     it('should not validate because entry 62 is not in ADV16', () => {
-    //         testSample.pathogen_adv = '62';
+    //         testSample.pathogen_avv = '62';
 
     //         const error = matchADVNumberOrString(mockCatalogService)(
-    //             testSample.pathogen_adv,
+    //             testSample.pathogen_avv,
     //             {
     //                 message: validationError,
     //                 catalog: 'adv16',
     //                 key: 'Kode',
     //                 alternateKeys: ['Text']
     //             } as MatchADVNumberOrStringOptions,
-    //             'pathogen_adv',
+    //             'pathogen_avv',
     //             testSample
     //         );
     //         expect(error).toEqual(validationError);
     //     });
 
     //     it('should validate because entry 1234567 is in ADV16', () => {
-    //         testSample.pathogen_adv = '1234567';
+    //         testSample.pathogen_avv = '1234567';
 
     //         const error = matchADVNumberOrString(mockCatalogService)(
-    //             testSample.pathogen_adv,
+    //             testSample.pathogen_avv,
     //             {
     //                 message: validationError,
     //                 catalog: 'adv16',
     //                 key: 'Kode',
     //                 alternateKeys: ['Text']
     //             } as MatchADVNumberOrStringOptions,
-    //             'pathogen_adv',
+    //             'pathogen_avv',
     //             testSample
     //         );
     //         expect(error).toEqual(null);
     //     });
 
     //     it('should validate because entry 1234567 is in ADV16 and value is trimmed', () => {
-    //         testSample.pathogen_adv = '    1234567    ';
+    //         testSample.pathogen_avv = '    1234567    ';
 
     //         const error = matchADVNumberOrString(mockCatalogService)(
-    //             testSample.pathogen_adv,
+    //             testSample.pathogen_avv,
     //             {
     //                 message: validationError,
     //                 catalog: 'adv16',
     //                 key: 'Kode',
     //                 alternateKeys: ['Text']
     //             } as MatchADVNumberOrStringOptions,
-    //             'pathogen_adv',
+    //             'pathogen_avv',
     //             testSample
     //         );
     //         expect(error).toEqual(null);
     //     });
 
     //     it('should validate because entry Escherichia coli is in ADV16 and value is trimmed', () => {
-    //         testSample.pathogen_adv = '    Escherichia coli    ';
+    //         testSample.pathogen_avv = '    Escherichia coli    ';
 
     //         const error = matchADVNumberOrString(mockCatalogService)(
-    //             testSample.pathogen_adv,
+    //             testSample.pathogen_avv,
     //             {
     //                 message: validationError,
     //                 catalog: 'adv16',
     //                 key: 'Kode',
     //                 alternateKeys: ['Text']
     //             } as MatchADVNumberOrStringOptions,
-    //             'pathogen_adv',
+    //             'pathogen_avv',
     //             testSample
     //         );
     //         expect(error).toEqual(null);
     //     });
 
     //     it('should not validate because entry 1234  567 contains spaces', () => {
-    //         testSample.pathogen_adv = '1234  567';
+    //         testSample.pathogen_avv = '1234  567';
 
     //         const error = matchADVNumberOrString(mockCatalogService)(
-    //             testSample.pathogen_adv,
+    //             testSample.pathogen_avv,
     //             {
     //                 message: validationError,
     //                 catalog: 'adv16',
     //                 key: 'Kode',
     //                 alternateKeys: ['Text']
     //             } as MatchADVNumberOrStringOptions,
-    //             'pathogen_adv',
+    //             'pathogen_avv',
     //             testSample
     //         );
     //         expect(error).toEqual(validationError);

@@ -14,6 +14,7 @@ class FileCatalogRepository implements CatalogRepository {
         [key: string]: Catalog<CatalogData>;
     };
     private catalogNames: string[] = [
+        'adv16',
         'plz',
         `zsp${new Date().getFullYear().toString()}`,
         `zsp${(new Date().getFullYear() + 1).toString()}`,

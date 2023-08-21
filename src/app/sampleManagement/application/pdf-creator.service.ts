@@ -610,8 +610,8 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                 subTitles.sample_id_avv
             ),
             this.createSamplesHeaderCell(
-                titles.pathogen_adv,
-                subTitles.pathogen_adv
+                titles.pathogen_avv,
+                subTitles.pathogen_avv
             ),
             this.createSamplesHeaderCell(
                 titles.pathogen_text,
@@ -626,8 +626,8 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                 subTitles.isolation_date
             ),
             this.createSamplesHeaderCell(
-                titles.sampling_location_adv,
-                subTitles.sampling_location_adv
+                titles.sampling_location_avv,
+                subTitles.sampling_location_avv
             ),
             this.createSamplesHeaderCell(
                 titles.sampling_location_zip,
@@ -637,30 +637,30 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                 titles.sampling_location_text,
                 subTitles.sampling_location_text
             ),
-            this.createSamplesHeaderCell(titles.topic_adv, subTitles.topic_adv),
+            this.createSamplesHeaderCell(titles.animal_avv, subTitles.animal_avv),
             this.createSamplesHeaderCell(
-                titles.matrix_adv,
-                subTitles.matrix_adv
+                titles.matrix_avv,
+                subTitles.matrix_avv
             ),
             this.createSamplesHeaderCell(
-                titles.matrix_text,
-                subTitles.matrix_text
+                titles.animal_matrix_text,
+                subTitles.animal_matrix_text
             ),
             this.createSamplesHeaderCell(
-                titles.process_state_adv,
-                subTitles.process_state_adv
+                titles.primary_production_avv,
+                subTitles.primary_production_avv
             ),
             this.createSamplesHeaderCell(
-                titles.sampling_reason_adv,
-                subTitles.sampling_reason_adv
+                titles.sampling_reason_avv,
+                subTitles.sampling_reason_avv
             ),
             this.createSamplesHeaderCell(
-                titles.sampling_reason_text,
-                subTitles.sampling_reason_text
+                titles.program_reason_text,
+                subTitles.program_reason_text
             ),
             this.createSamplesHeaderCell(
-                titles.operations_mode_adv,
-                subTitles.operations_mode_adv
+                titles.operations_mode_avv,
+                subTitles.operations_mode_avv
             ),
             this.createSamplesHeaderCell(
                 titles.operations_mode_text,
@@ -689,8 +689,8 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                 !!sampleData.sample_id_avv.oldValue
             ),
             this.createSamplesDataCell(
-                sampleData.pathogen_adv.value,
-                !!sampleData.pathogen_adv.oldValue
+                sampleData.pathogen_avv.value,
+                !!sampleData.pathogen_avv.oldValue
             ),
             this.createSamplesDataCell(
                 sampleData.pathogen_text.value,
@@ -705,8 +705,8 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                 !!sampleData.isolation_date.oldValue
             ),
             this.createSamplesDataCell(
-                sampleData.sampling_location_adv.value,
-                !!sampleData.sampling_location_adv.oldValue
+                sampleData.sampling_location_avv.value,
+                !!sampleData.sampling_location_avv.oldValue
             ),
             this.createSamplesDataCell(
                 sampleData.sampling_location_zip.value,
@@ -717,32 +717,32 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                 !!sampleData.sampling_location_text.oldValue
             ),
             this.createSamplesDataCell(
-                sampleData.topic_adv.value,
-                !!sampleData.topic_adv.oldValue
+                sampleData.animal_avv.value,
+                !!sampleData.animal_avv.oldValue
             ),
             this.createSamplesDataCell(
-                sampleData.matrix_adv.value,
-                !!sampleData.matrix_adv.oldValue
+                sampleData.matrix_avv.value,
+                !!sampleData.matrix_avv.oldValue
             ),
             this.createSamplesDataCell(
-                sampleData.matrix_text.value,
-                !!sampleData.matrix_text.oldValue
+                sampleData.animal_matrix_text.value,
+                !!sampleData.animal_matrix_text.oldValue
             ),
             this.createSamplesDataCell(
-                sampleData.process_state_adv.value,
-                !!sampleData.process_state_adv.oldValue
+                sampleData.primary_production_avv.value,
+                !!sampleData.primary_production_avv.oldValue
             ),
             this.createSamplesDataCell(
-                sampleData.sampling_reason_adv.value,
-                !!sampleData.sampling_reason_adv.oldValue
+                sampleData.sampling_reason_avv.value,
+                !!sampleData.sampling_reason_avv.oldValue
             ),
             this.createSamplesDataCell(
-                sampleData.sampling_reason_text.value,
-                !!sampleData.sampling_reason_text.oldValue
+                sampleData.program_reason_text.value,
+                !!sampleData.program_reason_text.oldValue
             ),
             this.createSamplesDataCell(
-                sampleData.operations_mode_adv.value,
-                !!sampleData.operations_mode_adv.oldValue
+                sampleData.operations_mode_avv.value,
+                !!sampleData.operations_mode_avv.oldValue
             ),
             this.createSamplesDataCell(
                 sampleData.operations_mode_text.value,

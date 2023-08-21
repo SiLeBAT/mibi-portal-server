@@ -23,7 +23,7 @@
             "sample_id_avv": {
               "value": "1-ABC"
             },
-            "pathogen_adv": {
+            "pathogen_avv": {
               "value": "Escherichia coli"
             },
             "pathogen_text": {
@@ -35,7 +35,7 @@
             "isolation_date": {
               "value": "02.01.2019"
             },
-            "sampling_location_adv": {
+            "sampling_location_avv": {
               "value": "11000000"
             },
             "sampling_location_zip": {
@@ -44,25 +44,25 @@
             "sampling_location_text": {
               "value": "Berlin"
             },
-            "topic_adv": {
+            "animal_avv": {
               "value": "01"
             },
-            "matrix_adv": {
+            "matrix_avv": {
               "value": "063502"
             },
-            "matrix_text": {
+            "animal_matrix_text": {
               "value": "Hähnchen auch tiefgefroren"
             },
-            "process_state_adv": {
+            "primary_production_avv": {
               "value": "999"
             },
-            "sampling_reason_adv": {
+            "sampling_reason_avv": {
               "value": "10"
             },
-            "sampling_reason_text": {
+            "program_reason_text": {
               "value": "Planprobe"
             },
-            "operations_mode_adv": {
+            "operations_mode_avv": {
               "value": "4010000"
             },
             "operations_mode_text": {
@@ -103,7 +103,7 @@
             "sample_id_avv": {
               "value": ""
             },
-            "pathogen_adv": {
+            "pathogen_avv": {
               "value": "Escherichia coli"
             },
             "pathogen_text": {
@@ -115,7 +115,7 @@
             "isolation_date": {
               "value": "03.01.2019"
             },
-            "sampling_location_adv": {
+            "sampling_location_avv": {
               "value": "11000000"
             },
             "sampling_location_zip": {
@@ -124,25 +124,25 @@
             "sampling_location_text": {
               "value": "Berlin"
             },
-            "topic_adv": {
+            "animal_avv": {
               "value": "1"
             },
-            "matrix_adv": {
+            "matrix_avv": {
               "value": "063502"
             },
-            "matrix_text": {
+            "animal_matrix_text": {
               "value": "Hähnchen auch tiefgefroren"
             },
-            "process_state_adv": {
+            "primary_production_avv": {
               "value": "052"
             },
-            "sampling_reason_adv": {
+            "sampling_reason_avv": {
               "value": "10"
             },
-            "sampling_reason_text": {
+            "program_reason_text": {
               "value": "Planprobe"
             },
-            "operations_mode_adv": {
+            "operations_mode_avv": {
               "value": "4010000"
             },
             "operations_mode_text": {
@@ -183,7 +183,7 @@
             "sample_id_avv": {
               "value": "3-ABC"
             },
-            "pathogen_adv": {
+            "pathogen_avv": {
               "value": "Escherichia coli AmpC-Resistenz"
             },
             "pathogen_text": {
@@ -195,7 +195,7 @@
             "isolation_date": {
               "value": "04.01.2019"
             },
-            "sampling_location_adv": {
+            "sampling_location_avv": {
               "value": ""
             },
             "sampling_location_zip": {
@@ -204,25 +204,25 @@
             "sampling_location_text": {
               "value": "Berlin"
             },
-            "topic_adv": {
+            "animal_avv": {
               "value": "15"
             },
-            "matrix_adv": {
+            "matrix_avv": {
               "value": "010011"
             },
-            "matrix_text": {
+            "animal_matrix_text": {
               "value": "Mastschweine; Kot"
             },
-            "process_state_adv": {
+            "primary_production_avv": {
               "value": ""
             },
-            "sampling_reason_adv": {
+            "sampling_reason_avv": {
               "value": ""
             },
-            "sampling_reason_text": {
+            "program_reason_text": {
               "value": "Zoonosen-Monitoring - Planprobe"
             },
-            "operations_mode_adv": {
+            "operations_mode_avv": {
               "value": "1010xxx"
             },
             "operations_mode_text": {
@@ -263,7 +263,7 @@
             "sample_id_avv": {
               "value": "4-ABC"
             },
-            "pathogen_adv": {
+            "pathogen_avv": {
               "value": "0801014"
             },
             "pathogen_text": {
@@ -275,7 +275,7 @@
             "isolation_date": {
               "value": "15.01.2019"
             },
-            "sampling_location_adv": {
+            "sampling_location_avv": {
               "value": "11000000"
             },
             "sampling_location_zip": {
@@ -284,25 +284,25 @@
             "sampling_location_text": {
               "value": "Berlin"
             },
-            "topic_adv": {
+            "animal_avv": {
               "value": "01"
             },
-            "matrix_adv": {
+            "matrix_avv": {
               "value": "0602xx"
             },
-            "matrix_text": {
+            "animal_matrix_text": {
               "value": "Fleischteilstücke Rind auch tiefgefroren"
             },
-            "process_state_adv": {
+            "primary_production_avv": {
               "value": "52"
             },
-            "sampling_reason_adv": {
+            "sampling_reason_avv": {
               "value": "10"
             },
-            "sampling_reason_text": {
+            "program_reason_text": {
               "value": ""
             },
-            "operations_mode_adv": {
+            "operations_mode_avv": {
               "value": "4010000"
             },
             "operations_mode_text": {
@@ -343,7 +343,7 @@
             "sample_id_avv": {
               "value": "7-ABC"
             },
-            "pathogen_adv": {
+            "pathogen_avv": {
               "value": "0801014"
             },
             "pathogen_text": {
@@ -355,7 +355,7 @@
             "isolation_date": {
               "value": "11.09.2017"
             },
-            "sampling_location_adv": {
+            "sampling_location_avv": {
               "value": "11000000"
             },
             "sampling_location_zip": {
@@ -364,25 +364,25 @@
             "sampling_location_text": {
               "value": "Berlin"
             },
-            "topic_adv": {
+            "animal_avv": {
               "value": "15"
             },
-            "matrix_adv": {
+            "matrix_avv": {
               "value": "010011"
             },
-            "matrix_text": {
+            "animal_matrix_text": {
               "value": "Mastschweine; Kot"
             },
-            "process_state_adv": {
+            "primary_production_avv": {
               "value": ""
             },
-            "sampling_reason_adv": {
+            "sampling_reason_avv": {
               "value": "81"
             },
-            "sampling_reason_text": {
+            "program_reason_text": {
               "value": "Zoonosen-Monitoring - Planprobe"
             },
-            "operations_mode_adv": {
+            "operations_mode_avv": {
               "value": "1010200"
             },
             "operations_mode_text": {
@@ -423,7 +423,7 @@
             "sample_id_avv": {
               "value": "8-ABC"
             },
-            "pathogen_adv": {
+            "pathogen_avv": {
               "value": "0801014"
             },
             "pathogen_text": {
@@ -435,7 +435,7 @@
             "isolation_date": {
               "value": "31.12.2018"
             },
-            "sampling_location_adv": {
+            "sampling_location_avv": {
               "value": "11000000"
             },
             "sampling_location_zip": {
@@ -444,25 +444,25 @@
             "sampling_location_text": {
               "value": "Berlin"
             },
-            "topic_adv": {
+            "animal_avv": {
               "value": "15"
             },
-            "matrix_adv": {
+            "matrix_avv": {
               "value": "010011"
             },
-            "matrix_text": {
+            "animal_matrix_text": {
               "value": "Mastschweine; Kot"
             },
-            "process_state_adv": {
+            "primary_production_avv": {
               "value": ""
             },
-            "sampling_reason_adv": {
+            "sampling_reason_avv": {
               "value": "81"
             },
-            "sampling_reason_text": {
+            "program_reason_text": {
               "value": "Zoonosen-Monitoring - Planprobe"
             },
-            "operations_mode_adv": {
+            "operations_mode_avv": {
               "value": "1010200"
             },
             "operations_mode_text": {
@@ -503,7 +503,7 @@
             "sample_id_avv": {
               "value": "9_ABC"
             },
-            "pathogen_adv": {
+            "pathogen_avv": {
               "value": "Salmonella"
             },
             "pathogen_text": {
@@ -515,7 +515,7 @@
             "isolation_date": {
               "value": "01.01.2019"
             },
-            "sampling_location_adv": {
+            "sampling_location_avv": {
               "value": "11000000"
             },
             "sampling_location_zip": {
@@ -524,25 +524,25 @@
             "sampling_location_text": {
               "value": "Berlin"
             },
-            "topic_adv": {
+            "animal_avv": {
               "value": "15"
             },
-            "matrix_adv": {
+            "matrix_avv": {
               "value": "010300"
             },
-            "matrix_text": {
+            "animal_matrix_text": {
               "value": "Mastschweine; Futtermittel"
             },
-            "process_state_adv": {
+            "primary_production_avv": {
               "value": ""
             },
-            "sampling_reason_adv": {
+            "sampling_reason_avv": {
               "value": "81"
             },
-            "sampling_reason_text": {
+            "program_reason_text": {
               "value": ""
             },
-            "operations_mode_adv": {
+            "operations_mode_avv": {
               "value": "8000000"
             },
             "operations_mode_text": {
