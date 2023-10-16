@@ -1,5 +1,5 @@
 export const sampleSheetConfig = {
-    version: 16,
+    version: 17,
     svgLogoPath: './assets/BfR_Logo_de_RGB_pdf.svg',
     page: {
         size: 'A4',
@@ -13,9 +13,9 @@ export const sampleSheetConfig = {
     },
     footer: {
         margins: {
-            left: 20,
+            left: 22,
             top: 3,
-            right: 20,
+            right: 9,
             bottom: 0
         }
     },

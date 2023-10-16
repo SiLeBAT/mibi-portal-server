@@ -16,6 +16,7 @@ import {
     SampleSheetAnalysis,
     SampleSheetAnalysisOption
 } from '../model/sample-sheet.model';
+import { ZOMO_ID } from '../domain/constants';
 
 @injectable()
 export class DefaultPDFCreatorService implements PDFCreatorService {
@@ -29,6 +30,13 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
 
     private get EMPTY(): {} {
         return { text: ' ' };
+    }
+
+    private get EMPTY_SMALL(): {} {
+        return {
+            text: ' ',
+            style: 'halfLine'
+        };
     }
 
     constructor(
@@ -186,7 +194,8 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                             {
                                 text: strings.nrl,
                                 style: 'heading3',
-                                border: [false, false, true, false]
+                                border: [false, false, true, false],
+                                marginLeft: -4
                             },
                             {
                                 text: nrlString,
@@ -337,14 +346,14 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                                 alignment: 'center'
                             }
                         ],
-                        [
-                            { text: strings.phageTyping },
-                            {
-                                text: getStringFromOption(analysis.phageTyping),
-                                style: 'markedCell',
-                                alignment: 'center'
-                            }
-                        ],
+                        // [
+                        //     { text: strings.phageTyping },
+                        //     {
+                        //         text: getStringFromOption(analysis.phageTyping),
+                        //         style: 'markedCell',
+                        //         alignment: 'center'
+                        //     }
+                        // ],
                         [
                             { text: strings.resistance },
                             {
@@ -387,16 +396,16 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                                 alignment: 'center'
                             }
                         ],
-                        [
-                            { text: strings.zoonosenIsolate },
-                            {
-                                text: getStringFromOption(
-                                    analysis.zoonosenIsolate
-                                ),
-                                style: 'markedCell',
-                                alignment: 'center'
-                            }
-                        ],
+                        // [
+                        //     { text: strings.zoonosenIsolate },
+                        //     {
+                        //         text: getStringFromOption(
+                        //             analysis.zoonosenIsolate
+                        //         ),
+                        //         style: 'markedCell',
+                        //         alignment: 'center'
+                        //     }
+                        // ],
                         [
                             { text: strings.esblAmpCCarbapenemasen },
                             {
@@ -443,7 +452,7 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                                     analysis.compareHumanText
                                 ),
                                 colSpan: 2,
-                                style: ['markedCell', 'userComment']
+                                style: ['markedCell', 'userComment', 'doubleRow']
                             }
                         ]
                     ]
@@ -532,7 +541,9 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                         { text: strings.sendInstructionsPost }
                     ]
                 },
+                this.EMPTY_SMALL,
                 { text: strings.printInstructions },
+                this.EMPTY_SMALL,
                 { text: strings.cellProtectionInstruction1 },
                 { text: strings.cellProtectionInstruction2 }
             ]
@@ -575,9 +586,11 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
     // Samples content
 
     private createSamples(samples: Sample[]): {} {
-        const widthFactors = this.config.samples.colWidthIndices.map(v => {
-            return this.config.samples.colWidthFactors[v];
-        });
+        const colWidthIndicesMap = this.config.samples.colWidthIndicesMap;
+        const widthFactors: number[] = [];
+        for (let value of colWidthIndicesMap.values()) {
+            widthFactors.push(this.config.samples.colWidthFactors[value]);
+        }
 
         const widthSum = widthFactors.reduce((a: number, b: number) => a + b);
         const widths = widthFactors.map(
@@ -610,6 +623,10 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                 subTitles.sample_id_avv
             ),
             this.createSamplesHeaderCell(
+                titles.partial_sample_id,
+                subTitles.partial_sample_id
+            ),
+            this.createSamplesHeaderCell(
                 titles.pathogen_avv,
                 subTitles.pathogen_avv
             ),
@@ -637,7 +654,10 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                 titles.sampling_location_text,
                 subTitles.sampling_location_text
             ),
-            this.createSamplesHeaderCell(titles.animal_avv, subTitles.animal_avv),
+            this.createSamplesHeaderCell(
+                titles.animal_avv,
+                subTitles.animal_avv
+            ),
             this.createSamplesHeaderCell(
                 titles.matrix_avv,
                 subTitles.matrix_avv
@@ -649,6 +669,10 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
             this.createSamplesHeaderCell(
                 titles.primary_production_avv,
                 subTitles.primary_production_avv
+            ),
+            this.createSamplesHeaderCell(
+                titles.control_program_avv,
+                subTitles.control_program_avv
             ),
             this.createSamplesHeaderCell(
                 titles.sampling_reason_avv,
@@ -679,6 +703,8 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
     }
 
     private createSamplesDataRow(sampleData: SampleData): Array<{}> {
+        const matrixTextValue = sampleData.animal_matrix_text.value;
+
         return [
             this.createSamplesDataCell(
                 sampleData.sample_id.value,
@@ -688,6 +714,12 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                 sampleData.sample_id_avv.value,
                 !!sampleData.sample_id_avv.oldValue
             ),
+
+            this.createSamplesDataCell(
+                sampleData.partial_sample_id.value,
+                !!sampleData.partial_sample_id.oldValue
+            ),
+
             this.createSamplesDataCell(
                 sampleData.pathogen_avv.value,
                 !!sampleData.pathogen_avv.oldValue
@@ -705,23 +737,45 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                 !!sampleData.isolation_date.oldValue
             ),
             this.createSamplesDataCell(
-                sampleData.sampling_location_avv.value,
+                // sampleData.sampling_location_avv.value,
+                this.calculateTruncatedValue(
+                    matrixTextValue,
+                    sampleData.sampling_location_avv.value,
+                    'sampling_location_avv'
+                ),
                 !!sampleData.sampling_location_avv.oldValue
             ),
             this.createSamplesDataCell(
-                sampleData.sampling_location_zip.value,
+                // sampleData.sampling_location_zip.value,
+                this.calculateTruncatedValue(
+                    matrixTextValue,
+                    sampleData.sampling_location_zip.value,
+                    'sampling_location_zip'
+                ),
                 !!sampleData.sampling_location_zip.oldValue
             ),
             this.createSamplesDataCell(
-                sampleData.sampling_location_text.value,
+                this.calculateTruncatedValue(
+                    matrixTextValue,
+                    sampleData.sampling_location_text.value,
+                    'sampling_location_text'
+                ),
                 !!sampleData.sampling_location_text.oldValue
             ),
             this.createSamplesDataCell(
-                sampleData.animal_avv.value,
+                this.calculateTruncatedValue(
+                    matrixTextValue,
+                    sampleData.animal_avv.value,
+                    'animal_avv'
+                ),
                 !!sampleData.animal_avv.oldValue
             ),
             this.createSamplesDataCell(
-                sampleData.matrix_avv.value,
+                this.calculateTruncatedValue(
+                    matrixTextValue,
+                    sampleData.matrix_avv.value,
+                    'matrix_avv'
+                ),
                 !!sampleData.matrix_avv.oldValue
             ),
             this.createSamplesDataCell(
@@ -729,31 +783,72 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                 !!sampleData.animal_matrix_text.oldValue
             ),
             this.createSamplesDataCell(
-                sampleData.primary_production_avv.value,
+                // sampleData.primary_production_avv.value,
+                this.calculateTruncatedValue(
+                    matrixTextValue,
+                    sampleData.primary_production_avv.value,
+                    'primary_production_avv'
+                ),
                 !!sampleData.primary_production_avv.oldValue
             ),
             this.createSamplesDataCell(
-                sampleData.sampling_reason_avv.value,
+                // sampleData.control_program_avv.value,
+                this.calculateTruncatedValue(
+                    matrixTextValue,
+                    sampleData.control_program_avv.value,
+                    'control_program_avv'
+                ),
+                !!sampleData.control_program_avv.oldValue
+            ),
+            this.createSamplesDataCell(
+                // sampleData.sampling_reason_avv.value,
+                this.calculateTruncatedValue(
+                    matrixTextValue,
+                    sampleData.sampling_reason_avv.value,
+                    'sampling_reason_avv'
+                ),
                 !!sampleData.sampling_reason_avv.oldValue
             ),
             this.createSamplesDataCell(
-                sampleData.program_reason_text.value,
+                // sampleData.program_reason_text.value,
+                this.calculateTruncatedValue(
+                    matrixTextValue,
+                    sampleData.program_reason_text.value,
+                    'program_reason_text'
+                ),
                 !!sampleData.program_reason_text.oldValue
             ),
             this.createSamplesDataCell(
-                sampleData.operations_mode_avv.value,
+                this.calculateTruncatedValue(
+                    matrixTextValue,
+                    sampleData.operations_mode_avv.value,
+                    'operations_mode_avv'
+                ),
                 !!sampleData.operations_mode_avv.oldValue
             ),
             this.createSamplesDataCell(
-                sampleData.operations_mode_text.value,
+                this.calculateTruncatedValue(
+                    matrixTextValue,
+                    sampleData.operations_mode_text.value,
+                    'operations_mode_text'
+                ),
                 !!sampleData.operations_mode_text.oldValue
             ),
             this.createSamplesDataCell(
-                sampleData.vvvo.value,
+                // sampleData.vvvo.value,
+                this.calculateTruncatedValue(
+                    matrixTextValue,
+                    sampleData.vvvo.value,
+                    'vvvo'
+                ),
                 !!sampleData.vvvo.oldValue
             ),
             this.createSamplesDataCell(
-                sampleData.comment.value,
+                this.calculateTruncatedValue(
+                    matrixTextValue,
+                    sampleData.comment.value,
+                    'comment'
+                ),
                 !!sampleData.comment.oldValue
             )
         ];
@@ -764,10 +859,33 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
         if (edited) {
             style.push('editedCell');
         }
+
         return {
             style: style,
-            text: value
+            text: value,
         };
+    }
+
+    private calculateTruncatedValue(matrixTextValue: string, value: string, sampleName: string): string {
+        const matrixTextLength = matrixTextValue.length;
+
+        if (value === '' || value.includes(ZOMO_ID.string)) {
+            return value;
+        }
+        const colWidthIndicesMap = this.config.samples.colWidthIndicesMap;
+        const colWidthFactors = this.config.samples.colWidthFactors;
+
+        const matrixWidthFactor = colWidthFactors[colWidthIndicesMap.get('animal_matrix_text') as number];
+        const valueWidthFactor = colWidthFactors[colWidthIndicesMap.get(sampleName) as number];
+        const truncatedValueLength = (matrixTextLength * (valueWidthFactor / matrixWidthFactor)) - 6;
+
+        if (value.length <= truncatedValueLength) {
+            return value;
+        }
+
+        const truncatedValue = `${value.substring(0, truncatedValueLength)}...`;
+
+        return truncatedValue;
     }
 
     // Footer

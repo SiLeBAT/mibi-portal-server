@@ -47,12 +47,19 @@ export const sampleSheetStyles = {
     userComment: {
         italics: true
     },
+    doubleRow: {
+        lineHeight: 2.4
+    },
+    halfLine: {
+        lineHeight: 0.8
+    },
 
     // samples
 
     headerCell: {
         lineHeight: 1.2,
-        fontSize: 10,
+        // fontSize: 10,
+        fontSize: 9.5,
         bold: true,
         fillColor: '#99CCFF'
     },
