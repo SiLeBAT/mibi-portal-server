@@ -346,14 +346,6 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                                 alignment: 'center'
                             }
                         ],
-                        // [
-                        //     { text: strings.phageTyping },
-                        //     {
-                        //         text: getStringFromOption(analysis.phageTyping),
-                        //         style: 'markedCell',
-                        //         alignment: 'center'
-                        //     }
-                        // ],
                         [
                             { text: strings.resistance },
                             {
@@ -396,16 +388,6 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                                 alignment: 'center'
                             }
                         ],
-                        // [
-                        //     { text: strings.zoonosenIsolate },
-                        //     {
-                        //         text: getStringFromOption(
-                        //             analysis.zoonosenIsolate
-                        //         ),
-                        //         style: 'markedCell',
-                        //         alignment: 'center'
-                        //     }
-                        // ],
                         [
                             { text: strings.esblAmpCCarbapenemasen },
                             {
@@ -452,7 +434,7 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                                     analysis.compareHumanText
                                 ),
                                 colSpan: 2,
-                                style: ['markedCell', 'userComment', 'doubleRow']
+                                style: ['markedCell', 'userComment']
                             }
                         ]
                     ]

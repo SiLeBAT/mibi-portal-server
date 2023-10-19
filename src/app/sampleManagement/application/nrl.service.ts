@@ -13,46 +13,39 @@ import { ParseNRLRepository } from '../model/repository.model';
 export class DefaultNRLService implements NRLService {
     static mapNRLStringToEnum(nrlString: string): NRL_ID {
         switch (nrlString.trim()) {
-            case 'NRL Überwachung von Bakterien in zweischaligen Weichtieren':
-            case 'NRL-Vibrio':
-                return NRL_ID.NRL_Vibrio;
-            case 'NRL Escherichia coli einschließlich verotoxinbildende E. coli':
-            case 'NRL Verotoxinbildende Escherichia coli':
+            case 'Konsiliarlabor für Vibrionen':
+            case 'KL-Vibrio':
+                return NRL_ID.KL_Vibrio;
+            case 'NRL für Escherichia coli einschließl. verotoxinbildende E. coli':
             case 'NRL-VTEC':
                 return NRL_ID.NRL_VTEC;
-            case 'Bacillus spp.':
+            case 'Labor für Sporenbildner, Bacillus spp.':
             case 'L-Bacillus':
                 return NRL_ID.L_Bacillus;
-            case 'Clostridium spp. (C. difficile)':
+            case 'Labor für Sporenbildner, Clostridium spp.':
             case 'L-Clostridium':
                 return NRL_ID.L_Clostridium;
-            case 'NRL koagulasepositive Staphylokokken einschließlich Staphylococcus aureus':
+            case 'NRL für koagulasepositive Staphylokokken einschl. Staphylococcus aureus':
             case 'NRL-Staph':
                 return NRL_ID.NRL_Staph;
-            case 'NRL Salmonellen (Durchführung von Analysen und Tests auf Zoonosen)':
+            case 'NRL für Salmonella':
             case 'NRL-Salm':
                 return NRL_ID.NRL_Salm;
-            case 'NRL Listeria monocytogenes':
+            case 'NRL für Listeria monocytogenes':
             case 'NRL-Listeria':
                 return NRL_ID.NRL_Listeria;
-            case 'NRL Campylobacter':
+            case 'NRL für Campylobacter':
             case 'NRL-Campy':
                 return NRL_ID.NRL_Campy;
-            case 'NRL Antibiotikaresistenz':
+            case 'NRL für Antibiotikaresistenz ':
             case 'NRL-AR':
                 return NRL_ID.NRL_AR;
-            case 'Yersinia':
+            case 'Konsiliarlabor für Yersinia':
             case 'KL-Yersinia':
                 return NRL_ID.KL_Yersinia;
+            case 'NRL für Trichinella':
             case 'NRL-Trichinella':
-            case 'NRL Trichinella':
                 return NRL_ID.NRL_Trichinella;
-            case 'NRL Überwachung von Viren in zweischaligen Weichtieren':
-            case 'NRL-Virus':
-                return NRL_ID.NRL_Virus;
-            case 'Leptospira':
-            case 'KL-Leptospira':
-                return NRL_ID.KL_Leptospira;
             case 'Labor nicht erkannt':
             default:
                 return NRL_ID.UNKNOWN;
