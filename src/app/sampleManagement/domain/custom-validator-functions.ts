@@ -338,7 +338,7 @@ function matchAVVCodeOrString(
         const trimmedValue = value.trim();
         const altKey = options.alternateKey || '';
         if (attributes[key]) {
-            const cat = catalogService.getAVVCatalog<AVVCatalogData>(options.catalog)
+            const cat = catalogService.getAVVCatalog<AVVCatalogData>(options.catalog);
 
             if (cat) {
                 const key: string = options.key

@@ -12,6 +12,7 @@ const mockCatalog: AVVCatalog<any> = {
     containsEintragWithAVVKode: jest.fn(),
     containsTextEintrag: jest.fn(),
     getEintragWithAVVKode: jest.fn(),
+    getAVV313EintragWithAVVKode: jest.fn(),
     getAttributeWithAVVKode: jest.fn(),
     containsFacetteWithBegriffsId: jest.fn(),
     getFacettenIdsWithKode: jest.fn(),

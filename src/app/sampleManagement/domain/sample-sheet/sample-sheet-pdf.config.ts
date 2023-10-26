@@ -29,7 +29,7 @@ export const sampleSheetPDFConfig = {
             left: 0.5,
             right: 0.5
         },
-        colWidthFactors: [5.57, 5.86, 6.57, 8.0, 9.14, 9.43, 9.57, 9.86, 10.71, 11.29, 14.57, 32.29],
+        colWidthFactors: [5.57, 5.86, 6.57, 8, 9.14, 9.43, 9.57, 9.86, 10.71, 11.29, 14.57, 32.29],
         colWidthIndicesMap: new Map<string, number>([
             ['sample_id', 4],
             ['sample_id_avv', 6],

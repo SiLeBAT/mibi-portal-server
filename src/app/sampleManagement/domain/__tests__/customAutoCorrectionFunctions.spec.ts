@@ -180,7 +180,7 @@ describe('Custom Auto-correction Functions', () => {
                 field: 'pathogen_avv',
                 original: '66684|57386|',
                 correctionOffer: ['Escherichia coli Carbapenemase-bildend'],
-                code: 87
+                code: 88
             });
         });
 
@@ -204,7 +204,7 @@ describe('Custom Auto-correction Functions', () => {
                 field: 'pathogen_avv',
                 original: '66684|57386|',
                 correctionOffer: ['Escherichia coli Carbapenemase-bildend'],
-                code: 87
+                code: 88
             });
         });
 
