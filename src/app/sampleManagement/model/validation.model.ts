@@ -114,6 +114,10 @@ export interface MatchADVNumberOrStringOptions extends InCatalogOptions {
     alternateKeys: string[];
 }
 
+export interface MatchAVVCodeOrStringOptions extends InCatalogOptions {
+    alternateKey: string;
+}
+
 interface Group {
     code: keyof ZSPCatalogEntry;
     attr: SampleProperty;

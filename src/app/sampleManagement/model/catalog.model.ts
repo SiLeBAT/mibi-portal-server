@@ -47,6 +47,7 @@ export interface AVVCatalog<T extends AVVCatalogData> {
     containsEintragWithAVVKode(kode: string): boolean;
     containsTextEintrag(value: string): boolean;
     getEintragWithAVVKode(kode: string): MibiEintrag | MibiFacettenEintrag | undefined;
+    getAVV313EintragWithAVVKode(kode: string): AVV313Eintrag | undefined;
     getAttributeWithAVVKode(kode: string): string[] | undefined;
     containsFacetteWithBegriffsId(begriffsId: string): boolean;
     getFacettenIdsWithKode(kode: string): number[] | undefined;

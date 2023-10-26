@@ -9,6 +9,7 @@ import {
     MibiFacette,
     MibiFacettenWert,
     AVV324Data,
+    AVV313Eintrag,
     AVVCatalogData,
     FuzzyEintrag
 } from '../model/catalog.model';
@@ -30,6 +31,14 @@ class AVVDefaultCatalog<T extends AVVCatalogData> implements AVVCatalog<T> {
 
     getEintragWithAVVKode(kode: string): MibiEintrag | MibiFacettenEintrag | undefined {
         return this.containsEintragWithAVVKode(kode) ? this.data.eintraege[kode] : undefined;
+    }
+
+    getAVV313EintragWithAVVKode(kode: string): AVV313Eintrag | undefined {
+        const eintrag = this.getEintragWithAVVKode(kode);
+        if (eintrag && this.isAVV313Eintrag(eintrag)) {
+            return eintrag;
+        }
+        return undefined;
     }
 
     getAttributeWithAVVKode(kode: string): string[] | undefined {
@@ -84,6 +93,10 @@ class AVVDefaultCatalog<T extends AVVCatalogData> implements AVVCatalog<T> {
 
     private isAVV324Data(data: AVVCatalogData): data is AVV324Data {
         return 'fuzzyEintraege' in data && 'textEintraege' in data;
+    }
+
+    private isAVV313Eintrag(eintrag: MibiEintrag | AVV313Eintrag): eintrag is AVV313Eintrag {
+        return 'PLZ' in eintrag && 'Name' in eintrag;
     }
 
     getUniqueId(): string {

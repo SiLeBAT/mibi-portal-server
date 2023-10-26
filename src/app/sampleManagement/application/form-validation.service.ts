@@ -215,11 +215,10 @@ export class DefaultFormValidatorService implements FormValidatorService {
         const cityEntry: AnnotatedSampleDataEntry = sample.getEntryFor('sampling_location_text');
 
         if (avvEntry.value !== '' && zipEntry.value === '' && cityEntry.value === '') {
-            const avv313Cat = this.catalogService.getCatalog('avv313');
-            // tslint:disable-next-line: no-any
-            let catEntry: any = avv313Cat.getUniqueEntryWithId(avvEntry.value);
+            const avv313Cat = this.catalogService.getAVVCatalog('avv313');
+            let catEntry = avv313Cat.getAVV313EintragWithAVVKode(avvEntry.value);
             if (catEntry !== undefined) {
-                sample.supplementAVV313Data(catEntry['PLZ'], catEntry['Text']);
+                sample.supplementAVV313Data(catEntry.PLZ, catEntry.Text);
             }
         }
     }

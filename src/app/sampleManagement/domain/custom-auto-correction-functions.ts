@@ -62,7 +62,7 @@ function autoCorrectAVV324(catalogService: CatalogService): CorrectionFunction {
                     property,
                     originalValue,
                     [eintrag.Text],
-                    87
+                    88
                 );
                 return searchCache[trimmedEntry];
             }

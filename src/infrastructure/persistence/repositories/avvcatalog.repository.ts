@@ -19,6 +19,7 @@ class AVVFileCatalogRepository implements AVVCatalogRepository {
     private catalogNames: string[] = [
         'avv303',
         'avv313',
+        'avv316',
         'avv319',
         'avv322',
         'avv324',

@@ -13,6 +13,7 @@ import {
     inAVVFacettenCatalog,
     registeredZoMo,
     matchADVNumberOrString,
+    matchAVVCodeOrString,
     matchesRegexPattern,
     matchesIdToSpecificYear,
     nrlExists,
@@ -91,6 +92,9 @@ class SampleValidator implements Validator {
         validate.validators.inAVVCatalog = inAVVCatalog(this.catalogService);
         validate.validators.inAVVFacettenCatalog = inAVVFacettenCatalog(this.catalogService);
         validate.validators.matchADVNumberOrString = matchADVNumberOrString(
+            this.catalogService
+        );
+        validate.validators.matchAVVCodeOrString = matchAVVCodeOrString(
             this.catalogService
         );
         validate.validators.registeredZoMo = registeredZoMo(

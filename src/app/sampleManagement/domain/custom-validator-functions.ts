@@ -8,6 +8,7 @@ import {
     ValidatorFunction,
     InCatalogOptions,
     MatchADVNumberOrStringOptions,
+    MatchAVVCodeOrStringOptions,
     RegisteredZoMoOptions,
     AtLeastOneOfOptions,
     DependentFieldsOptions,
@@ -39,7 +40,7 @@ function noPlanprobeForNRL_AR(
     key: SampleProperty,
     attributes: Record<string, string>
 ) {
-    const disallowed = [10, '10', 'Planprobe'];
+    const disallowed = ['22562|126354|', 'Planprobe'];
     return attributes.nrl === NRL_ID.NRL_AR && _.includes(disallowed, value)
         ? { ...options.message }
         : null;
@@ -62,6 +63,12 @@ function requiredIfOther(
 function numbersOnlyValue(value: string): boolean {
     const numbersOnly = /^\d+$/;
     return numbersOnly.test(value);
+}
+
+// @ts-ignore
+function isAVVKodeValue(value: string): boolean {
+    const avvKode = /^\d+\|\d+\|$/;
+    return avvKode.test(value);
 }
 
 function matchesRegexPattern(
@@ -194,7 +201,8 @@ function inAVVCatalog(
                 const cat = catalogService.getAVVCatalog<AVVCatalogData>(catalog);
 
                 if (cat) {
-                    return cat.containsEintragWithAVVKode(trimmedValue);
+                    return (cat.containsEintragWithAVVKode(trimmedValue) ||
+                            cat.containsTextEintrag(trimmedValue));
                 }
             });
 
@@ -312,6 +320,47 @@ function matchADVNumberOrString(
                     }
                     return { ...options.message };
                 }
+            }
+        }
+        return null;
+    };
+}
+
+function matchAVVCodeOrString(
+    catalogService: CatalogService
+): ValidatorFunction<InCatalogOptions> {
+    return (
+        value: string,
+        options: MatchAVVCodeOrStringOptions,
+        key: SampleProperty,
+        attributes: SampleDataValues
+    ) => {
+        const trimmedValue = value.trim();
+        const altKey = options.alternateKey || '';
+        if (attributes[key]) {
+            const cat = catalogService.getAVVCatalog<AVVCatalogData>(options.catalog)
+
+            if (cat) {
+                const key: string = options.key
+                    ? options.key
+                    : cat.getUniqueId();
+                if (!key) {
+                    return null;
+                }
+                if (isAVVKodeValue(trimmedValue)) {
+                    if (!cat.containsEintragWithAVVKode(trimmedValue)) {
+                        return { ...options.message };
+                    }
+                }
+                if (altKey === 'Text') {
+                    if (!cat.containsTextEintrag(trimmedValue)) {
+                        return { ...options.message };
+                    }
+
+                    return null;
+                }
+
+                return { ...options.message };
             }
         }
         return null;
@@ -610,6 +659,7 @@ export {
     registeredZoMo,
     shouldBeZoMo,
     matchADVNumberOrString,
+    matchAVVCodeOrString,
     matchesRegexPattern,
     matchesIdToSpecificYear,
     nrlExists,

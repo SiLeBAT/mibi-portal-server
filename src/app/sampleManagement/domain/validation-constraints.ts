@@ -21,6 +21,62 @@ export const zoMoConstraints: ValidationConstraints = {
 
     },
 
+    pathogen_avv: {
+
+        registeredZoMo: {
+            error: 49,
+            group: [
+                {
+                    attr: 'operations_mode_avv',
+                    code: 'ADV8-Kode'
+                },
+                {
+                    attr: 'matrix_avv',
+                    code: 'ADV3-Kode'
+                },
+                {
+                    attr: 'animal_avv',
+                    code: 'Kodiersystem'
+                },
+                {
+                    attr: 'pathogen_avv',
+                    code: 'ADV16-Kode'
+                }
+            ],
+            year: ['sampling_date', 'isolation_date'],
+            catalog: 'adv16'
+        }
+
+    },
+
+    pathogen_text: {
+
+        registeredZoMo: {
+            error: 49,
+            group: [
+                {
+                    attr: 'operations_mode_avv',
+                    code: 'ADV8-Kode'
+                },
+                {
+                    attr: 'matrix_avv',
+                    code: 'ADV3-Kode'
+                },
+                {
+                    attr: 'animal_avv',
+                    code: 'Kodiersystem'
+                },
+                {
+                    attr: 'pathogen_avv',
+                    code: 'ADV16-Kode'
+                }
+            ],
+            year: ['sampling_date', 'isolation_date'],
+            catalog: 'adv16'
+        }
+
+    },
+
     sampling_date: {
 
         presence: {
@@ -62,34 +118,14 @@ export const zoMoConstraints: ValidationConstraints = {
             allowEmpty: false
         },
 
-        // new text
-        registeredZoMo: {
-            error: 49,
-            group: [
-                {
-                    attr: 'operations_mode_avv',
-                    code: 'ADV8-Kode'
-                },
-                {
-                    attr: 'matrix_avv',
-                    code: 'ADV3-Kode'
-                },
-                {
-                    attr: 'animal_avv',
-                    code: 'Kodiersystem'
-                },
-                {
-                    attr: 'pathogen_avv',
-                    code: 'ADV16-Kode'
-                }
-            ],
-            year: ['sampling_date', 'isolation_date'],
-            catalog: 'adv16'
-        }
-
     },
 
     animal_avv: {
+
+        presence: {
+            error: 34,
+            allowEmpty: false
+        },
 
         // new text
         registeredZoMo: {
@@ -232,13 +268,6 @@ export const zoMoConstraints: ValidationConstraints = {
     },
 
     primary_production_avv: {
-
-        // prüfen
-        requiredIfOther: {
-            error: 39,
-            field: 'operations_mode_avv',
-            regex: '^4'
-        },
 
         // new text
         registeredZoMo: {
@@ -442,6 +471,16 @@ export const baseConstraints: ValidationConstraints = {
 
     },
 
+    partial_sample_id: {
+
+        matchesRegexPattern: {
+            error: 102,
+            regex: ['^\\d+$'],
+            ignoreNumbers: false
+
+        }
+    },
+
     pathogen_avv: {
 
         presence: {
@@ -449,15 +488,29 @@ export const baseConstraints: ValidationConstraints = {
             allowEmpty: false
         },
 
-        matchADVNumberOrString: {
+        matchAVVCodeOrString: {
             error: 8,
-            catalog: 'adv16',
-            alternateKeys: ['Text']
+            catalog: 'avv324',
+            alternateKey: 'Text'
+        },
+
+        inAVVCatalog: {
+            error: 98,
+            catalog: 'avv324'
         },
 
         nrlExists: {
             error: 96
         }
+    },
+
+    pathogen_text: {
+
+        inAVVCatalog: {
+            error: 98,
+            catalog: 'avv324'
+        },
+
     },
 
     sampling_date: {
@@ -573,6 +626,12 @@ export const baseConstraints: ValidationConstraints = {
             dependents: ['sampling_location_text']
         },
 
+        requiredIfOther: {
+            error: 25,
+            field: 'sampling_location_text',
+            regex: '\\S'
+        },
+
         length: {
             error: 27,
             is: 5,
@@ -602,7 +661,13 @@ export const baseConstraints: ValidationConstraints = {
         dependentFields: {
             error: 25,
             dependents: ['sampling_location_zip']
-        }
+        },
+
+        requiredIfOther: {
+            error: 28,
+            field: 'sampling_location_zip',
+            regex: '\\S'
+        },
 
     },
 
@@ -614,9 +679,14 @@ export const baseConstraints: ValidationConstraints = {
         },
 
         inAVVFacettenCatalog: {
-            error: 30,
+            error: 99,
             catalog: 'avv339'
-        }
+        },
+
+        presence: {
+            error: 32,
+            allowEmpty: false
+        },
 
     },
 
@@ -651,13 +721,18 @@ export const baseConstraints: ValidationConstraints = {
 
     primary_production_avv: {
 
+        inAVVCatalog: {
+            error: 100,
+            catalog: 'avv316'
+        },
+
     },
 
     control_program_avv: {
 
         atLeastOneOf: {
             error: 44,
-            additionalMembers: ['program_reason_text']
+            additionalMembers: ['sampling_reason_avv', 'program_reason_text']
         },
 
         // new text
@@ -666,22 +741,18 @@ export const baseConstraints: ValidationConstraints = {
             catalog: 'avv322'
         },
 
-        noPlanprobeForNRL_AR: {
-            error: 95
-        }
-
     },
 
     sampling_reason_avv: {
 
         atLeastOneOf: {
             error: 44,
-            additionalMembers: ['program_reason_text']
+            additionalMembers: ['control_program_avv', 'program_reason_text']
         },
 
         // new text
         inAVVCatalog: {
-            error: 42,
+            error: 101,
             catalog: 'avv326'
         },
 
@@ -695,12 +766,8 @@ export const baseConstraints: ValidationConstraints = {
 
         atLeastOneOf: {
             error: 44,
-            additionalMembers: ['sampling_reason_avv']
+            additionalMembers: ['control_program_avv', 'sampling_reason_avv']
         },
-
-        noPlanprobeForNRL_AR: {
-            error: 95
-        }
 
     },
 
