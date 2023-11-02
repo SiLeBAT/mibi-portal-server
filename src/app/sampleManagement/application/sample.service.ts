@@ -381,6 +381,7 @@ export class DefaultSampleService implements SampleService {
         nrlSampleSet.samples.forEach(sample => {
             this.replaceEmptySampleIDWithSampleIDAVV(sample);
             this.moveAVV313Data(sample);
+            this.removeGeneratedTiereMatrixText(sample);
         });
 
         return nrlSampleSet;
@@ -406,6 +407,15 @@ export class DefaultSampleService implements SampleService {
             sampleData.sampling_location_text.value = sampleCity;
             delete sampleData.sampling_location_zip.nrlData;
             delete sampleData.sampling_location_text.nrlData;
+        }
+    }
+
+    private removeGeneratedTiereMatrixText(sample: Sample) {
+        const sampleData = sample.getAnnotatedData();
+        const tierMatrixTextOldValue = sampleData.animal_matrix_text.oldValue;
+
+        if (tierMatrixTextOldValue === '') {
+            sampleData.animal_matrix_text.value = '';
         }
     }
 }

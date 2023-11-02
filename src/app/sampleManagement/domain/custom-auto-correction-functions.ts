@@ -13,8 +13,88 @@ import {
     CatalogService,
     ADVCatalogEntry,
     FuzzyEintrag,
-    AVV324Data
+    AVV324Data,
+    AVVCatalogData
 } from '../model/catalog.model';
+
+
+
+function autoCorrectTiereMatrixText(catalogService: CatalogService): CorrectionFunction {
+    const catalogNameTiere = 'avv339';
+    const catalogNameMatrix = 'avv319';
+    const propertyTierMatrixText: SampleProperty = 'animal_matrix_text';
+    const propertyTierAVV: SampleProperty = 'animal_avv';
+    const propertyMatrixAVV: SampleProperty = 'matrix_avv';
+    const catalogTiere = catalogService.getAVVCatalog<AVVCatalogData>(catalogNameTiere);
+    const catalogMatrix = catalogService.getAVVCatalog<AVVCatalogData>(catalogNameMatrix);
+
+    const searchCacheTiere: Record<string, string> = {};
+    const searchCacheMatrix: Record<string, string> = {};
+
+    logger.debug(
+        'Initializing auto-correction: Tiere/Matrix Text & creating closure'
+    );
+
+    return (sampleData: SampleData): CorrectionSuggestions | null => {
+        const originalValue = sampleData[propertyTierMatrixText].value;
+        const trimmedEntry = originalValue.trim();
+        // ignore non-empty entries
+        if (trimmedEntry !== '') {
+            return null;
+        }
+
+        // return cached result
+        const tierCodeValue = sampleData[propertyTierAVV].value.trim();
+        const matrixCodeValue = sampleData[propertyMatrixAVV].value.trim();
+
+        if (searchCacheTiere[tierCodeValue] && searchCacheMatrix[matrixCodeValue]) {
+            const generatedText =
+                [searchCacheTiere[tierCodeValue], searchCacheMatrix[matrixCodeValue]]
+                    .filter((str) => str !== '')
+                    .join(' | ');
+
+
+            return createCacheEntry(
+                propertyTierMatrixText,
+                originalValue,
+                [generatedText],
+                103
+            );
+        }
+
+        // generate text from codes
+        let tierText = '';
+        let matrixText = '';
+
+        if (searchCacheTiere[tierCodeValue]) {
+            tierText = searchCacheTiere[tierCodeValue];
+        } else {
+            tierText = catalogTiere.getTextWithFacettenCode(tierCodeValue) || '';
+            searchCacheTiere[tierCodeValue] = tierText;
+        }
+
+        if (searchCacheMatrix[matrixCodeValue]) {
+            matrixText = searchCacheMatrix[matrixCodeValue];
+        } else {
+            matrixText = catalogMatrix.getTextWithFacettenCode(matrixCodeValue) || '';
+            searchCacheMatrix[matrixCodeValue] = matrixText;
+        }
+
+        return {
+            field: propertyTierMatrixText,
+            original: '',
+            correctionOffer: [
+                [tierText, matrixText]
+                    .filter((str) => str !== '')
+                    .join(' | ')
+            ],
+            code: 103
+        };
+    };
+
+}
+
+
 
 function autoCorrectAVV324(catalogService: CatalogService): CorrectionFunction {
     const catalogName = 'avv324';
@@ -212,5 +292,6 @@ function createCatalogEnhancements(
 }
 
 export {
+    autoCorrectTiereMatrixText,
     autoCorrectAVV324
 };

@@ -54,6 +54,7 @@ export interface AVVCatalog<T extends AVVCatalogData> {
     getFacetteWithBegriffsId(begriffsId: string): MibiFacette | undefined;
     getFacettenWertWithBegriffsId(facettenWertId: string, facettenBegriffsId: string): MibiFacettenWert | undefined;
     assembleAVVKode(begriffsIdEintrag: string, id: string): string;
+    getTextWithFacettenCode(kode: string): string;
     getFuzzyIndex(options: Fuse.IFuseOptions<FuzzyEintrag>, enhancements?: FuzzyEintrag[]): Fuse<FuzzyEintrag>;
     getUniqueId(): string;
     dump(): T;

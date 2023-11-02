@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { logger } from '../../../aspects';
 import {
+    autoCorrectTiereMatrixText,
     autoCorrectAVV324
 } from '../domain/custom-auto-correction-functions';
 import {
@@ -63,6 +64,7 @@ export class DefaultFormAutoCorrectionService
     }
 
     private registerCorrectionFunctions() {
+        this.correctionFunctions.push(autoCorrectTiereMatrixText(this.catalogService));
         this.correctionFunctions.push(autoCorrectAVV324(this.catalogService));
     }
 }

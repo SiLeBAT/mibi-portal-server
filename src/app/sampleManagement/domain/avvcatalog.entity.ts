@@ -83,6 +83,53 @@ class AVVDefaultCatalog<T extends AVVCatalogData> implements AVVCatalog<T> {
         return `${begriffsIdEintrag}|${id}|`;
     }
 
+    getTextWithFacettenCode(kode: string): string {
+        let generatedText = '';
+
+        if (this.isMibiCatalogFacettenData(this.data)) {
+            const trimmedValue = kode.trim();
+            const [begriffsIdEintrag, id, facettenValues] = trimmedValue.split('|');
+
+            if (!(begriffsIdEintrag && id)) {
+                return '';
+            }
+
+            const avvKode = this.assembleAVVKode(begriffsIdEintrag, id);
+            if (this.containsEintragWithAVVKode(avvKode)) {
+                const eintrag = this.getEintragWithAVVKode(avvKode)?.Text;
+                generatedText += `${eintrag};`;
+            }
+
+            const facettenIds = this.getFacettenIdsWithKode(avvKode);
+            if (facettenIds && facettenValues) {
+                const currentFacetten = facettenValues.split(',');
+                currentFacetten.forEach((facettenValue) => {
+                    const [facettenBeginId, facettenEndeIds] = facettenValue.split('-');
+                    const facettenEndeList = facettenEndeIds.split(':');
+                    const facette = this.getFacetteWithBegriffsId(facettenBeginId);
+                    if (facette) {
+                        generatedText += ` ${facette.Text} -`;
+                    }
+                    if (facette && facettenIds.includes(facette.FacettenId)) {
+                        facettenEndeList.forEach((facettenEndeId) => {
+                            const facettenWert = this.getFacettenWertWithBegriffsId(facettenEndeId, facettenBeginId);
+                            if (facettenWert) {
+                                generatedText += ` ${facettenWert.Text},`;
+                            }
+                        });
+                    }
+
+                    const replacedText = generatedText.replace(/.$/, ';');
+                    generatedText = replacedText;
+                });
+            }
+            const replacedText = generatedText.replace(/.$/, '');
+            generatedText = replacedText;
+        }
+
+        return generatedText;
+    }
+
     private isMibiCatalogFacettenData(data: MibiCatalogData | MibiCatalogFacettenData): data is MibiCatalogFacettenData {
         return 'facetten' in data;
     }
