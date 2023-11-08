@@ -46,6 +46,7 @@ import {
 } from '../model/shared-dto.model';
 import {
     InvalidInputErrorDTO,
+    InvalidExcelVersionErrorDTO,
     AutoCorrectedInputErrorDTO,
     PutValidatedResponseDTO,
     PostSubmittedResponseDTO,
@@ -108,6 +109,16 @@ export class DefaultSamplesController
                 req,
                 res
             );
+
+            if (!this.isValidExcelVersion(sampleSet)) {
+                const errorDTO: InvalidExcelVersionErrorDTO = {
+                    code: SERVER_ERROR_CODE.INVALID_VERSION,
+                    message: 'Invalid excel version',
+                    version: sampleSet.meta.version
+                };
+                res.status(422).json(errorDTO);
+                return;
+            }
 
             await this.putSamplesSendResponse(req, res, sampleSet);
         } catch (error) {
@@ -235,6 +246,12 @@ export class DefaultSamplesController
             );
             this.handleError(res, error);
         }
+    }
+
+    private isValidExcelVersion(sampleSet: SampleSet): boolean {
+        const validVersion = 17;
+
+        return parseInt(sampleSet.meta.version, 10) >= validVersion;
     }
 
     private async putSamplesTransformInput(
@@ -408,7 +425,8 @@ export class DefaultSamplesController
             customerRefNumber: dto.customerRefNumber
                 ? dto.customerRefNumber
                 : '',
-            signatureDate: dto.signatureDate ? dto.signatureDate : ''
+            signatureDate: dto.signatureDate ? dto.signatureDate : '',
+            version: dto.version ? dto.version : ''
         };
     }
 

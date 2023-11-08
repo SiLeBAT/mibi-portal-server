@@ -166,7 +166,8 @@ describe('Sample controller', () => {
                     contactPerson: '',
                     telephone: '',
                     email: ''
-                }
+                },
+                version: '17'
             }
         };
     });

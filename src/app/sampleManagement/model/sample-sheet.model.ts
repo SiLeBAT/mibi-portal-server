@@ -51,6 +51,7 @@ export interface SampleSheetMetaData {
     fileName: string;
     customerRefNumber: string;
     signatureDate: string;
+    version: string;
 }
 
 export interface SampleSheet {

@@ -29,6 +29,7 @@ export interface SampleSetMetaDTO {
     fileName?: string;
     customerRefNumber?: string;
     signatureDate?: string;
+    version?: string;
 }
 
 export interface SampleValidationErrorDTO {

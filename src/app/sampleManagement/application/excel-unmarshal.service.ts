@@ -25,6 +25,7 @@ import {
     META_SENDER_TELEPHONE_CELL,
     META_SENDER_EMAIL_CELL,
     META_URGENCY_CELL,
+    META_EXCEL_VERSION,
     META_NRL_CELL,
     FORM_PROPERTIES,
     META_ANALYSIS_RESISTANCE_CELL,
@@ -106,7 +107,10 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
             ),
             signatureDate: this.getStringFromCell(
                 workSheet[META_SIGNATURE_DATE_CELL]
-            )
+            ),
+            version: this.getStringFromCell(
+                workSheet[META_EXCEL_VERSION]
+            ).substring(1)
         };
     }
 

@@ -29,6 +29,7 @@ export const FORM_PROPERTIES: string[] = [
 export const DEFAULT_SAMPLE_DATA_HEADER_ROW = 41;
 export const SAMPLE_DATA_HEADER_ROW_MARKER = 'Ihre Probe-nummer';
 
+export const META_EXCEL_VERSION = 'B3';
 export const META_NRL_CELL = 'B7';
 export const META_URGENCY_CELL = 'L27';
 export const META_SENDER_INSTITUTENAME_CELL = 'C12';

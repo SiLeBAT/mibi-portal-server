@@ -56,7 +56,8 @@ export class DefaultSampleSheetService implements SampleSheetService {
                 sender: sampleSheet.meta.sender,
                 fileName: sampleSheet.meta.fileName,
                 customerRefNumber: sampleSheet.meta.customerRefNumber,
-                signatureDate: sampleSheet.meta.signatureDate
+                signatureDate: sampleSheet.meta.signatureDate,
+                version: sampleSheet.meta.version
             }
         };
     }
@@ -85,7 +86,8 @@ export class DefaultSampleSheetService implements SampleSheetService {
             urgency,
             fileName: sampleSet.meta.fileName,
             customerRefNumber: sampleSet.meta.customerRefNumber,
-            signatureDate: sampleSet.meta.signatureDate
+            signatureDate: sampleSet.meta.signatureDate,
+            version: sampleSet.meta.version
         };
     }
 

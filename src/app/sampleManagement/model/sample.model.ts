@@ -83,6 +83,7 @@ export interface SampleSetMetaData {
     fileName: string;
     customerRefNumber: string;
     signatureDate: string;
+    version: string;
 }
 
 export interface SampleSet {
