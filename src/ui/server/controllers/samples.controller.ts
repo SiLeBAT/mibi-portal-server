@@ -451,7 +451,8 @@ export class DefaultSamplesController
                     ? undefined
                     : data.customerRefNumber, // non-breaking API change
             signatureDate:
-                data.signatureDate === '' ? undefined : data.signatureDate // non-breaking API change
+                data.signatureDate === '' ? undefined : data.signatureDate, // non-breaking API change
+            version: data.version
         };
     }
 
