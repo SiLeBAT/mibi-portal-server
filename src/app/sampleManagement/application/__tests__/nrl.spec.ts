@@ -112,6 +112,7 @@ describe('NRL Assignment Service', () => {
                 correctionOffer: []
             },
             vvvo: { value: '', errors: [], correctionOffer: [] },
+            program_avv: { value: '', errors: [], correctionOffer: [] },
             comment: { value: '', errors: [], correctionOffer: [] }
         };
         genericTestSample = factory.createSample(testSampleData);

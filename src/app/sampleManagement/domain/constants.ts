@@ -23,6 +23,7 @@ export const FORM_PROPERTIES: string[] = [
     'operations_mode_avv',
     'operations_mode_text',
     'vvvo',
+    'program_avv',
     'comment'
 ];
 

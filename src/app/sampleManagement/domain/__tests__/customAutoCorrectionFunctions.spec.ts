@@ -73,6 +73,7 @@ describe('Custom Auto-correction Functions', () => {
             correctionOffer: []
         },
         vvvo: { value: '', errors: [], correctionOffer: [] },
+        program_avv: { value: '', errors: [], correctionOffer: [] },
         comment: { value: '', errors: [], correctionOffer: [] }
     };
     describe('autoCorrectAVV324', () => {

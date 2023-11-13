@@ -24,6 +24,7 @@ class AVVFileCatalogRepository implements AVVCatalogRepository {
         'avv322',
         'avv324',
         'avv326',
+        'avv328',
         'avv339',
         // `zsp${new Date().getFullYear().toString()}`,
         // `zsp${(new Date().getFullYear() + 1).toString()}`,

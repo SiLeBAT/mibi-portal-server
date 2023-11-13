@@ -352,7 +352,16 @@ export const zoMoConstraints: ValidationConstraints = {
             catalog: 'adv16'
         }
 
-    }
+    },
+
+    program_avv: {
+
+        presence: {
+            error: 105,
+            allowEmpty: false
+        }
+
+    },
 
 };
 
@@ -796,6 +805,15 @@ export const baseConstraints: ValidationConstraints = {
     },
 
     vvvo: {},
+
+    program_avv: {
+
+        inAVVCatalog: {
+            error: 104,
+            catalog: 'avv328'
+        },
+
+    },
 
     comment: {}
 

@@ -248,6 +248,21 @@ export const genericValidationErrors = [
         code: 102,
         level: 1,
         message: 'Das Format der AVV DatA Teilproben-Nr. scheint nicht korrekt zu sein.'
+    },
+    {
+        code: 103,
+        level: 4,
+        message: 'Tier- / Matrix-Code erkannt. Entsprechender Text wurde aus AVV DatA-Katalog Nr. 339 / 319 generiert.'
+    },
+    {
+        code: 104,
+        level: 2,
+        message: 'Ungültiger Code. Code ist nicht im AVV DatA-Katalog Nr. 328 enthalten.'
+    },
+    {
+        code: 105,
+        level: 2,
+        message: 'Programm fehlt (Pflicht bei ZoMo).'
     }
 ];
 export function getMockValidationErrorRepository(): ParseValidationErrorRepository {

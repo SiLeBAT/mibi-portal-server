@@ -41,6 +41,7 @@ export interface SampleData {
     operations_mode_avv: AnnotatedSampleDataEntry;
     operations_mode_text: AnnotatedSampleDataEntry;
     vvvo: AnnotatedSampleDataEntry;
+    program_avv: AnnotatedSampleDataEntry;
     comment: AnnotatedSampleDataEntry;
     [key: string]: AnnotatedSampleDataEntry;
 }

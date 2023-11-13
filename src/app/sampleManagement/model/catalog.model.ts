@@ -68,6 +68,10 @@ export interface MibiCatalog {
 
 export interface MibiCatalogData {
     version: string;
+    gueltigAb: string;
+    katalogNummer: string;
+    katalogName: string;
+    facettenErlaubt: boolean;
     eintraege: MibiEintraege;
 }
 

@@ -130,6 +130,10 @@ describe('Sample controller', () => {
                             value: 'string',
                             oldValue: 'string'
                         },
+                        program_avv: {
+                            value: 'string',
+                            oldValue: 'string'
+                        },
                         comment: {
                             value: 'string',
                             oldValue: 'string'
@@ -277,6 +281,9 @@ describe('Sample controller', () => {
                                         vvvo: {
                                             value: 'string'
                                         },
+                                        program_avv: {
+                                            value: 'string'
+                                        },
                                         comment: {
                                             value: 'string'
                                         }
@@ -395,6 +402,9 @@ describe('Sample controller', () => {
                                         vvvo: {
                                             value: 'string'
                                         },
+                                        program_avv: {
+                                            value: 'string',
+                                        },
                                         comment: {
                                             value: 'string'
                                         }
@@ -506,6 +516,9 @@ describe('Sample controller', () => {
                                         },
                                         vvvo: {
                                             value: 'string'
+                                        },
+                                        program_avv: {
+                                            value: 'string',
                                         },
                                         comment: {
                                             value: 'string'
