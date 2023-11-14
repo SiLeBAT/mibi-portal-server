@@ -74,5 +74,6 @@ export const EMPTY_ANALYSIS: Analysis = {
 
 export const ZOMO_ID = {
     code: '70564|53075|',
-    string: 'Zoonosen-Monitoring'
+    string1: 'zoonose',
+    string2: 'monitoring'
 };

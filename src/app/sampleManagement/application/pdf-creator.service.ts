@@ -851,7 +851,7 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
     private calculateTruncatedValue(matrixTextValue: string, value: string, sampleName: string): string {
         const matrixTextLength = matrixTextValue.length;
 
-        if (value === '' || value.includes(ZOMO_ID.string)) {
+        if (value === '' || (value.toLowerCase().includes(ZOMO_ID.string1) && value.toLowerCase().includes(ZOMO_ID.string2))) {
             return value;
         }
         const colWidthIndicesMap = this.config.samples.colWidthIndicesMap;
