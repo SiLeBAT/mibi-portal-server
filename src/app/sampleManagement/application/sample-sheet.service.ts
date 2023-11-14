@@ -17,8 +17,6 @@ import { NRLService } from '../model/nrl.model';
 export class DefaultSampleSheetService implements SampleSheetService {
     private readonly EMPTY_SAMPLE_SHEET_ANALYSIS: SampleSheetAnalysis = {
         species: SampleSheetAnalysisOption.OMIT,
-        phageTyping: SampleSheetAnalysisOption.OMIT,
-        zoonosenIsolate: SampleSheetAnalysisOption.OMIT,
         serological: SampleSheetAnalysisOption.OMIT,
         resistance: SampleSheetAnalysisOption.OMIT,
         vaccination: SampleSheetAnalysisOption.OMIT,
@@ -132,8 +130,6 @@ export class DefaultSampleSheetService implements SampleSheetService {
 
         return {
             species: getOptionFor('species'),
-            phageTyping: SampleSheetAnalysisOption.OMIT,
-            zoonosenIsolate: SampleSheetAnalysisOption.OMIT,
             serological: getOptionFor('serological'),
             resistance: getOptionFor('resistance'),
             vaccination: getOptionFor('vaccination'),

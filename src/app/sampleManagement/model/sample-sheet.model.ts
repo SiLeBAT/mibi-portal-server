@@ -30,12 +30,10 @@ export enum SampleSheetAnalysisOption {
 export interface SampleSheetAnalysis {
     species: SampleSheetAnalysisOption;
     serological: SampleSheetAnalysisOption;
-    phageTyping: SampleSheetAnalysisOption;
     resistance: SampleSheetAnalysisOption;
     vaccination: SampleSheetAnalysisOption;
     molecularTyping: SampleSheetAnalysisOption;
     toxin: SampleSheetAnalysisOption;
-    zoonosenIsolate: SampleSheetAnalysisOption;
     esblAmpCCarbapenemasen: SampleSheetAnalysisOption;
     other: SampleSheetAnalysisOption;
     otherText: string;

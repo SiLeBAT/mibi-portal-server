@@ -37,8 +37,6 @@ import {
     META_ANALYSIS_SEROLOGICAL_CELL,
     META_SENDER_CONTACTPERSON_CELL,
     META_ANALYSIS_COMPAREHUMAN_TEXT_CELL,
-    META_ANALYSIS_ZOONOSENISOLATE_CELL,
-    META_ANALYSIS_PHAGETYPING_CELL,
     META_ANAYLSIS_OTHER_BOOL_CELL,
     META_CUSTOMER_REF_NUMBER_CELL,
     META_SIGNATURE_DATE_CELL,
@@ -132,12 +130,6 @@ export class DefaultExcelUnmarshalService implements ExcelUnmarshalService {
             ),
             resistance: getOptionFromCell(
                 workSheet[META_ANALYSIS_RESISTANCE_CELL]
-            ),
-            zoonosenIsolate: getOptionFromCell(
-                workSheet[META_ANALYSIS_ZOONOSENISOLATE_CELL]
-            ),
-            phageTyping: getOptionFromCell(
-                workSheet[META_ANALYSIS_PHAGETYPING_CELL]
             ),
             vaccination: getOptionFromCell(
                 workSheet[META_ANALYSIS_VACCINATION_CELL]

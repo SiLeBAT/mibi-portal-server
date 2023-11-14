@@ -174,12 +174,10 @@ export class DefaultSampleService implements SampleService {
         >[] = [
             'species',
             'serological',
-            'phageTyping',
             'resistance',
             'vaccination',
             'molecularTyping',
             'toxin',
-            'zoonosenIsolate',
             'esblAmpCCarbapenemasen',
             'other',
             'compareHuman'
