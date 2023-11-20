@@ -45,7 +45,7 @@ interface Payload {
     fileName: string;
     mime: string;
     nrl: NRL_ID;
-};
+}
 
 interface NrlDataFeatureProperties {
     catalog: string;
@@ -53,8 +53,8 @@ interface NrlDataFeatureProperties {
 }
 
 interface NrlDataFeatures {
-    [key: string]: NrlDataFeatureProperties
-};
+    [key: string]: NrlDataFeatureProperties;
+}
 
 @injectable()
 export class DefaultSampleService implements SampleService {
