@@ -6,7 +6,9 @@ import {
     NewDatasetNotificationPayload,
     NewDatasetCopyNotificationPayload,
     SampleSet,
-    Sample
+    NrlSampleData,
+    Sample,
+    AnnotatedSampleDataEntry
 } from '../model/sample.model';
 import {
     NotificationService,
@@ -36,13 +38,23 @@ import {
     SampleSheetAnalysisOption,
     SampleSheetAnalysis
 } from '../model/sample-sheet.model';
+import { CatalogService } from '../model/catalog.model';
 
 interface Payload {
     buffer: Buffer;
     fileName: string;
     mime: string;
     nrl: NRL_ID;
+};
+
+interface NrlDataFeatureProperties {
+    catalog: string;
+    avvProperty: string;
 }
+
+interface NrlDataFeatures {
+    [key: string]: NrlDataFeatureProperties
+};
 
 @injectable()
 export class DefaultSampleService implements SampleService {
@@ -69,7 +81,9 @@ export class DefaultSampleService implements SampleService {
         @inject(APPLICATION_TYPES.NRLService)
         private nrlService: NRLService,
         @inject(APPLICATION_TYPES.SampleSheetService)
-        private sampleSheetService: SampleSheetService
+        private sampleSheetService: SampleSheetService,
+        @inject(APPLICATION_TYPES.CatalogService)
+        private catalogService: CatalogService,
     ) {
         this.appName =
             this.configurationService.getApplicationConfiguration().appName;
@@ -88,7 +102,7 @@ export class DefaultSampleService implements SampleService {
 
         const nrlPayloads = await this.createPayloads(
             nrlSampleSets,
-            sampleSheet => this.jsonMarshalService.createExcel(sampleSheet)
+            sampleSheet => this.jsonMarshalService.createExcel(sampleSheet, true)
         );
 
         let userPayloads: Payload[];
@@ -371,6 +385,46 @@ export class DefaultSampleService implements SampleService {
     }
 
     private createNRLSampleSet(sampleSet: SampleSet): SampleSet {
+        const nrlDataFeatures: NrlDataFeatures = {
+            sampling_location_text_avv: {
+                catalog: 'avv313',
+                avvProperty: 'sampling_location_avv'
+            },
+            animal_text_avv: {
+                catalog: 'avv339',
+                avvProperty: 'animal_avv'
+            },
+            matrix_text_avv: {
+                catalog: 'avv319',
+                avvProperty: 'matrix_avv'
+            },
+            primary_production_text_avv: {
+                catalog: 'avv316',
+                avvProperty: 'primary_production_avv'
+            },
+            control_program_text_avv: {
+                catalog: 'avv322',
+                avvProperty: 'control_program_avv'
+            },
+            sampling_reason_text_avv: {
+                catalog: 'avv326',
+                avvProperty: 'sampling_reason_avv'
+            },
+            operations_mode_text_avv: {
+                catalog: 'avv303',
+                avvProperty: 'operations_mode_avv'
+            },
+            program_text_avv: {
+                catalog: 'avv328',
+                avvProperty: 'program_avv'
+            }
+        };
+
+        sampleSet.samples.forEach(sample => {
+            const nrlData: Partial<NrlSampleData> = this.getNrlDataForSample(sample, nrlDataFeatures);
+            this.expandSampleWithNrlData(sample, nrlData);
+        });
+
         const nrlSampleSet: SampleSet = {
             meta: sampleSet.meta,
             samples: sampleSet.samples.map(sample => sample.clone())
@@ -380,9 +434,41 @@ export class DefaultSampleService implements SampleService {
             this.replaceEmptySampleIDWithSampleIDAVV(sample);
             this.moveAVV313Data(sample);
             this.removeGeneratedTiereMatrixText(sample);
+            this.removeSampleDataDuplicates(sample);
         });
 
         return nrlSampleSet;
+    }
+
+    private getNrlDataForSample(sample: Sample, nrlDataFeatures: NrlDataFeatures): Partial<NrlSampleData> {
+
+        const nrlSampleData: Partial<NrlSampleData> = {};
+
+        for (const props in nrlDataFeatures) {
+            const nrlDataFeatureProperties = nrlDataFeatures[props];
+            const catalog = this.catalogService.getAVVCatalog(nrlDataFeatureProperties.catalog);
+            const avvProperty = nrlDataFeatureProperties.avvProperty;
+            const textValue = catalog.getTextWithAVVKode(sample.getAnnotatedData()[avvProperty].value);
+            nrlSampleData[props] = {
+                value: textValue,
+                errors: [],
+                correctionOffer: []
+            };
+        }
+
+        return nrlSampleData as NrlSampleData;
+    }
+
+    private expandSampleWithNrlData(sample: Sample, nrlData: Partial<NrlSampleData>) {
+        const errorSampleDataEntry: AnnotatedSampleDataEntry = {
+            value: '',
+            errors: [],
+            correctionOffer: []
+        };
+        const annotatedData: Partial<NrlSampleData> = sample.getAnnotatedData();
+        for (const props in nrlData) {
+            annotatedData[props] = nrlData[props] ? nrlData[props] : errorSampleDataEntry;
+        }
     }
 
     private replaceEmptySampleIDWithSampleIDAVV(sample: Sample) {
@@ -415,5 +501,58 @@ export class DefaultSampleService implements SampleService {
         if (tierMatrixTextOldValue === '') {
             sampleData.animal_matrix_text.value = '';
         }
+    }
+
+    private removeSampleDataDuplicates(sample: Sample) {
+        const sampleData = sample.getAnnotatedData() as NrlSampleData;
+
+        this.removeSimpleDuplicates(
+            sampleData.pathogen_avv,
+            sampleData.pathogen_text
+        );
+        this.removeSimpleDuplicates(
+            sampleData.sampling_location_text_avv,
+            sampleData.sampling_location_text
+        );
+        this.removeSimpleDuplicates(
+            sampleData.operations_mode_text_avv,
+            sampleData.operations_mode_text
+        );
+        this.removeComplexDuplicates(
+            sampleData.animal_text_avv,
+            sampleData.matrix_text_avv,
+            sampleData.animal_matrix_text
+        );
+        this.removeComplexDuplicates(
+            sampleData.control_program_text_avv,
+            sampleData.sampling_reason_text_avv,
+            sampleData.program_reason_text
+        );
+    }
+
+    private removeSimpleDuplicates(
+        sampleDataEntry1: AnnotatedSampleDataEntry,
+        sampleDataEntryToRemove: AnnotatedSampleDataEntry
+    ) {
+        if (sampleDataEntry1.value.trim() === sampleDataEntryToRemove.value.trim()) {
+            sampleDataEntryToRemove.value = '';
+        }
+    }
+
+    private removeComplexDuplicates(
+        sampleDataEntry1: AnnotatedSampleDataEntry,
+        sampleDataEntry2: AnnotatedSampleDataEntry,
+        sampleDataEntryToRemove: AnnotatedSampleDataEntry
+    ) {
+        const entry1Text = sampleDataEntry1.value.trim();
+        const entry2Text = sampleDataEntry2.value.trim();
+        const entryToRemoveText = sampleDataEntryToRemove.value.trim();
+
+        const newText = entryToRemoveText
+            .replace(entry1Text, '')
+            .replace(entry2Text, '')
+            .trim();
+
+        sampleDataEntryToRemove.value = newText;
     }
 }

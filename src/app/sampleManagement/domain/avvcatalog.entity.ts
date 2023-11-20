@@ -83,6 +83,14 @@ class AVVDefaultCatalog<T extends AVVCatalogData> implements AVVCatalog<T> {
         return `${begriffsIdEintrag}|${id}|`;
     }
 
+    getTextWithAVVKode(kode: string): string {
+        if (this.isFacettenCatalog()) {
+            return this.getTextWithFacettenCode(kode);
+        }
+
+        return this.containsEintragWithAVVKode(kode) ? this.data.eintraege[kode].Text : '';
+    }
+
     getTextWithFacettenCode(kode: string): string {
         let generatedText = '';
 
@@ -128,6 +136,10 @@ class AVVDefaultCatalog<T extends AVVCatalogData> implements AVVCatalog<T> {
         }
 
         return generatedText;
+    }
+
+    private isFacettenCatalog() {
+        return this.data.facettenErlaubt;
     }
 
     private isMibiCatalogFacettenData(data: MibiCatalogData | MibiCatalogFacettenData): data is MibiCatalogFacettenData {

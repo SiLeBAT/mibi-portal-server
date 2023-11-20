@@ -513,15 +513,6 @@ export const baseConstraints: ValidationConstraints = {
         }
     },
 
-    pathogen_text: {
-
-        inAVVCatalog: {
-            error: 98,
-            catalog: 'avv324'
-        },
-
-    },
-
     sampling_date: {
 
         presence: {

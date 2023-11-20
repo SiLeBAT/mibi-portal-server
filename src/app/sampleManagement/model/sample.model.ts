@@ -46,6 +46,17 @@ export interface SampleData {
     [key: string]: AnnotatedSampleDataEntry;
 }
 
+export interface NrlSampleData extends SampleData {
+    sampling_location_text_avv: AnnotatedSampleDataEntry;
+    animal_text_avv: AnnotatedSampleDataEntry;
+    matrix_text_avv: AnnotatedSampleDataEntry;
+    primary_production_text_avv: AnnotatedSampleDataEntry;
+    control_program_text_avv: AnnotatedSampleDataEntry;
+    sampling_reason_text_avv: AnnotatedSampleDataEntry;
+    operations_mode_text_avv: AnnotatedSampleDataEntry;
+    program_text_avv: AnnotatedSampleDataEntry;
+}
+
 export interface SampleMetaData {
     nrl: NRL_ID;
     urgency: Urgency;

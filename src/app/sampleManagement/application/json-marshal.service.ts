@@ -16,6 +16,7 @@ import { injectable, inject } from 'inversify';
 import { APPLICATION_TYPES } from '../../application.types';
 import {
     FORM_PROPERTIES,
+    FORM_PROPERTIES_NRL,
     VALID_SHEET_NAME,
     META_NRL_CELL,
     META_URGENCY_CELL,
@@ -49,7 +50,8 @@ type ChangedValueCollection = Record<string, string>;
 
 @injectable()
 export class DefaultJSONMarshalService implements JSONMarshalService {
-    private readonly TEMPLATE_FILE_NAME = 'Einsendebogen.xlsx';
+    private readonly TEMPLATE_FILE_NAME = 'Einsendebogen_user.xlsx';
+    private readonly TEMPLATE_FILE_NAME_NRL = 'Einsendebogen_nrl.xlsx';
     private readonly FILE_EXTENSION = '.xlsx';
 
     constructor(
@@ -59,9 +61,11 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
         private sampleSheetConstants: SampleSheetConstants
     ) {}
 
-    async createExcel(sampleSheet: SampleSheet): Promise<FileBuffer> {
+    async createExcel(sampleSheet: SampleSheet, nrlSampleSheet: boolean = false): Promise<FileBuffer> {
+        const templateFileName = nrlSampleSheet ? this.TEMPLATE_FILE_NAME_NRL : this.TEMPLATE_FILE_NAME;
+
         const buffer = await this.fileRepository.getFileBuffer(
-            this.TEMPLATE_FILE_NAME
+            templateFileName
         );
 
         if (!buffer) {
@@ -72,12 +76,13 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
         sampleSheet.samples.forEach((sample: Sample) => {
             highlights.push(sample.getOldValues());
         });
-        const dataToSave = this.fromDataObjToAOO(sampleSheet.samples);
+        const dataToSave = this.fromDataObjToAOO(sampleSheet.samples, nrlSampleSheet);
         let workbook = await this.fromFileToWorkbook(buffer);
         workbook = this.addValidatedDataToWorkbook(
             workbook,
             dataToSave,
-            highlights
+            highlights,
+            nrlSampleSheet
         );
 
         workbook = this.addMetaDataToWorkbook(workbook, sampleSheet.meta);
@@ -96,13 +101,14 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
         return workbook;
     }
 
-    private fromDataObjToAOO(sampleCollection: Sample[]): string[][] {
+    private fromDataObjToAOO(sampleCollection: Sample[], nrlSampleSheet: boolean = false): string[][] {
         const dataToSave: string[][] = [];
+        const formProperties: string[] = nrlSampleSheet ? [...FORM_PROPERTIES_NRL] : [...FORM_PROPERTIES];
 
         _.forEach(sampleCollection, (sample: Sample) => {
             const row: string[] = [];
-            _.forEach(FORM_PROPERTIES, header => {
-                row.push(sample.getValueFor(header));
+            _.forEach(formProperties, header => {
+                    row.push(sample.getValueFor(header));
             });
             dataToSave.push(row);
         });
@@ -225,15 +231,17 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
         // tslint:disable-next-line: no-any
         workbook: any,
         dataToSave: string[][],
-        highlights: ChangedValueCollection[] = []
+        highlights: ChangedValueCollection[] = [],
+        nrlSampleSheet: boolean = false
     ) {
         const searchTerm = 'Ihre Probe-';
         const sheet = workbook.sheet(VALID_SHEET_NAME);
+        const formProperties: string[] = nrlSampleSheet ? [...FORM_PROPERTIES_NRL] : [...FORM_PROPERTIES];
 
         if (sheet) {
             const startCol = 'A';
-            const endCol = String.fromCharCode(
-                startCol.charCodeAt(0) + FORM_PROPERTIES.length
+            const endCol = this.getColumnName(
+                startCol.charCodeAt(0) - 64 + formProperties.length
             );
             const result = sheet.find(searchTerm);
             if (result.length > 0) {
@@ -245,7 +253,7 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
                     i <= rowNumber + dataToSave.length;
                     i++
                 ) {
-                    for (let j = 1; j <= FORM_PROPERTIES.length; j++) {
+                    for (let j = 1; j <= formProperties.length; j++) {
                         const cell2 = sheet.row(i).cell(j);
                         cell2.value(undefined);
                     }
@@ -268,6 +276,16 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
             }
         }
         return workbook;
+    }
+
+    private getColumnName(numberOfColumns: number): string {
+        let columnName = '';
+        while (numberOfColumns > 0) {
+            const modulo = (numberOfColumns - 1) % 26;
+            columnName = String.fromCharCode(65 + modulo) + columnName;
+            numberOfColumns = Math.floor((numberOfColumns - modulo) / 26);
+        }
+        return columnName;
     }
 
     // tslint:disable-next-line: no-any

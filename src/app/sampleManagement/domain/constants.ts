@@ -27,6 +27,39 @@ export const FORM_PROPERTIES: string[] = [
     'comment'
 ];
 
+export const FORM_PROPERTIES_NRL: string[] = [
+    'sample_id',
+    'sample_id_avv',
+    'partial_sample_id',
+    'pathogen_avv',
+    'pathogen_text',
+    'sampling_date',
+    'isolation_date',
+    'sampling_location_avv',
+    'sampling_location_text_avv',
+    'sampling_location_zip',
+    'sampling_location_text',
+    'animal_avv',
+    'animal_text_avv',
+    'matrix_avv',
+    'matrix_text_avv',
+    'animal_matrix_text',
+    'primary_production_avv',
+    'primary_production_text_avv',
+    'control_program_avv',
+    'control_program_text_avv',
+    'sampling_reason_avv',
+    'sampling_reason_text_avv',
+    'program_reason_text',
+    'operations_mode_avv',
+    'operations_mode_text_avv',
+    'operations_mode_text',
+    'vvvo',
+    'program_avv',
+    'program_text_avv',
+    'comment'
+];
+
 export const DEFAULT_SAMPLE_DATA_HEADER_ROW = 41;
 export const SAMPLE_DATA_HEADER_ROW_MARKER = 'Ihre Probe-nummer';
 
