@@ -266,7 +266,7 @@ export class DefaultSamplesController
                 const file = this.parseInputDTO(() => {
                     return {
                         buffer: req.file!.buffer,
-                        name: req.file!.originalname
+                        name: decodeURIComponent(req.file!.originalname)
                     };
                 });
                 return this.sampleService
