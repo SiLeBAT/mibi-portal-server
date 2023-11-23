@@ -42,9 +42,11 @@ export class DefaultSampleSheetService implements SampleSheetService {
     }
 
     fromSampleSheetToSampleSet(sampleSheet: SampleSheet): SampleSet {
-        if (
-            this.tryGetSingleNRL(sampleSheet.samples) === sampleSheet.meta.nrl
-        ) {
+        const returnNrl = this.tryGetSingleNRL(sampleSheet.samples);
+        const isInEnum = Object.values(NRL_ID).includes(returnNrl);
+        const isNotUnknown = returnNrl !== NRL_ID.UNKNOWN;
+
+        if (isInEnum && isNotUnknown) {
             this.addMetaDataToSamples(sampleSheet);
         }
 

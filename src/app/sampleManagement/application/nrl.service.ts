@@ -37,7 +37,7 @@ export class DefaultNRLService implements NRLService {
             case 'NRL für Campylobacter':
             case 'NRL-Campy':
                 return NRL_ID.NRL_Campy;
-            case 'NRL für Antibiotikaresistenz ':
+            case 'NRL für Antibiotikaresistenz':
             case 'NRL-AR':
                 return NRL_ID.NRL_AR;
             case 'Konsiliarlabor für Yersinia':
