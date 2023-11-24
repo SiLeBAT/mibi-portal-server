@@ -123,6 +123,9 @@
     },
     "escodegen": {
       "optionator": "0.9.3"
+    },
+    "@pm2/js-api": {
+      "axios": "1.6.2"
     }
   },
   "mibiConfig": {
