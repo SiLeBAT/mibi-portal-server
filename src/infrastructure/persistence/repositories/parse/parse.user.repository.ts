@@ -60,7 +60,7 @@ export class ParseDefaultUserRepository
 
     async findByUserId(id: string): Promise<User> {
         return super
-            ._findById(id)
+            ._findById(id, undefined, true)
             .then(async (user: ParseUser) => {
                 if (!user) {
                     return Promise.reject(null);

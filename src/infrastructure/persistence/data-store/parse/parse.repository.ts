@@ -37,13 +37,17 @@ export class ParseRepositoryBase<T extends Parse.Object<Parse.Attributes>> {
             .find();
     }
 
-    protected async _findById<U extends Parse.Object<Parse.Attributes>>(id: string, className?: string): Promise<T | U | undefined> {
+    protected async _findById<U extends Parse.Object<Parse.Attributes>>(id: string, className?: string, includingAll?: boolean): Promise<T | U | undefined> {
         let query: Parse.Query;
         if (className) {
             query = new Parse.Query<U>(className);
         } else {
             query = new Parse.Query<T>(this._className);
         }
+        if (includingAll) {
+            query.includeAll();
+        }
+
         return query.get(id) as Promise<T | U | undefined>;
     }
 
