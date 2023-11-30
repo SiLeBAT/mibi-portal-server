@@ -122,9 +122,9 @@ export const zoMoConstraints: ValidationConstraints = {
 
     animal_avv: {
 
-        presence: {
+        atLeastOneOf: {
             error: 34,
-            allowEmpty: false
+            additionalMembers: ['matrix_avv']
         },
 
         // new text
@@ -156,9 +156,9 @@ export const zoMoConstraints: ValidationConstraints = {
 
     matrix_avv: {
 
-        presence: {
+        atLeastOneOf: {
             error: 34,
-            allowEmpty: false
+            additionalMembers: ['animal_avv']
         },
 
         // new text

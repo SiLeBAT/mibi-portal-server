@@ -191,13 +191,13 @@ export class DefaultSampleSheetService implements SampleSheetService {
                 esblAmpCCarbapenemasen:
                     analysis.esblAmpCCarbapenemasen !==
                     SampleSheetAnalysisOption.OMIT,
-                other: analysis.otherText,
+                other: analysis.otherText.length > 130 ? analysis.otherText.slice(0, 130) : analysis.otherText,
                 compareHuman: {
                     active:
                         analysis.compareHuman !==
                             SampleSheetAnalysisOption.OMIT ||
                         analysis.compareHumanText !== '',
-                    value: analysis.compareHumanText
+                    value: analysis.compareHumanText.length > 130 ? analysis.compareHumanText.slice(0, 130) : analysis.compareHumanText
                 }
             }
         };
