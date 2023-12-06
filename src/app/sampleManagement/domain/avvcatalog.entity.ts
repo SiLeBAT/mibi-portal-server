@@ -83,15 +83,15 @@ class AVVDefaultCatalog<T extends AVVCatalogData> implements AVVCatalog<T> {
         return `${begriffsIdEintrag}|${id}|`;
     }
 
-    getTextWithAVVKode(kode: string): string {
+    getTextWithAVVKode(kode: string, includingFacettenName: boolean = true): string {
         if (this.isFacettenCatalog()) {
-            return this.getTextWithFacettenCode(kode);
+            return this.getTextWithFacettenCode(kode, includingFacettenName);
         }
 
         return this.containsEintragWithAVVKode(kode) ? this.data.eintraege[kode].Text : '';
     }
 
-    getTextWithFacettenCode(kode: string): string {
+    getTextWithFacettenCode(kode: string, includingFacettenName: boolean = true): string {
         let generatedText = '';
 
         if (this.isMibiCatalogFacettenData(this.data)) {
@@ -115,7 +115,7 @@ class AVVDefaultCatalog<T extends AVVCatalogData> implements AVVCatalog<T> {
                     const [facettenBeginId, facettenEndeIds] = facettenValue.split('-');
                     const facettenEndeList = facettenEndeIds.split(':');
                     const facette = this.getFacetteWithBegriffsId(facettenBeginId);
-                    if (facette) {
+                    if (facette && includingFacettenName) {
                         generatedText += ` ${facette.Text} -`;
                     }
                     if (facette && facettenIds.includes(facette.FacettenId)) {

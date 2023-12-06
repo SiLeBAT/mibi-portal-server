@@ -3,7 +3,7 @@ import {
     PDFCreatorService,
     PDFConfigProviderService
 } from '../model/pdf.model';
-import { Address, SampleData, Sample } from '../model/sample.model';
+import { Address, NrlSampleData, Sample } from '../model/sample.model';
 import { APPLICATION_TYPES } from '../../application.types';
 import _ from 'lodash';
 import fs from 'fs';
@@ -16,12 +16,16 @@ import {
     SampleSheetAnalysis,
     SampleSheetAnalysisOption
 } from '../model/sample-sheet.model';
-import { ZOMO_ID } from '../domain/constants';
+import { CatalogService } from '../model/catalog.model';
+
+type PdfPrefixText = { text: string; bold: boolean };
+type PdfText = (string | PdfPrefixText)[];
 
 @injectable()
 export class DefaultPDFCreatorService implements PDFCreatorService {
     private readonly FILE_EXTENSION = '.pdf';
     private readonly MIME_TYPE = 'application/pdf';
+    private readonly SEPARATOR = '. ';
 
     private readonly config = this.configProvider.config;
     private readonly strings = this.configProvider.strings;
@@ -43,7 +47,9 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
         @inject(APPLICATION_TYPES.PDFService)
         private pdfService: PDFService,
         @inject(APPLICATION_TYPES.PDFConfigProviderService)
-        private configProvider: PDFConfigProviderService
+        private configProvider: PDFConfigProviderService,
+        @inject(APPLICATION_TYPES.CatalogService)
+        private catalogService: CatalogService,
     ) {
         this.loadLogo();
     }
@@ -582,7 +588,7 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
         const body = new Array<Array<{}>>();
         body.push(this.createSamplesHeaderRow());
         samples.forEach(sample => {
-            body.push(this.createSamplesDataRow(sample.getAnnotatedData()));
+            body.push(this.createSamplesDataRow(sample.getAnnotatedData() as NrlSampleData));
         });
         return {
             layout: 'samplesLayout',
@@ -599,7 +605,10 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
         const titles = this.strings.samples.titles;
         const subTitles = this.strings.samples.subtitles;
         return [
-            this.createSamplesHeaderCell(titles.sample_id, subTitles.sample_id),
+            this.createSamplesHeaderCell(
+                titles.sample_id,
+                subTitles.sample_id
+            ),
             this.createSamplesHeaderCell(
                 titles.sample_id_avv,
                 subTitles.sample_id_avv
@@ -625,10 +634,6 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                 subTitles.isolation_date
             ),
             this.createSamplesHeaderCell(
-                titles.sampling_location_avv,
-                subTitles.sampling_location_avv
-            ),
-            this.createSamplesHeaderCell(
                 titles.sampling_location_zip,
                 subTitles.sampling_location_zip
             ),
@@ -637,43 +642,33 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                 subTitles.sampling_location_text
             ),
             this.createSamplesHeaderCell(
-                titles.animal_avv,
-                subTitles.animal_avv
-            ),
-            this.createSamplesHeaderCell(
-                titles.matrix_avv,
-                subTitles.matrix_avv
-            ),
-            this.createSamplesHeaderCell(
                 titles.animal_matrix_text,
                 subTitles.animal_matrix_text
             ),
             this.createSamplesHeaderCell(
-                titles.primary_production_avv,
-                subTitles.primary_production_avv
-            ),
-            this.createSamplesHeaderCell(
-                titles.control_program_avv,
-                subTitles.control_program_avv
-            ),
-            this.createSamplesHeaderCell(
-                titles.sampling_reason_avv,
-                subTitles.sampling_reason_avv
+                titles.primary_production_text_avv,
+                subTitles.primary_production_text_avv
             ),
             this.createSamplesHeaderCell(
                 titles.program_reason_text,
                 subTitles.program_reason_text
             ),
             this.createSamplesHeaderCell(
-                titles.operations_mode_avv,
-                subTitles.operations_mode_avv
-            ),
-            this.createSamplesHeaderCell(
                 titles.operations_mode_text,
                 subTitles.operations_mode_text
             ),
-            this.createSamplesHeaderCell(titles.vvvo, subTitles.vvvo),
-            this.createSamplesHeaderCell(titles.comment, subTitles.comment)
+            this.createSamplesHeaderCell(
+                titles.vvvo,
+                subTitles.vvvo
+            ),
+            this.createSamplesHeaderCell(
+                titles.program_text_avv,
+                subTitles.program_text_avv
+            ),
+            this.createSamplesHeaderCell(
+                titles.comment,
+                subTitles.comment
+            )
         ];
     }
 
@@ -684,163 +679,86 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
         };
     }
 
-    private createSamplesDataRow(sampleData: SampleData): Array<{}> {
-        const matrixTextValue = sampleData.animal_matrix_text.value;
-
+    private createSamplesDataRow(sampleData: NrlSampleData): Array<{}> {
         return [
             this.createSamplesDataCell(
-                sampleData.sample_id.value,
-                !!sampleData.sample_id.oldValue
+                [sampleData.sample_id.value]
             ),
             this.createSamplesDataCell(
-                sampleData.sample_id_avv.value,
-                !!sampleData.sample_id_avv.oldValue
+                [sampleData.sample_id_avv.value]
             ),
 
             this.createSamplesDataCell(
-                sampleData.partial_sample_id.value,
-                !!sampleData.partial_sample_id.oldValue
+                [sampleData.partial_sample_id.value]
             ),
 
             this.createSamplesDataCell(
-                sampleData.pathogen_avv.value,
-                !!sampleData.pathogen_avv.oldValue
+                [sampleData.pathogen_avv.value]
             ),
             this.createSamplesDataCell(
-                sampleData.pathogen_text.value,
-                !!sampleData.pathogen_text.oldValue
+                [sampleData.pathogen_text.value]
             ),
             this.createSamplesDataCell(
-                sampleData.sampling_date.value,
-                !!sampleData.sampling_date.oldValue
+                [sampleData.sampling_date.value]
             ),
             this.createSamplesDataCell(
-                sampleData.isolation_date.value,
-                !!sampleData.isolation_date.oldValue
+                [sampleData.isolation_date.value]
             ),
             this.createSamplesDataCell(
-                // sampleData.sampling_location_avv.value,
-                this.calculateTruncatedValue(
-                    matrixTextValue,
-                    sampleData.sampling_location_avv.value,
-                    'sampling_location_avv'
-                ),
-                !!sampleData.sampling_location_avv.oldValue
+                [sampleData.sampling_location_zip.value]
+            ),
+            this.createCodeToTextDataCell(
+                'avv313',
+                sampleData.sampling_location_avv.value.trim(),
+                sampleData.sampling_location_text.value.trim(),
+                'Ort'
+            ),
+            this.createTwoCodesToTextDataCell(
+                'avv339',
+                'avv319',
+                sampleData.animal_avv.value.trim(),
+                sampleData.matrix_avv.value.trim(),
+                sampleData.animal_matrix_text.value.trim(),
+                'Tier',
+                'Matrix',
+                false,
+                false
+            ),
+            this.createAdditionalDataCell(
+                'avv316',
+                sampleData.primary_production_avv.value
+            ),
+            this.createTwoCodesToTextDataCell(
+                'avv322',
+                'avv326',
+                sampleData.control_program_avv.value.trim(),
+                sampleData.sampling_reason_avv.value.trim(),
+                sampleData.program_reason_text.value.trim(),
+                'Kontroll-P',
+                'Unters.-Grund'
+            ),
+            this.createCodeToTextDataCell(
+                'avv303',
+                sampleData.operations_mode_avv.value.trim(),
+                sampleData.operations_mode_text.value.trim(),
+                'Betrieb',
+                false
             ),
             this.createSamplesDataCell(
-                // sampleData.sampling_location_zip.value,
-                this.calculateTruncatedValue(
-                    matrixTextValue,
-                    sampleData.sampling_location_zip.value,
-                    'sampling_location_zip'
-                ),
-                !!sampleData.sampling_location_zip.oldValue
+                [sampleData.vvvo.value]
+            ),
+            this.createAdditionalDataCell(
+                'avv328',
+                sampleData.program_avv.value
             ),
             this.createSamplesDataCell(
-                this.calculateTruncatedValue(
-                    matrixTextValue,
-                    sampleData.sampling_location_text.value,
-                    'sampling_location_text'
-                ),
-                !!sampleData.sampling_location_text.oldValue
-            ),
-            this.createSamplesDataCell(
-                this.calculateTruncatedValue(
-                    matrixTextValue,
-                    sampleData.animal_avv.value,
-                    'animal_avv'
-                ),
-                !!sampleData.animal_avv.oldValue
-            ),
-            this.createSamplesDataCell(
-                this.calculateTruncatedValue(
-                    matrixTextValue,
-                    sampleData.matrix_avv.value,
-                    'matrix_avv'
-                ),
-                !!sampleData.matrix_avv.oldValue
-            ),
-            this.createSamplesDataCell(
-                sampleData.animal_matrix_text.value,
-                !!sampleData.animal_matrix_text.oldValue
-            ),
-            this.createSamplesDataCell(
-                // sampleData.primary_production_avv.value,
-                this.calculateTruncatedValue(
-                    matrixTextValue,
-                    sampleData.primary_production_avv.value,
-                    'primary_production_avv'
-                ),
-                !!sampleData.primary_production_avv.oldValue
-            ),
-            this.createSamplesDataCell(
-                // sampleData.control_program_avv.value,
-                this.calculateTruncatedValue(
-                    matrixTextValue,
-                    sampleData.control_program_avv.value,
-                    'control_program_avv'
-                ),
-                !!sampleData.control_program_avv.oldValue
-            ),
-            this.createSamplesDataCell(
-                // sampleData.sampling_reason_avv.value,
-                this.calculateTruncatedValue(
-                    matrixTextValue,
-                    sampleData.sampling_reason_avv.value,
-                    'sampling_reason_avv'
-                ),
-                !!sampleData.sampling_reason_avv.oldValue
-            ),
-            this.createSamplesDataCell(
-                // sampleData.program_reason_text.value,
-                this.calculateTruncatedValue(
-                    matrixTextValue,
-                    sampleData.program_reason_text.value,
-                    'program_reason_text'
-                ),
-                !!sampleData.program_reason_text.oldValue
-            ),
-            this.createSamplesDataCell(
-                this.calculateTruncatedValue(
-                    matrixTextValue,
-                    sampleData.operations_mode_avv.value,
-                    'operations_mode_avv'
-                ),
-                !!sampleData.operations_mode_avv.oldValue
-            ),
-            this.createSamplesDataCell(
-                this.calculateTruncatedValue(
-                    matrixTextValue,
-                    sampleData.operations_mode_text.value,
-                    'operations_mode_text'
-                ),
-                !!sampleData.operations_mode_text.oldValue
-            ),
-            this.createSamplesDataCell(
-                // sampleData.vvvo.value,
-                this.calculateTruncatedValue(
-                    matrixTextValue,
-                    sampleData.vvvo.value,
-                    'vvvo'
-                ),
-                !!sampleData.vvvo.oldValue
-            ),
-            this.createSamplesDataCell(
-                this.calculateTruncatedValue(
-                    matrixTextValue,
-                    sampleData.comment.value,
-                    'comment'
-                ),
-                !!sampleData.comment.oldValue
+                [sampleData.comment.value]
             )
         ];
     }
 
-    private createSamplesDataCell(value: string, edited: boolean): {} {
+    private createSamplesDataCell(value: PdfText): {} {
         const style = ['dataCell'];
-        if (edited) {
-            style.push('editedCell');
-        }
 
         return {
             style: style,
@@ -848,26 +766,266 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
         };
     }
 
-    private calculateTruncatedValue(matrixTextValue: string, value: string, sampleName: string): string {
-        const matrixTextLength = matrixTextValue.length;
+    private createAdditionalDataCell(catalogName: string, codeValue: string): {} {
+        const catalogTextValue = this.getCatalogTextWithAVVKode(catalogName, codeValue);
 
-        if (value === '' || (value.toLowerCase().includes(ZOMO_ID.string1) && value.toLowerCase().includes(ZOMO_ID.string2))) {
-            return value;
+        return this.createSamplesDataCell([catalogTextValue]);
+    }
+
+    private createCodeToTextDataCell(catalogName: string,
+        codeValue: string,
+        textValue: string,
+        prefix: string,
+        includingFacettenName: boolean = true
+    ): {} {
+        const pdfText: PdfText = [];
+        let catalogTextValue = this.getCatalogTextWithAVVKode(catalogName, codeValue);
+
+        const hasCode = !!codeValue;
+        const hasText = !!textValue;
+        const isCatalogText = textValue === catalogTextValue;
+        const hasCatalogText = textValue.includes(catalogTextValue);
+        const isUserText = !hasCatalogText && hasText;
+        const hasUserAndCatalogText = hasCatalogText && (textValue.length > catalogTextValue.length);
+
+        if (!includingFacettenName) {
+            catalogTextValue = this.getCatalogTextWithAVVKode(catalogName, codeValue, false);
         }
-        const colWidthIndicesMap = this.config.samples.colWidthIndicesMap;
-        const colWidthFactors = this.config.samples.colWidthFactors;
 
-        const matrixWidthFactor = colWidthFactors[colWidthIndicesMap.get('animal_matrix_text') as number];
-        const valueWidthFactor = colWidthFactors[colWidthIndicesMap.get(sampleName) as number];
-        const truncatedValueLength = (matrixTextLength * (valueWidthFactor / matrixWidthFactor)) - 6;
-
-        if (value.length <= truncatedValueLength) {
-            return value;
+        if (!hasCode && !hasText) {
+            // code: no, text: no
+            pdfText.push('');
+            return this.createSamplesDataCell(pdfText);
         }
 
-        const truncatedValue = `${value.substring(0, truncatedValueLength)}...`;
+        if (hasCode && !hasText) {
+            // code: yes, text: no
+            pdfText.push(catalogTextValue);
+            return this.createSamplesDataCell(pdfText);
+        }
 
-        return truncatedValue;
+        if (!hasCode && hasText) {
+            // code: no, text: yes
+            pdfText.push(textValue);
+            return this.createSamplesDataCell(pdfText);
+        }
+
+        if (hasCode && isUserText) {
+            // code: yes, text: user text
+            pdfText.push(this.getBoldPrefixText('user'));
+            pdfText.push(textValue);
+            pdfText.push(this.SEPARATOR);
+            pdfText.push(this.getBoldPrefixText(prefix));
+            pdfText.push(catalogTextValue);
+            return this.createSamplesDataCell(pdfText);
+        }
+
+        if (hasCode && isCatalogText) {
+            pdfText.push(catalogTextValue);
+            return this.createSamplesDataCell(pdfText);
+        }
+
+        if (hasCode && hasUserAndCatalogText) {
+            // code: yes, text: user text + avv text
+            const userText = textValue.replace(catalogTextValue, '').trim();
+            pdfText.push(this.getBoldPrefixText('user'));
+            pdfText.push(userText);
+            pdfText.push(this.SEPARATOR);
+            pdfText.push(this.getBoldPrefixText(prefix));
+            pdfText.push(catalogTextValue);
+            return this.createSamplesDataCell(pdfText);
+        }
+
+        return this.createSamplesDataCell(pdfText);
+    }
+
+    private createTwoCodesToTextDataCell(
+        catalogName1: string,
+        catalogName2: string,
+        codeValue1: string,
+        codeValue2: string,
+        textValue: string,
+        prefix1: string,
+        prefix2: string,
+        includingFacettenName1: boolean = true,
+        includingFacettenName2: boolean = true,
+    ): {} {
+        const pdfText: PdfText = [];
+        let catalogTextValue1 = this.getCatalogTextWithAVVKode(catalogName1, codeValue1);
+        let catalogTextValue2 = this.getCatalogTextWithAVVKode(catalogName2, codeValue2);
+
+        const cleanedUserText = textValue
+            .replace(catalogTextValue1, '')
+            .trim()
+            .replace(catalogTextValue2, '')
+            .trim()
+            .replace(/^[^a-zA-Z]+|[^a-zA-Z]+$/g, '');
+        const userTextLength = cleanedUserText.length;
+        const textValueLength = textValue.length;
+        const catalogTextLength = textValue.length - userTextLength;
+        const hasUserText = (textValueLength > catalogTextLength);
+
+        const hasCode1 = !!codeValue1;
+        const hasCode2 = !!codeValue2;
+        const hasText = !!textValue;
+        const isCatalogText1 = (catalogTextValue1 !== '') && textValue === catalogTextValue1;
+        const isCatalogText2 = (catalogTextValue2 !== '') && textValue === catalogTextValue2;
+        const hasCatalogText1 = (catalogTextValue1 !== '') && textValue.includes(catalogTextValue1);
+        const hasCatalogText2 = (catalogTextValue2 !== '') && textValue.includes(catalogTextValue2);
+        const isUserText = !hasCatalogText1 && !hasCatalogText2 && hasText;
+        const hasUserAndCatalogText1 = hasCatalogText1 && !hasCatalogText2 && hasUserText;
+        const hasUserAndCatalogText2 = hasCatalogText2 && !hasCatalogText1 && hasUserText;
+        const hasUserAndCatalogText1AndCatalogText2 = hasCatalogText1 && hasCatalogText2 && hasUserText;
+
+        if (!includingFacettenName1) {
+            catalogTextValue1 = this.getCatalogTextWithAVVKode(catalogName1, codeValue1, false);
+        }
+        if (!includingFacettenName2) {
+            catalogTextValue2 = this.getCatalogTextWithAVVKode(catalogName2, codeValue2, false);
+        }
+
+        if (!hasCode1 && !hasCode2 && !hasText) {
+            pdfText.push('');
+            return this.createSamplesDataCell(pdfText);
+        }
+
+        if (!hasCode1 && !hasCode2 && hasText) {
+            pdfText.push(this.getBoldPrefixText('User'));
+            pdfText.push(textValue);
+            return this.createSamplesDataCell(pdfText);
+        }
+
+        if (hasCode1 && !hasCode2 && !hasText) {
+            pdfText.push(this.getBoldPrefixText(prefix1));
+            pdfText.push(catalogTextValue1);
+           return this.createSamplesDataCell(pdfText);
+        }
+
+        if (hasCode1 && !hasCode2 && isUserText) {
+            pdfText.push(this.getBoldPrefixText('User'));
+            pdfText.push(textValue);
+            pdfText.push(this.SEPARATOR);
+            pdfText.push(this.getBoldPrefixText(prefix1));
+            pdfText.push(catalogTextValue1);
+            return this.createSamplesDataCell(pdfText);
+        }
+
+        if (hasCode1 && !hasCode2 && isCatalogText1) {
+            pdfText.push(this.getBoldPrefixText(prefix1));
+            pdfText.push(catalogTextValue1);
+            return this.createSamplesDataCell(pdfText);
+        }
+
+        if (hasCode1 && !hasCode2 && hasUserAndCatalogText1) {
+            const userText = cleanedUserText;
+            pdfText.push(this.getBoldPrefixText('User'));
+            pdfText.push(userText);
+            pdfText.push(this.SEPARATOR);
+            pdfText.push(this.getBoldPrefixText(prefix1));
+            pdfText.push(catalogTextValue1);
+            return this.createSamplesDataCell(pdfText);
+        }
+
+        if (!hasCode1 && hasCode2 && !hasText) {
+            pdfText.push(this.getBoldPrefixText(prefix2));
+            pdfText.push(catalogTextValue2);
+            return this.createSamplesDataCell(pdfText);
+        }
+
+        if (!hasCode1 && hasCode2 && isUserText) {
+            pdfText.push(this.getBoldPrefixText('User'));
+            pdfText.push(textValue);
+            pdfText.push(this.SEPARATOR);
+            pdfText.push(this.getBoldPrefixText(prefix2));
+            pdfText.push(catalogTextValue2);
+            return this.createSamplesDataCell(pdfText);
+        }
+
+        if (!hasCode1 && hasCode2 && isCatalogText2) {
+            pdfText.push(this.getBoldPrefixText(prefix2));
+            pdfText.push(catalogTextValue2);
+            return this.createSamplesDataCell(pdfText);
+        }
+
+        if (!hasCode1 && hasCode2 && hasUserAndCatalogText2) {
+            const userText = cleanedUserText;
+            pdfText.push(this.getBoldPrefixText('User'));
+            pdfText.push(userText);
+            pdfText.push(this.SEPARATOR);
+            pdfText.push(this.getBoldPrefixText(prefix2));
+            pdfText.push(catalogTextValue2);
+            return this.createSamplesDataCell(pdfText);
+        }
+
+        if (hasCode1 && hasCode2 && !hasText) {
+            pdfText.push(this.getBoldPrefixText(prefix1));
+            pdfText.push(catalogTextValue1);
+            pdfText.push(this.SEPARATOR);
+            pdfText.push(this.getBoldPrefixText(prefix2));
+            pdfText.push(catalogTextValue2);
+            return this.createSamplesDataCell(pdfText);
+        }
+
+        if (hasCode1 && hasCode2 && isUserText) {
+            pdfText.push(this.getBoldPrefixText('User'));
+            pdfText.push(textValue);
+            pdfText.push(this.SEPARATOR);
+            pdfText.push(this.getBoldPrefixText(prefix1));
+            pdfText.push(catalogTextValue1);
+            pdfText.push(this.SEPARATOR);
+            pdfText.push(this.getBoldPrefixText(prefix2));
+            pdfText.push(catalogTextValue2);
+            return this.createSamplesDataCell(pdfText);
+        }
+
+        if (
+            hasCode1 &&
+            hasCode2 &&
+            (hasCatalogText1 || hasCatalogText2) &&
+            !hasUserAndCatalogText1 &&
+            !hasUserAndCatalogText2 &&
+            !hasUserAndCatalogText1AndCatalogText2
+        ) {
+            pdfText.push(this.getBoldPrefixText(prefix1));
+            pdfText.push(catalogTextValue1);
+            pdfText.push(this.SEPARATOR);
+            pdfText.push(this.getBoldPrefixText(prefix2));
+            pdfText.push(catalogTextValue2);
+            return this.createSamplesDataCell(pdfText);
+        }
+
+        if (
+            hasCode1 &&
+            hasCode2 &&
+            (hasUserAndCatalogText1 || hasUserAndCatalogText2 || hasUserAndCatalogText1AndCatalogText2)
+        ) {
+            const userText = cleanedUserText;
+            pdfText.push(this.getBoldPrefixText('User'));
+            pdfText.push(userText);
+            pdfText.push(this.SEPARATOR);
+            pdfText.push(this.getBoldPrefixText(prefix1));
+            pdfText.push(catalogTextValue1);
+            pdfText.push(this.SEPARATOR);
+            pdfText.push(this.getBoldPrefixText(prefix2));
+            pdfText.push(catalogTextValue2);
+            return this.createSamplesDataCell(pdfText);
+        }
+
+        return this.createSamplesDataCell(pdfText);
+    }
+
+    private getCatalogTextWithAVVKode(catalogName: string, codeValue: string, includingFacettenName: boolean = true): string {
+        const catalog = this.catalogService.getAVVCatalog(catalogName);
+        const catalogTextValue = catalog.getTextWithAVVKode(codeValue.trim(), includingFacettenName);
+
+        return catalogTextValue;
+    }
+
+    private getBoldPrefixText(text: string): PdfPrefixText {
+        return {
+            text: `${text}: `,
+            bold: true
+        };
     }
 
     // Footer
