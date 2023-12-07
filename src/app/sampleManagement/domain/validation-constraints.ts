@@ -683,11 +683,6 @@ export const baseConstraints: ValidationConstraints = {
             catalog: 'avv339'
         },
 
-        presence: {
-            error: 32,
-            allowEmpty: false
-        },
-
     },
 
     matrix_avv: {
@@ -697,12 +692,6 @@ export const baseConstraints: ValidationConstraints = {
             additionalMembers: ['animal_matrix_text', 'animal_avv']
         },
 
-        presence: {
-            error: 32,
-            allowEmpty: false
-        },
-
-        // new text
         inAVVFacettenCatalog: {
             error: 33,
             catalog: 'avv319'
