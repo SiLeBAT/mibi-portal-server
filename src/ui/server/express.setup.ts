@@ -31,7 +31,7 @@ export function initialiseExpress(container: Container) {
             root: serverConfig.apiRoot,
             version: API_ROUTE.V2,
             port: serverConfig.port,
-            docPath: '/api-docs'
+            docPath: '/'
         },
         logging: {
             logger,
