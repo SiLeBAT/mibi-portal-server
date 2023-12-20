@@ -26,6 +26,7 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
     private readonly FILE_EXTENSION = '.pdf';
     private readonly MIME_TYPE = 'application/pdf';
     private readonly SEPARATOR = '. ';
+    private readonly USER_PREFIX = 'User';
 
     private readonly config = this.configProvider.config;
     private readonly strings = this.configProvider.strings;
@@ -772,7 +773,8 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
         return this.createSamplesDataCell([catalogTextValue]);
     }
 
-    private createCodeToTextDataCell(catalogName: string,
+    private createCodeToTextDataCell(
+        catalogName: string,
         codeValue: string,
         textValue: string,
         prefix: string,
@@ -812,7 +814,7 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
 
         if (hasCode && isUserText) {
             // code: yes, text: user text
-            pdfText.push(this.getBoldPrefixText('user'));
+            pdfText.push(this.getBoldPrefixText(this.USER_PREFIX));
             pdfText.push(textValue);
             pdfText.push(this.SEPARATOR);
             pdfText.push(this.getBoldPrefixText(prefix));
@@ -828,7 +830,7 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
         if (hasCode && hasUserAndCatalogText) {
             // code: yes, text: user text + avv text
             const userText = textValue.replace(catalogTextValue, '').trim();
-            pdfText.push(this.getBoldPrefixText('user'));
+            pdfText.push(this.getBoldPrefixText(this.USER_PREFIX));
             pdfText.push(userText);
             pdfText.push(this.SEPARATOR);
             pdfText.push(this.getBoldPrefixText(prefix));
@@ -890,7 +892,7 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
         }
 
         if (!hasCode1 && !hasCode2 && hasText) {
-            pdfText.push(this.getBoldPrefixText('User'));
+            pdfText.push(this.getBoldPrefixText(this.USER_PREFIX));
             pdfText.push(textValue);
             return this.createSamplesDataCell(pdfText);
         }
@@ -902,7 +904,7 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
         }
 
         if (hasCode1 && !hasCode2 && isUserText) {
-            pdfText.push(this.getBoldPrefixText('User'));
+            pdfText.push(this.getBoldPrefixText(this.USER_PREFIX));
             pdfText.push(textValue);
             pdfText.push(this.SEPARATOR);
             pdfText.push(this.getBoldPrefixText(prefix1));
@@ -918,7 +920,7 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
 
         if (hasCode1 && !hasCode2 && hasUserAndCatalogText1) {
             const userText = cleanedUserText;
-            pdfText.push(this.getBoldPrefixText('User'));
+            pdfText.push(this.getBoldPrefixText(this.USER_PREFIX));
             pdfText.push(userText);
             pdfText.push(this.SEPARATOR);
             pdfText.push(this.getBoldPrefixText(prefix1));
@@ -933,7 +935,7 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
         }
 
         if (!hasCode1 && hasCode2 && isUserText) {
-            pdfText.push(this.getBoldPrefixText('User'));
+            pdfText.push(this.getBoldPrefixText(this.USER_PREFIX));
             pdfText.push(textValue);
             pdfText.push(this.SEPARATOR);
             pdfText.push(this.getBoldPrefixText(prefix2));
@@ -949,7 +951,7 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
 
         if (!hasCode1 && hasCode2 && hasUserAndCatalogText2) {
             const userText = cleanedUserText;
-            pdfText.push(this.getBoldPrefixText('User'));
+            pdfText.push(this.getBoldPrefixText(this.USER_PREFIX));
             pdfText.push(userText);
             pdfText.push(this.SEPARATOR);
             pdfText.push(this.getBoldPrefixText(prefix2));
@@ -967,7 +969,7 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
         }
 
         if (hasCode1 && hasCode2 && isUserText) {
-            pdfText.push(this.getBoldPrefixText('User'));
+            pdfText.push(this.getBoldPrefixText(this.USER_PREFIX));
             pdfText.push(textValue);
             pdfText.push(this.SEPARATOR);
             pdfText.push(this.getBoldPrefixText(prefix1));
@@ -1000,7 +1002,7 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
             (hasUserAndCatalogText1 || hasUserAndCatalogText2 || hasUserAndCatalogText1AndCatalogText2)
         ) {
             const userText = cleanedUserText;
-            pdfText.push(this.getBoldPrefixText('User'));
+            pdfText.push(this.getBoldPrefixText(this.USER_PREFIX));
             pdfText.push(userText);
             pdfText.push(this.SEPARATOR);
             pdfText.push(this.getBoldPrefixText(prefix1));

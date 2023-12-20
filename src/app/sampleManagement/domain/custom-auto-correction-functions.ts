@@ -14,10 +14,9 @@ import {
     ADVCatalogEntry,
     FuzzyEintrag,
     AVV324Data,
-    AVVCatalogData
+    AVVCatalogData,
+    AVVCatalog
 } from '../model/catalog.model';
-
-
 
 function autoCorrectTiereMatrixText(catalogService: CatalogService): CorrectionFunction {
     const catalogNameTiere = 'avv339';
@@ -28,8 +27,10 @@ function autoCorrectTiereMatrixText(catalogService: CatalogService): CorrectionF
     const catalogTiere = catalogService.getAVVCatalog<AVVCatalogData>(catalogNameTiere);
     const catalogMatrix = catalogService.getAVVCatalog<AVVCatalogData>(catalogNameMatrix);
 
-    const searchCacheTiere: Record<string, string> = {};
-    const searchCacheMatrix: Record<string, string> = {};
+    const separator = '. ';
+    const userPrefix = 'User';
+    const tierPrefix = 'Tier';
+    const matrixPrefix = 'Matrix';
 
     logger.debug(
         'Initializing auto-correction: Tiere/Matrix Text & creating closure'
@@ -38,60 +39,362 @@ function autoCorrectTiereMatrixText(catalogService: CatalogService): CorrectionF
     return (sampleData: SampleData): CorrectionSuggestions | null => {
         const originalValue = sampleData[propertyTierMatrixText].value;
         const trimmedEntry = originalValue.trim();
-        // ignore non-empty entries
-        if (trimmedEntry !== '') {
+
+        // ignore already autocorrected or empty entries
+        if (trimmedEntry.includes(`${userPrefix}: `) ||
+            trimmedEntry.includes(`${tierPrefix}: `) ||
+            trimmedEntry.includes(`${matrixPrefix}: `) ||
+            (sampleData[propertyTierAVV].value === '' &&
+                sampleData[propertyMatrixAVV].value === '' &&
+                originalValue === ''))  {
+
+
             return null;
         }
 
-        // return cached result
-        const tierCodeValue = sampleData[propertyTierAVV].value.trim();
-        const matrixCodeValue = sampleData[propertyMatrixAVV].value.trim();
+        const generatedText = generateTextFromTwoCodes(
+            sampleData,
+            propertyTierAVV,
+            propertyMatrixAVV,
+            trimmedEntry,
+            catalogTiere,
+            catalogMatrix,
+            userPrefix,
+            tierPrefix,
+            matrixPrefix,
+            separator
+        );
 
-        if (searchCacheTiere[tierCodeValue] && searchCacheMatrix[matrixCodeValue]) {
-            const generatedText =
-                [searchCacheTiere[tierCodeValue], searchCacheMatrix[matrixCodeValue]]
-                    .filter((str) => str !== '')
-                    .join(' | ');
-
-
-            return createCacheEntry(
-                propertyTierMatrixText,
-                originalValue,
-                [generatedText],
-                103
-            );
-        }
-
-        // generate text from codes
-        let tierText = '';
-        let matrixText = '';
-
-        if (searchCacheTiere[tierCodeValue]) {
-            tierText = searchCacheTiere[tierCodeValue];
-        } else {
-            tierText = catalogTiere.getTextWithFacettenCode(tierCodeValue) || '';
-            searchCacheTiere[tierCodeValue] = tierText;
-        }
-
-        if (searchCacheMatrix[matrixCodeValue]) {
-            matrixText = searchCacheMatrix[matrixCodeValue];
-        } else {
-            matrixText = catalogMatrix.getTextWithFacettenCode(matrixCodeValue) || '';
-            searchCacheMatrix[matrixCodeValue] = matrixText;
+        if (generatedText === '') {
+            return null;
         }
 
         return {
             field: propertyTierMatrixText,
             original: '',
-            correctionOffer: [
-                [tierText, matrixText]
-                    .filter((str) => str !== '')
-                    .join(' | ')
-            ],
+            correctionOffer: [generatedText],
             code: 103
         };
     };
+}
 
+function autoCorrectKontrollprogrammUntersuchungsgrundText(catalogService: CatalogService): CorrectionFunction {
+    const catalogNameKontrollprogramm = 'avv322';
+    const catalogNameUntersuchungsgrund = 'avv326';
+    const propertyProgrammGrundText: SampleProperty = 'program_reason_text';
+    const propertyKontrollprogrammAVV: SampleProperty = 'control_program_avv';
+    const propertyUntersuchungsgrundAVV: SampleProperty = 'sampling_reason_avv';
+    const catalogKontrollprogramm = catalogService.getAVVCatalog<AVVCatalogData>(catalogNameKontrollprogramm);
+    const catalogUntersuchungsgrund = catalogService.getAVVCatalog<AVVCatalogData>(catalogNameUntersuchungsgrund);
+
+    const separator = '. ';
+    const userPrefix = 'User';
+    const kontrollprogrammPrefix = 'Kontroll-P';
+    const untersuchungsgrundPrefix = 'Unters.-Grund';
+
+    logger.debug(
+        'Initializing auto-correction: Kontrollprogramm/Untersuchungsgrund Text & creating closure'
+    );
+
+    return (sampleData: SampleData): CorrectionSuggestions | null => {
+        const originalValue = sampleData[propertyProgrammGrundText].value;
+        const trimmedEntry = originalValue.trim();
+
+        // ignore already autocorrected or empty entries
+        if (trimmedEntry.includes(`${userPrefix}: `) ||
+            trimmedEntry.includes(`${kontrollprogrammPrefix}: `) ||
+            trimmedEntry.includes(`${untersuchungsgrundPrefix}: `) ||
+            (sampleData[propertyKontrollprogrammAVV].value === '' &&
+                sampleData[propertyUntersuchungsgrundAVV].value === '' &&
+                originalValue === ''))  {
+
+            return null;
+        }
+        const generatedText = generateTextFromTwoCodes(
+            sampleData,
+            propertyKontrollprogrammAVV,
+            propertyUntersuchungsgrundAVV,
+            trimmedEntry,
+            catalogKontrollprogramm,
+            catalogUntersuchungsgrund,
+            userPrefix,
+            kontrollprogrammPrefix,
+            untersuchungsgrundPrefix,
+            separator
+        );
+
+        if (generatedText === '') {
+            return null;
+        }
+
+        return {
+            field: propertyProgrammGrundText,
+            original: '',
+            correctionOffer: [generatedText],
+            code: 107
+        };
+    };
+}
+
+function generateTextFromTwoCodes(
+    sampleData: SampleData,
+    sampleCodeProperty1: SampleProperty,
+    sampleCodeProperty2: SampleProperty,
+    trimmedEntry: string,
+    avvCatalog1: AVVCatalog<AVVCatalogData>,
+    avvCatalog2: AVVCatalog<AVVCatalogData>,
+    userPrefix: string,
+    prefix1: string,
+    prefix2: string,
+    separator: string
+): string {
+    let generatedText = '';
+    const codeValue1 = sampleData[sampleCodeProperty1].value.trim();
+    const codeValue2 = sampleData[sampleCodeProperty2].value.trim();
+    let catalogTextValue1 = avvCatalog1.getTextWithAVVKode(codeValue1.trim());
+    let catalogTextValue2 = avvCatalog2.getTextWithAVVKode(codeValue2.trim());
+
+    const cleanedUserText = trimmedEntry
+        .replace(catalogTextValue1, '')
+        .trim()
+        .replace(catalogTextValue2, '')
+        .trim()
+        .replace(/^[^a-zA-Z]+|[^a-zA-Z]+$/g, '');
+    const userTextLength = cleanedUserText.length;
+    const textValueLength = trimmedEntry.length;
+    const catalogTextLength = trimmedEntry.length - userTextLength;
+    const hasUserText = (textValueLength > catalogTextLength);
+
+    const hasCode1 = !!codeValue1;
+    const hasCode2 = !!codeValue2;
+    const hasText = !!trimmedEntry;
+    const isCatalogText1 = (catalogTextValue1 !== '') && trimmedEntry === catalogTextValue1;
+    const isCatalogText2 = (catalogTextValue2 !== '') && trimmedEntry === catalogTextValue2;
+    const hasCatalogText1 = (catalogTextValue1 !== '') && trimmedEntry.includes(catalogTextValue1);
+    const hasCatalogText2 = (catalogTextValue2 !== '') && trimmedEntry.includes(catalogTextValue2);
+    const isUserText = !hasCatalogText1 && !hasCatalogText2 && hasText;
+    const hasUserAndCatalogText1 = hasCatalogText1 && !hasCatalogText2 && hasUserText;
+    const hasUserAndCatalogText2 = hasCatalogText2 && !hasCatalogText1 && hasUserText;
+    const hasUserAndCatalogText1AndCatalogText2 = hasCatalogText1 && hasCatalogText2 && hasUserText;
+
+    if (!hasCode1 && !hasCode2 && !hasText) {
+        return '';
+    }
+
+    if (!hasCode1 && !hasCode2 && hasText) {
+        return `${userPrefix}: ${trimmedEntry}`;
+    }
+
+    if (hasCode1 && !hasCode2 && !hasText) {
+        return `${prefix1}: ${catalogTextValue1}`;
+    }
+
+    if (hasCode1 && !hasCode2 && isUserText) {
+        return `${userPrefix}: ${trimmedEntry}${separator}${prefix1}: ${catalogTextValue1}`;
+    }
+
+    if (hasCode1 && !hasCode2 && isCatalogText1) {
+        return `${prefix1}: ${catalogTextValue1}`;
+    }
+
+    if (hasCode1 && !hasCode2 && hasUserAndCatalogText1) {
+        const userText = cleanedUserText;
+        return `${userPrefix}: ${userText}${separator}${prefix1}: ${catalogTextValue1}`;
+    }
+
+    if (!hasCode1 && hasCode2 && !hasText) {
+        return `${prefix2}: ${catalogTextValue2}`;
+    }
+
+    if (!hasCode1 && hasCode2 && isUserText) {
+        return `${userPrefix}: ${trimmedEntry}${separator}${prefix2}: ${catalogTextValue2}`;
+    }
+
+    if (!hasCode1 && hasCode2 && isCatalogText2) {
+        return `${prefix2}: ${catalogTextValue2}`;
+    }
+
+    if (!hasCode1 && hasCode2 && hasUserAndCatalogText2) {
+        const userText = cleanedUserText;
+        return `${userPrefix}: ${userText}${separator}${prefix2}: ${catalogTextValue2}`;
+    }
+
+    if (hasCode1 && hasCode2 && !hasText) {
+        return `${prefix1}: ${catalogTextValue1}${separator}${prefix2}: ${catalogTextValue2}`;
+    }
+
+    if (hasCode1 && hasCode2 && isUserText) {
+        return `${userPrefix}: ${trimmedEntry}${separator}${prefix1}: ${catalogTextValue1}${separator}${prefix2}: ${catalogTextValue2}`;
+    }
+
+    if (
+        hasCode1 &&
+        hasCode2 &&
+        (hasCatalogText1 || hasCatalogText2) &&
+        !hasUserAndCatalogText1 &&
+        !hasUserAndCatalogText2 &&
+        !hasUserAndCatalogText1AndCatalogText2
+    ) {
+        return `${prefix1}: ${catalogTextValue1}${separator}${prefix2}: ${catalogTextValue2}`;
+    }
+
+    if (
+        hasCode1 &&
+        hasCode2 &&
+        (hasUserAndCatalogText1 || hasUserAndCatalogText2 || hasUserAndCatalogText1AndCatalogText2)
+    ) {
+        const userText = cleanedUserText;
+        return `${userPrefix}: ${userText}${separator}${prefix1}: ${catalogTextValue1}${separator}${prefix2}: ${catalogTextValue2}`;
+    }
+
+    return generatedText;
+}
+
+function autoCorrectOrtText(catalogService: CatalogService): CorrectionFunction {
+    const catalogNameOrt = 'avv313';
+    const propertyOrtText: SampleProperty = 'sampling_location_text';
+    const propertyOrtAVV: SampleProperty = 'sampling_location_avv';
+    const catalogOrt = catalogService.getAVVCatalog<AVVCatalogData>(catalogNameOrt);
+
+    const separator = '. ';
+    const userPrefix = 'User';
+    const ortPrefix = 'Ort';
+
+    logger.debug(
+        'Initializing auto-correction: Ort Text & creating closure'
+    );
+
+    return (sampleData: SampleData): CorrectionSuggestions | null => {
+        const originalValue = sampleData[propertyOrtText].value;
+        const trimmedEntry = originalValue.trim();
+
+        // ignore already autocorrected or empty entries
+        if (trimmedEntry.includes(`${userPrefix}: `) ||
+            trimmedEntry.includes(`${ortPrefix}: `) ||
+            (sampleData[propertyOrtAVV].value === '' &&
+                originalValue === ''))  {
+
+            return null;
+        }
+        const generatedText = generateTextFromCode(
+            sampleData,
+            propertyOrtAVV,
+            trimmedEntry,
+            catalogOrt,
+            userPrefix,
+            ortPrefix,
+            separator
+        );
+
+        if (generatedText === '') {
+            return null;
+        }
+
+        return {
+            field: propertyOrtText,
+            original: '',
+            correctionOffer: [generatedText],
+            code: 106
+        };
+    };
+}
+
+function autoCorrectBetriebsartText(catalogService: CatalogService): CorrectionFunction {
+    const catalogNameBetriebsart = 'avv303';
+    const propertyBetriebsartText: SampleProperty = 'operations_mode_text';
+    const propertyBetriebsartAVV: SampleProperty = 'operations_mode_avv';
+    const catalogBetriebsart = catalogService.getAVVCatalog<AVVCatalogData>(catalogNameBetriebsart);
+
+    const separator = '. ';
+    const userPrefix = 'User';
+    const betriebsPrefix = 'Betrieb';
+
+    logger.debug(
+        'Initializing auto-correction: Betriebsart Text & creating closure'
+    );
+
+    return (sampleData: SampleData): CorrectionSuggestions | null => {
+        const originalValue = sampleData[propertyBetriebsartText].value;
+        const trimmedEntry = originalValue.trim();
+
+        // ignore already autocorrected or empty entries
+        if (trimmedEntry.includes(`${userPrefix}: `) ||
+            trimmedEntry.includes(`${betriebsPrefix}: `) ||
+            (sampleData[propertyBetriebsartAVV].value === '' &&
+                originalValue === ''))  {
+
+            return null;
+        }
+        const generatedText = generateTextFromCode(
+            sampleData,
+            propertyBetriebsartAVV,
+            trimmedEntry,
+            catalogBetriebsart,
+            userPrefix,
+            betriebsPrefix,
+            separator
+        );
+
+        if (generatedText === '') {
+            return null;
+        }
+
+        return {
+            field: propertyBetriebsartText,
+            original: '',
+            correctionOffer: [generatedText],
+            code: 108
+        };
+    };
+}
+
+function generateTextFromCode(
+    sampleData: SampleData,
+    sampleCodeProperty: SampleProperty,
+    trimmedEntry: string,
+    avvCatalog: AVVCatalog<AVVCatalogData>,
+    userPrefix: string,
+    prefix: string,
+    separator: string
+): string {
+
+    let generatedText = '';
+    const codeValue = sampleData[sampleCodeProperty].value.trim();
+    let catalogTextValue = avvCatalog.getTextWithAVVKode(codeValue.trim());
+
+    const hasCode = !!codeValue;
+    const hasText = !!trimmedEntry;
+    const isCatalogText = trimmedEntry === catalogTextValue;
+    const hasCatalogText = trimmedEntry.includes(catalogTextValue);
+    const isUserText = !hasCatalogText && hasText;
+    const hasUserAndCatalogText = hasCatalogText && (trimmedEntry.length > catalogTextValue.length);
+
+    if (!hasCode && !hasText) {
+        return '';
+    }
+
+    if (hasCode && !hasText) {
+        return `${catalogTextValue}`;
+    }
+
+    if (!hasCode && hasText) {
+        return '';
+    }
+
+    if (hasCode && isUserText) {
+        return `${userPrefix}: ${trimmedEntry}${separator}${prefix}: ${catalogTextValue}`;
+    }
+
+    if (hasCode && isCatalogText) {
+        return '';
+    }
+
+    if (hasCode && hasUserAndCatalogText) {
+        const userText = trimmedEntry.replace(catalogTextValue, '').trim();
+        return `${userPrefix}: ${userText}${separator}${prefix}: ${catalogTextValue}`;
+    }
+
+    return generatedText;
 }
 
 
@@ -293,5 +596,8 @@ function createCatalogEnhancements(
 
 export {
     autoCorrectTiereMatrixText,
+    autoCorrectKontrollprogrammUntersuchungsgrundText,
+    autoCorrectOrtText,
+    autoCorrectBetriebsartText,
     autoCorrectAVV324
 };

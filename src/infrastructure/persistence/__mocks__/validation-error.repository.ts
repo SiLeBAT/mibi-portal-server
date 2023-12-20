@@ -252,7 +252,7 @@ export const genericValidationErrors = [
     {
         code: 103,
         level: 4,
-        message: 'Tier- / Matrix-Code erkannt. Entsprechender Text wurde aus AVV DatA-Katalog Nr. 339 / 319 generiert.'
+        message: 'Code für Tier / Matrix erkannt. Entsprechender Text wurde aus AVV DatA-Katalog Nr. 339 / 319 eingefügt.'
     },
     {
         code: 104,
@@ -263,6 +263,21 @@ export const genericValidationErrors = [
         code: 105,
         level: 2,
         message: 'Programm fehlt (Pflicht bei ZoMo).'
+    },
+    {
+        code: 106,
+        level: 4,
+        message: 'Code für Probenahmeort erkannt. Entsprechender Text wurde aus AVV DatA-Katalog Nr. 313 eingefügt.'
+    },
+    {
+        code: 107,
+        level: 4,
+        message: 'Code für Kontrollprogramm / Untersuchungsgrund erkannt. Entsprechender Text wurde aus AVV DatA-Katalog Nr. 322 / 326 eingefügt.'
+    },
+    {
+        code: 108,
+        level: 4,
+        message: 'Code für Betriebsart erkannt. Entsprechender Text wurde aus AVV DatA-Katalog Nr. 303 eingefügt.'
     }
 ];
 export function getMockValidationErrorRepository(): ParseValidationErrorRepository {

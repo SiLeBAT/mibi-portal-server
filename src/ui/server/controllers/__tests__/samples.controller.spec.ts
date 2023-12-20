@@ -485,7 +485,7 @@ describe('Sample controller', () => {
                                             value: 'string'
                                         },
                                         sampling_location_text: {
-                                            value: 'string'
+                                            value: 'User: string. Ort: undefined'
                                         },
                                         animal_avv: {
                                             value: 'string'
@@ -494,7 +494,7 @@ describe('Sample controller', () => {
                                             value: 'string'
                                         },
                                         animal_matrix_text: {
-                                            value: 'string'
+                                            value: 'User: string. Tier: undefined. Matrix: undefined'
                                         },
                                         primary_production_avv: {
                                             value: 'string'
@@ -506,13 +506,13 @@ describe('Sample controller', () => {
                                             value: 'string'
                                         },
                                         program_reason_text: {
-                                            value: 'string'
+                                            value: 'User: string. Kontroll-P: undefined. Unters.-Grund: undefined'
                                         },
                                         operations_mode_avv: {
                                             value: 'string'
                                         },
                                         operations_mode_text: {
-                                            value: 'string'
+                                            value: 'User: string. Betrieb: undefined'
                                         },
                                         vvvo: {
                                             value: 'string'
