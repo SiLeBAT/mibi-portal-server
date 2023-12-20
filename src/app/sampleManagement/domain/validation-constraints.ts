@@ -408,6 +408,33 @@ export const standardConstraints: ValidationConstraints = {
 
     },
 
+    animal_avv: {
+
+        atLeastOneOf: {
+            error: 37,
+            additionalMembers: ['matrix_avv', 'animal_matrix_text']
+        },
+
+    },
+
+    matrix_avv: {
+
+        atLeastOneOf: {
+            error: 37,
+            additionalMembers: ['animal_matrix_text', 'animal_avv']
+        },
+
+    },
+
+    animal_matrix_text: {
+
+        atLeastOneOf: {
+            error: 37,
+            additionalMembers: ['matrix_avv', 'animal_avv']
+        }
+
+    },
+
     control_program_avv: {
 
         // new text
@@ -673,11 +700,6 @@ export const baseConstraints: ValidationConstraints = {
 
     animal_avv: {
 
-        atLeastOneOf: {
-            error: 37,
-            additionalMembers: ['matrix_avv', 'animal_matrix_text']
-        },
-
         inAVVFacettenCatalog: {
             error: 99,
             catalog: 'avv339'
@@ -687,11 +709,6 @@ export const baseConstraints: ValidationConstraints = {
 
     matrix_avv: {
 
-        atLeastOneOf: {
-            error: 37,
-            additionalMembers: ['animal_matrix_text', 'animal_avv']
-        },
-
         inAVVFacettenCatalog: {
             error: 33,
             catalog: 'avv319'
@@ -699,14 +716,7 @@ export const baseConstraints: ValidationConstraints = {
 
     },
 
-    animal_matrix_text: {
-
-        atLeastOneOf: {
-            error: 37,
-            additionalMembers: ['matrix_avv', 'animal_avv']
-        }
-
-    },
+    animal_matrix_text: { },
 
     primary_production_avv: {
 
