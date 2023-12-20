@@ -1,10 +1,6 @@
 import _ from 'lodash';
 import { logger } from '../../../aspects';
 import {
-    autoCorrectTiereMatrixText,
-    autoCorrectKontrollprogrammUntersuchungsgrundText,
-    autoCorrectOrtText,
-    autoCorrectBetriebsartText,
     autoCorrectAVV324
 } from '../domain/custom-auto-correction-functions';
 import {
@@ -67,10 +63,6 @@ export class DefaultFormAutoCorrectionService
     }
 
     private registerCorrectionFunctions() {
-        this.correctionFunctions.push(autoCorrectTiereMatrixText(this.catalogService));
-        this.correctionFunctions.push(autoCorrectKontrollprogrammUntersuchungsgrundText(this.catalogService));
-        this.correctionFunctions.push(autoCorrectOrtText(this.catalogService));
-        this.correctionFunctions.push(autoCorrectBetriebsartText(this.catalogService));
         this.correctionFunctions.push(autoCorrectAVV324(this.catalogService));
     }
 }
