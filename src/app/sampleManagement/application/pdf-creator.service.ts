@@ -416,9 +416,9 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                         [
                             {
                                 text: getStringFromText(analysis.otherText),
-                                colSpan: 2,
                                 style: ['markedCell', 'userComment']
-                            }
+                            },
+                            { text: '' }
                         ],
                         [
                             {
@@ -440,9 +440,9 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                                 text: getStringFromText(
                                     analysis.compareHumanText
                                 ),
-                                colSpan: 2,
                                 style: ['markedCell', 'userComment']
-                            }
+                            },
+                            { text: '' }
                         ]
                     ]
                 })

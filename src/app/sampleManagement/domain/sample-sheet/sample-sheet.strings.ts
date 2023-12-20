@@ -109,7 +109,7 @@ export const sampleSheetSamplesStrings = {
         sample_id: '',
         sample_id_avv: '',
         partial_sample_id: '',
-        pathogen_avv: '(Code oder Text aus AVV DatA-Kat-Nr. 324)',
+        pathogen_avv: '(Text aus AVV DatA-Kat-Nr. 324)',
         pathogen_text: '(Text)',
         sampling_date: '',
         isolation_date: '',
