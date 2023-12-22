@@ -80,7 +80,7 @@ export const sampleSheetMetaStrings = {
     },
     footer: {
         validated:
-            'OE-Mibi-SOP-059_FB_A01_Elektronischer Einsendebogen_V16 gültig ab 26.06.2023',
+            'OE-Mibi-SOP-059_FB_A01_Elektronischer Einsendebogen_V17 gültig ab 01.01.2024',
         page: 'Seite',
         pageOf: 'von'
     }
