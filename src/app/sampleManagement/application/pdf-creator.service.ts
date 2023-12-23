@@ -808,6 +808,7 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
 
         if (!hasCode && hasText) {
             // code: no, text: yes
+            pdfText.push(this.getBoldPrefixText(this.USER_PREFIX));
             pdfText.push(textValue);
             return this.createSamplesDataCell(pdfText);
         }
