@@ -43,11 +43,11 @@ function noPlanprobeForNRL_AR(
 ) {
     const planprobenCode = '22562|126354|';
 
-    const isNRL_AR = attributes.nrl === NRL_ID.NRL_AR;
+    const isNrlAr = attributes.nrl === NRL_ID.NRL_AR;
     const isPlanprobenCode = value === planprobenCode;
     const isZomoCode = attributes.control_program_avv === ZOMO_ID.code;
 
-    return isNRL_AR &&
+    return isNrlAr &&
         isPlanprobenCode &&
         !isZomoCode
         ? { ...options.message }
