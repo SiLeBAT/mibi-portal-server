@@ -19,6 +19,7 @@ import { CatalogService } from '../model/catalog.model';
 import { SampleProperty, SampleDataValues } from '../model/sample.model';
 import { MalformedValidationOptionsError } from './domain.error';
 import { NRL_ID } from './enums';
+import { ZOMO_ID } from './constants';
 
 moment.locale('de');
 
@@ -40,8 +41,15 @@ function noPlanprobeForNRL_AR(
     key: SampleProperty,
     attributes: Record<string, string>
 ) {
-    const disallowed = ['22562|126354|', 'Planprobe'];
-    return attributes.nrl === NRL_ID.NRL_AR && _.includes(disallowed, value)
+    const planprobenCode = '22562|126354|';
+
+    const isNRL_AR = attributes.nrl === NRL_ID.NRL_AR;
+    const isPlanprobenCode = value === planprobenCode;
+    const isZomoCode = attributes.control_program_avv === ZOMO_ID.code;
+
+    return isNRL_AR &&
+        isPlanprobenCode &&
+        !isZomoCode
         ? { ...options.message }
         : null;
 }

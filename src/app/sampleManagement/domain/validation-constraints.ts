@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { ValidationConstraints } from '../model/validation.model';
 
+// only for ZoMo samples
 export const zoMoConstraints: ValidationConstraints = {
 
     sample_id: {
@@ -365,6 +366,7 @@ export const zoMoConstraints: ValidationConstraints = {
 
 };
 
+// only for not ZoMo samples
 export const standardConstraints: ValidationConstraints = {
 
     sample_id: {
@@ -437,7 +439,6 @@ export const standardConstraints: ValidationConstraints = {
 
     control_program_avv: {
 
-        // new text
         shouldBeZoMo: {
             error: 97,
             group: [
@@ -466,7 +467,6 @@ export const standardConstraints: ValidationConstraints = {
 
     program_reason_text: {
 
-        // new text
         shouldBeZoMo: {
             error: 97,
             group: [
@@ -495,6 +495,7 @@ export const standardConstraints: ValidationConstraints = {
 
 };
 
+// for both samples: ZoMo and not ZoMo
 export const baseConstraints: ValidationConstraints = {
     sample_id: {},
 
@@ -630,7 +631,6 @@ export const baseConstraints: ValidationConstraints = {
             ]
         },
 
-        // new text
         inAVVCatalog: {
             error: 24,
             catalog: 'avv313'
@@ -734,7 +734,6 @@ export const baseConstraints: ValidationConstraints = {
             additionalMembers: ['sampling_reason_avv', 'program_reason_text']
         },
 
-        // new text
         inAVVCatalog: {
             error: 42,
             catalog: 'avv322'
@@ -749,7 +748,6 @@ export const baseConstraints: ValidationConstraints = {
             additionalMembers: ['control_program_avv', 'program_reason_text']
         },
 
-        // new text
         inAVVCatalog: {
             error: 101,
             catalog: 'avv326'
@@ -777,7 +775,6 @@ export const baseConstraints: ValidationConstraints = {
             additionalMembers: ['operations_mode_text']
         },
 
-        // new text
         inAVVFacettenCatalog: {
             error: 46,
             catalog: 'avv303'
