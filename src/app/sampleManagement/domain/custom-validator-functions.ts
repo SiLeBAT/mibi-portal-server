@@ -203,10 +203,10 @@ function inAVVCatalog(
     ) => {
         const trimmedValue = value.trim();
         if (attributes[key]) {
-            const catalogs = options.catalog.split(',');
+            const catalogNames = options.catalog.split(',');
 
-            const catalogWithKode = _.filter(catalogs, (catalog) => {
-                const cat = catalogService.getAVVCatalog<AVVCatalogData>(catalog);
+            const catalogWithKode = _.filter(catalogNames, (catalogName: string) => {
+                const cat = catalogService.getAVVCatalog<AVVCatalogData>(catalogName);
 
                 if (cat) {
                     return (cat.containsEintragWithAVVKode(trimmedValue) ||
@@ -233,7 +233,6 @@ function inAVVFacettenCatalog(
     ) => {
         const trimmedValue = value.trim();
         if (attributes[key]) {
-
             const [begriffsIdEintrag, id, facettenValues, currentAttributes] = trimmedValue.split('|');
             const catalogName = options.catalog;
             const catalog = catalogService.getAVVCatalog<MibiCatalogFacettenData>(catalogName);
@@ -242,6 +241,15 @@ function inAVVFacettenCatalog(
                     return { ...options.message };
                 }
 
+                // simple AVV code without facetten
+                if ((!facettenValues)) {
+                    if ((isAVVKodeValue(trimmedValue)) && (catalog.containsEintragWithAVVKode(trimmedValue))) {
+                        return null;
+                    } else {
+                        return { ...options.message };
+                    }
+                }
+    
                 const avvKode = catalog.assembleAVVKode(begriffsIdEintrag, id);
                 let found = catalog.containsEintragWithAVVKode(avvKode);
                 found = found && checkEintragAttributes(currentAttributes, avvKode, catalog);
