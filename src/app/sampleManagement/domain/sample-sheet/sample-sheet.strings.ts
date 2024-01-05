@@ -134,7 +134,6 @@ export const sampleSheetNRLStrings: Record<NRL_ID, string> = {
     'NRL-Listeria': 'NRL für Listeria monocytogenes',
     'NRL-Salm':
         'NRL für Salmonella',
-    'NRL-Trichinella': 'NRL für Trichinella',
     'KL-Vibrio': 'Konsiliarlabor für Vibrionen',
     'L-Bacillus': 'Labor für Sporenbildner, Bacillus spp.',
     'L-Clostridium': 'Labor für Sporenbildner, Clostridium spp.',

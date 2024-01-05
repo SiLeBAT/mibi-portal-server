@@ -18,7 +18,6 @@ export enum NRL_ID {
     NRL_Staph = 'NRL-Staph',
     NRL_Listeria = 'NRL-Listeria',
     NRL_Salm = 'NRL-Salm',
-    NRL_Trichinella = 'NRL-Trichinella',
     L_Clostridium = 'L-Clostridium',
     KL_Yersinia = 'KL-Yersinia'
 }

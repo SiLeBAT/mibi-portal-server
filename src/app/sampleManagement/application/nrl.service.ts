@@ -43,9 +43,6 @@ export class DefaultNRLService implements NRLService {
             case 'Konsiliarlabor für Yersinia':
             case 'KL-Yersinia':
                 return NRL_ID.KL_Yersinia;
-            case 'NRL für Trichinella':
-            case 'NRL-Trichinella':
-                return NRL_ID.NRL_Trichinella;
             case 'Labor nicht erkannt':
             default:
                 return NRL_ID.UNKNOWN;
