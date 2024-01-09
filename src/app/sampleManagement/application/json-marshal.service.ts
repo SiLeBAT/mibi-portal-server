@@ -59,7 +59,7 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
         private fileRepository: FileRepository,
         @inject(APPLICATION_TYPES.SampleSheetConstants)
         private sampleSheetConstants: SampleSheetConstants
-    ) {}
+    ) { }
 
     async createExcel(sampleSheet: SampleSheet, nrlSampleSheet: boolean = false): Promise<FileBuffer> {
         const templateFileName = nrlSampleSheet ? this.TEMPLATE_FILE_NAME_NRL : this.TEMPLATE_FILE_NAME;
@@ -108,7 +108,7 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
         _.forEach(sampleCollection, (sample: Sample) => {
             const row: string[] = [];
             _.forEach(formProperties, header => {
-                    row.push(sample.getValueFor(header));
+                row.push(sample.getValueFor(header));
             });
             dataToSave.push(row);
         });
@@ -262,17 +262,21 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
                 const startRow = rowNumber + 1;
                 const startCell = startCol + startRow.toString();
                 sheet.cell(startCell).value(dataToSave);
-                try {
-                    const endCell =
-                        endCol + (startRow + dataToSave.length).toString();
-                    const rng = sheet.range(startCell + ':' + endCell);
-                    rng.style({ fill: 'ffffff' });
-                    this.highlightEdits(sheet, highlights, startCol, startRow);
-                } catch (e) {
-                    throw new ApplicationDomainError(
-                        'Unable to apply styling to Excel'
-                    );
+
+                if (!nrlSampleSheet) {
+                    try {
+                        const endCell =
+                            endCol + (startRow + dataToSave.length).toString();
+                        const rng = sheet.range(startCell + ':' + endCell);
+                        rng.style({ fill: 'ffffff' });
+                        this.highlightEdits(sheet, highlights, startCol, startRow);
+                    } catch (e) {
+                        throw new ApplicationDomainError(
+                            'Unable to apply styling to Excel'
+                        );
+                    }
                 }
+
             }
         }
         return workbook;
