@@ -1,6 +1,6 @@
 {
   "name": "mibi-portal-server",
-  "version": "5.0.2",
+  "version": "5.0.3",
   "license": "MIT",
   "private": true,
   "type": "commonjs",
@@ -64,7 +64,7 @@
     "swagger-ui-express": "~4.5.0",
     "validate.js": "0.13.1",
     "winston": "~3.10.0",
-    "xlsx": "https://cdn.sheetjs.com/xlsx-0.19.3/xlsx-0.19.3.tgz",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.1/xlsx-0.20.1.tgz",
     "xlsx-populate": "~1.21.0"
   },
   "devDependencies": {
@@ -109,7 +109,8 @@
       "qs": "6.5.3"
     },
     "semver": "7.5.2",
-    "crypto-js": "4.2.0"
+    "crypto-js": "4.2.0",
+    "follow-redirects": "1.15.4"
   },
   "mibiConfig": {
     "lastChange": "2019-04-16 11:25:17 +0200"
