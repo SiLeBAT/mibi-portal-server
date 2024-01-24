@@ -12,18 +12,18 @@ export class ParseRepositoryBase<T extends Parse.Object<Parse.Attributes>> {
     protected async _matches(key: string, regexp: RegExp, modfiers: string): Promise<T | undefined> {
         return new Parse.Query<T>(this._className)
             .matches(key, regexp, modfiers)
-            .first();
+            .first({ useMasterKey: true });
     }
 
     protected async _retrieve(): Promise<T[]> {
         return new Parse.Query<T>(this._className)
-            .find();
+            .find({ useMasterKey: true });
     }
 
     protected async _retrieveRelationObjects(relation: Parse.Relation): Promise<Parse.Object<Parse.Attributes>[]> {
         return relation
             .query()
-            .find();
+            .find({ useMasterKey: true });
     }
 
     protected async _retrieveIncludingWith(paths: string[], key?: string, value?: T['attributes'][string | number]): Promise<T[]> {
@@ -34,7 +34,7 @@ export class ParseRepositoryBase<T extends Parse.Object<Parse.Attributes>> {
 
         return query
             .include(paths)
-            .find();
+            .find({ useMasterKey: true });
     }
 
     protected async _findById<U extends Parse.Object<Parse.Attributes>>(id: string, className?: string, includingAll?: boolean): Promise<T | U | undefined> {
@@ -48,12 +48,12 @@ export class ParseRepositoryBase<T extends Parse.Object<Parse.Attributes>> {
             query.includeAll();
         }
 
-        return query.get(id) as Promise<T | U | undefined>;
+        return query.get(id, { useMasterKey: true }) as Promise<T | U | undefined>;
     }
 
     protected async _create(item: T): Promise<T> {
         return item
-            .save();
+            .save(null, { useMasterKey: true });
     }
 
     protected async _findIdByMatchingQuery<U extends Parse.Object<Parse.Attributes>>(
@@ -64,28 +64,28 @@ export class ParseRepositoryBase<T extends Parse.Object<Parse.Attributes>> {
     ): Promise<T[]> {
         const matchingQuery = new Parse.Query<U>(matchingClass);
         // tslint:disable-next-line
-        matchingQuery.get(matchingId);
+        matchingQuery.get(matchingId, { useMasterKey: true });
 
         return new Parse.Query<T>(this._className)
             .equalTo(equalTo[0], equalTo[1])
             .matchesQuery(pointerField, matchingQuery)
-            .find();
+            .find({ useMasterKey: true });
     }
 
     protected async _delete(parseObject: T): Promise<T> {
-        return parseObject.destroy();
+        return parseObject.destroy({ useMasterKey: true });
     }
 
     protected async _findOne(key: string, value: T['attributes'][string | number]): Promise<T | undefined> {
         return new Parse.Query<T>(this._className)
             .equalTo(key, value)
-            .first();
+            .first({ useMasterKey: true });
     }
 
     protected async _update<U extends Parse.Attributes>(
         parseObject: T,
         attr: U
     ): Promise<T | undefined> {
-        return parseObject.save(attr);
+        return parseObject.save(attr, { useMasterKey: true });
     }
 }
