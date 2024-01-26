@@ -11,14 +11,6 @@ module.exports = {
             PARSE_SERVER_MOUNT_PATH: '/admin/parse'
         }
     }, {
-        name: "mibi-parse-dashboard",
-        script: "./node_modules/.bin/parse-dashboard",
-        args: "--config ./config/parse-dashboard-config.json --host '127.0.0.1' --mountPath '/admin'",
-        exp_backoff_restart_delay: 500,
-        out_file: process.env['MIBI_LOG'],
-        error_file: process.env['MIBI_LOG'],
-        log_date_format: "YYYY-MM-DD HH:mm:ss Z",
-    }, {
         name: 'mibi-parse-proxy',
         script: "./lib/ui/server/internal-proxy.server.js",
         exp_backoff_restart_delay: 500,
