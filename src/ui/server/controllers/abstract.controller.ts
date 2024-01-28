@@ -1,12 +1,15 @@
 import { Response } from 'express';
+import { controller } from 'inversify-express-utils';
+import { Controller } from '../model/controller.model';
+import { MalformedRequestError } from '../model/domain.error';
 import { SERVER_ERROR_CODE } from '../model/enums';
 import { DefaultServerErrorDTO } from '../model/response.model';
-import { Controller } from '../model/controller.model';
-import { controller } from 'inversify-express-utils';
-import { MalformedRequestError } from '../model/domain.error';
 
 @controller('')
 export abstract class AbstractController implements Controller {
+
+    protected parseRedirectionPath = 'http://127.0.0.1:3001/admin/parse/classes/';
+
     protected jsonResponse<T>(
         response: Response,
         code: number,
