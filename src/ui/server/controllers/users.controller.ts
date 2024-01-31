@@ -1,43 +1,44 @@
 import { Request, Response } from 'express';
-import { logger } from '../../../aspects';
-import {
-    PasswordPort,
-    UserLoginInformation,
-    LoginResponse,
-    AuthorizationError,
-    LoginPort,
-    RegistrationPort,
-    UserRegistration
-} from '../../../app/ports';
-import { UsersController } from '../model/controller.model';
-import { AbstractController } from './abstract.controller';
-import {
-    ResetRequestDTO,
-    NewPasswordRequestDTO,
-    RegistrationDetailsDTO
-} from '../model/request.model';
-import {
-    PasswordResetRequestResponseDTO,
-    PasswordResetResponseDTO,
-    TokenizedUserDTO,
-    FailedLoginErrorDTO,
-    ActivationResponseDTO,
-    RegistrationRequestResponseDTO
-} from '../model/response.model';
-import { MalformedRequestError } from '../model/domain.error';
-import { SERVER_ERROR_CODE, API_ROUTE } from '../model/enums';
-import { JsonWebTokenError } from 'jsonwebtoken';
+import { inject } from 'inversify';
 import {
     controller,
-    httpPut,
     httpPatch,
     httpPost,
-    requestParam,
+    httpPut,
     request,
+    requestParam,
     response
 } from 'inversify-express-utils';
-import { inject } from 'inversify';
+import { JsonWebTokenError } from 'jsonwebtoken';
+import Parse from 'parse/node';
+import {
+    AuthorizationError,
+    LoginPort,
+    LoginResponse,
+    PasswordPort,
+    RegistrationPort,
+    UserLoginInformation,
+    UserRegistration
+} from '../../../app/ports';
+import { logger } from '../../../aspects';
+import { UsersController } from '../model/controller.model';
+import { MalformedRequestError } from '../model/domain.error';
+import { API_ROUTE, SERVER_ERROR_CODE } from '../model/enums';
+import {
+    NewPasswordRequestDTO,
+    RegistrationDetailsDTO,
+    ResetRequestDTO
+} from '../model/request.model';
+import {
+    ActivationResponseDTO,
+    FailedLoginErrorDTO,
+    PasswordResetRequestResponseDTO,
+    PasswordResetResponseDTO,
+    RegistrationRequestResponseDTO,
+    TokenizedUserDTO
+} from '../model/response.model';
 import { APPLICATION_TYPES } from './../../../app/application.types';
+import { AbstractController } from './abstract.controller';
 
 enum USERS_ROUTE {
     ROOT = '/users',
@@ -51,8 +52,7 @@ enum USERS_ROUTE {
 @controller(API_ROUTE.V2 + USERS_ROUTE.ROOT)
 export class DefaultUsersController
     extends AbstractController
-    implements UsersController
-{
+    implements UsersController {
     constructor(
         @inject(APPLICATION_TYPES.PasswordService)
         private passwordService: PasswordPort,
@@ -148,7 +148,20 @@ export class DefaultUsersController
             logger.info(
                 `${this.constructor.name}.${this.postLogin.name}, Response sent`
             );
-            this.ok(res, dto);
+
+            try {
+                await Parse.User.signUp(userLoginInfo.email, userLoginInfo.password, {
+                    email: userLoginInfo.email
+                });
+
+            }
+            catch (error) {
+                logger.error(error)
+            }
+            finally {
+                this.ok(res, dto);
+            }
+
         } catch (error) {
             logger.info(
                 `${this.constructor.name}.${this.postLogin.name} has thrown an error. ${error}`
