@@ -57,35 +57,35 @@ export class DefaultInstituteController
             `${this.constructor.name}.${this.getInstitutes.name}, Request received`
         );
 
-        await this.redirectionTarget
-            .get<
+        try {
+            const parseResponse = await this.redirectionTarget.get<
                 ParseResponse<ParseInstitutionDTO>,
                 AxiosResponse<ParseResponse<ParseInstitutionDTO>>,
                 ParseInstitutionDTO
-            >('classes/institutions')
-            .then(response => {
-                const institutes: ParseInstitutionDTO[] = response.data.results;
+            >('classes/institutions');
 
-                const instituteDTOCollection = institutes.map(institution => ({
-                    id: institution.objectId,
-                    short: institution.state_short,
-                    name: institution.name1,
-                    addendum: institution.name2 || '',
-                    city: institution.city || '',
-                    zip: institution.zip || '',
-                    phone: institution.phone,
-                    fax: institution.fax || '',
-                    email: institution.email || []
-                }));
+            const institutes: ParseInstitutionDTO[] =
+                parseResponse.data.results;
 
-                this.ok(res, { institutes: instituteDTOCollection });
-            })
-            .catch(error => {
-                logger.info(
-                    `${this.constructor.name}.${this.getInstitutes.name} has thrown an error. ${error}`
-                );
-                this.handleError(res);
-            });
+            const instituteDTOCollection = institutes.map(institution => ({
+                id: institution.objectId,
+                short: institution.state_short,
+                name: institution.name1,
+                addendum: institution.name2 || '',
+                city: institution.city || '',
+                zip: institution.zip || '',
+                phone: institution.phone,
+                fax: institution.fax || '',
+                email: institution.email || []
+            }));
+
+            this.ok(res, { institutes: instituteDTOCollection });
+        } catch (error) {
+            logger.info(
+                `${this.constructor.name}.${this.getInstitutes.name} has thrown an error. ${error}`
+            );
+            this.handleError(res);
+        }
     }
 
     private handleError(res: Response) {
