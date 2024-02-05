@@ -36,6 +36,7 @@
   "dependencies": {
     "@SiLeBAT/fg43-ne-server": "^1.2.1",
     "argon2": "0.30.3",
+    "axios": "^1.6.7",
     "compression": "~1.7.4",
     "config": "~3.3.8",
     "cors": "~2.8.5",
