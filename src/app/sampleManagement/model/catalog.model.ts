@@ -41,27 +41,38 @@ export interface CatalogPort {
     getAVVCatalog<T extends AVVCatalogData>(catalogName: string): AVVCatalog<T>;
 }
 
-export interface CatalogService extends CatalogPort { }
+export interface CatalogService extends CatalogPort {}
 
 export interface AVVCatalog<T extends AVVCatalogData> {
     containsEintragWithAVVKode(kode: string): boolean;
     containsTextEintrag(value: string): boolean;
-    getEintragWithAVVKode(kode: string): MibiEintrag | MibiFacettenEintrag | undefined;
+    getEintragWithAVVKode(
+        kode: string
+    ): MibiEintrag | MibiFacettenEintrag | undefined;
     getAVV313EintragWithAVVKode(kode: string): AVV313Eintrag | undefined;
     getAttributeWithAVVKode(kode: string): string[] | undefined;
     containsFacetteWithBegriffsId(begriffsId: string): boolean;
     getFacettenIdsWithKode(kode: string): number[] | undefined;
     getFacetteWithBegriffsId(begriffsId: string): MibiFacette | undefined;
-    getFacettenWertWithBegriffsId(facettenWertId: string, facettenBegriffsId: string): MibiFacettenWert | undefined;
+    getFacettenWertWithBegriffsId(
+        facettenWertId: string,
+        facettenBegriffsId: string
+    ): MibiFacettenWert | undefined;
     assembleAVVKode(begriffsIdEintrag: string, id: string): string;
     getTextWithAVVKode(kode: string, includingFacettenName?: boolean): string;
     getTextWithFacettenCode(kode: string): string;
-    getFuzzyIndex(options: Fuse.IFuseOptions<FuzzyEintrag>, enhancements?: FuzzyEintrag[]): Fuse<FuzzyEintrag>;
+    getFuzzyIndex(
+        options: Fuse.IFuseOptions<FuzzyEintrag>,
+        enhancements?: FuzzyEintrag[]
+    ): Fuse<FuzzyEintrag>;
     getUniqueId(): string;
     dump(): T;
 }
 
-export type AVVCatalogData = MibiCatalogData | MibiCatalogFacettenData | AVV324Data;
+export type AVVCatalogData =
+    | MibiCatalogData
+    | MibiCatalogFacettenData
+    | AVV324Data;
 export interface MibiCatalog {
     data: AVVCatalogData;
     uId: string;
@@ -92,7 +103,6 @@ export interface MibiEintraege {
 export interface AVV324Eintraege {
     [key: string]: string;
 }
-
 
 export interface MibiEintrag {
     Text: string;

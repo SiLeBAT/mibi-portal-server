@@ -5,7 +5,7 @@ import { getApplicationContainerModule } from '../../../application.module';
 import { APPLICATION_TYPES } from '../../../application.types';
 import { Sample, SampleData, SampleFactory } from '../../../ports';
 import {
-    FormValidatorService,
+    FormValidatorService
     // ValidationError
 } from '../../model/validation.model';
 import { createContainer } from './../../../../aspects/container/container';
@@ -85,8 +85,16 @@ describe('Validate Sample Use Case', () => {
                 errors: [],
                 correctionOffer: []
             },
-            animal_avv: { value: '706|57678|', errors: [], correctionOffer: [] },
-            matrix_avv: { value: '187036|183974|8871-8874,183670-1086', errors: [], correctionOffer: [] },
+            animal_avv: {
+                value: '706|57678|',
+                errors: [],
+                correctionOffer: []
+            },
+            matrix_avv: {
+                value: '187036|183974|8871-8874,183670-1086',
+                errors: [],
+                correctionOffer: []
+            },
             animal_matrix_text: {
                 value: 'Kot (Hygieneproben (LFGB-Bereich)); Kontakt - LM-Kontakt; Pflanze/Tier/Stoff/relevante Zutat - Schwein',
                 errors: [],

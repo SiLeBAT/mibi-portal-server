@@ -4,8 +4,14 @@ import { registerParseClass as registerState } from './state';
 import { registerParseClass as registerInstitution } from './institution';
 import { registerParseClass as registerNrl } from './nrl';
 import { registerParseClass as registerValidationError } from './validationerror';
-import { registerParseClass as registerAnalysisprocedure, SCHEMA_FIELDS as PROCEDURE_FIELDS } from './analysisprocedure';
-import { registerParseClass as registerUser, SCHEMA_FIELDS as USER_FIELDS } from './user';
+import {
+    registerParseClass as registerAnalysisprocedure,
+    SCHEMA_FIELDS as PROCEDURE_FIELDS
+} from './analysisprocedure';
+import {
+    registerParseClass as registerUser,
+    SCHEMA_FIELDS as USER_FIELDS
+} from './user';
 import { registerParseClass as registerToken } from './resettoken';
 import { logger } from './../../../../../aspects';
 
@@ -29,10 +35,13 @@ interface RegisterFunc {
     (dbConfig?: ParseConnectionInfo): Promise<void>;
 }
 
-async function createUniqueIndex(dbConfig: ParseConnectionInfo, client: MongoClient): Promise<boolean> {
+async function createUniqueIndex(
+    dbConfig: ParseConnectionInfo,
+    client: MongoClient
+): Promise<boolean> {
     const indices: {
-        collection: string,
-        field: string
+        collection: string;
+        field: string;
     }[] = [
         {
             collection: USER_FIELDS.className,
@@ -90,7 +99,7 @@ export async function initSchema(dbConfig: ParseConnectionInfo): Promise<void> {
                     logger.info('Creating unique indices done');
                     return;
                 })
-                .catch((error) => {
+                .catch(error => {
                     logger.error(' error creating unique indices: ', error);
                     return;
                 })
@@ -98,9 +107,8 @@ export async function initSchema(dbConfig: ParseConnectionInfo): Promise<void> {
 
             return;
         },
-        (error) => {
+        error => {
             throw error;
         }
     );
-
 }

@@ -405,7 +405,7 @@ describe('Sample controller', () => {
                                             value: 'string'
                                         },
                                         program_avv: {
-                                            value: 'string',
+                                            value: 'string'
                                         },
                                         comment: {
                                             value: 'string'
@@ -520,7 +520,7 @@ describe('Sample controller', () => {
                                             value: 'string'
                                         },
                                         program_avv: {
-                                            value: 'string',
+                                            value: 'string'
                                         },
                                         comment: {
                                             value: 'string'

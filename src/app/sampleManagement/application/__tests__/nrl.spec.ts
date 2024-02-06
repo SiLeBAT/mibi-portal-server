@@ -74,8 +74,16 @@ describe('NRL Assignment Service', () => {
                 errors: [],
                 correctionOffer: []
             },
-            animal_avv: { value: '2464|57755|1212-905,1334-1356,63421-1512', errors: [], correctionOffer: [] },
-            matrix_avv: { value: '187036|183974|', errors: [], correctionOffer: [] },
+            animal_avv: {
+                value: '2464|57755|1212-905,1334-1356,63421-1512',
+                errors: [],
+                correctionOffer: []
+            },
+            matrix_avv: {
+                value: '187036|183974|',
+                errors: [],
+                correctionOffer: []
+            },
             animal_matrix_text: {
                 value: 'Tier: Hühner; Art/ Quelle/ Stoff - Haushuhn; Alter - <=16 Wo; Nutzungs- und Produktionsrichtung - Zur Mast',
                 errors: [],

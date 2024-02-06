@@ -1,8 +1,6 @@
 import _ from 'lodash';
 import Fuse from 'fuse.js';
-import {
-    autoCorrectAVV324
-} from '../custom-auto-correction-functions';
+import { autoCorrectAVV324 } from '../custom-auto-correction-functions';
 import { CorrectionFunction } from '../../model/autocorrection.model';
 import { SampleData } from '../../model/sample.model';
 jest.mock('../../../core/application/configuration.service');
@@ -44,14 +42,22 @@ describe('Custom Auto-correction Functions', () => {
             correctionOffer: []
         },
         animal_avv: { value: '706|57678|', errors: [], correctionOffer: [] },
-        matrix_avv: { value: '187036|183974|8871-8874,183670-1086', errors: [], correctionOffer: [] },
+        matrix_avv: {
+            value: '187036|183974|8871-8874,183670-1086',
+            errors: [],
+            correctionOffer: []
+        },
         animal_matrix_text: {
             value: 'Kot (Hygieneproben (LFGB-Bereich)); Kontakt - LM-Kontakt; Pflanze/Tier/Stoff/relevante Zutat - Schwein',
             errors: [],
             correctionOffer: []
         },
         primary_production_avv: { value: '', errors: [], correctionOffer: [] },
-        sampling_reason_avv: { value: '22564|126366|', errors: [], correctionOffer: [] },
+        sampling_reason_avv: {
+            value: '22564|126366|',
+            errors: [],
+            correctionOffer: []
+        },
         control_program_avv: {
             value: '70564|53075|',
             errors: [],
@@ -115,7 +121,7 @@ describe('Custom Auto-correction Functions', () => {
                         containsEintragWithAVVKode: (v: string) =>
                             !!_.filter(mockAVVEntries, e => e.Kode === v)[0],
                         getEintragWithAVVKode: (v: string) =>
-                            _.filter(mockAVVEntries, e => e.Kode === v)[0],
+                            _.filter(mockAVVEntries, e => e.Kode === v)[0]
                     };
                 }),
                 getCatalogSearchAliases: () => []

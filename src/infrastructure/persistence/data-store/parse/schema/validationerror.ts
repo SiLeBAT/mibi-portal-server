@@ -15,46 +15,43 @@ async function createSchema(): Promise<boolean> {
         await errorSchema.get();
         return true;
     } catch (error) {
-        if (error.message.includes(`Class ${SCHEMA_FIELDS.className} does not exist`)) {
+        if (
+            error.message.includes(
+                `Class ${SCHEMA_FIELDS.className} does not exist`
+            )
+        ) {
             return errorSchema
-                .addField(
-                    SCHEMA_FIELDS.code,
-                    'Number',
-                    {
-                        required: true
-                    }
-                )
-                .addField(
-                    SCHEMA_FIELDS.level,
-                    'Number',
-                    {
-                        required: true
-                    }
-                )
-                .addField(
-                    SCHEMA_FIELDS.message,
-                    'String',
-                    {
-                        required: true
-                    }
-                )
+                .addField(SCHEMA_FIELDS.code, 'Number', {
+                    required: true
+                })
+                .addField(SCHEMA_FIELDS.level, 'Number', {
+                    required: true
+                })
+                .addField(SCHEMA_FIELDS.message, 'String', {
+                    required: true
+                })
                 .save()
                 .then(
                     () => {
                         logger.info(`${SCHEMA_FIELDS.className} schema saved`);
                         return true;
                     },
-                    (error) => {
-                        logger.error(`error saving ${SCHEMA_FIELDS.className} schema: `, error);
+                    error => {
+                        logger.error(
+                            `error saving ${SCHEMA_FIELDS.className} schema: `,
+                            error
+                        );
                         return false;
                     }
                 );
         } else {
-            logger.error(`error creating ${SCHEMA_FIELDS.className} schema: `, error);
+            logger.error(
+                `error creating ${SCHEMA_FIELDS.className} schema: `,
+                error
+            );
             return false;
         }
     }
-
 }
 
 export interface IValidationError extends Parse.Attributes {
@@ -64,7 +61,6 @@ export interface IValidationError extends Parse.Attributes {
 }
 
 export class ValidationError extends Parse.Object<IValidationError> {
-
     constructor(attributes: IValidationError) {
         // Pass the ClassName to the Parse.Object constructor
         super(SCHEMA_FIELDS.className, attributes);
@@ -97,7 +93,6 @@ export class ValidationError extends Parse.Object<IValidationError> {
     getMessage(): string {
         return this.get(SCHEMA_FIELDS.message);
     }
-
 }
 
 export async function registerParseClass() {

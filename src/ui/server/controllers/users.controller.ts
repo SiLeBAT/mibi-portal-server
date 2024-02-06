@@ -52,7 +52,8 @@ enum USERS_ROUTE {
 @controller(API_ROUTE.V2 + USERS_ROUTE.ROOT)
 export class DefaultUsersController
     extends AbstractController
-    implements UsersController {
+    implements UsersController
+{
     constructor(
         @inject(APPLICATION_TYPES.PasswordService)
         private passwordService: PasswordPort,
@@ -150,18 +151,18 @@ export class DefaultUsersController
             );
 
             try {
-                await Parse.User.signUp(userLoginInfo.email, userLoginInfo.password, {
-                    email: userLoginInfo.email
-                });
-
-            }
-            catch (error) {
-                logger.error(error)
-            }
-            finally {
+                await Parse.User.signUp(
+                    userLoginInfo.email,
+                    userLoginInfo.password,
+                    {
+                        email: userLoginInfo.email
+                    }
+                );
+            } catch (error) {
+                logger.error(error);
+            } finally {
                 this.ok(res, dto);
             }
-
         } catch (error) {
             logger.info(
                 `${this.constructor.name}.${this.postLogin.name} has thrown an error. ${error}`

@@ -34,7 +34,6 @@ export function mapToInstitution(institution: Institution): Institute {
 }
 
 export function mapToUser(user: ParseUser): User {
-
     const institution = mapToInstitution(user.getInstitution() as Institution);
 
     return createUser(
@@ -94,4 +93,3 @@ export function mapToNRL(nrl: ParseNrl): NRL {
         }))
     };
 }
-

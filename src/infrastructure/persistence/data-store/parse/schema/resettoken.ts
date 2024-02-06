@@ -18,54 +18,45 @@ async function createSchema(): Promise<boolean> {
         await tokenSchema.get();
         return true;
     } catch (error) {
-        if (error.message.includes(`Class ${SCHEMA_FIELDS.className} does not exist`)) {
+        if (
+            error.message.includes(
+                `Class ${SCHEMA_FIELDS.className} does not exist`
+            )
+        ) {
             return tokenSchema
-                .addField(
-                    SCHEMA_FIELDS.token,
-                    'String',
-                    {
-                        required: true
-                    }
-                )
-                .addField(
-                    SCHEMA_FIELDS.type,
-                    'String',
-                    {
-                        required: true
-                    }
-                )
-                .addPointer(
-                    SCHEMA_FIELDS.user,
-                    USER_FIELDS.className,
-                    {
-                        required: true
-                    }
-                )
-                .addField(
-                    SCHEMA_FIELDS.oriCreatedAt,
-                    'Date'
-                )
-                .addField(
-                    SCHEMA_FIELDS.oriUpdatedAt,
-                    'Date'
-                )
+                .addField(SCHEMA_FIELDS.token, 'String', {
+                    required: true
+                })
+                .addField(SCHEMA_FIELDS.type, 'String', {
+                    required: true
+                })
+                .addPointer(SCHEMA_FIELDS.user, USER_FIELDS.className, {
+                    required: true
+                })
+                .addField(SCHEMA_FIELDS.oriCreatedAt, 'Date')
+                .addField(SCHEMA_FIELDS.oriUpdatedAt, 'Date')
                 .save()
                 .then(
                     () => {
                         logger.info(`${SCHEMA_FIELDS.className} schema saved`);
                         return true;
                     },
-                    (error) => {
-                        logger.error(`error saving ${SCHEMA_FIELDS.className} schema: `, error);
+                    error => {
+                        logger.error(
+                            `error saving ${SCHEMA_FIELDS.className} schema: `,
+                            error
+                        );
                         return false;
                     }
                 );
         } else {
-            logger.error(`error creating ${SCHEMA_FIELDS.className} schema: `, error);
+            logger.error(
+                `error creating ${SCHEMA_FIELDS.className} schema: `,
+                error
+            );
             return false;
         }
     }
-
 }
 
 interface IToken extends Parse.Attributes {
@@ -77,7 +68,6 @@ interface IToken extends Parse.Attributes {
 }
 
 export class Token extends Parse.Object<IToken> {
-
     constructor(attributes: IToken) {
         // Pass the ClassName to the Parse.Object constructor
         super(SCHEMA_FIELDS.className, attributes);
@@ -107,7 +97,7 @@ export class Token extends Parse.Object<IToken> {
         this.set(SCHEMA_FIELDS.user, user);
     }
 
-    getUser(): (User | undefined) {
+    getUser(): User | undefined {
         return this.get(SCHEMA_FIELDS.user);
     }
 

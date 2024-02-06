@@ -20,10 +20,7 @@ import {
     ParseConnectionConfiguration,
     ServerConfiguration
 } from '../../main.model';
-import {
-    getServerContainerModule
-} from './ports';
-
+import { getServerContainerModule } from './ports';
 
 export async function initialiseContainer(
     // tslint:disable-next-line: no-any
@@ -55,7 +52,6 @@ export async function initialiseContainer(
         username: parseConnectionConfig.username,
         password: parseConnectionConfig.password,
         authDatabase: parseConnectionConfig.authDatabase
-
     });
 
     const container = createContainer({ defaultScope: 'Singleton' });
@@ -90,4 +86,3 @@ export async function initialiseContainer(
     );
     return container;
 }
-

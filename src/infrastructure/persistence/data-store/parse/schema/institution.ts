@@ -10,8 +10,7 @@ export const SCHEMA_FIELDS = {
     city: 'city',
     phone: 'phone',
     fax: 'fax',
-    email: 'email',
-
+    email: 'email'
 } as const;
 
 async function createSchema(): Promise<boolean> {
@@ -21,65 +20,48 @@ async function createSchema(): Promise<boolean> {
         await institutionSchema.get();
         return true;
     } catch (error) {
-        if (error.message.includes(`Class ${SCHEMA_FIELDS.className} does not exist`)) {
+        if (
+            error.message.includes(
+                `Class ${SCHEMA_FIELDS.className} does not exist`
+            )
+        ) {
             return institutionSchema
-                .addField(
-                    SCHEMA_FIELDS.state_short,
-                    'String',
-                    {
-                        required: true
-                    }
-                )
-                .addField(
-                    SCHEMA_FIELDS.name1,
-                    'String',
-                    {
-                        required: true
-                    }
-                )
-                .addField(
-                    SCHEMA_FIELDS.name2,
-                    'String'
-                )
-                .addField(
-                    SCHEMA_FIELDS.zip,
-                    'String'
-                )
-                .addField(
-                    SCHEMA_FIELDS.city,
-                    'String'
-                )
-                .addField(
-                    SCHEMA_FIELDS.phone,
-                    'String',
-                    {
-                        required: true
-                    }
-                )
-                .addArray(
-                    SCHEMA_FIELDS.email
-                )
-                .addField(
-                    SCHEMA_FIELDS.fax,
-                    'String'
-                )
+                .addField(SCHEMA_FIELDS.state_short, 'String', {
+                    required: true
+                })
+                .addField(SCHEMA_FIELDS.name1, 'String', {
+                    required: true
+                })
+                .addField(SCHEMA_FIELDS.name2, 'String')
+                .addField(SCHEMA_FIELDS.zip, 'String')
+                .addField(SCHEMA_FIELDS.city, 'String')
+                .addField(SCHEMA_FIELDS.phone, 'String', {
+                    required: true
+                })
+                .addArray(SCHEMA_FIELDS.email)
+                .addField(SCHEMA_FIELDS.fax, 'String')
                 .save()
                 .then(
                     () => {
                         logger.info(`${SCHEMA_FIELDS.className} schema saved`);
                         return true;
                     },
-                    (error) => {
-                        logger.error(`error saving ${SCHEMA_FIELDS.className} schema: `, error);
+                    error => {
+                        logger.error(
+                            `error saving ${SCHEMA_FIELDS.className} schema: `,
+                            error
+                        );
                         return false;
                     }
                 );
         } else {
-            logger.error(`error creating ${SCHEMA_FIELDS.className} schema: `, error);
+            logger.error(
+                `error creating ${SCHEMA_FIELDS.className} schema: `,
+                error
+            );
             return false;
         }
     }
-
 }
 
 export interface IInstitution extends Parse.Attributes {
@@ -93,7 +75,6 @@ export interface IInstitution extends Parse.Attributes {
     email?: string[];
 }
 export class Institution extends Parse.Object<IInstitution> {
-
     constructor(attributes: IInstitution) {
         // Pass the ClassName to the Parse.Object constructor
         super(SCHEMA_FIELDS.className, attributes);
@@ -163,7 +144,7 @@ export class Institution extends Parse.Object<IInstitution> {
         this.set(SCHEMA_FIELDS.email, arr);
     }
 
-    getEmail(): string[] | undefined{
+    getEmail(): string[] | undefined {
         return this.get(SCHEMA_FIELDS.email);
     }
 }

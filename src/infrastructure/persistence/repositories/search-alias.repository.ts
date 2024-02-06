@@ -7,7 +7,7 @@ class FileSearchAliasRepository implements SearchAliasRepository {
 
     private aliases: SearchAlias[] = [];
 
-    constructor(private dataDir: string) { }
+    constructor(private dataDir: string) {}
 
     async initialise(): Promise<void> {
         logger.verbose(

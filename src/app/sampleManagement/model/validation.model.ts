@@ -1,8 +1,5 @@
 import { Sample, SampleProperty, SampleDataValues } from './sample.model';
-import {
-    CatalogService,
-    ZSPCatalogEntry
-} from './catalog.model';
+import { CatalogService, ZSPCatalogEntry } from './catalog.model';
 
 export interface ValidationError {
     code: number;

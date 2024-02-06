@@ -24,7 +24,10 @@ export interface ExcelUnmarshalService {
 export interface ExcelUnmarshalPort extends ExcelUnmarshalService {}
 
 export interface JSONMarshalService {
-    createExcel(sampleSheet: SampleSheet, nrlSampleSheet?: boolean): Promise<FileBuffer>;
+    createExcel(
+        sampleSheet: SampleSheet,
+        nrlSampleSheet?: boolean
+    ): Promise<FileBuffer>;
 }
 
 export interface JSONMarshalPort extends JSONMarshalService {}

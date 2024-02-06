@@ -90,7 +90,9 @@ class SampleValidator implements Validator {
         validate.validators.matchesIdToSpecificYear = matchesIdToSpecificYear;
         validate.validators.inCatalog = inCatalog(this.catalogService);
         validate.validators.inAVVCatalog = inAVVCatalog(this.catalogService);
-        validate.validators.inAVVFacettenCatalog = inAVVFacettenCatalog(this.catalogService);
+        validate.validators.inAVVFacettenCatalog = inAVVFacettenCatalog(
+            this.catalogService
+        );
         validate.validators.matchADVNumberOrString = matchADVNumberOrString(
             this.catalogService
         );

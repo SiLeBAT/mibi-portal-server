@@ -25,7 +25,8 @@ export const genericValidationErrors = [
     {
         code: 8,
         level: 2,
-        message: 'Erreger nicht erkannt. Bitte korrigieren oder hier klicken und einen Eintrag auswählen.'
+        message:
+            'Erreger nicht erkannt. Bitte korrigieren oder hier klicken und einen Eintrag auswählen.'
     },
     {
         code: 10,
@@ -112,7 +113,8 @@ export const genericValidationErrors = [
     {
         code: 33,
         level: 2,
-        message: 'Ungültiger Code. Code ist nicht im AVV DatA-Katalog Nr. 319 enthalten.'
+        message:
+            'Ungültiger Code. Code ist nicht im AVV DatA-Katalog Nr. 319 enthalten.'
     },
     {
         code: 34,
@@ -128,7 +130,8 @@ export const genericValidationErrors = [
     {
         code: 42,
         level: 2,
-        message: 'Ungültiger Code. Code ist nicht im AVV DatA-Katalog Nr. 322 enthalten.'
+        message:
+            'Ungültiger Code. Code ist nicht im AVV DatA-Katalog Nr. 322 enthalten.'
     },
     {
         code: 44,
@@ -138,7 +141,8 @@ export const genericValidationErrors = [
     {
         code: 46,
         level: 2,
-        message: 'Ungültiger Code. Code ist nicht im AVV DatA-Katalog Nr. 303 enthalten.'
+        message:
+            'Ungültiger Code. Code ist nicht im AVV DatA-Katalog Nr. 303 enthalten.'
     },
     {
         code: 48,
@@ -189,7 +193,8 @@ export const genericValidationErrors = [
     {
         code: 72,
         level: 1,
-        message: 'Das Format der Probenummer nach AVV DatA scheint nicht korrekt zu sein.'
+        message:
+            'Das Format der Probenummer nach AVV DatA scheint nicht korrekt zu sein.'
     },
     {
         code: 75,
@@ -227,37 +232,44 @@ export const genericValidationErrors = [
     {
         code: 98,
         level: 2,
-        message: 'Ungültiger Code. Code ist nicht im AVV DatA-Katalog Nr. 324 enthalten.'
+        message:
+            'Ungültiger Code. Code ist nicht im AVV DatA-Katalog Nr. 324 enthalten.'
     },
     {
         code: 99,
         level: 2,
-        message: 'Ungültiger Code. Code ist nicht im AVV DatA-Katalog Nr. 339 enthalten.'
+        message:
+            'Ungültiger Code. Code ist nicht im AVV DatA-Katalog Nr. 339 enthalten.'
     },
     {
         code: 100,
         level: 2,
-        message: 'Ungültiger Code. Code ist nicht im AVV DatA-Katalog Nr. 316 enthalten.'
+        message:
+            'Ungültiger Code. Code ist nicht im AVV DatA-Katalog Nr. 316 enthalten.'
     },
     {
         code: 101,
         level: 2,
-        message: 'Ungültiger Code. Code ist nicht im AVV DatA-Katalog Nr. 326 enthalten.'
+        message:
+            'Ungültiger Code. Code ist nicht im AVV DatA-Katalog Nr. 326 enthalten.'
     },
     {
         code: 102,
         level: 1,
-        message: 'Das Format der AVV DatA Teilproben-Nr. scheint nicht korrekt zu sein.'
+        message:
+            'Das Format der AVV DatA Teilproben-Nr. scheint nicht korrekt zu sein.'
     },
     {
         code: 103,
         level: 4,
-        message: 'Code für Tier / Matrix erkannt. Entsprechender Text wurde aus AVV DatA-Katalog Nr. 339 / 319 eingefügt.'
+        message:
+            'Code für Tier / Matrix erkannt. Entsprechender Text wurde aus AVV DatA-Katalog Nr. 339 / 319 eingefügt.'
     },
     {
         code: 104,
         level: 2,
-        message: 'Ungültiger Code. Code ist nicht im AVV DatA-Katalog Nr. 328 enthalten.'
+        message:
+            'Ungültiger Code. Code ist nicht im AVV DatA-Katalog Nr. 328 enthalten.'
     },
     {
         code: 105,
@@ -267,17 +279,20 @@ export const genericValidationErrors = [
     {
         code: 106,
         level: 4,
-        message: 'Code für Probenahmeort erkannt. Entsprechender Text wurde aus AVV DatA-Katalog Nr. 313 eingefügt.'
+        message:
+            'Code für Probenahmeort erkannt. Entsprechender Text wurde aus AVV DatA-Katalog Nr. 313 eingefügt.'
     },
     {
         code: 107,
         level: 4,
-        message: 'Code für Kontrollprogramm / Untersuchungsgrund erkannt. Entsprechender Text wurde aus AVV DatA-Katalog Nr. 322 / 326 eingefügt.'
+        message:
+            'Code für Kontrollprogramm / Untersuchungsgrund erkannt. Entsprechender Text wurde aus AVV DatA-Katalog Nr. 322 / 326 eingefügt.'
     },
     {
         code: 108,
         level: 4,
-        message: 'Code für Betriebsart erkannt. Entsprechender Text wurde aus AVV DatA-Katalog Nr. 303 eingefügt.'
+        message:
+            'Code für Betriebsart erkannt. Entsprechender Text wurde aus AVV DatA-Katalog Nr. 303 eingefügt.'
     }
 ];
 export function getMockValidationErrorRepository(): ParseValidationErrorRepository {

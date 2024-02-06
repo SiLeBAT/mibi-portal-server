@@ -1,25 +1,31 @@
-import { AVVCatalog, AVVCatalogData, MibiCatalogData, MibiCatalogFacettenData, ZSPCatalogEntry } from './../model/catalog.model';
-import moment from 'moment';
 import _ from 'lodash';
+import moment from 'moment';
+import { CatalogService } from '../model/catalog.model';
+import { SampleDataValues, SampleProperty } from '../model/sample.model';
 import {
-    RequiredIfOtherOptions,
-    MatchRegexPatternOptions,
-    MatchIdToYearOptions,
-    ValidatorFunction,
+    AtLeastOneOfOptions,
+    DependentFieldsOptions,
     InCatalogOptions,
     MatchADVNumberOrStringOptions,
     MatchAVVCodeOrStringOptions,
-    RegisteredZoMoOptions,
-    AtLeastOneOfOptions,
-    DependentFieldsOptions,
+    MatchIdToYearOptions,
+    MatchRegexPatternOptions,
     ReferenceDateOptions,
+    RegisteredZoMoOptions,
+    RequiredIfOtherOptions,
+    ValidatorFunction,
     ValidatorFunctionOptions
 } from '../model/validation.model';
-import { CatalogService } from '../model/catalog.model';
-import { SampleProperty, SampleDataValues } from '../model/sample.model';
+import {
+    AVVCatalog,
+    AVVCatalogData,
+    MibiCatalogData,
+    MibiCatalogFacettenData,
+    ZSPCatalogEntry
+} from './../model/catalog.model';
+import { ZOMO_ID } from './constants';
 import { MalformedValidationOptionsError } from './domain.error';
 import { NRL_ID } from './enums';
-import { ZOMO_ID } from './constants';
 
 moment.locale('de');
 
@@ -47,9 +53,7 @@ function noPlanprobeForNRL_AR(
     const isPlanprobenCode = value === planprobenCode;
     const isZomoCode = attributes.control_program_avv === ZOMO_ID.code;
 
-    return isNrlAr &&
-        isPlanprobenCode &&
-        !isZomoCode
+    return isNrlAr && isPlanprobenCode && !isZomoCode
         ? { ...options.message }
         : null;
 }
@@ -173,14 +177,16 @@ function inCatalog(
         if (attributes[key]) {
             const catalogs = options.catalog.split(',');
 
-            const catalogWithKode = _.filter(catalogs, (catalog) => {
+            const catalogWithKode = _.filter(catalogs, catalog => {
                 const cat = catalogService.getCatalog(catalog);
 
                 if (cat) {
                     const key: string = options.key
                         ? options.key
                         : cat.getUniqueId();
-                    return (key && cat.containsEntryWithKeyValue(key, trimmedValue));
+                    return (
+                        key && cat.containsEntryWithKeyValue(key, trimmedValue)
+                    );
                 }
             });
 
@@ -205,14 +211,22 @@ function inAVVCatalog(
         if (attributes[key]) {
             const catalogNames = options.catalog.split(',');
 
-            const catalogWithKode = _.filter(catalogNames, (catalogName: string) => {
-                const cat = catalogService.getAVVCatalog<AVVCatalogData>(catalogName);
+            const catalogWithKode = _.filter(
+                catalogNames,
+                (catalogName: string) => {
+                    const cat =
+                        catalogService.getAVVCatalog<AVVCatalogData>(
+                            catalogName
+                        );
 
-                if (cat) {
-                    return (cat.containsEintragWithAVVKode(trimmedValue) ||
-                            cat.containsTextEintrag(trimmedValue));
+                    if (cat) {
+                        return (
+                            cat.containsEintragWithAVVKode(trimmedValue) ||
+                            cat.containsTextEintrag(trimmedValue)
+                        );
+                    }
                 }
-            });
+            );
 
             if (catalogWithKode.length === 0) {
                 return { ...options.message };
@@ -233,43 +247,68 @@ function inAVVFacettenCatalog(
     ) => {
         const trimmedValue = value.trim();
         if (attributes[key]) {
-            const [begriffsIdEintrag, id, facettenValues, currentAttributes] = trimmedValue.split('|');
+            const [begriffsIdEintrag, id, facettenValues, currentAttributes] =
+                trimmedValue.split('|');
             const catalogName = options.catalog;
-            const catalog = catalogService.getAVVCatalog<MibiCatalogFacettenData>(catalogName);
+            const catalog =
+                catalogService.getAVVCatalog<MibiCatalogFacettenData>(
+                    catalogName
+                );
             if (catalog) {
                 if (!(begriffsIdEintrag && id)) {
                     return { ...options.message };
                 }
 
                 // simple AVV code without facetten
-                if ((!facettenValues)) {
-                    if ((isAVVKodeValue(trimmedValue)) && (catalog.containsEintragWithAVVKode(trimmedValue))) {
+                if (!facettenValues) {
+                    if (
+                        isAVVKodeValue(trimmedValue) &&
+                        catalog.containsEintragWithAVVKode(trimmedValue)
+                    ) {
                         return null;
                     } else {
                         return { ...options.message };
                     }
                 }
-    
+
                 const avvKode = catalog.assembleAVVKode(begriffsIdEintrag, id);
                 let found = catalog.containsEintragWithAVVKode(avvKode);
-                found = found && checkEintragAttributes(currentAttributes, avvKode, catalog);
+                found =
+                    found &&
+                    checkEintragAttributes(currentAttributes, avvKode, catalog);
 
                 const facettenIds = catalog.getFacettenIdsWithKode(avvKode);
                 if (facettenIds && facettenValues) {
                     const currentFacetten = facettenValues.split(',');
-                    found = found && currentFacetten.every((facettenValue) => {
-                        const [facettenBeginnId, facettenEndeIds] = facettenValue.split('-');
-                        const facettenEndeIdList = facettenEndeIds.split(':');
-                        const facette = catalog.getFacetteWithBegriffsId(facettenBeginnId);
-                        let facettenWertPresent: boolean = false;
-                        if (facette && facettenIds.includes(facette.FacettenId)) {
-                            facettenWertPresent = facettenEndeIdList.every((facettenEndeId) => {
-                                const facettenWert = catalog.getFacettenWertWithBegriffsId(facettenEndeId, facettenBeginnId);
-                                return !!facettenWert;
-                            });
-                        }
-                        return facettenWertPresent;
-                    });
+                    found =
+                        found &&
+                        currentFacetten.every(facettenValue => {
+                            const [facettenBeginnId, facettenEndeIds] =
+                                facettenValue.split('-');
+                            const facettenEndeIdList =
+                                facettenEndeIds.split(':');
+                            const facette =
+                                catalog.getFacetteWithBegriffsId(
+                                    facettenBeginnId
+                                );
+                            let facettenWertPresent: boolean = false;
+                            if (
+                                facette &&
+                                facettenIds.includes(facette.FacettenId)
+                            ) {
+                                facettenWertPresent = facettenEndeIdList.every(
+                                    facettenEndeId => {
+                                        const facettenWert =
+                                            catalog.getFacettenWertWithBegriffsId(
+                                                facettenEndeId,
+                                                facettenBeginnId
+                                            );
+                                        return !!facettenWert;
+                                    }
+                                );
+                            }
+                            return facettenWertPresent;
+                        });
                 }
                 if (!found) {
                     return { ...options.message };
@@ -281,17 +320,15 @@ function inAVVFacettenCatalog(
     };
 }
 
-function checkEintragAttributes<T extends MibiCatalogData | MibiCatalogFacettenData>(
-    currentAttributes: string,
-    avvKode: string,
-    catalog: AVVCatalog<T>
-) {
+function checkEintragAttributes<
+    T extends MibiCatalogData | MibiCatalogFacettenData
+>(currentAttributes: string, avvKode: string, catalog: AVVCatalog<T>) {
     if (currentAttributes) {
         const eintragAttributes = catalog.getAttributeWithAVVKode(avvKode);
         if (eintragAttributes) {
             return currentAttributes
                 .split(':')
-                .every((attr) => eintragAttributes.includes(attr));
+                .every(attr => eintragAttributes.includes(attr));
         }
     }
 
@@ -354,7 +391,9 @@ function matchAVVCodeOrString(
         const trimmedValue = value.trim();
         const altKey = options.alternateKey || '';
         if (attributes[key]) {
-            const cat = catalogService.getAVVCatalog<AVVCatalogData>(options.catalog);
+            const cat = catalogService.getAVVCatalog<AVVCatalogData>(
+                options.catalog
+            );
 
             if (cat) {
                 const key: string = options.key
@@ -397,7 +436,9 @@ function shouldBeZoMo(
         }
 
         const years = getYears(options.year, attributes);
-        const advCat = catalogService.getCatalog<ZSPCatalogEntry>(options.catalog);
+        const advCat = catalogService.getCatalog<ZSPCatalogEntry>(
+            options.catalog
+        );
 
         let result = null;
         _.forEach(years, yearToCheck => {
@@ -408,7 +449,10 @@ function shouldBeZoMo(
                 const groupValues = options.group.map(g => attributes[g.attr]);
 
                 // tslint:disable-next-line: no-any
-                const adv16Entry: any[] = advCat.getEntriesWithKeyValue('Text', groupValues[3]);
+                const adv16Entry: any[] = advCat.getEntriesWithKeyValue(
+                    'Text',
+                    groupValues[3]
+                );
                 if (adv16Entry.length < 1) {
                     return null;
                 }
@@ -416,17 +460,32 @@ function shouldBeZoMo(
 
                 // tslint:disable-next-line
                 const zspEntries: any[] = zspCat.dump() as any[];
-                // tslint:disable-next-line: no-any
-                const zspEntriesWithValues = _.filter(zspEntries, (entry: any) => {
-                    const containsKodes = (
-                        containsEntryWithValueFast(entry[options.group[0].code], groupValues[0]) &&
-                        containsEntryWithValueFast(entry[options.group[1].code], groupValues[1]) &&
-                        containsEntryWithValueFast(entry[options.group[2].code], groupValues[2]) &&
-                        containsEntryWithValueFast(entry[options.group[3].code], adv16Kode)
-                    );
 
-                    return containsKodes;
-                });
+                const zspEntriesWithValues = _.filter(
+                    zspEntries,
+                    // tslint:disable-next-line: no-any
+                    (entry: any) => {
+                        const containsKodes =
+                            containsEntryWithValueFast(
+                                entry[options.group[0].code],
+                                groupValues[0]
+                            ) &&
+                            containsEntryWithValueFast(
+                                entry[options.group[1].code],
+                                groupValues[1]
+                            ) &&
+                            containsEntryWithValueFast(
+                                entry[options.group[2].code],
+                                groupValues[2]
+                            ) &&
+                            containsEntryWithValueFast(
+                                entry[options.group[3].code],
+                                adv16Kode
+                            );
+
+                        return containsKodes;
+                    }
+                );
 
                 if (zspEntriesWithValues.length >= 1) {
                     result = { ...options.message };
@@ -457,12 +516,17 @@ function registeredZoMo(
             const zspCat = catalogService.getCatalog<ZSPCatalogEntry>(
                 'zsp' + yearToCheck.toString()
             );
-            const advCat = catalogService.getCatalog<ZSPCatalogEntry>(options.catalog);
+            const advCat = catalogService.getCatalog<ZSPCatalogEntry>(
+                options.catalog
+            );
             if (zspCat && advCat) {
                 const groupValues = options.group.map(g => attributes[g.attr]);
 
                 // tslint:disable-next-line: no-any
-                const adv16Entry: any[] = advCat.getEntriesWithKeyValue('Text', groupValues[3]);
+                const adv16Entry: any[] = advCat.getEntriesWithKeyValue(
+                    'Text',
+                    groupValues[3]
+                );
                 if (adv16Entry.length < 1) {
                     return { ...options.message };
                 }
@@ -470,17 +534,32 @@ function registeredZoMo(
 
                 // tslint:disable-next-line: no-any
                 const zspEntries: any[] = zspCat.dump() as any[];
-                // tslint:disable-next-line: no-any
-                const zspEntriesWithValues = _.filter(zspEntries, (entry: any) => {
-                    const containsKodes = (
-                        containsEntryWithValueFast(entry[options.group[0].code], groupValues[0]) &&
-                        containsEntryWithValueFast(entry[options.group[1].code], groupValues[1]) &&
-                        containsEntryWithValueFast(entry[options.group[2].code], groupValues[2]) &&
-                        containsEntryWithValueFast(entry[options.group[3].code], adv16Kode)
-                    );
 
-                    return containsKodes;
-                });
+                const zspEntriesWithValues = _.filter(
+                    zspEntries,
+                    // tslint:disable-next-line: no-any
+                    (entry: any) => {
+                        const containsKodes =
+                            containsEntryWithValueFast(
+                                entry[options.group[0].code],
+                                groupValues[0]
+                            ) &&
+                            containsEntryWithValueFast(
+                                entry[options.group[1].code],
+                                groupValues[1]
+                            ) &&
+                            containsEntryWithValueFast(
+                                entry[options.group[2].code],
+                                groupValues[2]
+                            ) &&
+                            containsEntryWithValueFast(
+                                entry[options.group[3].code],
+                                adv16Kode
+                            );
+
+                        return containsKodes;
+                    }
+                );
 
                 if (zspEntriesWithValues.length < 1) {
                     return { ...options.message };
@@ -495,7 +574,7 @@ function registeredZoMo(
     };
 }
 
-function containsEntryWithValueFast (arr: string[], value: string) {
+function containsEntryWithValueFast(arr: string[], value: string) {
     let start = 0;
     let end = arr.length - 1;
 
@@ -664,20 +743,20 @@ function isEmptyString(str: string): boolean {
 }
 
 export {
-    referenceDate,
     atLeastOneOf,
     dateAllowEmpty,
     dependentFields,
-    requiredIfOther,
-    inCatalog,
     inAVVCatalog,
     inAVVFacettenCatalog,
-    registeredZoMo,
-    shouldBeZoMo,
+    inCatalog,
     matchADVNumberOrString,
     matchAVVCodeOrString,
-    matchesRegexPattern,
     matchesIdToSpecificYear,
+    matchesRegexPattern,
+    noPlanprobeForNRL_AR,
     nrlExists,
-    noPlanprobeForNRL_AR
+    referenceDate,
+    registeredZoMo,
+    requiredIfOther,
+    shouldBeZoMo
 };

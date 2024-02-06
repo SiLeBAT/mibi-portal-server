@@ -58,7 +58,4 @@ function resolveFilePath(fileName: string, dataDir: string) {
     }
 }
 
-export {
-    loadJSONFile,
-    loadBinaryFile
-};
+export { loadJSONFile, loadBinaryFile };

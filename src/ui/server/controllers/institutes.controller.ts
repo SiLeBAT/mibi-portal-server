@@ -12,7 +12,11 @@ import { InstitutesController } from '../model/controller.model';
 import { API_ROUTE } from '../model/enums';
 import { AppServerConfiguration } from '../ports';
 import { SERVER_TYPES } from '../server.types';
-import { AbstractController, ParseEntityDTO, ParseResponse } from './abstract.controller';
+import {
+    AbstractController,
+    ParseEntityDTO,
+    ParseResponse
+} from './abstract.controller';
 
 enum INSTITUTES_ROUTE {
     ROOT = '/institutes'
@@ -32,14 +36,12 @@ interface ParseInstitutionDTO extends ParseEntityDTO {
 @controller(API_ROUTE.V2 + INSTITUTES_ROUTE.ROOT)
 export class DefaultInstituteController
     extends AbstractController
-    implements InstitutesController {
-
+    implements InstitutesController
+{
     private redirectionTarget: AxiosInstance;
     constructor(
-
         @inject(SERVER_TYPES.AppServerConfiguration)
         configuration: AppServerConfiguration
-
     ) {
         super();
 
@@ -55,33 +57,38 @@ export class DefaultInstituteController
             `${this.constructor.name}.${this.getInstitutes.name}, Request received`
         );
 
-        await this.redirectionTarget.get<ParseResponse<ParseInstitutionDTO>, AxiosResponse<ParseResponse<ParseInstitutionDTO>>, ParseInstitutionDTO>('classes/institutions').then((response) => {
-            const institutes: ParseInstitutionDTO[] = response.data.results;
+        await this.redirectionTarget
+            .get<
+                ParseResponse<ParseInstitutionDTO>,
+                AxiosResponse<ParseResponse<ParseInstitutionDTO>>,
+                ParseInstitutionDTO
+            >('classes/institutions')
+            .then(response => {
+                const institutes: ParseInstitutionDTO[] = response.data.results;
 
-            const instituteDTOCollection = institutes.map(institution => ({
-                id: institution.objectId,
-                short: institution.state_short,
-                name: institution.name1,
-                addendum: institution.name2 || '',
-                city: institution.city || '',
-                zip: institution.zip || '',
-                phone: institution.phone,
-                fax: institution.fax || '',
-                email: institution.email || []
-            }));
+                const instituteDTOCollection = institutes.map(institution => ({
+                    id: institution.objectId,
+                    short: institution.state_short,
+                    name: institution.name1,
+                    addendum: institution.name2 || '',
+                    city: institution.city || '',
+                    zip: institution.zip || '',
+                    phone: institution.phone,
+                    fax: institution.fax || '',
+                    email: institution.email || []
+                }));
 
-            this.ok(res, { institutes: instituteDTOCollection });
-        }).catch(error => {
-            logger.info(
-                `${this.constructor.name}.${this.getInstitutes.name} has thrown an error. ${error}`
-            );
-            this.handleError(res);
-        });
-
+                this.ok(res, { institutes: instituteDTOCollection });
+            })
+            .catch(error => {
+                logger.info(
+                    `${this.constructor.name}.${this.getInstitutes.name} has thrown an error. ${error}`
+                );
+                this.handleError(res);
+            });
     }
 
     private handleError(res: Response) {
         this.fail(res);
     }
-
 }
