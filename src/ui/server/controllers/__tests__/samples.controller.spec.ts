@@ -27,7 +27,9 @@ describe('Sample controller', () => {
                 publicAPIDoc: {},
                 jwtSecret: 'test',
                 logLevel: 'info',
-                supportContact: 'test'
+                supportContact: 'test',
+                parseAPI: '',
+                appId: ''
             }),
             getApplicationContainerModule({
                 appName: 'test',
