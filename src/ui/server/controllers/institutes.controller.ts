@@ -55,7 +55,7 @@ export class DefaultInstituteController
             `${this.constructor.name}.${this.getInstitutes.name}, Request received`
         );
 
-        await this.redirectionTarget.get<ParseResponse<ParseInstitutionDTO>, AxiosResponse<ParseResponse<ParseInstitutionDTO>>, any>('classes/institutions').then((response) => {
+        await this.redirectionTarget.get<ParseResponse<ParseInstitutionDTO>, AxiosResponse<ParseResponse<ParseInstitutionDTO>>, ParseInstitutionDTO>('classes/institutions').then((response) => {
             const institutes: ParseInstitutionDTO[] = response.data.results;
 
             const instituteDTOCollection = institutes.map(institution => ({
@@ -68,7 +68,7 @@ export class DefaultInstituteController
                 phone: institution.phone,
                 fax: institution.fax || '',
                 email: institution.email || []
-            }))
+            }));
 
             this.ok(res, { institutes: instituteDTOCollection });
         }).catch(error => {
