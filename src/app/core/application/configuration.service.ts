@@ -12,7 +12,7 @@ export class DefaultConfigurationService implements ConfigurationService {
     constructor(
         @inject(APPLICATION_TYPES.ApplicationConfiguration)
         private appConfiguration: ApplicationConfiguration
-    ) { }
+    ) {}
 
     getApplicationConfiguration(): ApplicationConfiguration {
         return this.appConfiguration;

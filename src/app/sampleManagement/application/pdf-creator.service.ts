@@ -50,7 +50,7 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
         @inject(APPLICATION_TYPES.PDFConfigProviderService)
         private configProvider: PDFConfigProviderService,
         @inject(APPLICATION_TYPES.CatalogService)
-        private catalogService: CatalogService,
+        private catalogService: CatalogService
     ) {
         this.loadLogo();
     }
@@ -589,7 +589,11 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
         const body = new Array<Array<{}>>();
         body.push(this.createSamplesHeaderRow());
         samples.forEach(sample => {
-            body.push(this.createSamplesDataRow(sample.getAnnotatedData() as NrlSampleData));
+            body.push(
+                this.createSamplesDataRow(
+                    sample.getAnnotatedData() as NrlSampleData
+                )
+            );
         });
         return {
             layout: 'samplesLayout',
@@ -606,10 +610,7 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
         const titles = this.strings.samples.titles;
         const subTitles = this.strings.samples.subtitles;
         return [
-            this.createSamplesHeaderCell(
-                titles.sample_id,
-                subTitles.sample_id
-            ),
+            this.createSamplesHeaderCell(titles.sample_id, subTitles.sample_id),
             this.createSamplesHeaderCell(
                 titles.sample_id_avv,
                 subTitles.sample_id_avv
@@ -658,18 +659,12 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                 titles.operations_mode_text,
                 subTitles.operations_mode_text
             ),
-            this.createSamplesHeaderCell(
-                titles.vvvo,
-                subTitles.vvvo
-            ),
+            this.createSamplesHeaderCell(titles.vvvo, subTitles.vvvo),
             this.createSamplesHeaderCell(
                 titles.program_text_avv,
                 subTitles.program_text_avv
             ),
-            this.createSamplesHeaderCell(
-                titles.comment,
-                subTitles.comment
-            )
+            this.createSamplesHeaderCell(titles.comment, subTitles.comment)
         ];
     }
 
@@ -682,32 +677,18 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
 
     private createSamplesDataRow(sampleData: NrlSampleData): Array<{}> {
         return [
-            this.createSamplesDataCell(
-                [sampleData.sample_id.value]
-            ),
-            this.createSamplesDataCell(
-                [sampleData.sample_id_avv.value]
-            ),
+            this.createSamplesDataCell([sampleData.sample_id.value]),
+            this.createSamplesDataCell([sampleData.sample_id_avv.value]),
 
-            this.createSamplesDataCell(
-                [sampleData.partial_sample_id.value]
-            ),
+            this.createSamplesDataCell([sampleData.partial_sample_id.value]),
 
-            this.createSamplesDataCell(
-                [sampleData.pathogen_avv.value]
-            ),
-            this.createSamplesDataCell(
-                [sampleData.pathogen_text.value]
-            ),
-            this.createSamplesDataCell(
-                [sampleData.sampling_date.value]
-            ),
-            this.createSamplesDataCell(
-                [sampleData.isolation_date.value]
-            ),
-            this.createSamplesDataCell(
-                [sampleData.sampling_location_zip.value]
-            ),
+            this.createSamplesDataCell([sampleData.pathogen_avv.value]),
+            this.createSamplesDataCell([sampleData.pathogen_text.value]),
+            this.createSamplesDataCell([sampleData.sampling_date.value]),
+            this.createSamplesDataCell([sampleData.isolation_date.value]),
+            this.createSamplesDataCell([
+                sampleData.sampling_location_zip.value
+            ]),
             this.createCodeToTextDataCell(
                 'avv313',
                 sampleData.sampling_location_avv.value.trim(),
@@ -745,16 +726,12 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
                 'Betrieb',
                 false
             ),
-            this.createSamplesDataCell(
-                [sampleData.vvvo.value]
-            ),
+            this.createSamplesDataCell([sampleData.vvvo.value]),
             this.createAdditionalDataCell(
                 'avv328',
                 sampleData.program_avv.value
             ),
-            this.createSamplesDataCell(
-                [sampleData.comment.value]
-            )
+            this.createSamplesDataCell([sampleData.comment.value])
         ];
     }
 
@@ -763,12 +740,18 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
 
         return {
             style: style,
-            text: value,
+            text: value
         };
     }
 
-    private createAdditionalDataCell(catalogName: string, codeValue: string): {} {
-        const catalogTextValue = this.getCatalogTextWithAVVKode(catalogName, codeValue);
+    private createAdditionalDataCell(
+        catalogName: string,
+        codeValue: string
+    ): {} {
+        const catalogTextValue = this.getCatalogTextWithAVVKode(
+            catalogName,
+            codeValue
+        );
 
         return this.createSamplesDataCell([catalogTextValue]);
     }
@@ -781,17 +764,25 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
         includingFacettenName: boolean = true
     ): {} {
         const pdfText: PdfText = [];
-        let catalogTextValue = this.getCatalogTextWithAVVKode(catalogName, codeValue);
+        let catalogTextValue = this.getCatalogTextWithAVVKode(
+            catalogName,
+            codeValue
+        );
 
         const hasCode = !!codeValue;
         const hasText = !!textValue;
         const isCatalogText = textValue === catalogTextValue;
         const hasCatalogText = textValue.includes(catalogTextValue);
         const isUserText = !hasCatalogText && hasText;
-        const hasUserAndCatalogText = hasCatalogText && (textValue.length > catalogTextValue.length);
+        const hasUserAndCatalogText =
+            hasCatalogText && textValue.length > catalogTextValue.length;
 
         if (!includingFacettenName) {
-            catalogTextValue = this.getCatalogTextWithAVVKode(catalogName, codeValue, false);
+            catalogTextValue = this.getCatalogTextWithAVVKode(
+                catalogName,
+                codeValue,
+                false
+            );
         }
 
         if (!hasCode && !hasText) {
@@ -851,11 +842,17 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
         prefix1: string,
         prefix2: string,
         includingFacettenName1: boolean = true,
-        includingFacettenName2: boolean = true,
+        includingFacettenName2: boolean = true
     ): {} {
         const pdfText: PdfText = [];
-        let catalogTextValue1 = this.getCatalogTextWithAVVKode(catalogName1, codeValue1);
-        let catalogTextValue2 = this.getCatalogTextWithAVVKode(catalogName2, codeValue2);
+        let catalogTextValue1 = this.getCatalogTextWithAVVKode(
+            catalogName1,
+            codeValue1
+        );
+        let catalogTextValue2 = this.getCatalogTextWithAVVKode(
+            catalogName2,
+            codeValue2
+        );
 
         const cleanedUserText = textValue
             .replace(catalogTextValue1, '')
@@ -866,25 +863,40 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
         const userTextLength = cleanedUserText.length;
         const textValueLength = textValue.length;
         const catalogTextLength = textValue.length - userTextLength;
-        const hasUserText = (textValueLength > catalogTextLength);
+        const hasUserText = textValueLength > catalogTextLength;
 
         const hasCode1 = !!codeValue1;
         const hasCode2 = !!codeValue2;
         const hasText = !!textValue;
-        const isCatalogText1 = (catalogTextValue1 !== '') && textValue === catalogTextValue1;
-        const isCatalogText2 = (catalogTextValue2 !== '') && textValue === catalogTextValue2;
-        const hasCatalogText1 = (catalogTextValue1 !== '') && textValue.includes(catalogTextValue1);
-        const hasCatalogText2 = (catalogTextValue2 !== '') && textValue.includes(catalogTextValue2);
+        const isCatalogText1 =
+            catalogTextValue1 !== '' && textValue === catalogTextValue1;
+        const isCatalogText2 =
+            catalogTextValue2 !== '' && textValue === catalogTextValue2;
+        const hasCatalogText1 =
+            catalogTextValue1 !== '' && textValue.includes(catalogTextValue1);
+        const hasCatalogText2 =
+            catalogTextValue2 !== '' && textValue.includes(catalogTextValue2);
         const isUserText = !hasCatalogText1 && !hasCatalogText2 && hasText;
-        const hasUserAndCatalogText1 = hasCatalogText1 && !hasCatalogText2 && hasUserText;
-        const hasUserAndCatalogText2 = hasCatalogText2 && !hasCatalogText1 && hasUserText;
-        const hasUserAndCatalogText1AndCatalogText2 = hasCatalogText1 && hasCatalogText2 && hasUserText;
+        const hasUserAndCatalogText1 =
+            hasCatalogText1 && !hasCatalogText2 && hasUserText;
+        const hasUserAndCatalogText2 =
+            hasCatalogText2 && !hasCatalogText1 && hasUserText;
+        const hasUserAndCatalogText1AndCatalogText2 =
+            hasCatalogText1 && hasCatalogText2 && hasUserText;
 
         if (!includingFacettenName1) {
-            catalogTextValue1 = this.getCatalogTextWithAVVKode(catalogName1, codeValue1, false);
+            catalogTextValue1 = this.getCatalogTextWithAVVKode(
+                catalogName1,
+                codeValue1,
+                false
+            );
         }
         if (!includingFacettenName2) {
-            catalogTextValue2 = this.getCatalogTextWithAVVKode(catalogName2, codeValue2, false);
+            catalogTextValue2 = this.getCatalogTextWithAVVKode(
+                catalogName2,
+                codeValue2,
+                false
+            );
         }
 
         if (!hasCode1 && !hasCode2 && !hasText) {
@@ -901,7 +913,7 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
         if (hasCode1 && !hasCode2 && !hasText) {
             pdfText.push(this.getBoldPrefixText(prefix1));
             pdfText.push(catalogTextValue1);
-           return this.createSamplesDataCell(pdfText);
+            return this.createSamplesDataCell(pdfText);
         }
 
         if (hasCode1 && !hasCode2 && isUserText) {
@@ -1000,7 +1012,9 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
         if (
             hasCode1 &&
             hasCode2 &&
-            (hasUserAndCatalogText1 || hasUserAndCatalogText2 || hasUserAndCatalogText1AndCatalogText2)
+            (hasUserAndCatalogText1 ||
+                hasUserAndCatalogText2 ||
+                hasUserAndCatalogText1AndCatalogText2)
         ) {
             const userText = cleanedUserText;
             pdfText.push(this.getBoldPrefixText(this.USER_PREFIX));
@@ -1017,9 +1031,16 @@ export class DefaultPDFCreatorService implements PDFCreatorService {
         return this.createSamplesDataCell(pdfText);
     }
 
-    private getCatalogTextWithAVVKode(catalogName: string, codeValue: string, includingFacettenName: boolean = true): string {
+    private getCatalogTextWithAVVKode(
+        catalogName: string,
+        codeValue: string,
+        includingFacettenName: boolean = true
+    ): string {
         const catalog = this.catalogService.getAVVCatalog(catalogName);
-        const catalogTextValue = catalog.getTextWithAVVKode(codeValue.trim(), includingFacettenName);
+        const catalogTextValue = catalog.getTextWithAVVKode(
+            codeValue.trim(),
+            includingFacettenName
+        );
 
         return catalogTextValue;
     }

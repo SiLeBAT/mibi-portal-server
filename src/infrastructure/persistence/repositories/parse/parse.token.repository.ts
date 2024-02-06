@@ -1,7 +1,13 @@
 import { injectable } from 'inversify';
 import { ParseRepositoryBase } from '../../data-store/parse/parse.repository';
-import { Token as ParseToken, SCHEMA_FIELDS as TOKEN_FIELDS } from '../../data-store/parse/schema/resettoken';
-import { User as ParseUser, SCHEMA_FIELDS as USER_FIELDS } from '../../data-store/parse/schema/user';
+import {
+    Token as ParseToken,
+    SCHEMA_FIELDS as TOKEN_FIELDS
+} from '../../data-store/parse/schema/resettoken';
+import {
+    User as ParseUser,
+    SCHEMA_FIELDS as USER_FIELDS
+} from '../../data-store/parse/schema/user';
 import { JsonWebTokenError } from 'jsonwebtoken';
 import {
     ParseTokenRepository,
@@ -11,12 +17,11 @@ import {
 } from './../../../../app/ports';
 import { mapToUserToken } from './data-mappers';
 
-
 @injectable()
 export class ParseDefaultTokenRepository
     extends ParseRepositoryBase<ParseToken>
-    implements ParseTokenRepository {
-
+    implements ParseTokenRepository
+{
     constructor() {
         super();
         super.setClassName(TOKEN_FIELDS.className);
@@ -31,7 +36,8 @@ export class ParseDefaultTokenRepository
                 USER_FIELDS.className,
                 user.uniqueId,
                 [TOKEN_FIELDS.type, type.toString()],
-                TOKEN_FIELDS.user)
+                TOKEN_FIELDS.user
+            )
             .then((token: ParseToken[]) => token.length > 0);
     }
 
@@ -39,9 +45,8 @@ export class ParseDefaultTokenRepository
         user: User,
         type: TokenType = TokenType.ACTIVATE
     ): Promise<boolean> {
-
-        const token: ParseToken[] | undefined = await super
-            ._findIdByMatchingQuery(
+        const token: ParseToken[] | undefined =
+            await super._findIdByMatchingQuery(
                 USER_FIELDS.className,
                 user.uniqueId,
                 [TOKEN_FIELDS.type, type.toString()],
@@ -56,26 +61,27 @@ export class ParseDefaultTokenRepository
     }
 
     async saveToken(token: UserToken): Promise<UserToken> {
-        const user: ParseUser = await super._findById(token.userId, USER_FIELDS.className) as ParseUser;
+        const user: ParseUser = (await super._findById(
+            token.userId,
+            USER_FIELDS.className
+        )) as ParseUser;
 
         const newToken = new ParseToken({
             token: token.token,
             type: token.type.toString(),
             user: user
         });
-        return super._create(newToken)
-            .then(doc => mapToUserToken(doc));
+        return super._create(newToken).then(doc => mapToUserToken(doc));
     }
 
     async getUserTokenByJWT(token: string): Promise<UserToken> {
-        return super._findOne(TOKEN_FIELDS.token, token)
-            .then(token => {
-                if (!token) {
-                    throw new JsonWebTokenError(
-                        `No UserToken for JWT Token. token=${token}`
-                    );
-                }
-                return mapToUserToken(token);
-            });
+        return super._findOne(TOKEN_FIELDS.token, token).then(token => {
+            if (!token) {
+                throw new JsonWebTokenError(
+                    `No UserToken for JWT Token. token=${token}`
+                );
+            }
+            return mapToUserToken(token);
+        });
     }
 }

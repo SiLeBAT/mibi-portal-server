@@ -1,7 +1,17 @@
 import _ from 'lodash';
-import { AVVCatalogRepository, CatalogRepository, SearchAliasRepository } from '../../ports';
+import {
+    AVVCatalogRepository,
+    CatalogRepository,
+    SearchAliasRepository
+} from '../../ports';
 import { logger } from '../../../aspects';
-import { CatalogService, Catalog, CatalogData, AVVCatalog, AVVCatalogData } from '../model/catalog.model';
+import {
+    CatalogService,
+    Catalog,
+    CatalogData,
+    AVVCatalog,
+    AVVCatalogData
+} from '../model/catalog.model';
 import { SearchAlias } from '../model/validation.model';
 import { injectable, inject } from 'inversify';
 import { APPLICATION_TYPES } from './../../application.types';
@@ -14,14 +24,16 @@ export class DefaultCatalogService implements CatalogService {
         @inject(APPLICATION_TYPES.SearchAliasRepository)
         private searchAliasRepository: SearchAliasRepository,
         @inject(APPLICATION_TYPES.AVVCatalogRepository)
-        private avvCatalogRepository: AVVCatalogRepository,
+        private avvCatalogRepository: AVVCatalogRepository
     ) {}
 
     getCatalog<T extends CatalogData>(catalogName: string): Catalog<T> {
         return this.catalogRepository.getCatalog<T>(catalogName);
     }
 
-    getAVVCatalog<T extends AVVCatalogData>(catalogName: string): AVVCatalog<T> {
+    getAVVCatalog<T extends AVVCatalogData>(
+        catalogName: string
+    ): AVVCatalog<T> {
         return this.avvCatalogRepository.getAVVCatalog<T>(catalogName);
     }
 

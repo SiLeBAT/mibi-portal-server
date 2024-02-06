@@ -14,39 +14,40 @@ async function createSchema(): Promise<boolean> {
         await procedureSchema.get();
         return true;
     } catch (error) {
-        if (error.message.includes(`Class ${SCHEMA_FIELDS.className} does not exist`)) {
+        if (
+            error.message.includes(
+                `Class ${SCHEMA_FIELDS.className} does not exist`
+            )
+        ) {
             return procedureSchema
-                .addField(
-                    SCHEMA_FIELDS.key,
-                    'Number',
-                    {
-                        required: true
-                    }
-                )
-                .addField(
-                    SCHEMA_FIELDS.value,
-                    'String',
-                    {
-                        required: true
-                    }
-                )
+                .addField(SCHEMA_FIELDS.key, 'Number', {
+                    required: true
+                })
+                .addField(SCHEMA_FIELDS.value, 'String', {
+                    required: true
+                })
                 .save()
                 .then(
                     () => {
                         logger.info(`${SCHEMA_FIELDS.className} schema saved`);
                         return true;
                     },
-                    (error) => {
-                        logger.error(`error saving ${SCHEMA_FIELDS.className} schema: `, error);
+                    error => {
+                        logger.error(
+                            `error saving ${SCHEMA_FIELDS.className} schema: `,
+                            error
+                        );
                         return false;
                     }
                 );
         } else {
-            logger.error(`error creating ${SCHEMA_FIELDS.className} schema: `, error);
+            logger.error(
+                `error creating ${SCHEMA_FIELDS.className} schema: `,
+                error
+            );
             return false;
         }
     }
-
 }
 
 export interface IAnalysisProcedure extends Parse.Attributes {
@@ -55,7 +56,6 @@ export interface IAnalysisProcedure extends Parse.Attributes {
 }
 
 export class AnalysisProcedure extends Parse.Object<IAnalysisProcedure> {
-
     constructor(attributes: IAnalysisProcedure) {
         // Pass the ClassName to the Parse.Object constructor
         super(SCHEMA_FIELDS.className, attributes);
@@ -80,7 +80,6 @@ export class AnalysisProcedure extends Parse.Object<IAnalysisProcedure> {
     getValue(): string {
         return this.get(SCHEMA_FIELDS.value);
     }
-
 }
 
 export async function registerParseClass() {

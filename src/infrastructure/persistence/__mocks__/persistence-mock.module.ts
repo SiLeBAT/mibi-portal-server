@@ -22,9 +22,9 @@ import { getMockAVVCatalogRepository } from './avvcatalog.repository';
 
 export const mockPersistenceContainerModule = new ContainerModule(
     (bind: interfaces.Bind, unbind: interfaces.Unbind) => {
-        bind<ParseNRLRepository>(APPLICATION_TYPES.ParseNRLRepository).toConstantValue(
-            getMockNRLRepository()
-        );
+        bind<ParseNRLRepository>(
+            APPLICATION_TYPES.ParseNRLRepository
+        ).toConstantValue(getMockNRLRepository());
 
         bind<ParseStateRepository>(
             APPLICATION_TYPES.ParseStateRepository
@@ -34,9 +34,9 @@ export const mockPersistenceContainerModule = new ContainerModule(
             APPLICATION_TYPES.ParseInstituteRepository
         ).toConstantValue(getMockInstituteRepository());
 
-        bind<ParseUserRepository>(APPLICATION_TYPES.ParseUserRepository).toConstantValue(
-            getMockUserRepository()
-        );
+        bind<ParseUserRepository>(
+            APPLICATION_TYPES.ParseUserRepository
+        ).toConstantValue(getMockUserRepository());
 
         bind<ParseTokenRepository>(
             APPLICATION_TYPES.ParseTokenRepository

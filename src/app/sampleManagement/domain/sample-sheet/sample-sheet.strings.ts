@@ -76,7 +76,6 @@ export const sampleSheetMetaStrings = {
             'Felder im Einsendebogen sind ohne Schreibschutz zur erleichterten Nutzung/Einbindung in unterschiedliche Laborinformationsmanagement-Systeme. Änderungen von Zellinhalten außerhalb der Ausfüllfelder',
         cellProtectionInstruction2:
             'sind nicht zielführend und werden beim Einlesen der Daten durch das BfR nicht berücksichtigt.'
-
     },
     footer: {
         validated:
@@ -128,12 +127,12 @@ export const sampleSheetSamplesStrings = {
 export const sampleSheetNRLStrings: Record<NRL_ID, string> = {
     'NRL-AR': 'NRL für Antibiotikaresistenz',
     'NRL-Campy': 'NRL für Campylobacter',
-    'NRL-VTEC': 'NRL für Escherichia coli einschließl. verotoxinbildende E. coli',
+    'NRL-VTEC':
+        'NRL für Escherichia coli einschließl. verotoxinbildende E. coli',
     'NRL-Staph':
         'NRL für koagulasepositive Staphylokokken einschl. Staphylococcus aureus',
     'NRL-Listeria': 'NRL für Listeria monocytogenes',
-    'NRL-Salm':
-        'NRL für Salmonella',
+    'NRL-Salm': 'NRL für Salmonella',
     'KL-Vibrio': 'Konsiliarlabor für Vibrionen',
     'L-Bacillus': 'Labor für Sporenbildner, Bacillus spp.',
     'L-Clostridium': 'Labor für Sporenbildner, Clostridium spp.',

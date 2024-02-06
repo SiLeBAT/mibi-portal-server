@@ -9,35 +9,44 @@ export class ParseRepositoryBase<T extends Parse.Object<Parse.Attributes>> {
         this._className = className;
     }
 
-    protected async _matches(key: string, regexp: RegExp, modfiers: string): Promise<T | undefined> {
+    protected async _matches(
+        key: string,
+        regexp: RegExp,
+        modfiers: string
+    ): Promise<T | undefined> {
         return new Parse.Query<T>(this._className)
             .matches(key, regexp, modfiers)
             .first({ useMasterKey: true });
     }
 
     protected async _retrieve(): Promise<T[]> {
-        return new Parse.Query<T>(this._className)
-            .find({ useMasterKey: true });
+        return new Parse.Query<T>(this._className).find({ useMasterKey: true });
     }
 
-    protected async _retrieveRelationObjects(relation: Parse.Relation): Promise<Parse.Object<Parse.Attributes>[]> {
-        return relation
-            .query()
-            .find({ useMasterKey: true });
+    protected async _retrieveRelationObjects(
+        relation: Parse.Relation
+    ): Promise<Parse.Object<Parse.Attributes>[]> {
+        return relation.query().find({ useMasterKey: true });
     }
 
-    protected async _retrieveIncludingWith(paths: string[], key?: string, value?: T['attributes'][string | number]): Promise<T[]> {
+    protected async _retrieveIncludingWith(
+        paths: string[],
+        key?: string,
+        value?: T['attributes'][string | number]
+    ): Promise<T[]> {
         const query = new Parse.Query<T>(this._className);
         if (key && value) {
             query.equalTo(key, value);
         }
 
-        return query
-            .include(paths)
-            .find({ useMasterKey: true });
+        return query.include(paths).find({ useMasterKey: true });
     }
 
-    protected async _findById<U extends Parse.Object<Parse.Attributes>>(id: string, className?: string, includingAll?: boolean): Promise<T | U | undefined> {
+    protected async _findById<U extends Parse.Object<Parse.Attributes>>(
+        id: string,
+        className?: string,
+        includingAll?: boolean
+    ): Promise<T | U | undefined> {
         let query: Parse.Query;
         if (className) {
             query = new Parse.Query<U>(className);
@@ -48,15 +57,18 @@ export class ParseRepositoryBase<T extends Parse.Object<Parse.Attributes>> {
             query.includeAll();
         }
 
-        return query.get(id, { useMasterKey: true }) as Promise<T | U | undefined>;
+        return query.get(id, { useMasterKey: true }) as Promise<
+            T | U | undefined
+        >;
     }
 
     protected async _create(item: T): Promise<T> {
-        return item
-            .save(null, { useMasterKey: true });
+        return item.save(null, { useMasterKey: true });
     }
 
-    protected async _findIdByMatchingQuery<U extends Parse.Object<Parse.Attributes>>(
+    protected async _findIdByMatchingQuery<
+        U extends Parse.Object<Parse.Attributes>
+    >(
         matchingClass: string,
         matchingId: string,
         equalTo: [string, T['attributes'][string]],
@@ -76,7 +88,10 @@ export class ParseRepositoryBase<T extends Parse.Object<Parse.Attributes>> {
         return parseObject.destroy({ useMasterKey: true });
     }
 
-    protected async _findOne(key: string, value: T['attributes'][string | number]): Promise<T | undefined> {
+    protected async _findOne(
+        key: string,
+        value: T['attributes'][string | number]
+    ): Promise<T | undefined> {
         return new Parse.Query<T>(this._className)
             .equalTo(key, value)
             .first({ useMasterKey: true });

@@ -5,7 +5,6 @@ import { MalformedRequestError } from '../model/domain.error';
 import { SERVER_ERROR_CODE } from '../model/enums';
 import { DefaultServerErrorDTO } from '../model/response.model';
 
-
 export interface ParseResponse<T> {
     results: T[];
 }
@@ -18,10 +17,6 @@ export interface ParseEntityDTO {
 
 @controller('')
 export abstract class AbstractController implements Controller {
-
-    constructor(
-    ) { }
-
     protected jsonResponse<T>(
         response: Response,
         code: number,

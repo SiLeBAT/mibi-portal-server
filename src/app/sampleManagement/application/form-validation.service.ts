@@ -12,7 +12,11 @@ import {
 } from '../model/validation.model';
 import { CatalogService } from '../model/catalog.model';
 import { createValidator } from '../domain/validator.entity';
-import { Sample, SampleProperty, AnnotatedSampleDataEntry } from '../model/sample.model';
+import {
+    Sample,
+    SampleProperty,
+    AnnotatedSampleDataEntry
+} from '../model/sample.model';
 import {
     baseConstraints,
     zoMoConstraints,
@@ -210,17 +214,28 @@ export class DefaultFormValidatorService implements FormValidatorService {
     }
 
     private supplementAVV313Data(sample: Sample) {
-        const avvEntry: AnnotatedSampleDataEntry = sample.getEntryFor('sampling_location_avv');
-        const zipEntry: AnnotatedSampleDataEntry = sample.getEntryFor('sampling_location_zip');
-        const cityEntry: AnnotatedSampleDataEntry = sample.getEntryFor('sampling_location_text');
+        const avvEntry: AnnotatedSampleDataEntry = sample.getEntryFor(
+            'sampling_location_avv'
+        );
+        const zipEntry: AnnotatedSampleDataEntry = sample.getEntryFor(
+            'sampling_location_zip'
+        );
+        const cityEntry: AnnotatedSampleDataEntry = sample.getEntryFor(
+            'sampling_location_text'
+        );
 
-        if (avvEntry.value !== '' && zipEntry.value === '' && cityEntry.value === '') {
+        if (
+            avvEntry.value !== '' &&
+            zipEntry.value === '' &&
+            cityEntry.value === ''
+        ) {
             const avv313Cat = this.catalogService.getAVVCatalog('avv313');
-            let catEntry = avv313Cat.getAVV313EintragWithAVVKode(avvEntry.value);
+            let catEntry = avv313Cat.getAVV313EintragWithAVVKode(
+                avvEntry.value
+            );
             if (catEntry !== undefined) {
                 sample.supplementAVV313Data(catEntry.PLZ, catEntry.Text);
             }
         }
     }
-
 }

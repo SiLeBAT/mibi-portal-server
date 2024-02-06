@@ -1,4 +1,3 @@
-
 import config from 'config';
 import {
     AppConfiguration,
@@ -89,4 +88,3 @@ class DefaultConfigurationService implements SystemConfigurationService {
 const configurationService = new DefaultConfigurationService();
 
 export { configurationService };
-

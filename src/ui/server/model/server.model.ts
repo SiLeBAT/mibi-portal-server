@@ -8,6 +8,6 @@ export interface AppServerConfiguration {
     jwtSecret: string;
     logLevel: string;
     supportContact: string;
-    parseAPI: string,
-    appId: string,
+    parseAPI: string;
+    appId: string;
 }

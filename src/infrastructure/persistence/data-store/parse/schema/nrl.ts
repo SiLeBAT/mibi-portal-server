@@ -1,5 +1,8 @@
 import Parse from 'parse/node';
-import { AnalysisProcedure, SCHEMA_FIELDS as ANALYSISPROCEDURE_FIELDS } from './analysisprocedure';
+import {
+    AnalysisProcedure,
+    SCHEMA_FIELDS as ANALYSISPROCEDURE_FIELDS
+} from './analysisprocedure';
 import { logger } from './../../../../../aspects';
 
 export const SCHEMA_FIELDS = {
@@ -18,31 +21,24 @@ async function createSchema(): Promise<boolean> {
         await nrlSchema.get();
         return true;
     } catch (error) {
-        if (error.message.includes(`Class ${SCHEMA_FIELDS.className} does not exist`)) {
+        if (
+            error.message.includes(
+                `Class ${SCHEMA_FIELDS.className} does not exist`
+            )
+        ) {
             return nrlSchema
-                .addField(
-                    SCHEMA_FIELDS.name,
-                    'String',
-                    {
-                        required: true
-                    }
-                )
-                .addArray(
-                    SCHEMA_FIELDS.selector
-                )
-                .addField(
-                    SCHEMA_FIELDS.email,
-                    'String'
-                )
+                .addField(SCHEMA_FIELDS.name, 'String', {
+                    required: true
+                })
+                .addArray(SCHEMA_FIELDS.selector)
+                .addField(SCHEMA_FIELDS.email, 'String')
                 .addRelation(
                     SCHEMA_FIELDS.standardProcedures,
-                    ANALYSISPROCEDURE_FIELDS.className,
-
+                    ANALYSISPROCEDURE_FIELDS.className
                 )
                 .addRelation(
                     SCHEMA_FIELDS.optionalProcedures,
-                    ANALYSISPROCEDURE_FIELDS.className,
-
+                    ANALYSISPROCEDURE_FIELDS.className
                 )
                 .save()
                 .then(
@@ -50,17 +46,22 @@ async function createSchema(): Promise<boolean> {
                         logger.info(`${SCHEMA_FIELDS.className} schema saved`);
                         return true;
                     },
-                    (error) => {
-                        logger.error(`error saving ${SCHEMA_FIELDS.className} schema: `, error);
+                    error => {
+                        logger.error(
+                            `error saving ${SCHEMA_FIELDS.className} schema: `,
+                            error
+                        );
                         return false;
                     }
                 );
         } else {
-            logger.error(`error creating ${SCHEMA_FIELDS.className} schema: `, error);
+            logger.error(
+                `error creating ${SCHEMA_FIELDS.className} schema: `,
+                error
+            );
             return false;
         }
     }
-
 }
 export interface INrl extends Parse.Attributes {
     name: string;
@@ -71,7 +72,6 @@ export interface INrl extends Parse.Attributes {
 }
 
 export class Nrl extends Parse.Object<INrl> {
-
     private standardProceduresList: AnalysisProcedure[] = [];
     private optionalProceduresList: AnalysisProcedure[] = [];
 
@@ -125,14 +125,18 @@ export class Nrl extends Parse.Object<INrl> {
             .add(procedure);
     }
 
-    removeStandardProcedure(procedure: AnalysisProcedure | AnalysisProcedure[]) {
+    removeStandardProcedure(
+        procedure: AnalysisProcedure | AnalysisProcedure[]
+    ) {
         (this as Parse.Object)
             .relation(SCHEMA_FIELDS.standardProcedures)
             .remove(procedure);
     }
 
     getStandardProcedures(): Parse.Relation {
-        return (this as Parse.Object).relation(SCHEMA_FIELDS.standardProcedures);
+        return (this as Parse.Object).relation(
+            SCHEMA_FIELDS.standardProcedures
+        );
     }
 
     setStandardProcedureList(list: AnalysisProcedure[]) {
@@ -149,14 +153,18 @@ export class Nrl extends Parse.Object<INrl> {
             .add(procedure);
     }
 
-    removeOptionalProcedure(procedure: AnalysisProcedure | AnalysisProcedure[]) {
+    removeOptionalProcedure(
+        procedure: AnalysisProcedure | AnalysisProcedure[]
+    ) {
         (this as Parse.Object)
             .relation(SCHEMA_FIELDS.optionalProcedures)
             .remove(procedure);
     }
 
     getOptionalProcedures(): Parse.Relation {
-        return (this as Parse.Object).relation(SCHEMA_FIELDS.optionalProcedures);
+        return (this as Parse.Object).relation(
+            SCHEMA_FIELDS.optionalProcedures
+        );
     }
 
     setOptionalProcedureList(list: AnalysisProcedure[]) {

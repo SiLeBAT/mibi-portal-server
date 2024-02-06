@@ -9,11 +9,11 @@ import {
     // inCatalog,
     // matchADVNumberOrString,
     matchesRegexPattern,
-    matchesIdToSpecificYear,
+    matchesIdToSpecificYear
     // requiredIfOther
 } from '../custom-validator-functions';
 import {
-    ValidationError,
+    ValidationError
     // MatchADVNumberOrStringOptions
 } from './../../model/validation.model';
 // import { CatalogService, Catalog } from '../../model/catalog.model';
@@ -44,12 +44,15 @@ describe('Custom Validator Functions', () => {
             sampling_location_text: 'Berlin',
             animal_avv: '706|57678|',
             matrix_avv: '187036|183974|8871-8874,183670-1086',
-            animal_matrix_text: 'Kot (Hygieneproben (LFGB-Bereich)); Kontakt - LM-Kontakt; Pflanze/Tier/Stoff/relevante Zutat - Schwein',
+            animal_matrix_text:
+                'Kot (Hygieneproben (LFGB-Bereich)); Kontakt - LM-Kontakt; Pflanze/Tier/Stoff/relevante Zutat - Schwein',
             primary_production_avv: '',
             sampling_reason_avv: '22564|126366|',
             program_reason_text: 'Verdachtsprobe',
-            operations_mode_avv: '10469|57619|63422-10492,63423-10563|BG:FM:KM:LM:TAM:TNP:TT:Tabak:Wein',
-            operations_mode_text: 'Inverkehrbringen; Prozessdetails - Abgeben an Endverbraucher; Verschiedene Eigenschaften zum Betrieb - Verkaufsabteilung',
+            operations_mode_avv:
+                '10469|57619|63422-10492,63423-10563|BG:FM:KM:LM:TAM:TNP:TT:Tabak:Wein',
+            operations_mode_text:
+                'Inverkehrbringen; Prozessdetails - Abgeben an Endverbraucher; Verschiedene Eigenschaften zum Betrieb - Verkaufsabteilung',
             vvvo: '',
             comment: ''
         };
@@ -489,9 +492,6 @@ describe('Custom Validator Functions', () => {
     //             ]
     //         };
 
-
-
-
     //         //
     //         //
     //         // getFacettenWertWithBegriffsId(facettenWertId: string, facettenBegriffsId: string): MibiFacettenWert | undefined;
@@ -499,8 +499,6 @@ describe('Custom Validator Functions', () => {
     //         // getFuzzyIndex(options: Fuse.IFuseOptions<FuzzyEintrag>, enhancements?: FuzzyEintrag[]): Fuse<FuzzyEintrag>;
     //         // getUniqueId(): string;
     //         // dump(): T;
-
-
 
     //         const mockCatalogService: CatalogService = {
     //             getAVVCatalog: () => mockCatalog,
