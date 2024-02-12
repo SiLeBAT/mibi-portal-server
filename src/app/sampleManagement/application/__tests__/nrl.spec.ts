@@ -146,14 +146,10 @@ describe('NRL Assignment Service', () => {
                 {
                     id: NRL_ID.NRL_AR,
                     selectors: [
-                        '^.*enterococ.*$',
-                        '^Escherichia coli$',
-                        '^Escherichia coli AmpC-bildend$',
-                        '^Escherichia coli Carbapenemase-bildend$',
-                        '^Escherichia coli ESBL-bildend$',
-                        '^Escherichia coli ESBL/AmpC-bildend$',
-                        '^Enterobacteriaceae Carbapenemase-bildend$'
-                    ],
+                        "^.(Carba|ESBL|mpC).$",
+                        "^Enterococcus (spp.|faecalis|faecium)$",
+                        "^Escherichia coli$"
+                      ],
                     email: 'fakeNRL@nrl.com',
                     standardProcedures: [],
                     optionalProcedures: []
@@ -174,14 +170,10 @@ describe('NRL Assignment Service', () => {
                 {
                     id: NRL_ID.NRL_AR,
                     selectors: [
-                        '^.*enterococ.*$',
-                        '^Escherichia coli$',
-                        '^Escherichia coli AmpC-bildend$',
-                        '^Escherichia coli Carbapenemase-bildend$',
-                        '^Escherichia coli ESBL-bildend$',
-                        '^Escherichia coli ESBL/AmpC-bildend$',
-                        '^Enterobacteriaceae Carbapenemase-bildend$'
-                    ],
+                        "^.(Carba|ESBL|mpC).$",
+                        "^Enterococcus (spp.|faecalis|faecium)$",
+                        "^Escherichia coli$"
+                      ],
                     email: 'fakeNRL@nrl.com',
                     standardProcedures: [],
                     optionalProcedures: []

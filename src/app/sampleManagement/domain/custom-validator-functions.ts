@@ -390,23 +390,28 @@ function matchAVVCodeOrString(
     ) => {
         const trimmedValue = value.trim();
         const altKey = options.alternateKey || '';
+
         if (attributes[key]) {
             const cat = catalogService.getAVVCatalog<AVVCatalogData>(
                 options.catalog
             );
-
             if (cat) {
                 const key: string = options.key
                     ? options.key
                     : cat.getUniqueId();
+
                 if (!key) {
                     return null;
                 }
+
                 if (isAVVKodeValue(trimmedValue)) {
                     if (!cat.containsEintragWithAVVKode(trimmedValue)) {
                         return { ...options.message };
                     }
+
+                    return null;
                 }
+
                 if (altKey === 'Text') {
                     if (!cat.containsTextEintrag(trimmedValue)) {
                         return { ...options.message };
