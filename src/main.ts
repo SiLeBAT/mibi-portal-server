@@ -1,9 +1,9 @@
-import { configurationService } from './configuratioin.service';
 import { logger } from './aspects';
+import { configurationService } from './configuratioin.service';
+import './infrastructure/parse';
 import { initialiseRepositories } from './repository.setup';
 import { initialiseContainer } from './ui/server/container.setup';
 import { initialiseExpress } from './ui/server/express.setup';
-
 async function init() {
     const appConfiguration = configurationService.getApplicationConfiguration();
 
