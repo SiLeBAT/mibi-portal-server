@@ -106,11 +106,6 @@ export const genericValidationErrors = [
         message: 'PLZ ohne Ortsname angegeben.'
     },
     {
-        code: 32,
-        level: 1,
-        message: 'Bitte geben Sie einen AVV DatA - Code für die Matrix an!'
-    },
-    {
         code: 33,
         level: 2,
         message:

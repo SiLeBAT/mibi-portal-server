@@ -1,12 +1,12 @@
 import { Container } from 'inversify';
 import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
-// import { genericValidationErrors } from '../../../../infrastructure/persistence/__mocks__/validation-error.repository';
+import { genericValidationErrors } from '../../../../infrastructure/persistence/__mocks__/validation-error.repository';
 import { getApplicationContainerModule } from '../../../application.module';
 import { APPLICATION_TYPES } from '../../../application.types';
 import { Sample, SampleData, SampleFactory } from '../../../ports';
 import {
-    FormValidatorService
-    // ValidationError
+    FormValidatorService,
+    ValidationError
 } from '../../model/validation.model';
 import { createContainer } from './../../../../aspects/container/container';
 
@@ -22,7 +22,7 @@ describe('Validate Sample Use Case', () => {
     let genericTestSampleCollection: Sample[];
     let testSampleData: SampleData;
     let genericTestSample: Sample;
-    // let validationErrors: ValidationError[];
+    let validationErrors: ValidationError[];
     let container: Container | null;
     let factory: SampleFactory;
     beforeEach(() => {
@@ -45,10 +45,18 @@ describe('Validate Sample Use Case', () => {
             APPLICATION_TYPES.FormValidatorService
         );
         factory = container.get<SampleFactory>(APPLICATION_TYPES.SampleFactory);
-        // validationErrors = [...genericValidationErrors];
+        validationErrors = [...genericValidationErrors];
         testSampleData = {
-            sample_id: { value: '1', errors: [], correctionOffer: [] },
-            sample_id_avv: { value: '1-ABC', errors: [], correctionOffer: [] },
+            sample_id: {
+                value: '1',
+                errors: [],
+                correctionOffer: []
+            },
+            sample_id_avv: {
+                value: '1-ABC',
+                errors: [],
+                correctionOffer: []
+            },
             partial_sample_id: {
                 value: '0',
                 errors: [],
@@ -59,19 +67,23 @@ describe('Validate Sample Use Case', () => {
                 errors: [],
                 correctionOffer: []
             },
-            pathogen_text: { value: '', errors: [], correctionOffer: [] },
+            pathogen_text: {
+                value: '',
+                errors: [],
+                correctionOffer: []
+            },
             sampling_date: {
-                value: '01.02.2023',
+                value: '02.01.2024',
                 errors: [],
                 correctionOffer: []
             },
             isolation_date: {
-                value: '01.03.2023',
+                value: '03.03.2024',
                 errors: [],
                 correctionOffer: []
             },
             sampling_location_avv: {
-                value: '45397|169446|',
+                value: '42342|175490|',
                 errors: [],
                 correctionOffer: []
             },
@@ -130,9 +142,21 @@ describe('Validate Sample Use Case', () => {
                 errors: [],
                 correctionOffer: []
             },
-            vvvo: { value: '', errors: [], correctionOffer: [] },
-            program_avv: { value: '', errors: [], correctionOffer: [] },
-            comment: { value: '', errors: [], correctionOffer: [] }
+            vvvo: {
+                value: '',
+                errors: [],
+                correctionOffer: []
+            },
+            program_avv: {
+                value: '',
+                errors: [],
+                correctionOffer: []
+            },
+            comment: {
+                value: '',
+                errors: [],
+                correctionOffer: []
+            }
         };
         genericTestSample = factory.createSample(testSampleData);
         genericTestSampleCollection = [];
@@ -209,53 +233,53 @@ describe('Validate Sample Use Case', () => {
         );
     });
 
-    // it('should flag an identical ID error because of identical AVV IDs', async () => {
-    //     const sampleOne = { ...testSampleData };
-    //     const sampleTwo = { ...testSampleData };
-    //     sampleOne.sample_id = { value: '', errors: [], correctionOffer: [] };
-    //     sampleTwo.sample_id = { value: '', errors: [], correctionOffer: [] };
+    it('should flag an identical ID error because of identical AVV IDs', async () => {
+        const sampleOne = { ...testSampleData };
+        const sampleTwo = { ...testSampleData };
+        sampleOne.sample_id = { value: '', errors: [], correctionOffer: [] };
+        sampleTwo.sample_id = { value: '', errors: [], correctionOffer: [] };
 
-    //     const firstSample = factory.createSample(sampleOne);
-    //     const secondSample = factory.createSample(sampleTwo);
+        const firstSample = factory.createSample(sampleOne);
+        const secondSample = factory.createSample(sampleTwo);
 
-    //     const specificTestSampleCollection = [firstSample, secondSample];
+        const specificTestSampleCollection = [firstSample, secondSample];
 
-    //     expect.assertions(2);
-    //     const result = await service.validateSamples(
-    //         specificTestSampleCollection,
-    //         {}
-    //     );
+        expect.assertions(2);
+        const result = await service.validateSamples(
+            specificTestSampleCollection,
+            {}
+        );
 
-    //     expect(result[0].getAnnotatedData()['sample_id_avv'].errors[0]).toEqual(
-    //         validationErrors[2]
-    //     );
-    //     expect(result[0].getAnnotatedData()['sample_id'].errors).toEqual([]);
-    // });
+        expect(result[0].getAnnotatedData()['sample_id_avv'].errors[0]).toEqual(
+            validationErrors[3]
+        );
+        expect(result[0].getAnnotatedData()['sample_id'].errors).toEqual([]);
+    });
 
-    // it('should flag an identical ID error because of identical AVV IDs', async () => {
-    //     const sampleOne = { ...testSampleData };
-    //     const sampleTwo = { ...testSampleData };
-    //     sampleOne.sample_id = { value: '5', errors: [], correctionOffer: [] };
-    //     sampleTwo.sample_id = { value: '5', errors: [], correctionOffer: [] };
+    it('should flag an identical ID error because of identical AVV IDs', async () => {
+        const sampleOne = { ...testSampleData };
+        const sampleTwo = { ...testSampleData };
+        sampleOne.sample_id = { value: '5', errors: [], correctionOffer: [] };
+        sampleTwo.sample_id = { value: '5', errors: [], correctionOffer: [] };
 
-    //     const firstSample = factory.createSample(sampleOne);
-    //     const secondSample = factory.createSample(sampleTwo);
+        const firstSample = factory.createSample(sampleOne);
+        const secondSample = factory.createSample(sampleTwo);
 
-    //     const specificTestSampleCollection = [firstSample, secondSample];
+        const specificTestSampleCollection = [firstSample, secondSample];
 
-    //     expect.assertions(2);
-    //     const result = await service.validateSamples(
-    //         specificTestSampleCollection,
-    //         {}
-    //     );
+        expect.assertions(2);
+        const result = await service.validateSamples(
+            specificTestSampleCollection,
+            {}
+        );
 
-    //     expect(result[0].getAnnotatedData()['sample_id_avv'].errors[0]).toEqual(
-    //         validationErrors[2]
-    //     );
-    //     expect(result[0].getAnnotatedData()['sample_id'].errors[0]).toEqual(
-    //         validationErrors[0]
-    //     );
-    // });
+        expect(result[0].getAnnotatedData()['sample_id_avv'].errors[0]).toEqual(
+            validationErrors[3]
+        );
+        expect(result[0].getAnnotatedData()['sample_id'].errors[0]).toEqual(
+            validationErrors[1]
+        );
+    });
 
     it('should not flag an identical ID error because of identical AVV IDs', async () => {
         const sampleOne = { ...testSampleData };
@@ -280,57 +304,57 @@ describe('Validate Sample Use Case', () => {
         expect(result[0].getAnnotatedData()['sample_id'].errors).toEqual([]);
     });
 
-    // it('should flag an identical ID error because of identical IDs', async () => {
-    //     const sampleOne = { ...testSampleData };
-    //     const sampleTwo = { ...testSampleData };
-    //     sampleOne.sample_id_avv = {
-    //         value: '',
-    //         errors: [],
-    //         correctionOffer: []
-    //     };
-    //     sampleTwo.sample_id_avv = {
-    //         value: '',
-    //         errors: [],
-    //         correctionOffer: []
-    //     };
+    it('should flag an identical ID error because of identical IDs', async () => {
+        const sampleOne = { ...testSampleData };
+        const sampleTwo = { ...testSampleData };
+        sampleOne.sample_id_avv = {
+            value: '',
+            errors: [],
+            correctionOffer: []
+        };
+        sampleTwo.sample_id_avv = {
+            value: '',
+            errors: [],
+            correctionOffer: []
+        };
 
-    //     const firstSample = factory.createSample(sampleOne);
-    //     const secondSample = factory.createSample(sampleTwo);
+        const firstSample = factory.createSample(sampleOne);
+        const secondSample = factory.createSample(sampleTwo);
 
-    //     const specificTestSampleCollection = [firstSample, secondSample];
+        const specificTestSampleCollection = [firstSample, secondSample];
 
-    //     expect.assertions(2);
-    //     const result = await service.validateSamples(
-    //         specificTestSampleCollection,
-    //         {}
-    //     );
+        expect.assertions(2);
+        const result = await service.validateSamples(
+            specificTestSampleCollection,
+            {}
+        );
 
-    //     expect(result[0].getAnnotatedData()['sample_id'].errors[0]).toEqual(
-    //         validationErrors[0]
-    //     );
-    //     expect(result[0].getAnnotatedData()['sample_id_avv'].errors).toEqual(
-    //         []
-    //     );
-    // });
+        expect(result[0].getAnnotatedData()['sample_id'].errors[0]).toEqual(
+            validationErrors[1]
+        );
+        expect(result[0].getAnnotatedData()['sample_id_avv'].errors).toEqual(
+            []
+        );
+    });
 
-    // it('should flag an identical ID error with two entry sample collection', async () => {
-    //     const identicalSample = factory.createSample(testSampleData);
-    //     const specificTestSampleCollection = [
-    //         genericTestSample,
-    //         identicalSample
-    //     ];
+    it('should flag an identical ID error with two entry sample collection', async () => {
+        const identicalSample = factory.createSample(testSampleData);
+        const specificTestSampleCollection = [
+            genericTestSample,
+            identicalSample
+        ];
 
-    //     const result = await service.validateSamples(
-    //         specificTestSampleCollection,
-    //         {}
-    //     );
+        const result = await service.validateSamples(
+            specificTestSampleCollection,
+            {}
+        );
 
-    //     expect(result[0].getAnnotatedData()['sample_id'].errors[0]).toEqual(
-    //         validationErrors[0]
-    //     );
-    //     expect(result[0].getAnnotatedData()['sample_id_avv'].errors[0]).toEqual(
-    //         validationErrors[2]
-    //     );
-    //     expect.assertions(2);
-    // });
+        expect(result[0].getAnnotatedData()['sample_id'].errors[0]).toEqual(
+            validationErrors[1]
+        );
+        expect(result[0].getAnnotatedData()['sample_id_avv'].errors[0]).toEqual(
+            validationErrors[3]
+        );
+        expect.assertions(2);
+    });
 });
