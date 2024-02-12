@@ -146,10 +146,10 @@ describe('NRL Assignment Service', () => {
                 {
                     id: NRL_ID.NRL_AR,
                     selectors: [
-                        "^.(Carba|ESBL|mpC).$",
-                        "^Enterococcus (spp.|faecalis|faecium)$",
-                        "^Escherichia coli$"
-                      ],
+                        '^.(Carba|ESBL|mpC).$',
+                        '^Enterococcus (spp.|faecalis|faecium)$',
+                        '^Escherichia coli$'
+                    ],
                     email: 'fakeNRL@nrl.com',
                     standardProcedures: [],
                     optionalProcedures: []
@@ -170,10 +170,10 @@ describe('NRL Assignment Service', () => {
                 {
                     id: NRL_ID.NRL_AR,
                     selectors: [
-                        "^.(Carba|ESBL|mpC).$",
-                        "^Enterococcus (spp.|faecalis|faecium)$",
-                        "^Escherichia coli$"
-                      ],
+                        '^.(Carba|ESBL|mpC).$',
+                        '^Enterococcus (spp.|faecalis|faecium)$',
+                        '^Escherichia coli$'
+                    ],
                     email: 'fakeNRL@nrl.com',
                     standardProcedures: [],
                     optionalProcedures: []
