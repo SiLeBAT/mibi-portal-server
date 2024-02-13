@@ -1,3 +1,4 @@
+const FSFilesAdapter = require('@parse/fs-files-adapter');
 import config from 'config';
 import express from 'express';
 import { ParseServer } from 'parse-server';
@@ -5,10 +6,13 @@ import { logger } from './../../aspects';
 
 // tslint:disable-next-line: no-any
 const parseServer: any = config.get('parseServer');
-
+const dataDir: string = config.get('dataStore.dataDir');
+const fsAdapter = new FSFilesAdapter({
+    filesSubDirectory: '../' + dataDir
+});
 const app = express();
-
-const server = new ParseServer({ ...parseServer });
+const parseConfig = { ...parseServer, filesAdapter: fsAdapter };
+const server = new ParseServer(parseConfig);
 
 // Start server
 server.start().then(() => {
