@@ -8,11 +8,6 @@
         "apiRoot": "MIBI_API_ROOT"
     },
     "dataStore": {
-        "host": "MIBI_DB_HOST",
-        "dataBase": "MIBI_DB_DATABASE",
-        "username": "MIBI_DB_USERNAME",
-        "password": "MIBI_DB_PASSWORD",
-        "authDatabase": "MIBI_DB_AUTH_DATABASE",
         "dataDir": "MIBI_DATA_DIR"
     },
     "mail": {

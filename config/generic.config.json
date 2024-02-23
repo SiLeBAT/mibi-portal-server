@@ -14,11 +14,6 @@
         "publicAPIDoc": { }
     },
     "dataStore": {
-      "host": "",
-      "dataBase": "",
-      "username": "",
-      "password": "",
-      "authDatabase": "",
       "dataDir": ""
     },
     "parseConnection": {
@@ -26,10 +21,7 @@
       "appId": "",
       "masterKey": "",
       "host": "",
-      "database": "",
-      "username": "",
-      "password": "",
-      "authDatabase": ""
+      "database": ""
     },
     "mail": {
         "fromAddress": "",
