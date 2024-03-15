@@ -263,18 +263,16 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
                 const startCell = startCol + startRow.toString();
                 sheet.cell(startCell).value(dataToSave);
 
-                if (!nrlSampleSheet) {
-                    try {
-                        const endCell =
-                            endCol + (startRow + dataToSave.length).toString();
-                        const rng = sheet.range(startCell + ':' + endCell);
-                        rng.style({ fill: 'ffffff' });
-                        this.highlightEdits(sheet, highlights, startCol, startRow);
-                    } catch (e) {
-                        throw new ApplicationDomainError(
-                            'Unable to apply styling to Excel'
-                        );
-                    }
+                try {
+                    const endCell =
+                        endCol + (startRow + dataToSave.length).toString();
+                    const rng = sheet.range(startCell + ':' + endCell);
+                    rng.style({ fill: 'ffffff' });
+                    this.highlightEdits(sheet, highlights, startCol, startRow);
+                } catch (e) {
+                    throw new ApplicationDomainError(
+                        'Unable to apply styling to Excel'
+                    );
                 }
 
             }
