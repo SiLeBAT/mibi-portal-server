@@ -60,6 +60,7 @@ export interface AVVCatalog<T extends AVVCatalogData> {
     ): MibiFacettenWert | undefined;
     assembleAVVKode(begriffsIdEintrag: string, id: string): string;
     getTextWithAVVKode(kode: string, includingFacettenName?: boolean): string;
+    hasFacettenInfo(kode: string): boolean;
     getTextWithFacettenCode(kode: string): string;
     getFuzzyIndex(
         options: Fuse.IFuseOptions<FuzzyEintrag>,

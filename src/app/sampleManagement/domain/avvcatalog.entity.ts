@@ -163,6 +163,12 @@ class AVVDefaultCatalog<T extends AVVCatalogData> implements AVVCatalog<T> {
         return generatedText;
     }
 
+    hasFacettenInfo(kode: string): boolean {
+        const regexFacettenCode = /^\d+\|\d+\|\d+[-:\d,|]*$/;
+
+        return this.isFacettenCatalog() && regexFacettenCode.test(kode);
+    }
+
     private isFacettenCatalog() {
         return this.data.facettenErlaubt;
     }
