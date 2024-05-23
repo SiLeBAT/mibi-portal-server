@@ -15,8 +15,8 @@ import { AppServerConfiguration } from '../ports';
 import { SERVER_TYPES } from '../server.types';
 import {
     AbstractController,
-    ParseEntityDTO,
-    ParseResponse
+    ParseCollectionResponse,
+    ParseEntityDTO
 } from './abstract.controller';
 
 enum NRL_ROUTE {
@@ -58,8 +58,8 @@ export class DefaultNRLsController
 
         try {
             const parseResponse = await this.redirectionTarget.get<
-                ParseResponse<ParseNRLDTO>,
-                AxiosResponse<ParseResponse<ParseNRLDTO>>,
+                ParseCollectionResponse<ParseNRLDTO>,
+                AxiosResponse<ParseCollectionResponse<ParseNRLDTO>>,
                 ParseNRLDTO
             >('classes/nrls');
 
@@ -98,8 +98,8 @@ export class DefaultNRLsController
 
     private async getRelationalData(procedureRelation: string, id: string) {
         const proceduresParseResponse = await this.redirectionTarget.get<
-            ParseResponse<ParseAnalysisProceduresDTO>,
-            AxiosResponse<ParseResponse<ParseAnalysisProceduresDTO>>,
+            ParseCollectionResponse<ParseAnalysisProceduresDTO>,
+            AxiosResponse<ParseCollectionResponse<ParseAnalysisProceduresDTO>>,
             ParseAnalysisProceduresDTO
         >(
             'classes/analysisprocedures?' +

@@ -1,71 +1,68 @@
-import { SampleMetaDTO, AnalysisDTO } from './../model/shared-dto.model';
-import moment from 'moment';
-import _ from 'lodash';
 import { Request, Response } from 'express';
-import { logger } from '../../../aspects';
+import { inject } from 'inversify';
 import {
-    FormValidatorPort,
-    FormAutoCorrectionPort,
-    Sample,
-    ValidationOptions,
-    SamplePort,
+    controller,
+    httpPost,
+    httpPut,
+    request,
+    response
+} from 'inversify-express-utils';
+import moment from 'moment';
+import {
+    AnnotatedSampleDataEntry,
     ApplicantMetaData,
+    FormAutoCorrectionPort,
+    FormValidatorPort,
+    ReceiveAs,
+    Sample,
+    SampleData,
+    SampleFactory,
+    SampleMetaData,
+    SamplePort,
     SampleSet,
     SampleSetMetaData,
     TokenPayload,
     TokenPort,
-    UserPort,
     Urgency,
     User,
-    ReceiveAs,
-    SampleData,
-    AnnotatedSampleDataEntry,
-    SampleMetaData,
-    SampleFactory
+    UserPort,
+    ValidationOptions
 } from '../../../app/ports';
+import { logger } from '../../../aspects';
+import { getTokenFromHeader } from '../middleware/token-validator.middleware';
 import { SamplesController } from '../model/controller.model';
-import {
-    PostSubmittedRequestDTO,
-    PutValidatedRequestDTO,
-    PutSamplesJSONRequestDTO
-} from '../model/request.model';
-import { SERVER_ERROR_CODE, API_ROUTE } from '../model/enums';
 import {
     MalformedRequestError,
     TokenNotFoundError
 } from '../model/domain.error';
-import { getTokenFromHeader } from '../middleware/token-validator.middleware';
-import { AbstractController } from './abstract.controller';
+import { API_ROUTE, SERVER_ERROR_CODE } from '../model/enums';
 import {
-    SampleDataDTO,
-    SampleSetDTO,
-    SampleDataEntryDTO,
-    OrderDTO,
-    SampleSetMetaDTO,
-    SampleDTO
-} from '../model/shared-dto.model';
+    PostSubmittedRequestDTO,
+    PutValidatedRequestDTO
+} from '../model/request.model';
 import {
-    InvalidInputErrorDTO,
-    InvalidExcelVersionErrorDTO,
     AutoCorrectedInputErrorDTO,
-    PutValidatedResponseDTO,
+    InvalidInputErrorDTO,
     PostSubmittedResponseDTO,
-    PutSamplesJSONResponseDTO,
-    PutSamplesXLSXResponseDTO
+    PutValidatedResponseDTO
 } from '../model/response.model';
 import {
-    controller,
-    httpPut,
-    httpPost,
-    request,
-    response
-} from 'inversify-express-utils';
-import { inject } from 'inversify';
+    OrderDTO,
+    SampleDTO,
+    SampleDataDTO,
+    SampleDataEntryDTO,
+    SampleSetDTO,
+    SampleSetMetaDTO
+} from '../model/shared-dto.model';
+import { AnalysisDTO, SampleMetaDTO } from './../model/shared-dto.model';
+import { AbstractController, ParseSingleResponse } from './abstract.controller';
 
-import { APPLICATION_TYPES } from './../../../app/application.types';
-import { SERVER_TYPES } from '../server.types';
+import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { NRLService } from '../../../app/sampleManagement/model/nrl.model';
 import { Analysis } from '../../../app/sampleManagement/model/sample.model';
+import { AppServerConfiguration } from '../ports';
+import { SERVER_TYPES } from '../server.types';
+import { APPLICATION_TYPES } from './../../../app/application.types';
 moment.locale('de');
 
 enum RESOURCE_VIEW_TYPE {
@@ -73,16 +70,25 @@ enum RESOURCE_VIEW_TYPE {
     XLSX
 }
 
+type RESOURCE_VIEW_TYPE_STRING = 'xml' | 'json';
+
 enum SAMPLES_ROUTE {
     ROOT = '/samples',
     VALIDATED = '/validated',
     SUBMITTED = '/submitted'
 }
+
+type ParseFileRequest = {
+    type: RESOURCE_VIEW_TYPE_STRING;
+    filename: string;
+    data: string;
+};
 @controller(API_ROUTE.V2 + SAMPLES_ROUTE.ROOT)
 export class DefaultSamplesController
     extends AbstractController
     implements SamplesController
 {
+    private redirectionTarget: AxiosInstance;
     constructor(
         @inject(APPLICATION_TYPES.FormValidatorService)
         private formValidationService: FormValidatorPort,
@@ -94,9 +100,15 @@ export class DefaultSamplesController
         @inject(APPLICATION_TYPES.UserService) private userService: UserPort,
         // dirty fix: Use of NRLService instead of NRLPort
         @inject(APPLICATION_TYPES.NRLService) private nrlService: NRLService,
-        @inject(APPLICATION_TYPES.SampleFactory) private factory: SampleFactory
+        @inject(APPLICATION_TYPES.SampleFactory) private factory: SampleFactory,
+        @inject(SERVER_TYPES.AppServerConfiguration)
+        configuration: AppServerConfiguration
     ) {
         super();
+        this.redirectionTarget = axios.create({
+            baseURL: configuration.parseAPI,
+            headers: { 'X-Parse-Application-Id': configuration.appId }
+        });
     }
 
     @httpPut('/', SERVER_TYPES.MulterMW)
@@ -105,22 +117,15 @@ export class DefaultSamplesController
             `${this.constructor.name}.${this.putSamples.name}, Request received`
         );
         try {
-            const sampleSet: SampleSet = await this.putSamplesTransformInput(
-                req,
-                res
-            );
+            const parseRequest: ParseFileRequest =
+                await this.putSamplesTransformInput(req, res);
 
-            if (!this.isValidExcelVersion(sampleSet)) {
-                const errorDTO: InvalidExcelVersionErrorDTO = {
-                    code: SERVER_ERROR_CODE.INVALID_VERSION,
-                    message: 'Invalid excel version',
-                    version: sampleSet.meta.version
-                };
-                res.status(422).json(errorDTO);
-                return;
-            }
-
-            await this.putSamplesSendResponse(req, res, sampleSet);
+            const parseResponse = await this.redirectionTarget.post<
+                ParseSingleResponse<OrderDTO>,
+                AxiosResponse<ParseSingleResponse<OrderDTO>>,
+                ParseFileRequest
+            >('functions/putSampleData', parseRequest);
+            this.ok(res, parseResponse.data.result);
         } catch (error) {
             logger.info(
                 `${this.constructor.name}.${this.putSamples.name} has thrown an error. ${error}`
@@ -128,6 +133,7 @@ export class DefaultSamplesController
             this.handleError(res, error);
         }
     }
+
     @httpPut(SAMPLES_ROUTE.VALIDATED)
     async putValidated(@request() req: Request, @response() res: Response) {
         logger.info(
@@ -168,6 +174,7 @@ export class DefaultSamplesController
             this.handleError(res, error);
         }
     }
+
     @httpPost(SAMPLES_ROUTE.SUBMITTED)
     async postSubmitted(@request() req: Request, @response() res: Response) {
         logger.info(
@@ -248,68 +255,27 @@ export class DefaultSamplesController
         }
     }
 
-    private isValidExcelVersion(sampleSet: SampleSet): boolean {
-        const validVersion = 17;
-
-        return parseInt(sampleSet.meta.version, 10) >= validVersion;
-    }
-
     private async putSamplesTransformInput(
         req: Request,
         res: Response
-    ): Promise<SampleSet> {
+    ): Promise<ParseFileRequest> {
         let contype = req.headers['content-type'];
         const type = this.getResourceViewType(contype);
-        const token: string | null = getTokenFromHeader(req);
+        let typeAsString: RESOURCE_VIEW_TYPE_STRING = 'xml';
         switch (type) {
-            case RESOURCE_VIEW_TYPE.XLSX:
-                const file = this.parseInputDTO(() => {
-                    return {
-                        buffer: req.file!.buffer,
-                        name: decodeURIComponent(req.file!.originalname)
-                    };
-                });
-                return this.sampleService
-                    .convertToJson(file.buffer, file.name, token)
-                    .catch((error: Error) => {
-                        throw error;
-                    });
             case RESOURCE_VIEW_TYPE.JSON:
-            default:
-                const dto: PutSamplesJSONRequestDTO = req.body;
-                return this.parseInputDTO(() => {
-                    return this.fromDTOToSampleSet(dto.order.sampleSet);
-                });
-        }
-    }
-
-    private async putSamplesSendResponse(
-        req: Request,
-        res: Response,
-        sampleSet: SampleSet
-    ) {
-        let accept = req.headers['accept'];
-
-        const type = this.getResourceViewType(accept);
-        switch (type) {
-            case RESOURCE_VIEW_TYPE.XLSX:
-                const result: PutSamplesXLSXResponseDTO =
-                    await this.sampleService.convertToExcel(sampleSet);
-                logger.info(
-                    `${this.constructor.name}.${this.putSamples.name}, Response sent`
-                );
-                this.ok(res, result);
+                typeAsString = 'json';
                 break;
-            case RESOURCE_VIEW_TYPE.JSON:
+            case RESOURCE_VIEW_TYPE.XLSX:
             default:
-                const successResponse: PutSamplesJSONResponseDTO = {
-                    order: this.fromSampleSetToUnannotatedOrderDTO(sampleSet)
-                };
-                logger.info(
-                    `${this.constructor.name}.${this.putSamples.name}, Response sent`
-                );
-                this.ok(res, successResponse);
+                typeAsString = 'xml';
         }
+
+        return {
+            type: typeAsString,
+            filename: decodeURIComponent(req.file!.originalname),
+            data: Buffer.from(req.file!.buffer).toString('base64')
+        };
     }
 
     private getResourceViewType(
@@ -489,22 +455,6 @@ export class DefaultSamplesController
         }
 
         return annotatedSampleDataEntry;
-    }
-
-    private fromSampleSetToUnannotatedOrderDTO(sampleSet: SampleSet): OrderDTO {
-        return {
-            sampleSet: {
-                meta: this.fromSampleSetMetaDataToDTO(sampleSet.meta),
-                samples: sampleSet.samples.map(sample => ({
-                    sampleData: sample.getDataEntries(),
-                    sampleMeta: {
-                        nrl: sample.getNRL().toString(),
-                        analysis: this.fromAnalysisToDTO(sample.getAnalysis()),
-                        urgency: sample.getUrgency().toString()
-                    }
-                }))
-            }
-        };
     }
 
     private fromSampleSetToOrderDTO(sampleSet: SampleSet): OrderDTO {

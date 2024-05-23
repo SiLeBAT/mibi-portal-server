@@ -14,8 +14,8 @@ import { AppServerConfiguration } from '../ports';
 import { SERVER_TYPES } from '../server.types';
 import {
     AbstractController,
-    ParseEntityDTO,
-    ParseResponse
+    ParseCollectionResponse,
+    ParseEntityDTO
 } from './abstract.controller';
 
 enum INSTITUTES_ROUTE {
@@ -59,8 +59,8 @@ export class DefaultInstituteController
 
         try {
             const parseResponse = await this.redirectionTarget.get<
-                ParseResponse<ParseInstitutionDTO>,
-                AxiosResponse<ParseResponse<ParseInstitutionDTO>>,
+                ParseCollectionResponse<ParseInstitutionDTO>,
+                AxiosResponse<ParseCollectionResponse<ParseInstitutionDTO>>,
                 ParseInstitutionDTO
             >('classes/institutions');
 
