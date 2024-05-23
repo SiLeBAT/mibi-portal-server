@@ -5,10 +5,13 @@ import { MalformedRequestError } from '../model/domain.error';
 import { SERVER_ERROR_CODE } from '../model/enums';
 import { DefaultServerErrorDTO } from '../model/response.model';
 
-export interface ParseResponse<T> {
+export interface ParseCollectionResponse<T> {
     results: T[];
 }
 
+export interface ParseSingleResponse<T> {
+    result: T;
+}
 export interface ParseEntityDTO {
     objectId: string;
     createdAt: string;
