@@ -184,7 +184,8 @@ function autoCorrectFinalPipeAfterFacettes(
             return searchCache[trimmedEntry];
         }
 
-        if (trimmedEntry.endsWith('|')) {
+        const regex = /-\d+/;
+        if (regex.test(trimmedEntry) && trimmedEntry.endsWith('|')) {
             searchCache[trimmedEntry] = createCacheEntry(
                 property,
                 originalValue,
