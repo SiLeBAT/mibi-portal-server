@@ -1,43 +1,43 @@
+import { AxiosResponse } from 'axios';
 import { Request, Response } from 'express';
-import { logger } from '../../../aspects';
-import {
-    PasswordPort,
-    UserLoginInformation,
-    LoginResponse,
-    AuthorizationError,
-    LoginPort,
-    RegistrationPort,
-    UserRegistration
-} from '../../../app/ports';
-import { UsersController } from '../model/controller.model';
-import { AbstractController } from './abstract.controller';
-import {
-    ResetRequestDTO,
-    NewPasswordRequestDTO,
-    RegistrationDetailsDTO
-} from '../model/request.model';
-import {
-    PasswordResetRequestResponseDTO,
-    PasswordResetResponseDTO,
-    TokenizedUserDTO,
-    FailedLoginErrorDTO,
-    ActivationResponseDTO,
-    RegistrationRequestResponseDTO
-} from '../model/response.model';
-import { MalformedRequestError } from '../model/domain.error';
-import { SERVER_ERROR_CODE, API_ROUTE } from '../model/enums';
-import { JsonWebTokenError } from 'jsonwebtoken';
+import { inject } from 'inversify';
 import {
     controller,
-    httpPut,
     httpPatch,
     httpPost,
-    requestParam,
+    httpPut,
     request,
+    requestParam,
     response
 } from 'inversify-express-utils';
-import { inject } from 'inversify';
+import { JsonWebTokenError } from 'jsonwebtoken';
+import { UserCredentials } from '../../../app/authentication/model/user.model';
+import {
+    AuthorizationError,
+    PasswordPort,
+    RegistrationPort,
+    UserLoginInformation,
+    UserRegistration
+} from '../../../app/ports';
+import { logger } from '../../../aspects';
+import { UsersController } from '../model/controller.model';
+import { MalformedRequestError } from '../model/domain.error';
+import { API_ROUTE, SERVER_ERROR_CODE } from '../model/enums';
+import {
+    NewPasswordRequestDTO,
+    RegistrationDetailsDTO,
+    ResetRequestDTO
+} from '../model/request.model';
+import {
+    ActivationResponseDTO,
+    FailedLoginErrorDTO,
+    PasswordResetRequestResponseDTO,
+    PasswordResetResponseDTO,
+    RegistrationRequestResponseDTO,
+    TokenizedUserDTO
+} from '../model/response.model';
 import { APPLICATION_TYPES } from './../../../app/application.types';
+import { RedirectionController } from './redirection.controller';
 
 enum USERS_ROUTE {
     ROOT = '/users',
@@ -50,13 +50,11 @@ enum USERS_ROUTE {
 }
 @controller(API_ROUTE.V2 + USERS_ROUTE.ROOT)
 export class DefaultUsersController
-    extends AbstractController
-    implements UsersController
-{
+    extends RedirectionController
+    implements UsersController {
     constructor(
         @inject(APPLICATION_TYPES.PasswordService)
         private passwordService: PasswordPort,
-        @inject(APPLICATION_TYPES.LoginService) private loginService: LoginPort,
         @inject(APPLICATION_TYPES.RegistrationService)
         private registrationService: RegistrationPort
     ) {
@@ -139,16 +137,21 @@ export class DefaultUsersController
         try {
             const userLoginInfo: UserLoginInformation =
                 this.mapRequestDTOToUserLoginInfo(req);
-            const response: LoginResponse = await this.loginService.loginUser(
-                userLoginInfo
-            );
 
-            const dto: TokenizedUserDTO =
-                this.fromLoginResponseToResponseDTO(response);
+            const userResponse = await this.redirectionTarget.post<TokenizedUserDTO, AxiosResponse<TokenizedUserDTO>, UserCredentials>(USERS_ROUTE.ROOT + USERS_ROUTE.LOGIN, userLoginInfo).then((response) => {
+                return response.data;
+            })
+                .catch(error => {
+                    logger.info(
+                        `${this.constructor.name}.${this.postLogin.name} has thrown an error. ${error}`
+                    );
+                    this.handleError(res, error);
+                });
+
             logger.info(
                 `${this.constructor.name}.${this.postLogin.name}, Response sent`
             );
-            this.ok(res, dto);
+            this.ok(res, userResponse);
         } catch (error) {
             logger.info(
                 `${this.constructor.name}.${this.postLogin.name} has thrown an error. ${error}`
@@ -300,17 +303,6 @@ export class DefaultUsersController
             password: req.body.password,
             userAgent: req.headers['user-agent'],
             host: req.headers['host']
-        };
-    }
-    private fromLoginResponseToResponseDTO(
-        response: LoginResponse
-    ): TokenizedUserDTO {
-        return {
-            firstName: response.user.firstName,
-            lastName: response.user.lastName,
-            email: response.user.email,
-            token: response.token,
-            instituteId: response.user.institution.uniqueId
         };
     }
 }

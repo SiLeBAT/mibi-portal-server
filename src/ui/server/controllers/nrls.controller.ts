@@ -19,16 +19,12 @@ enum NRL_ROUTE {
 export class DefaultNRLsController
     extends RedirectionController
     implements NRLsController {
-    constructor(
-    ) {
-        super();
-    }
     @httpGet('/')
     async getNRLs(@request() req: Request, @response() res: Response) {
         logger.info(
             `${this.constructor.name}.${this.getNRLs.name}, Request received`
         );
-        const nrls = await this.redirectionTarget.get<NRLCollectionDTO, AxiosResponse<NRLCollectionDTO>, NRLCollectionDTO>(API_ROUTE.V2 + NRL_ROUTE.ROOT).then((response) => {
+        const nrls = await this.redirectionTarget.get<NRLCollectionDTO, AxiosResponse<NRLCollectionDTO>, NRLCollectionDTO>(NRL_ROUTE.ROOT).then((response) => {
             return response.data;
         })
             .catch(error => {
