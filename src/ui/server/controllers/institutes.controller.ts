@@ -11,6 +11,7 @@ import { API_ROUTE } from '../model/enums';
 import { AbstractController } from './abstract.controller';
 
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { InstituteCollectionDTO } from '../model/response.model';
 
 enum INSTITUTES_ROUTE {
     ROOT = '/institutes'
@@ -36,7 +37,7 @@ export class DefaultInstituteController
             `${this.constructor.name}.${this.getInstitutes.name}, Request received`
         );
 
-        const institutes = await this.redirectionTarget.get<any, AxiosResponse<any>, any>('/v2/institutes').then((response) => {
+        const institutes = await this.redirectionTarget.get<InstituteCollectionDTO, AxiosResponse<InstituteCollectionDTO>, InstituteCollectionDTO>('/v2/institutes').then((response) => {
             return response.data;
         })
             .catch(error => {
