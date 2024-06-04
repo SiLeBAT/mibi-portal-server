@@ -260,7 +260,7 @@ function inAVVFacettenCatalog(
                 }
 
                 // simple AVV code without facetten
-                if (!facettenValues) {
+                if (catalog.isBasicCode(trimmedValue)) {
                     if (
                         isAVVKodeValue(trimmedValue) &&
                         catalog.containsEintragWithAVVKode(trimmedValue)
@@ -269,6 +269,10 @@ function inAVVFacettenCatalog(
                     } else {
                         return { ...options.message };
                     }
+                }
+
+                if (!catalog.hasFacettenInfo(trimmedValue)) {
+                    return { ...options.message };
                 }
 
                 const avvKode = catalog.assembleAVVKode(begriffsIdEintrag, id);
@@ -292,8 +296,6 @@ function inAVVFacettenCatalog(
                             const facettenEndeIdList = facettenEndeIds
                                 ? facettenEndeIds.split(':')
                                 : [''];
-                            // const facettenEndeIdList =
-                            //     facettenEndeIds.split(':');
                             const facette =
                                 catalog.getFacetteWithBegriffsId(
                                     facettenBeginnId

@@ -119,6 +119,7 @@ describe('Custom Auto-correction Functions', () => {
             correctionOffer: []
         }
     };
+
     describe('autoCorrectAVV324', () => {
         // tslint:disable-next-line
         let mockCatalogService: any;
@@ -179,6 +180,7 @@ describe('Custom Auto-correction Functions', () => {
                         containsTextEintrag: (value: string) =>
                             value in
                             (mockAVV324Entries as AVV324Data).textEintraege,
+                        isBasicCode: (kode: string) => true,
                         containsEintragWithAVVKode: (kode: string) =>
                             kode in (mockAVV324Entries as AVV324Data).eintraege,
                         getEintragWithAVVKode: (kode: string) =>
