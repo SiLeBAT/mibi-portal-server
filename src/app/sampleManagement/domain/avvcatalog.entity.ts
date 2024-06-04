@@ -15,6 +15,24 @@ import {
 } from '../model/catalog.model';
 
 class AVVDefaultCatalog<T extends AVVCatalogData> implements AVVCatalog<T> {
+    private readonly basicCodeRegex: RegExp = /^\d+\|\d+\|$/;
+    private readonly facettenPartRegex =
+        /((\d+-\d+(:\d+)*)?(,\d+-\d+(:\d+)*)*)?/;
+    private readonly basicCodeRegexSource =
+        this.basicCodeRegex.source.substring(
+            1,
+            this.basicCodeRegex.source.length - 1
+        );
+    private readonly facettenPartRegexSource = this.facettenPartRegex.source;
+    // facettenCodeRegex: /^(\d+\|\d+\|)((\d+-\d+(:\d+)*)?(,\d+-\d+(:\d+)*)*)?$/
+    private readonly facettenCodeRegex = new RegExp(
+        '^(' +
+            this.basicCodeRegexSource +
+            ')' +
+            this.facettenPartRegexSource +
+            '$'
+    );
+
     constructor(private data: T, private uId: string = '') {}
 
     containsEintragWithAVVKode(kode: string): boolean {
@@ -164,9 +182,11 @@ class AVVDefaultCatalog<T extends AVVCatalogData> implements AVVCatalog<T> {
     }
 
     hasFacettenInfo(kode: string): boolean {
-        const regexFacettenCode = /^\d+\|\d+\|\d+[-:\d,|]*$/;
+        return this.isFacettenCatalog() && this.facettenCodeRegex.test(kode);
+    }
 
-        return this.isFacettenCatalog() && regexFacettenCode.test(kode);
+    isBasicCode(kode: string): boolean {
+        return this.basicCodeRegex.test(kode);
     }
 
     private isFacettenCatalog() {

@@ -1,11 +1,6 @@
 import _ from 'lodash';
 import { logger } from '../../../aspects';
-import {
-    autoCorrectAVV324,
-    autoCorrectAVV319,
-    autoCorrectAVV339,
-    autoCorrectAVV303
-} from '../domain/custom-auto-correction-functions';
+import { autoCorrectAVV324 } from '../domain/custom-auto-correction-functions';
 import {
     CorrectionFunction,
     FormAutoCorrectionService,
@@ -67,8 +62,5 @@ export class DefaultFormAutoCorrectionService
 
     private registerCorrectionFunctions() {
         this.correctionFunctions.push(autoCorrectAVV324(this.catalogService));
-        this.correctionFunctions.push(autoCorrectAVV319(this.catalogService));
-        this.correctionFunctions.push(autoCorrectAVV339(this.catalogService));
-        this.correctionFunctions.push(autoCorrectAVV303(this.catalogService));
     }
 }

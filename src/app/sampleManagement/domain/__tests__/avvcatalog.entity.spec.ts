@@ -502,4 +502,76 @@ describe('facetten catalog matrizes 319', () => {
 
         expect(result).toEqual(expected);
     });
+
+    describe('regular expression for basic code and facetten code', () => {
+        describe('should validate without errors', () => {
+            it.each([
+                ['1234|56789|', true],
+                ['1|5|', true]
+            ])(
+                'because %s is a correct basic code format',
+                (inputKode, expectedResult) => {
+                    const result = avvCatalog.isBasicCode(inputKode);
+
+                    expect(result).toEqual(expectedResult);
+                }
+            );
+
+            it.each([
+                ['1234|56789|', true],
+                ['1|5|', true],
+                ['2464|186528|1212-905', true],
+                ['2464|186528|1212-905,1334-1356,63421-1512', true],
+                [
+                    '182272|184169|6843-6909:183390:183393,183670-2296,185085-6986:3',
+                    true
+                ]
+            ])(
+                'because %s is a correct facetten code format',
+                (inputKode, expectedResult) => {
+                    const result = avvCatalog.hasFacettenInfo(inputKode);
+
+                    expect(result).toEqual(expectedResult);
+                }
+            );
+        });
+
+        describe('should not validate', () => {
+            it.each([
+                ['1234|56789', false],
+                ['1234|56789||', false],
+                ['1234|56789|%', false],
+                ['1234|56789Y', false]
+            ])(
+                'because %s is not a correct basic code format',
+                (inputKode, expectedResult) => {
+                    const result = avvCatalog.isBasicCode(inputKode);
+
+                    expect(result).toEqual(expectedResult);
+                }
+            );
+
+            it.each([
+                ['1234|56789', false],
+                ['1234|56789||', false],
+                ['1234|56789|%', false],
+                ['1234|56789Y', false],
+                ['185770|183467|183670', false],
+                ['2464|186528|1212-905,1334-1356,63421-1512|', false],
+                ['2464|186528|1212-905,1334-1356,63421-1512Ä', false],
+                [
+                    '182272|184169|6843-6909:183390:183393,183670-2296,185085:3',
+                    false
+                ],
+                ['182272|184169|6843-6909:183390:183393,183670-', false]
+            ])(
+                'because %s is not a correct facetten code format',
+                (inputKode, expectedResult) => {
+                    const result = avvCatalog.hasFacettenInfo(inputKode);
+
+                    expect(result).toEqual(expectedResult);
+                }
+            );
+        });
+    });
 });

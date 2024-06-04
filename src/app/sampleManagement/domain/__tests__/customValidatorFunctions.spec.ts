@@ -685,6 +685,7 @@ describe('Custom Validator Functions', () => {
                 assembleAVVKode: jest.fn(),
                 getTextWithAVVKode: jest.fn(),
                 hasFacettenInfo: jest.fn(),
+                isBasicCode: jest.fn(),
                 getTextWithFacettenCode: jest.fn(),
                 getFuzzyIndex: jest.fn(),
                 getUniqueId: () => '',
@@ -738,7 +739,7 @@ describe('Custom Validator Functions', () => {
         beforeEach(() => {
             mockCatalog = {
                 containsEintragWithAVVKode: (kode: string) => true,
-                containsTextEintrag: (value: string) => true,
+                containsTextEintrag: jest.fn(),
                 getEintragWithAVVKode: jest.fn(),
                 getAVV313EintragWithAVVKode: jest.fn(),
                 getAttributeWithAVVKode: jest.fn(),
@@ -754,7 +755,8 @@ describe('Custom Validator Functions', () => {
                 ) => ({} as any),
                 assembleAVVKode: jest.fn(),
                 getTextWithAVVKode: jest.fn(),
-                hasFacettenInfo: jest.fn(),
+                hasFacettenInfo: (kode: string) => true,
+                isBasicCode: (kode: string) => false,
                 getTextWithFacettenCode: jest.fn(),
                 getFuzzyIndex: jest.fn(),
                 getUniqueId: () => '',
@@ -806,6 +808,7 @@ describe('Custom Validator Functions', () => {
 
         it('should not validate beccause entry 187036|183974 is lacking the final pipe character', () => {
             testSample.matrix_avv = '187036|183974';
+            mockCatalog.hasFacettenInfo = (kode: string) => false;
             const error = inAVVFacettenCatalog(mockCatalogService)(
                 testSample.matrix_avv,
                 {
@@ -821,6 +824,8 @@ describe('Custom Validator Functions', () => {
 
         it('should validate without errors because 187036|183974| is a valid AVV matrix code ', () => {
             testSample.matrix_avv = '187036|183974|';
+            mockCatalog.isBasicCode = (kode: string) => true;
+            mockCatalog.hasFacettenInfo = (kode: string) => false;
             const error = inAVVFacettenCatalog(mockCatalogService)(
                 testSample.matrix_avv,
                 {
@@ -836,6 +841,8 @@ describe('Custom Validator Functions', () => {
 
         it('should not validate because entry 1234|56789| is not a valid AVV matrix code', () => {
             testSample.matrix_avv = '1234|56789|';
+            mockCatalog.isBasicCode = (kode: string) => true;
+            mockCatalog.hasFacettenInfo = (kode: string) => false;
             mockCatalog.containsEintragWithAVVKode = (value: string) => false;
             const error = inAVVFacettenCatalog(mockCatalogService)(
                 testSample.matrix_avv,
@@ -1129,6 +1136,7 @@ describe('Custom Validator Functions', () => {
                 assembleAVVKode: jest.fn(),
                 getTextWithAVVKode: jest.fn(),
                 hasFacettenInfo: jest.fn(),
+                isBasicCode: jest.fn(),
                 getTextWithFacettenCode: jest.fn(),
                 getFuzzyIndex: jest.fn(),
                 getUniqueId: () => '',

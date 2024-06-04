@@ -61,6 +61,7 @@ export interface AVVCatalog<T extends AVVCatalogData> {
     assembleAVVKode(begriffsIdEintrag: string, id: string): string;
     getTextWithAVVKode(kode: string, includingFacettenName?: boolean): string;
     hasFacettenInfo(kode: string): boolean;
+    isBasicCode(kode: string): boolean;
     getTextWithFacettenCode(kode: string): string;
     getFuzzyIndex(
         options: Fuse.IFuseOptions<FuzzyEintrag>,
