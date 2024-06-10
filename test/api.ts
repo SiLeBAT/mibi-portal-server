@@ -2,7 +2,7 @@ import config from 'config';
 import { PutValidatedRequestDTO, PutSamplesJSONRequestDTO } from '../src/ui/server/model/request.model';
 import { PutValidatedResponseDTO, PutSamplesJSONResponseDTO, PutSamplesXLSXResponseDTO } from '../src/ui/server/model/response.model';
 import rp from 'request-promise-native';
-import request = require('request');
+import * as request from 'request'; 
 import { API_ROUTE } from '../src/ui/server/model/enums';
 
 const API_URL = config.get('apiUrl');

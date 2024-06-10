@@ -1,0 +1,200 @@
+{
+  "order": {
+    "sampleSet": {
+      "meta": {
+        "sender": {
+          "instituteName": "",
+          "department": "",
+          "street": "",
+          "zip": "",
+          "city": "",
+          "contactPerson": "",
+          "telephone": "",
+          "email": ""
+        },
+        "fileName": "mps155_timezone_bug_v17.xlsx",
+        "version": "17"
+      },
+      "samples": [
+        {
+          "sampleData": {
+            "sample_id": {
+              "value": "1"
+            },
+            "sample_id_avv": {
+              "value": "1-ABC"
+            },
+            "partial_sample_id": {
+              "value": ""
+            },
+            "pathogen_avv": {
+              "value": "Escherichia coli"
+            },
+            "pathogen_text": {
+              "value": ""
+            },
+            "sampling_date": {
+              "value": "01.01.2019"
+            },
+            "isolation_date": {
+              "value": "02.01.2019"
+            },
+            "sampling_location_avv": {
+              "value": "45398|173159|"
+            },
+            "sampling_location_zip": {
+              "value": "10178"
+            },
+            "sampling_location_text": {
+              "value": "Berlin"
+            },
+            "animal_avv": {
+              "value": "2464|186528|"
+            },
+            "matrix_avv": {
+              "value": "182336|184855|183670-2296,185085-6986"
+            },
+            "animal_matrix_text": {
+              "value": "Fleischteilstück roh; Pflanze/Tier/Stoff/relevante Zutat - Fleisch; Produktmerkmal - Roh"
+            },
+            "primary_production_avv": {
+              "value": "59138|50593|"
+            },
+            "control_program_avv": {
+              "value": "70555|59517|"
+            },
+            "sampling_reason_avv": {
+              "value": "22562|126354|"
+            },
+            "program_reason_text": {
+              "value": "Amtliche Kontrolle in Betrieben, Planprobe"
+            },
+            "operations_mode_avv": {
+              "value": "62727|57609|2-2464,63421-1512"
+            },
+            "operations_mode_text": {
+              "value": "Tierhaltung; Tiere - Hühner; Nutzungs- und Produktionsrichtung - Zur Mast"
+            },
+            "vvvo": {
+              "value": ""
+            },
+            "program_avv": {
+              "value": ""
+            },
+            "comment": {
+              "value": ""
+            }
+          },
+          "sampleMeta": {
+            "nrl": "NRL-AR",
+            "analysis": {
+              "species": false,
+              "serological": false,
+              "resistance": false,
+              "vaccination": false,
+              "molecularTyping": false,
+              "toxin": false,
+              "esblAmpCCarbapenemasen": false,
+              "sample": false,
+              "other": "",
+              "compareHuman": {
+                "value": "",
+                "active": false
+              }
+            },
+            "urgency": "NORMAL"
+          }
+        },
+        {
+          "sampleData": {
+            "sample_id": {
+              "value": "2"
+            },
+            "sample_id_avv": {
+              "value": "2-ABC"
+            },
+            "partial_sample_id": {
+              "value": ""
+            },
+            "pathogen_avv": {
+              "value": "66684|57386|"
+            },
+            "pathogen_text": {
+              "value": ""
+            },
+            "sampling_date": {
+              "value": "31.12.2018"
+            },
+            "isolation_date": {
+              "value": "01.01.2019"
+            },
+            "sampling_location_avv": {
+              "value": "45398|173159|"
+            },
+            "sampling_location_zip": {
+              "value": "10178"
+            },
+            "sampling_location_text": {
+              "value": "Berlin"
+            },
+            "animal_avv": {
+              "value": "1566|57806|"
+            },
+            "matrix_avv": {
+              "value": "182272|184169|6843-6909,183670-2296,185085-6986"
+            },
+            "animal_matrix_text": {
+              "value": "Rohschinken; Be- und Verarbeitung - Gepökelt; Pflanze/Tier/Stoff/relevante Zutat - Fleisch; Produktmerkmal - Roh"
+            },
+            "primary_production_avv": {
+              "value": "59138|50593|"
+            },
+            "control_program_avv": {
+              "value": "70555|59517|"
+            },
+            "sampling_reason_avv": {
+              "value": "22562|126354|"
+            },
+            "program_reason_text": {
+              "value": "Amtliche Kontrolle in Betrieben, Planprobe"
+            },
+            "operations_mode_avv": {
+              "value": "62727|57609|2-1566,63421-1512"
+            },
+            "operations_mode_text": {
+              "value": "Tierhaltung; Tiere - Schweine; Nutzungs- und Produktionsrichtung - Zur Mast"
+            },
+            "vvvo": {
+              "value": ""
+            },
+            "program_avv": {
+              "value": ""
+            },
+            "comment": {
+              "value": ""
+            }
+          },
+          "sampleMeta": {
+            "nrl": "Labor nicht erkannt",
+            "analysis": {
+              "species": false,
+              "serological": false,
+              "resistance": false,
+              "vaccination": false,
+              "molecularTyping": false,
+              "toxin": false,
+              "esblAmpCCarbapenemasen": false,
+              "sample": false,
+              "other": "",
+              "compareHuman": {
+                "value": "",
+                "active": false
+              }
+            },
+            "urgency": "NORMAL"
+          }
+        }
+      ]
+    }
+  }
+}
