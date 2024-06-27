@@ -1,15 +1,15 @@
+import { inject, injectable } from 'inversify';
 import {
     ParseUserRepository
 } from '../../ports';
-import { UserService, User } from '../model/user.model';
-import { injectable, inject } from 'inversify';
+import { User, UserService } from '../model/user.model';
 import { APPLICATION_TYPES } from './../../application.types';
 @injectable()
 export class DefaultUserService implements UserService {
     constructor(
         @inject(APPLICATION_TYPES.ParseUserRepository)
         private parseUserRepository: ParseUserRepository
-    ) {}
+    ) { }
 
     async getUserByEmail(email: string): Promise<User> {
         return this.parseUserRepository.findByUsername(email);
@@ -23,8 +23,8 @@ export class DefaultUserService implements UserService {
         return this.parseUserRepository.updateUser(user);
     }
 
-    async createUser(user: User): Promise<User> {
-        return this.parseUserRepository.createUser(user);
+    async createUser(user: User, legacySystem = false): Promise<User> {
+        return this.parseUserRepository.createUser(user, legacySystem);
     }
 
     async hasUserWithEmail(email: string): Promise<boolean> {

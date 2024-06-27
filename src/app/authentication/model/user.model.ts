@@ -1,5 +1,5 @@
-import { Institute } from './institute.model';
 import { TokenType } from '../domain/enums';
+import { Institute } from './institute.model';
 
 export interface UserCredentials {
     email: string;
@@ -37,13 +37,13 @@ export interface UserPort {
 
 export interface UserService extends UserPort {
     updateUser(user: User): Promise<User>;
-    createUser(user: User): Promise<User>;
+    createUser(user: User, legacySystem?: boolean): Promise<User>;
     hasUserWithEmail(email: string): Promise<boolean>;
 }
 
 export interface ParseUserRepository {
     hasUserWithEmail(username: string): Promise<boolean>;
-    createUser(user: User): Promise<User>;
+    createUser(user: User, legacySystem?: boolean): Promise<User>;
     findByUserId(id: string): Promise<User>;
     updateUser(user: User): Promise<User>;
     findByUsername(username: string): Promise<User>;
