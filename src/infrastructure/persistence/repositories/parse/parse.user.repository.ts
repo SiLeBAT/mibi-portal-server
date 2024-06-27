@@ -1,8 +1,8 @@
 import { injectable } from 'inversify';
+import { ParseUserRepository, User, createUser } from '../../../../app/ports';
 import { ParseRepositoryBase } from '../../data-store/parse/parse.repository';
+import { SCHEMA_FIELDS as INSTITUTION_FIELDS, Institution } from '../../data-store/parse/schema/institution';
 import { User as ParseUser, SCHEMA_FIELDS as USER_FIELDS } from '../../data-store/parse/schema/user';
-import { Institution, SCHEMA_FIELDS as INSTITUTION_FIELDS } from '../../data-store/parse/schema/institution';
-import { ParseUserRepository, createUser, User } from '../../../../app/ports';
 import {
     UserNotFoundError,
     UserUpdateError
@@ -12,8 +12,7 @@ import { mapToUser } from './data-mappers';
 @injectable()
 export class ParseDefaultUserRepository
     extends ParseRepositoryBase<ParseUser>
-    implements ParseUserRepository
-{
+    implements ParseUserRepository {
 
     constructor() {
         super();
@@ -28,7 +27,7 @@ export class ParseDefaultUserRepository
             .then((user: ParseUser) => !!user);
     }
 
-    async createUser(user: User): Promise<User> {
+    async createUser(user: User, legacySystem = false): Promise<User> {
         const institution: Institution = await super._findById(user.institution.uniqueId, INSTITUTION_FIELDS.className) as Institution;
 
         const newUser = new ParseUser({
@@ -37,7 +36,8 @@ export class ParseDefaultUserRepository
             lastName: user.lastName,
             email: user.email,
             password: user.password,
-            lastAttempt: Date.now()
+            lastAttempt: Date.now(),
+            legacySystem: legacySystem
         });
         return super
             ._create(newUser)

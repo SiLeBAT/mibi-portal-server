@@ -1,4 +1,4 @@
-import { UserCredentials, User } from './user.model';
+import { User, UserCredentials } from './user.model';
 
 export interface UserLoginInformation extends UserCredentials {
     userAgent: string | string[] | undefined;
@@ -14,19 +14,20 @@ export interface LoginPort {
     loginUser(credentials: UserLoginInformation): Promise<LoginResponse>;
 }
 
-export interface LoginService extends LoginPort {}
+export interface LoginService extends LoginPort { }
 
 export interface RecoveryData {
     email: string;
     host: string;
     userAgent: string;
+    legacySystem?: boolean;
 }
 export interface PasswordPort {
     requestPasswordReset(recoveryData: RecoveryData): Promise<void>;
-    resetPassword(token: string, password: string): Promise<void>;
+    resetPassword(token: string, password: string, legacySystem?: boolean): Promise<void>;
 }
 
-export interface PasswordService extends PasswordPort {}
+export interface PasswordService extends PasswordPort { }
 
 interface BaseResetNotificationPayload {
     name: string;

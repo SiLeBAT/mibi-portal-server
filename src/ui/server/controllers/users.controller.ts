@@ -80,7 +80,8 @@ export class DefaultUsersController
             await this.passwordService.requestPasswordReset({
                 email: resetRequest.email,
                 host: req.headers['host'] as string,
-                userAgent: req.headers['user-agent'] as string
+                userAgent: req.headers['user-agent'] as string,
+                legacySystem: resetRequest.legacySystem
             });
             const dto: PasswordResetRequestResponseDTO = {
                 passwordResetRequest: true,
@@ -115,7 +116,8 @@ export class DefaultUsersController
             }
             await this.passwordService.resetPassword(
                 token,
-                newPasswordRequest.password
+                newPasswordRequest.password,
+                newPasswordRequest.legacySystem,
             );
             const dto: PasswordResetResponseDTO = {
                 passwordReset: true
