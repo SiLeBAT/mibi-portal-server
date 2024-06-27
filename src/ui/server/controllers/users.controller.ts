@@ -14,7 +14,6 @@ import { JsonWebTokenError } from 'jsonwebtoken';
 import { UserCredentials } from '../../../app/authentication/model/user.model';
 import {
     AuthorizationError,
-    PasswordPort,
     RegistrationPort,
     UserLoginInformation,
     UserRegistration
@@ -53,8 +52,6 @@ export class DefaultUsersController
     extends RedirectionController
     implements UsersController {
     constructor(
-        @inject(APPLICATION_TYPES.PasswordService)
-        private passwordService: PasswordPort,
         @inject(APPLICATION_TYPES.RegistrationService)
         private registrationService: RegistrationPort
     ) {
@@ -75,15 +72,20 @@ export class DefaultUsersController
                     'Email for password reset not supplied'
                 );
             }
-            await this.passwordService.requestPasswordReset({
+            const dto = await this.redirectionTarget.put<PasswordResetRequestResponseDTO, AxiosResponse<PasswordResetRequestResponseDTO>, ResetRequestDTO>(USERS_ROUTE.ROOT + USERS_ROUTE.RESET_PASSWORD_REQUEST, {
                 email: resetRequest.email,
-                host: req.headers['host'] as string,
-                userAgent: req.headers['user-agent'] as string
-            });
-            const dto: PasswordResetRequestResponseDTO = {
-                passwordResetRequest: true,
-                email: resetRequest.email
-            };
+                legacySystem: true
+            }).then((response) => {
+                return response.data;
+            })
+                .catch(error => {
+                    logger.info(
+                        `${this.constructor.name}.${this.putResetPasswordRequest.name} has thrown an error. ${error}`
+                    );
+                    this.handleError(res, error);
+                });
+
+
             logger.info(
                 `${this.constructor.name}.${this.putResetPasswordRequest.name}, Response sent`
             );
@@ -111,13 +113,23 @@ export class DefaultUsersController
                     'New password or token not supplied'
                 );
             }
-            await this.passwordService.resetPassword(
-                token,
-                newPasswordRequest.password
-            );
+            await this.redirectionTarget.patch<PasswordResetResponseDTO, AxiosResponse<PasswordResetResponseDTO>, NewPasswordRequestDTO>(USERS_ROUTE.ROOT + USERS_ROUTE.RESET_PASSWORD + "/" + token, {
+                password: newPasswordRequest.password,
+                legacySystem: true
+            }).then((response) => {
+                return response.data;
+            })
+                .catch(error => {
+                    logger.info(
+                        `${this.constructor.name}.${this.patchResetPassword.name} has thrown an error. ${error}`
+                    );
+                    this.handleError(res, error);
+                });
+
             const dto: PasswordResetResponseDTO = {
                 passwordReset: true
             };
+
             logger.info(
                 `${this.constructor.name}.${this.patchResetPassword.name}, Response sent`
             );
