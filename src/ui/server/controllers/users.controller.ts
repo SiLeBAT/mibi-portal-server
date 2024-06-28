@@ -1,6 +1,5 @@
 import { AxiosResponse } from 'axios';
 import { Request, Response } from 'express';
-import { inject } from 'inversify';
 import {
     controller,
     httpPatch,
@@ -14,7 +13,6 @@ import { JsonWebTokenError } from 'jsonwebtoken';
 import { UserCredentials } from '../../../app/authentication/model/user.model';
 import {
     AuthorizationError,
-    RegistrationPort,
     UserLoginInformation,
     UserRegistration
 } from '../../../app/ports';
@@ -28,14 +26,12 @@ import {
     ResetRequestDTO
 } from '../model/request.model';
 import {
-    ActivationResponseDTO,
     FailedLoginErrorDTO,
     PasswordResetRequestResponseDTO,
     PasswordResetResponseDTO,
     RegistrationRequestResponseDTO,
     TokenizedUserDTO
 } from '../model/response.model';
-import { APPLICATION_TYPES } from './../../../app/application.types';
 import { RedirectionController } from './redirection.controller';
 
 enum USERS_ROUTE {
@@ -52,8 +48,6 @@ export class DefaultUsersController
     extends RedirectionController
     implements UsersController {
     constructor(
-        @inject(APPLICATION_TYPES.RegistrationService)
-        private registrationService: RegistrationPort
     ) {
         super();
     }
@@ -181,11 +175,16 @@ export class DefaultUsersController
             `${this.constructor.name}.${this.patchVerification.name}, Request received`
         );
         try {
-            const username = await this.registrationService.verifyUser(token);
-            const dto: ActivationResponseDTO = {
-                activation: true,
-                username
-            };
+            const dto = await this.redirectionTarget.patch<RegistrationRequestResponseDTO, AxiosResponse<RegistrationRequestResponseDTO>, UserRegistration>(USERS_ROUTE.ROOT + USERS_ROUTE.VERIFICATION + '/' + token).then((response) => {
+                return response.data;
+            })
+                .catch(error => {
+                    logger.info(
+                        `${this.constructor.name}.${this.patchVerification.name} has thrown an error. ${error}`
+                    );
+                    this.handleError(res, error);
+                });
+
             logger.info(
                 `${this.constructor.name}.${this.patchVerification.name}, Response sent`
             );
@@ -206,11 +205,15 @@ export class DefaultUsersController
             `${this.constructor.name}.${this.patchActivation.name}, Request received`
         );
         try {
-            const username = await this.registrationService.activateUser(token);
-            const dto: ActivationResponseDTO = {
-                activation: true,
-                username
-            };
+            const dto = await this.redirectionTarget.patch<RegistrationRequestResponseDTO, AxiosResponse<RegistrationRequestResponseDTO>, UserRegistration>(USERS_ROUTE.ROOT + USERS_ROUTE.ACTIVATION + '/' + token).then((response) => {
+                return response.data;
+            })
+                .catch(error => {
+                    logger.info(
+                        `${this.constructor.name}.${this.patchActivation.name} has thrown an error. ${error}`
+                    );
+                    this.handleError(res, error);
+                });
             logger.info(
                 `${this.constructor.name}.${this.patchActivation.name}, Response sent`
             );
@@ -230,11 +233,17 @@ export class DefaultUsersController
         try {
             const credentials: UserRegistration =
                 this.fromRequestToUserRegistration(req);
-            await this.registrationService.registerUser(credentials);
-            const dto: RegistrationRequestResponseDTO = {
-                registerRequest: true,
-                email: credentials.email
-            };
+
+            console.log(JSON.stringify(credentials))
+            const dto = await this.redirectionTarget.post<RegistrationRequestResponseDTO, AxiosResponse<RegistrationRequestResponseDTO>, RegistrationDetailsDTO>(USERS_ROUTE.ROOT + USERS_ROUTE.REGISTRATION, { ...credentials, instituteId: credentials.institution }).then((response) => {
+                return response.data;
+            })
+                .catch(error => {
+                    logger.info(
+                        `${this.constructor.name}.${this.postRegistration.name} has thrown an error. ${error}`
+                    );
+                    this.handleError(res, error);
+                });
 
             logger.info(
                 `${this.constructor.name}.${this.postRegistration.name}, Response sent`
@@ -298,7 +307,8 @@ export class DefaultUsersController
                 password: registrationDetail.password,
                 institution: registrationDetail.instituteId,
                 userAgent: req.headers['user-agent'] as string,
-                host: req.headers['host'] as string
+                host: req.headers['host'] as string,
+                legacySystem: true
             };
             return credentials;
         } catch (error) {
