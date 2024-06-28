@@ -15,6 +15,9 @@ export interface RegistrationDetailsDTO {
     readonly instituteId: string;
     readonly lastName: string;
     readonly password: string;
+    readonly legacySystem?: boolean;
+    readonly userAgent?: string;
+    readonly host?: string;
 }
 
 export interface PutSamplesJSONRequestDTO {

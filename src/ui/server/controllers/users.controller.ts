@@ -277,6 +277,7 @@ export class DefaultUsersController
 
     private fromRequestToUserRegistration(req: Request): UserRegistration {
         const registrationDetail: RegistrationDetailsDTO = req.body;
+        logger.debug(JSON.stringify(registrationDetail));
         try {
             if (
                 !(
@@ -297,8 +298,8 @@ export class DefaultUsersController
                 email: registrationDetail.email,
                 password: registrationDetail.password,
                 institution: registrationDetail.instituteId,
-                userAgent: req.headers['user-agent'] as string,
-                host: req.headers['host'] as string
+                userAgent: registrationDetail.legacySystem ? registrationDetail.userAgent || "unknown" : req.headers['user-agent'] as string,
+                host: registrationDetail.legacySystem ? registrationDetail.host || "unknown" : req.headers['host'] as string
             };
             return credentials;
         } catch (error) {
