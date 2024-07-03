@@ -18,7 +18,7 @@ export class DefaultTokenService implements TokenService {
     private jwtSecret: string;
     protected redirectionTarget: AxiosInstance = axios.create({
 
-        //baseURL: "https://mibi-portal.bfr.bund.de" + API_ROUTE.V2
+        // baseURL: "https://mibi-portal.bfr.bund.de" + API_ROUTE.V2
         baseURL: "https://epilab-dev.bfr.berlin/admin/parse"
     });
 

@@ -47,10 +47,6 @@ enum USERS_ROUTE {
 export class DefaultUsersController
     extends RedirectionController
     implements UsersController {
-    constructor(
-    ) {
-        super();
-    }
     @httpPut(USERS_ROUTE.RESET_PASSWORD_REQUEST)
     async putResetPasswordRequest(
         @request() req: Request,
@@ -234,7 +230,6 @@ export class DefaultUsersController
             const credentials: UserRegistration =
                 this.fromRequestToUserRegistration(req);
 
-            console.log(JSON.stringify(credentials))
             const dto = await this.redirectionTarget.post<RegistrationRequestResponseDTO, AxiosResponse<RegistrationRequestResponseDTO>, RegistrationDetailsDTO>(USERS_ROUTE.ROOT + USERS_ROUTE.REGISTRATION, { ...credentials, instituteId: credentials.institution }).then((response) => {
                 return response.data;
             })
