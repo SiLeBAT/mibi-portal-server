@@ -1,26 +1,28 @@
+import { inject, injectable } from 'inversify';
+import { NotificationType } from '../../core/domain/enums';
+import { ConfigurationService } from '../../core/model/configuration.model';
+import {
+    EmailNotificationMeta,
+    Notification,
+    NotificationService
+} from '../../core/model/notification.model';
 import {
     PasswordService,
     RecoveryData,
-    ResetSuccessNotificationPayload,
-    ResetRequestNotificationPayload
+    ResetRequestNotificationPayload,
+    ResetSuccessNotificationPayload
 } from '../model/login.model';
-import { TokenType } from './../domain/enums';
-import { User, UserToken, UserService } from './../model/user.model';
-import { NotificationType } from '../../core/domain/enums';
-import {
-    NotificationService,
-    EmailNotificationMeta,
-    Notification
-} from '../../core/model/notification.model';
 import { TokenService } from '../model/token.model';
-import { ConfigurationService } from '../../core/model/configuration.model';
-import { injectable, inject } from 'inversify';
 import { APPLICATION_TYPES } from './../../application.types';
+import { TokenType } from './../domain/enums';
+import { User, UserService, UserToken } from './../model/user.model';
 @injectable()
 export class DefaultPasswordService implements PasswordService {
     private appName: string;
     private clientUrl: string;
     private supportContact: string;
+
+    private legacySystemURL: string = "https://nolar-dev.bfr.berlin/";
 
     constructor(
         @inject(APPLICATION_TYPES.NotificationService)
@@ -63,7 +65,7 @@ export class DefaultPasswordService implements PasswordService {
         this.notificationService.sendNotification(requestResetNotification);
     }
 
-    async resetPassword(token: string, password: string): Promise<void> {
+    async resetPassword(token: string, password: string, legacySystem = false): Promise<void> {
         const userToken = await this.tokenService.getUserTokenByJWT(token);
         const userId = userToken.userId;
         this.tokenService.verifyTokenWithUser(token, String(userId));
@@ -72,7 +74,7 @@ export class DefaultPasswordService implements PasswordService {
         await this.userService.updateUser(user);
         await this.tokenService.deleteTokenForUser(user, TokenType.RESET);
         const resetSuccessNotification =
-            this.createResetSuccessNotification(user);
+            this.createResetSuccessNotification(user, legacySystem);
         this.notificationService.sendNotification(resetSuccessNotification);
     }
 
@@ -81,12 +83,14 @@ export class DefaultPasswordService implements PasswordService {
         recoveryData: RecoveryData,
         resetToken: UserToken
     ): Notification<ResetRequestNotificationPayload, EmailNotificationMeta> {
+
+        const targetURL = recoveryData.legacySystem ? this.legacySystemURL : this.clientUrl
         return {
             type: NotificationType.REQUEST_RESET,
             payload: {
                 name: user.firstName + ' ' + user.lastName,
-                action_url: this.clientUrl + '/users/reset/' + resetToken.token,
-                client_url: this.clientUrl,
+                action_url: targetURL + '/users/reset/' + resetToken.token,
+                client_url: targetURL,
                 operating_system: recoveryData.host,
                 user_agent: recoveryData.userAgent,
                 support_contact: this.supportContact,
@@ -100,15 +104,17 @@ export class DefaultPasswordService implements PasswordService {
     }
 
     private createResetSuccessNotification(
-        user: User
+        user: User,
+        legacySystem = false
     ): Notification<ResetSuccessNotificationPayload, EmailNotificationMeta> {
+        const targetURL = legacySystem ? this.legacySystemURL : this.clientUrl
         return {
             type: NotificationType.RESET_SUCCESS,
             payload: {
                 name: user.firstName + ' ' + user.lastName,
-                client_url: this.clientUrl,
+                client_url: targetURL,
                 email: user.email,
-                action_url: this.clientUrl + '/users/login',
+                action_url: targetURL + '/users/login',
                 appName: this.appName
             },
             meta: this.notificationService.createEmailNotificationMetaData(

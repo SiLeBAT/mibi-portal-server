@@ -80,7 +80,8 @@ export class DefaultUsersController
             await this.passwordService.requestPasswordReset({
                 email: resetRequest.email,
                 host: req.headers['host'] as string,
-                userAgent: req.headers['user-agent'] as string
+                userAgent: req.headers['user-agent'] as string,
+                legacySystem: resetRequest.legacySystem
             });
             const dto: PasswordResetRequestResponseDTO = {
                 passwordResetRequest: true,
@@ -115,7 +116,8 @@ export class DefaultUsersController
             }
             await this.passwordService.resetPassword(
                 token,
-                newPasswordRequest.password
+                newPasswordRequest.password,
+                newPasswordRequest.legacySystem,
             );
             const dto: PasswordResetResponseDTO = {
                 passwordReset: true
@@ -295,8 +297,8 @@ export class DefaultUsersController
                 email: registrationDetail.email,
                 password: registrationDetail.password,
                 institution: registrationDetail.instituteId,
-                userAgent: req.headers['user-agent'] as string,
-                host: req.headers['host'] as string
+                userAgent: registrationDetail.legacySystem ? registrationDetail.userAgent || "unknown" : req.headers['user-agent'] as string,
+                host: registrationDetail.legacySystem ? registrationDetail.host || "unknown" : req.headers['host'] as string
             };
             return credentials;
         } catch (error) {
