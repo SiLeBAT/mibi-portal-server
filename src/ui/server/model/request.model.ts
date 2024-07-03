@@ -2,10 +2,12 @@ import { OrderDTO } from './shared-dto.model';
 
 export interface ResetRequestDTO {
     readonly email: string;
+    readonly legacySystem?: boolean;
 }
 
 export interface NewPasswordRequestDTO {
     readonly password: string;
+    readonly legacySystem?: boolean;
 }
 export interface RegistrationDetailsDTO {
     readonly email: string;
@@ -13,6 +15,9 @@ export interface RegistrationDetailsDTO {
     readonly instituteId: string;
     readonly lastName: string;
     readonly password: string;
+    readonly legacySystem?: boolean;
+    readonly userAgent?: string;
+    readonly host?: string;
 }
 
 export interface PutSamplesJSONRequestDTO {
