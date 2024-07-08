@@ -158,7 +158,7 @@ export class DefaultUsersController
 
             }
             catch (error) {
-                logger.error(error)
+                logger.error(error);
             }
             finally {
                 this.ok(res, dto);
