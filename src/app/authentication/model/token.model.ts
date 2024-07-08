@@ -1,7 +1,22 @@
-import { UserToken, User } from './user.model';
 import { TokenType } from '../domain/enums';
+import { User, UserToken } from './user.model';
 
-export interface TokenPayload {
+export interface TokenUserInfo {
+    firstName: string;
+    lastName: string;
+    email: string;
+    institution: {
+        stateShort: string;
+        name: string;
+        addendum: string;
+        city: string;
+        zip: string;
+        phone: string;
+        fax: string;
+        email: string[];
+    };
+}
+export interface TokenPayload extends TokenUserInfo {
     sub: string;
 }
 
@@ -10,13 +25,13 @@ export interface AdminTokenPayload extends TokenPayload {
 }
 
 export interface TokenPort {
-    generateToken(userId: string): string;
+    generateToken(payload: TokenPayload): string;
     verifyTokenWithUser(token: string, id: string): TokenPayload;
     verifyToken(token: string): TokenPayload;
 }
 
 export interface TokenService extends TokenPort {
-    generateAdminToken(id: string): string;
+    generateAdminToken(payload: TokenPayload): string;
     saveToken(
         token: string,
         type: TokenType,

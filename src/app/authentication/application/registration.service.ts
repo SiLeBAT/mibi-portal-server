@@ -129,7 +129,15 @@ export class DefaultRegistrationService implements RegistrationService {
             await this.tokenService.deleteTokenForUser(user);
         }
 
-        const token = this.tokenService.generateToken(user.uniqueId);
+        const token = this.tokenService.generateToken({
+            sub: user.uniqueId,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            institution: {
+                ...user.institution
+            }
+        });
 
         const activationToken = await this.tokenService.saveToken(
             token,
@@ -173,7 +181,15 @@ export class DefaultRegistrationService implements RegistrationService {
             await this.tokenService.deleteTokenForUser(user, TokenType.ADMIN);
         }
 
-        const adminToken = this.tokenService.generateAdminToken(user.uniqueId);
+        const adminToken = this.tokenService.generateAdminToken({
+            sub: user.uniqueId,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            institution: {
+                ...user.institution
+            }
+        });
 
         const adminActivationToken = await this.tokenService.saveToken(
             adminToken,
@@ -208,7 +224,7 @@ export class DefaultRegistrationService implements RegistrationService {
         RequestActivationNotificationPayload,
         EmailNotificationMeta
     > {
-        const targetURL = recoveryData.legacySystem ? this.legacySystemURL : this.clientUrl
+        const targetURL = recoveryData.legacySystem ? this.legacySystemURL : this.clientUrl;
         return {
             type: NotificationType.REQUEST_ACTIVATION,
             payload: {
