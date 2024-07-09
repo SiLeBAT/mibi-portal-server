@@ -1,70 +1,69 @@
-import { SampleMetaDTO, AnalysisDTO } from './../model/shared-dto.model';
-import moment from 'moment';
-import _ from 'lodash';
 import { Request, Response } from 'express';
-import { logger } from '../../../aspects';
+import { inject } from 'inversify';
 import {
-    FormValidatorPort,
-    FormAutoCorrectionPort,
-    Sample,
-    ValidationOptions,
-    SamplePort,
+    controller,
+    httpPost,
+    httpPut,
+    request,
+    response
+} from 'inversify-express-utils';
+import moment from 'moment';
+import {
+    AnnotatedSampleDataEntry,
     ApplicantMetaData,
+    FormAutoCorrectionPort,
+    FormValidatorPort,
+    ReceiveAs,
+    Sample,
+    SampleData,
+    SampleFactory,
+    SampleMetaData,
+    SamplePort,
     SampleSet,
     SampleSetMetaData,
-    TokenPayload,
     TokenPort,
-    UserPort,
     Urgency,
     User,
-    ReceiveAs,
-    SampleData,
-    AnnotatedSampleDataEntry,
-    SampleMetaData,
-    SampleFactory
+    ValidationOptions
 } from '../../../app/ports';
+import { logger } from '../../../aspects';
+import { getTokenFromHeader } from '../middleware/token-validator.middleware';
 import { SamplesController } from '../model/controller.model';
-import {
-    PostSubmittedRequestDTO,
-    PutValidatedRequestDTO,
-    PutSamplesJSONRequestDTO
-} from '../model/request.model';
-import { SERVER_ERROR_CODE, API_ROUTE } from '../model/enums';
 import {
     MalformedRequestError,
     TokenNotFoundError
 } from '../model/domain.error';
-import { getTokenFromHeader } from '../middleware/token-validator.middleware';
-import { AbstractController } from './abstract.controller';
+import { API_ROUTE, SERVER_ERROR_CODE } from '../model/enums';
 import {
-    SampleDataDTO,
-    SampleSetDTO,
-    SampleDataEntryDTO,
-    OrderDTO,
-    SampleSetMetaDTO,
-    SampleDTO
-} from '../model/shared-dto.model';
+    PostSubmittedRequestDTO,
+    PutSamplesJSONRequestDTO,
+    PutValidatedRequestDTO
+} from '../model/request.model';
 import {
-    InvalidInputErrorDTO,
     AutoCorrectedInputErrorDTO,
-    PutValidatedResponseDTO,
+    InvalidInputErrorDTO,
     PostSubmittedResponseDTO,
     PutSamplesJSONResponseDTO,
-    PutSamplesXLSXResponseDTO
+    PutSamplesXLSXResponseDTO,
+    PutValidatedResponseDTO
 } from '../model/response.model';
 import {
-    controller,
-    httpPut,
-    httpPost,
-    request,
-    response
-} from 'inversify-express-utils';
-import { inject } from 'inversify';
+    OrderDTO,
+    SampleDataDTO,
+    SampleDataEntryDTO,
+    SampleDTO,
+    SampleSetDTO,
+    SampleSetMetaDTO
+} from '../model/shared-dto.model';
+import { AnalysisDTO, SampleMetaDTO } from './../model/shared-dto.model';
+import { AbstractController } from './abstract.controller';
 
-import { APPLICATION_TYPES } from './../../../app/application.types';
-import { SERVER_TYPES } from '../server.types';
+import { TokenUserInfo } from '../../../app/authentication/model/token.model';
+import { UserCredentials } from '../../../app/authentication/model/user.model';
 import { NRLService } from '../../../app/sampleManagement/model/nrl.model';
 import { Analysis } from '../../../app/sampleManagement/model/sample.model';
+import { SERVER_TYPES } from '../server.types';
+import { APPLICATION_TYPES } from './../../../app/application.types';
 moment.locale('de');
 
 enum RESOURCE_VIEW_TYPE {
@@ -80,8 +79,7 @@ enum SAMPLES_ROUTE {
 @controller(API_ROUTE.V2 + SAMPLES_ROUTE.ROOT)
 export class DefaultSamplesController
     extends AbstractController
-    implements SamplesController
-{
+    implements SamplesController {
     constructor(
         @inject(APPLICATION_TYPES.FormValidatorService)
         private formValidationService: FormValidatorPort,
@@ -90,7 +88,6 @@ export class DefaultSamplesController
         @inject(APPLICATION_TYPES.SampleService)
         private sampleService: SamplePort,
         @inject(APPLICATION_TYPES.TokenService) private tokenService: TokenPort,
-        @inject(APPLICATION_TYPES.UserService) private userService: UserPort,
         // dirty fix: Use of NRLService instead of NRLPort
         @inject(APPLICATION_TYPES.NRLService) private nrlService: NRLService,
         @inject(APPLICATION_TYPES.SampleFactory) private factory: SampleFactory
@@ -368,9 +365,49 @@ export class DefaultSamplesController
     }
 
     private async getUserFromToken(token: string): Promise<User> {
-        const payload: TokenPayload = this.tokenService.verifyToken(token);
-        const userId = payload.sub;
-        return this.userService.getUserById(userId);
+        const payload: TokenUserInfo = this.tokenService.verifyToken(token);
+        const user: User = {
+            firstName: payload.firstName,
+            lastName: payload.lastName,
+            email: payload.email,
+            institution: {
+                ...payload.institution,
+                uniqueId: 'unknown'
+            },
+            uniqueId: 'unknown',
+            password: 'unknown',
+            // tslint:disable-next-line
+            isAuthorized: function (credentials: UserCredentials): Promise<boolean> {
+                throw new Error('Function not implemented.');
+            },
+            // tslint:disable-next-line
+            updatePassword: function (password: string): Promise<string> {
+                throw new Error('Function not implemented.');
+            },
+            updateNumberOfFailedAttempts: function (increment: boolean): void {
+                throw new Error('Function not implemented.');
+            },
+            updateLastLoginAttempt: function (): void {
+                throw new Error('Function not implemented.');
+            },
+            isVerified: function (verified?: boolean): boolean {
+                throw new Error('Function not implemented.');
+            },
+            isActivated: function (active?: boolean): boolean {
+                throw new Error('Function not implemented.');
+            },
+            getNumberOfFailedAttempts: function (): number {
+                throw new Error('Function not implemented.');
+            },
+            getLastLoginAttempt: function (): number {
+                throw new Error('Function not implemented.');
+            },
+            getFullName: function (): string {
+                const fullName = payload.firstName + ' ' + payload.lastName;
+                return fullName;
+            }
+        };
+        return user;
     }
 
     private fromDTOToUnannotatedSampleSet(dto: SampleSetDTO): SampleSet {
