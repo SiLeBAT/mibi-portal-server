@@ -124,7 +124,7 @@ export class DefaultSamplesController
                 ParseSingleResponse<OrderDTO>,
                 AxiosResponse<ParseSingleResponse<OrderDTO>>,
                 ParseFileRequest
-            >('functions/putSampleData', parseRequest);
+            >('functions/parseSampleData', parseRequest);
             this.ok(res, parseResponse.data.result);
         } catch (error) {
             logger.info(
