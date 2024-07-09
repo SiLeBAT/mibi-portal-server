@@ -6,7 +6,8 @@ import {
     AdminTokenPayload,
     TokenPayload,
     TokenRepository,
-    TokenService
+    TokenService,
+    TokenUserInfo
 } from '../model/token.model';
 import { User, UserToken } from '../model/user.model';
 import { APPLICATION_TYPES } from './../../application.types';
@@ -50,8 +51,8 @@ export class DefaultTokenService implements TokenService {
         return verify(token, this.jwtSecret, { subject: id }) as TokenPayload;
     }
 
-    verifyToken(token: string): TokenPayload {
-        return verify(token, this.jwtSecret) as TokenPayload;
+    verifyToken(token: string): TokenUserInfo {
+        return verify(token, this.jwtSecret) as TokenUserInfo;
     }
 
     async saveToken(
