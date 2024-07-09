@@ -1,23 +1,23 @@
 import { Request, Response } from 'express';
-import { logger } from '../../../aspects';
-import { TokensController } from '../model/controller.model';
-import { TokenRefreshConfirmationResponseDTO } from '../model/response.model';
-import {
-    TokenPort,
-    TokenPayload,
-    AuthorizationError
-} from '../../../app/ports';
-import { AbstractController } from './abstract.controller';
-import { JsonWebTokenError } from 'jsonwebtoken';
-import { getTokenFromHeader } from '../middleware/token-validator.middleware';
+import { inject } from 'inversify';
 import {
     controller,
+    httpPost,
     request,
-    response,
-    httpPost
+    response
 } from 'inversify-express-utils';
-import { inject } from 'inversify';
-import { SERVER_ERROR_CODE, API_ROUTE } from '../model/enums';
+import { JsonWebTokenError } from 'jsonwebtoken';
+import {
+    AuthorizationError,
+    TokenPayload,
+    TokenPort
+} from '../../../app/ports';
+import { logger } from '../../../aspects';
+import { getTokenFromHeader } from '../middleware/token-validator.middleware';
+import { TokensController } from '../model/controller.model';
+import { API_ROUTE, SERVER_ERROR_CODE } from '../model/enums';
+import { TokenRefreshConfirmationResponseDTO } from '../model/response.model';
+import { AbstractController } from './abstract.controller';
 
 import { APPLICATION_TYPES } from './../../../app/application.types';
 enum TOKENS_ROUTE {
@@ -46,7 +46,7 @@ export class DefaultTokensController
             }
             const payload: TokenPayload =
                 this.tokenService.verifyToken(oldToken);
-            const token = this.tokenService.generateToken(payload.sub);
+            const token = this.tokenService.generateToken(payload);
             const dto: TokenRefreshConfirmationResponseDTO = {
                 refresh: true,
                 token: token
