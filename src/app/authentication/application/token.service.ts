@@ -1,14 +1,14 @@
+import { inject, injectable } from 'inversify';
 import { sign, verify } from 'jsonwebtoken';
 import { ConfigurationService } from '../../core/model/configuration.model';
+import { TokenType } from '../domain/enums';
 import {
-    TokenService,
-    TokenPayload,
     AdminTokenPayload,
-    ParseTokenRepository
+    ParseTokenRepository,
+    TokenPayload,
+    TokenService
 } from '../model/token.model';
 import { User, UserToken } from '../model/user.model';
-import { TokenType } from '../domain/enums';
-import { injectable, inject } from 'inversify';
 import { APPLICATION_TYPES } from './../../application.types';
 
 @injectable()
@@ -21,27 +21,24 @@ export class DefaultTokenService implements TokenService {
         private configurationService: ConfigurationService,
         @inject(APPLICATION_TYPES.ParseTokenRepository)
         private parseTokenRepository: ParseTokenRepository,
-) {
+    ) {
         const serverConfig =
             this.configurationService.getApplicationConfiguration();
         this.jwtSecret = serverConfig.jwtSecret;
     }
 
-    generateToken(userId: string): string {
-        const payload: TokenPayload = {
-            sub: userId
-        };
+    generateToken(payload: TokenPayload): string {
         return sign(payload, this.jwtSecret, {
             expiresIn: this.expirationTime
         });
     }
 
-    generateAdminToken(id: string): string {
-        const payload: AdminTokenPayload = {
-            sub: id,
+    generateAdminToken(payload: TokenPayload): string {
+        const adminPayload: AdminTokenPayload = {
+            ...payload,
             admin: true
         };
-        return sign(payload, this.jwtSecret, {
+        return sign(adminPayload, this.jwtSecret, {
             expiresIn: this.adminExpirationTime
         });
     }

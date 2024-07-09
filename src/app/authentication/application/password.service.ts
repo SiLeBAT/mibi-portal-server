@@ -50,7 +50,15 @@ export class DefaultPasswordService implements PasswordService {
         if (hasOldToken) {
             await this.tokenService.deleteTokenForUser(user, TokenType.RESET);
         }
-        const token = this.tokenService.generateToken(user.uniqueId);
+        const token = this.tokenService.generateToken({
+            sub: user.uniqueId,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            institution: {
+                ...user.institution
+            }
+        });
         const resetToken = await this.tokenService.saveToken(
             token,
             TokenType.RESET,
@@ -84,7 +92,7 @@ export class DefaultPasswordService implements PasswordService {
         resetToken: UserToken
     ): Notification<ResetRequestNotificationPayload, EmailNotificationMeta> {
 
-        const targetURL = recoveryData.legacySystem ? this.legacySystemURL : this.clientUrl
+        const targetURL = recoveryData.legacySystem ? this.legacySystemURL : this.clientUrl;
         return {
             type: NotificationType.REQUEST_RESET,
             payload: {
@@ -107,7 +115,7 @@ export class DefaultPasswordService implements PasswordService {
         user: User,
         legacySystem = false
     ): Notification<ResetSuccessNotificationPayload, EmailNotificationMeta> {
-        const targetURL = legacySystem ? this.legacySystemURL : this.clientUrl
+        const targetURL = legacySystem ? this.legacySystemURL : this.clientUrl;
         return {
             type: NotificationType.RESET_SUCCESS,
             payload: {
