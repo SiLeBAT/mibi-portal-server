@@ -43,8 +43,7 @@ import {
 import {
     AutoCorrectedInputErrorDTO,
     InvalidInputErrorDTO,
-    PostSubmittedResponseDTO,
-    PutValidatedResponseDTO
+    PostSubmittedResponseDTO
 } from '../model/response.model';
 import {
     OrderDTO,
@@ -141,32 +140,16 @@ export class DefaultSamplesController
         );
         try {
             const requestDTO: PutValidatedRequestDTO = req.body;
-            const sampleSet: SampleSet = this.parseInputDTO(() => {
-                return this.fromDTOToUnannotatedSampleSet(
-                    requestDTO.order.sampleSet
-                );
-            });
-            const validationOptions = await this.getValidationOptions(req);
-            const validationResult: Sample[] = await this.validateSamples(
-                sampleSet.samples,
-                validationOptions
-            );
-            const validatedSampleSet: SampleSet = {
-                samples: validationResult,
-                meta: {
-                    ...sampleSet.meta
-                }
-            };
-            const validatedOrderDTO: OrderDTO =
-                this.fromSampleSetToOrderDTO(validatedSampleSet);
-            const responseDTO: PutValidatedResponseDTO = {
-                order: validatedOrderDTO
-            };
+            const parseResponse = await this.redirectionTarget.post<
+                ParseSingleResponse<OrderDTO>,
+                AxiosResponse<ParseSingleResponse<OrderDTO>>,
+                PutValidatedRequestDTO
+            >('functions/validateSampleData', requestDTO);
             logger.info(
                 `${this.constructor.name}.${this.putValidated.name}, Response sent`
             );
-            logger.verbose('Response:', responseDTO);
-            this.ok(res, responseDTO);
+            logger.verbose('Response:', parseResponse.data.result);
+            this.ok(res, parseResponse.data.result);
         } catch (error) {
             logger.info(
                 `${this.constructor.name}.${this.putValidated.name} has thrown an error. ${error}`
@@ -353,23 +336,6 @@ export class DefaultSamplesController
         const payload: TokenPayload = this.tokenService.verifyToken(token);
         const userId = payload.sub;
         return this.userService.getUserById(userId);
-    }
-
-    private fromDTOToUnannotatedSampleSet(dto: SampleSetDTO): SampleSet {
-        const cleanedDto: SampleSetDTO = {
-            meta: dto.meta,
-            samples: dto.samples.map(entry => {
-                const e = entry;
-                for (const prop in e.sampleData) {
-                    e.sampleData[prop] = {
-                        value: e.sampleData[prop].value,
-                        oldValue: e.sampleData[prop].oldValue
-                    };
-                }
-                return e;
-            })
-        };
-        return this.fromDTOToSampleSet(cleanedDto);
     }
 
     private fromDTOToSampleSet(dto: SampleSetDTO): SampleSet {
