@@ -1,6 +1,6 @@
 {
   "name": "mibi-portal-server",
-  "version": "4.3.3",
+  "version": "4.4.0",
   "license": "MIT",
   "private": true,
   "type": "commonjs",
@@ -34,8 +34,9 @@
     ]
   },
   "dependencies": {
-    "@SiLeBAT/fg43-ne-server": "^1.2.0",
+    "@SiLeBAT/fg43-ne-server": "^1.4.0",
     "argon2": "0.30.1",
+    "axios": "^1.6.7",
     "compression": "~1.7.4",
     "config": "~3.3.8",
     "cors": "~2.8.5",

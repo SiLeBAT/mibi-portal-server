@@ -1,21 +1,22 @@
+import { inject, injectable } from 'inversify';
 import { sign, verify } from 'jsonwebtoken';
 import { ConfigurationService } from '../../core/model/configuration.model';
+import { TokenType } from '../domain/enums';
 import {
-    TokenService,
-    TokenPayload,
     AdminTokenPayload,
-    TokenRepository
+    TokenPayload,
+    TokenRepository,
+    TokenService,
+    TokenUserInfo
 } from '../model/token.model';
 import { User, UserToken } from '../model/user.model';
-import { TokenType } from '../domain/enums';
-import { injectable, inject } from 'inversify';
 import { APPLICATION_TYPES } from './../../application.types';
-
 @injectable()
 export class DefaultTokenService implements TokenService {
     private expirationTime = 60 * 60 * 24;
     private adminExpirationTime = 60 * 60 * 24 * 7;
     private jwtSecret: string;
+
     constructor(
         @inject(APPLICATION_TYPES.ConfigurationService)
         private configurationService: ConfigurationService,
@@ -50,8 +51,8 @@ export class DefaultTokenService implements TokenService {
         return verify(token, this.jwtSecret, { subject: id }) as TokenPayload;
     }
 
-    verifyToken(token: string): TokenPayload {
-        return verify(token, this.jwtSecret) as TokenPayload;
+    verifyToken(token: string): TokenUserInfo {
+        return verify(token, this.jwtSecret) as TokenUserInfo;
     }
 
     async saveToken(

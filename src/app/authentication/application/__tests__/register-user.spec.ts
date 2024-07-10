@@ -1,14 +1,14 @@
+import { Container } from 'inversify';
+import { rebindMocks } from '../../../../__mocks__/util';
 import { getContainer } from '../../../../aspects/container/container';
+import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
+import { APPLICATION_TYPES } from '../../../application.types';
+import { getApplicationContainerModule } from '../../../ports';
+import { createUser } from '../../domain/user.entity';
 import {
     RegistrationService,
     UserRegistration
 } from '../../model/registration.model';
-import { createUser } from '../../domain/user.entity';
-import { Container } from 'inversify';
-import { getApplicationContainerModule } from '../../../ports';
-import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
-import { APPLICATION_TYPES } from '../../../application.types';
-import { rebindMocks } from '../../../../__mocks__/util';
 import { getMockInstituteService } from '../__mocks__/institute.service';
 
 jest.mock('./../../domain/user.entity', () => ({
@@ -48,7 +48,8 @@ describe('Register User Use Case', () => {
             password: 'test',
             institution: 'test',
             userAgent: 'test',
-            host: 'test'
+            host: 'test',
+            legacySystem: true
         };
 
         (createUser as jest.Mock).mockClear();

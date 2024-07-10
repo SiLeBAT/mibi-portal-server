@@ -1,43 +1,38 @@
+import { AxiosResponse } from 'axios';
 import { Request, Response } from 'express';
-import { logger } from '../../../aspects';
-import {
-    PasswordPort,
-    UserLoginInformation,
-    LoginResponse,
-    AuthorizationError,
-    LoginPort,
-    RegistrationPort,
-    UserRegistration
-} from '../../../app/ports';
-import { UsersController } from '../model/controller.model';
-import { AbstractController } from './abstract.controller';
-import {
-    ResetRequestDTO,
-    NewPasswordRequestDTO,
-    RegistrationDetailsDTO
-} from '../model/request.model';
-import {
-    PasswordResetRequestResponseDTO,
-    PasswordResetResponseDTO,
-    TokenizedUserDTO,
-    FailedLoginErrorDTO,
-    ActivationResponseDTO,
-    RegistrationRequestResponseDTO
-} from '../model/response.model';
-import { MalformedRequestError } from '../model/domain.error';
-import { SERVER_ERROR_CODE, API_ROUTE } from '../model/enums';
-import { JsonWebTokenError } from 'jsonwebtoken';
 import {
     controller,
-    httpPut,
     httpPatch,
     httpPost,
-    requestParam,
+    httpPut,
     request,
+    requestParam,
     response
 } from 'inversify-express-utils';
-import { inject } from 'inversify';
-import { APPLICATION_TYPES } from './../../../app/application.types';
+import { JsonWebTokenError } from 'jsonwebtoken';
+import { UserCredentials } from '../../../app/authentication/model/user.model';
+import {
+    AuthorizationError,
+    UserLoginInformation,
+    UserRegistration
+} from '../../../app/ports';
+import { logger } from '../../../aspects';
+import { UsersController } from '../model/controller.model';
+import { MalformedRequestError } from '../model/domain.error';
+import { API_ROUTE, SERVER_ERROR_CODE } from '../model/enums';
+import {
+    NewPasswordRequestDTO,
+    RegistrationDetailsDTO,
+    ResetRequestDTO
+} from '../model/request.model';
+import {
+    FailedLoginErrorDTO,
+    PasswordResetRequestResponseDTO,
+    PasswordResetResponseDTO,
+    RegistrationRequestResponseDTO,
+    TokenizedUserDTO
+} from '../model/response.model';
+import { RedirectionController } from './redirection.controller';
 
 enum USERS_ROUTE {
     ROOT = '/users',
@@ -50,18 +45,8 @@ enum USERS_ROUTE {
 }
 @controller(API_ROUTE.V2 + USERS_ROUTE.ROOT)
 export class DefaultUsersController
-    extends AbstractController
-    implements UsersController
-{
-    constructor(
-        @inject(APPLICATION_TYPES.PasswordService)
-        private passwordService: PasswordPort,
-        @inject(APPLICATION_TYPES.LoginService) private loginService: LoginPort,
-        @inject(APPLICATION_TYPES.RegistrationService)
-        private registrationService: RegistrationPort
-    ) {
-        super();
-    }
+    extends RedirectionController
+    implements UsersController {
     @httpPut(USERS_ROUTE.RESET_PASSWORD_REQUEST)
     async putResetPasswordRequest(
         @request() req: Request,
@@ -77,15 +62,20 @@ export class DefaultUsersController
                     'Email for password reset not supplied'
                 );
             }
-            await this.passwordService.requestPasswordReset({
+            const dto = await this.redirectionTarget.put<PasswordResetRequestResponseDTO, AxiosResponse<PasswordResetRequestResponseDTO>, ResetRequestDTO>(USERS_ROUTE.ROOT + USERS_ROUTE.RESET_PASSWORD_REQUEST, {
                 email: resetRequest.email,
-                host: req.headers['host'] as string,
-                userAgent: req.headers['user-agent'] as string
-            });
-            const dto: PasswordResetRequestResponseDTO = {
-                passwordResetRequest: true,
-                email: resetRequest.email
-            };
+                legacySystem: true
+            }).then((response) => {
+                return response.data;
+            })
+                .catch(error => {
+                    logger.info(
+                        `${this.constructor.name}.${this.putResetPasswordRequest.name} has thrown an error. ${error}`
+                    );
+                    this.handleError(res, error);
+                });
+
+
             logger.info(
                 `${this.constructor.name}.${this.putResetPasswordRequest.name}, Response sent`
             );
@@ -113,13 +103,23 @@ export class DefaultUsersController
                     'New password or token not supplied'
                 );
             }
-            await this.passwordService.resetPassword(
-                token,
-                newPasswordRequest.password
-            );
+            await this.redirectionTarget.patch<PasswordResetResponseDTO, AxiosResponse<PasswordResetResponseDTO>, NewPasswordRequestDTO>(USERS_ROUTE.ROOT + USERS_ROUTE.RESET_PASSWORD + "/" + token, {
+                password: newPasswordRequest.password,
+                legacySystem: true
+            }).then((response) => {
+                return response.data;
+            })
+                .catch(error => {
+                    logger.info(
+                        `${this.constructor.name}.${this.patchResetPassword.name} has thrown an error. ${error}`
+                    );
+                    this.handleError(res, error);
+                });
+
             const dto: PasswordResetResponseDTO = {
                 passwordReset: true
             };
+
             logger.info(
                 `${this.constructor.name}.${this.patchResetPassword.name}, Response sent`
             );
@@ -139,16 +139,21 @@ export class DefaultUsersController
         try {
             const userLoginInfo: UserLoginInformation =
                 this.mapRequestDTOToUserLoginInfo(req);
-            const response: LoginResponse = await this.loginService.loginUser(
-                userLoginInfo
-            );
 
-            const dto: TokenizedUserDTO =
-                this.fromLoginResponseToResponseDTO(response);
+            const userResponse = await this.redirectionTarget.post<TokenizedUserDTO, AxiosResponse<TokenizedUserDTO>, UserCredentials>(USERS_ROUTE.ROOT + USERS_ROUTE.LOGIN, userLoginInfo).then((response) => {
+                return response.data;
+            })
+                .catch(error => {
+                    logger.info(
+                        `${this.constructor.name}.${this.postLogin.name} has thrown an error. ${error}`
+                    );
+                    this.handleError(res, error);
+                });
+
             logger.info(
                 `${this.constructor.name}.${this.postLogin.name}, Response sent`
             );
-            this.ok(res, dto);
+            this.ok(res, userResponse);
         } catch (error) {
             logger.info(
                 `${this.constructor.name}.${this.postLogin.name} has thrown an error. ${error}`
@@ -166,11 +171,16 @@ export class DefaultUsersController
             `${this.constructor.name}.${this.patchVerification.name}, Request received`
         );
         try {
-            const username = await this.registrationService.verifyUser(token);
-            const dto: ActivationResponseDTO = {
-                activation: true,
-                username
-            };
+            const dto = await this.redirectionTarget.patch<RegistrationRequestResponseDTO, AxiosResponse<RegistrationRequestResponseDTO>, UserRegistration>(USERS_ROUTE.ROOT + USERS_ROUTE.VERIFICATION + '/' + token).then((response) => {
+                return response.data;
+            })
+                .catch(error => {
+                    logger.info(
+                        `${this.constructor.name}.${this.patchVerification.name} has thrown an error. ${error}`
+                    );
+                    this.handleError(res, error);
+                });
+
             logger.info(
                 `${this.constructor.name}.${this.patchVerification.name}, Response sent`
             );
@@ -191,11 +201,15 @@ export class DefaultUsersController
             `${this.constructor.name}.${this.patchActivation.name}, Request received`
         );
         try {
-            const username = await this.registrationService.activateUser(token);
-            const dto: ActivationResponseDTO = {
-                activation: true,
-                username
-            };
+            const dto = await this.redirectionTarget.patch<RegistrationRequestResponseDTO, AxiosResponse<RegistrationRequestResponseDTO>, UserRegistration>(USERS_ROUTE.ROOT + USERS_ROUTE.ACTIVATION + '/' + token).then((response) => {
+                return response.data;
+            })
+                .catch(error => {
+                    logger.info(
+                        `${this.constructor.name}.${this.patchActivation.name} has thrown an error. ${error}`
+                    );
+                    this.handleError(res, error);
+                });
             logger.info(
                 `${this.constructor.name}.${this.patchActivation.name}, Response sent`
             );
@@ -215,11 +229,16 @@ export class DefaultUsersController
         try {
             const credentials: UserRegistration =
                 this.fromRequestToUserRegistration(req);
-            await this.registrationService.registerUser(credentials);
-            const dto: RegistrationRequestResponseDTO = {
-                registerRequest: true,
-                email: credentials.email
-            };
+
+            const dto = await this.redirectionTarget.post<RegistrationRequestResponseDTO, AxiosResponse<RegistrationRequestResponseDTO>, RegistrationDetailsDTO>(USERS_ROUTE.ROOT + USERS_ROUTE.REGISTRATION, { ...credentials, instituteId: credentials.institution }).then((response) => {
+                return response.data;
+            })
+                .catch(error => {
+                    logger.info(
+                        `${this.constructor.name}.${this.postRegistration.name} has thrown an error. ${error}`
+                    );
+                    this.handleError(res, error);
+                });
 
             logger.info(
                 `${this.constructor.name}.${this.postRegistration.name}, Response sent`
@@ -283,7 +302,8 @@ export class DefaultUsersController
                 password: registrationDetail.password,
                 institution: registrationDetail.instituteId,
                 userAgent: req.headers['user-agent'] as string,
-                host: req.headers['host'] as string
+                host: req.headers['host'] as string,
+                legacySystem: true
             };
             return credentials;
         } catch (error) {
@@ -300,17 +320,6 @@ export class DefaultUsersController
             password: req.body.password,
             userAgent: req.headers['user-agent'],
             host: req.headers['host']
-        };
-    }
-    private fromLoginResponseToResponseDTO(
-        response: LoginResponse
-    ): TokenizedUserDTO {
-        return {
-            firstName: response.user.firstName,
-            lastName: response.user.lastName,
-            email: response.user.email,
-            token: response.token,
-            instituteId: response.user.institution.uniqueId
         };
     }
 }
