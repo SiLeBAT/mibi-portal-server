@@ -6,6 +6,7 @@ import {
     Notification,
     NotificationService
 } from '../../core/model/notification.model';
+import { ParseInstituteRepository } from '../../ports';
 import {
     PasswordService,
     RecoveryData,
@@ -31,7 +32,9 @@ export class DefaultPasswordService implements PasswordService {
         private tokenService: TokenService,
         @inject(APPLICATION_TYPES.ConfigurationService)
         private configurationService: ConfigurationService,
-        @inject(APPLICATION_TYPES.UserService) private userService: UserService
+        @inject(APPLICATION_TYPES.UserService) private userService: UserService,
+        @inject(APPLICATION_TYPES.ParseInstituteRepository)
+        private parseInstituteRepository: ParseInstituteRepository
     ) {
         this.appName =
             this.configurationService.getApplicationConfiguration().appName;
@@ -50,13 +53,15 @@ export class DefaultPasswordService implements PasswordService {
         if (hasOldToken) {
             await this.tokenService.deleteTokenForUser(user, TokenType.RESET);
         }
+        const institute = await this.parseInstituteRepository.findByInstituteId
+            (user.institution.uniqueId);
         const token = this.tokenService.generateToken({
             sub: user.uniqueId,
             firstName: user.firstName,
             lastName: user.lastName,
             email: user.email,
             institution: {
-                ...user.institution
+                ...institute
             }
         });
         const resetToken = await this.tokenService.saveToken(

@@ -10,7 +10,7 @@ import {
 import { UserAlreadyExistsError } from '../domain/domain.error';
 import { TokenType } from '../domain/enums';
 import { createUser } from '../domain/user.entity';
-import { InstituteService } from '../model/institute.model';
+import { InstituteService, ParseInstituteRepository } from '../model/institute.model';
 import { RecoveryData } from '../model/login.model';
 import {
     AdminActivationNotificationPayload,
@@ -40,7 +40,9 @@ export class DefaultRegistrationService implements RegistrationService {
         private configurationService: ConfigurationService,
         @inject(APPLICATION_TYPES.UserService) private userService: UserService,
         @inject(APPLICATION_TYPES.InstituteService)
-        private instituteService: InstituteService
+        private instituteService: InstituteService,
+        @inject(APPLICATION_TYPES.ParseInstituteRepository)
+        private parseInstituteRepository: ParseInstituteRepository
     ) {
         this.appName =
             this.configurationService.getApplicationConfiguration().appName;
@@ -131,14 +133,15 @@ export class DefaultRegistrationService implements RegistrationService {
         if (hasOldToken) {
             await this.tokenService.deleteTokenForUser(user);
         }
-
+        const institute = await this.parseInstituteRepository.findByInstituteId
+            (user.institution.uniqueId);
         const token = this.tokenService.generateToken({
             sub: user.uniqueId,
             firstName: user.firstName,
             lastName: user.lastName,
             email: user.email,
             institution: {
-                ...user.institution
+                ...institute
             }
         });
 
