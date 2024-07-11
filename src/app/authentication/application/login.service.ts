@@ -1,6 +1,7 @@
 import { inject, injectable } from 'inversify';
 import moment from 'moment';
 import { ConfigurationService } from '../../core/model/configuration.model';
+import { ParseInstituteRepository } from '../../ports';
 import {
     LoginResponse,
     LoginService,
@@ -27,7 +28,9 @@ export class DefaultLoginService implements LoginService {
         private tokenService: TokenService,
         @inject(APPLICATION_TYPES.ConfigurationService)
         private configurationService: ConfigurationService,
-        @inject(APPLICATION_TYPES.UserService) private userService: UserService
+        @inject(APPLICATION_TYPES.UserService) private userService: UserService,
+        @inject(APPLICATION_TYPES.ParseInstituteRepository)
+        private parseInstituteRepository: ParseInstituteRepository
     ) {
         this.threshold =
             this.configurationService.getApplicationConfiguration().login.threshold;
@@ -84,6 +87,8 @@ export class DefaultLoginService implements LoginService {
             }
             await this.userService.updateUser(user);
 
+            const institute = await this.parseInstituteRepository.findByInstituteId
+                (user.institution.uniqueId);
             return {
                 user: user,
                 token: this.tokenService.generateToken({
@@ -92,7 +97,7 @@ export class DefaultLoginService implements LoginService {
                     lastName: user.lastName,
                     email: user.email,
                     institution: {
-                        ...user.institution
+                        ...institute
                     }
                 })
             };
