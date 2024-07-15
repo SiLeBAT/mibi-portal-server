@@ -9,6 +9,7 @@ import {
     inCatalog,
     inAVVCatalog,
     inAVVFacettenCatalog,
+    hasObligatoryFacettenValues,
     nrlExists,
     dateAllowEmpty,
     noPlanprobeForNRL_AR,
@@ -23,7 +24,13 @@ import {
     MatchADVNumberOrStringOptions,
     MatchAVVCodeOrStringOptions
 } from './../../model/validation.model';
-import { CatalogService, Catalog, AVVCatalog } from '../../model/catalog.model';
+import {
+    CatalogService,
+    Catalog,
+    AVVCatalog,
+    MibiCatalogFacettenData,
+    MibiFacettenEintrag
+} from '../../model/catalog.model';
 jest.mock('../../../ports');
 
 moment.locale('de');
@@ -687,6 +694,7 @@ describe('Custom Validator Functions', () => {
                 hasFacettenInfo: jest.fn(),
                 isBasicCode: jest.fn(),
                 getTextWithFacettenCode: jest.fn(),
+                getObligatoryFacettenzuordnungen: jest.fn(),
                 getFuzzyIndex: jest.fn(),
                 getUniqueId: () => '',
                 dump: () => ({})
@@ -758,6 +766,7 @@ describe('Custom Validator Functions', () => {
                 hasFacettenInfo: (kode: string) => true,
                 isBasicCode: (kode: string) => false,
                 getTextWithFacettenCode: jest.fn(),
+                getObligatoryFacettenzuordnungen: jest.fn(),
                 getFuzzyIndex: jest.fn(),
                 getUniqueId: () => '',
                 dump: () => ({})
@@ -855,6 +864,181 @@ describe('Custom Validator Functions', () => {
                 testSample
             );
             expect(error).toEqual(validationError);
+        });
+    });
+
+    describe('hasObligatoryFacettenValues', () => {
+        // tslint:disable-next-line
+        let mockCatalog: AVVCatalog<any>;
+        let mockCatalogService: CatalogService;
+
+        beforeEach(() => {
+            let mockAVV319Entries: Partial<MibiCatalogFacettenData> = {
+                eintraege: {
+                    '182356|185669|': {
+                        Text: 'Fleischteilstück mit Zutaten roh',
+                        Basiseintrag: true,
+                        Facettenzuordnungen: [
+                            {
+                                FacettenId: 946,
+                                FacettenwertId: 126512,
+                                Festgelegt: true
+                            },
+                            {
+                                FacettenId: 945,
+                                FacettenwertId: 125735,
+                                Festgelegt: true
+                            },
+                            {
+                                FacettenId: 945,
+                                FacettenwertId: 125956,
+                                Festgelegt: true
+                            }
+                        ],
+                        FacettenIds: [
+                            945, 949, 930, 946, 938, 939, 935, 936, 948
+                        ]
+                    },
+                    '4434|185211|': {
+                        Text: 'Gemüsenektar',
+                        Basiseintrag: true,
+                        Facettenzuordnungen: [],
+                        FacettenIds: [939, 945, 946, 930, 936, 949]
+                    }
+                },
+                facetten: {
+                    '183670': {
+                        FacettenId: 945,
+                        MehrfachAuswahl: true,
+                        Text: 'Pflanze/Tier/Stoff/relevante Zutat',
+                        FacettenWerte: {
+                            '1597': {
+                                Text: 'Lebensmittel'
+                            },
+                            '2296': {
+                                Text: 'Fleisch'
+                            }
+                        }
+                    },
+                    '185085': {
+                        FacettenId: 946,
+                        MehrfachAuswahl: true,
+                        Text: 'Produktmerkmal',
+                        FacettenWerte: {
+                            '6986': {
+                                Text: 'Roh'
+                            }
+                        }
+                    }
+                },
+                facettenIds: {
+                    '945': {
+                        '125956': {
+                            FacettenNameBegriffsId: 183670,
+                            WertNameBegriffsId: 1597
+                        },
+                        '125735': {
+                            FacettenNameBegriffsId: 183670,
+                            WertNameBegriffsId: 2296
+                        }
+                    },
+                    '946': {
+                        '126512': {
+                            FacettenNameBegriffsId: 185085,
+                            WertNameBegriffsId: 6986
+                        }
+                    }
+                }
+            };
+
+            mockCatalog = {
+                containsEintragWithAVVKode: jest.fn(),
+                containsTextEintrag: jest.fn(),
+                getEintragWithAVVKode: (kode: string) =>
+                    kode in
+                    (mockAVV319Entries as MibiCatalogFacettenData).eintraege
+                        ? (mockAVV319Entries as MibiCatalogFacettenData)
+                              .eintraege[kode]
+                        : undefined,
+                getAVV313EintragWithAVVKode: jest.fn(),
+                getAttributeWithAVVKode: jest.fn(),
+                containsFacetteWithBegriffsId: jest.fn(),
+                getFacettenIdsWithKode: jest.fn(),
+                getFacetteWithBegriffsId: jest.fn(),
+                getFacettenWertWithBegriffsId: jest.fn(),
+                assembleAVVKode: jest.fn(),
+                getTextWithAVVKode: jest.fn(),
+                hasFacettenInfo: jest.fn(),
+                isBasicCode: jest.fn(),
+                getTextWithFacettenCode: jest.fn(),
+                getObligatoryFacettenzuordnungen: (kode: string) =>
+                    kode in
+                    (mockAVV319Entries as MibiCatalogFacettenData).eintraege
+                        ? (
+                              (mockAVV319Entries as MibiCatalogFacettenData)
+                                  .eintraege[kode] as MibiFacettenEintrag
+                          ).Facettenzuordnungen!
+                        : [],
+
+                getFuzzyIndex: jest.fn(),
+                getUniqueId: () => '',
+                dump: () => mockAVV319Entries
+            };
+
+            mockCatalogService = {
+                getCatalog: jest.fn(),
+                getCatalogSearchAliases: jest.fn(),
+                getAVVCatalog: () => mockCatalog
+            };
+        });
+
+        it('should validate without errors because all obligatory facetten are present', () => {
+            testSample.matrix_avv =
+                '182356|185669|183670-1597:2296,185085-6986';
+
+            const error = hasObligatoryFacettenValues(mockCatalogService)(
+                testSample.matrix_avv,
+                {
+                    message: validationError,
+                    catalog: 'avv319',
+                    key: 'Kode'
+                },
+                'matrix_avv',
+                testSample
+            );
+            expect(error).toBe(null);
+        });
+
+        it('should not validate because 182356|185669| needs obligatory facetten', () => {
+            testSample.matrix_avv = '182356|185669|';
+
+            const error = inAVVFacettenCatalog(mockCatalogService)(
+                testSample.matrix_avv,
+                {
+                    message: validationError,
+                    catalog: 'avv319',
+                    key: 'Kode'
+                },
+                'matrix_avv',
+                testSample
+            );
+            expect(error).toEqual(validationError);
+        });
+
+        it('should validate without errors because the entry does not have obligatory facetten', () => {
+            testSample.matrix_avv = '4434|185211|';
+
+            const error = hasObligatoryFacettenValues(mockCatalogService)(
+                testSample.matrix_avv,
+                {
+                    message: validationError,
+                    catalog: 'avv319',
+                    key: 'Kode'
+                },
+                'matrix_avv',
+                testSample
+            );
+            expect(error).toBe(null);
         });
     });
 
@@ -1138,6 +1322,7 @@ describe('Custom Validator Functions', () => {
                 hasFacettenInfo: jest.fn(),
                 isBasicCode: jest.fn(),
                 getTextWithFacettenCode: jest.fn(),
+                getObligatoryFacettenzuordnungen: jest.fn(),
                 getFuzzyIndex: jest.fn(),
                 getUniqueId: () => '',
                 dump: () => ({})

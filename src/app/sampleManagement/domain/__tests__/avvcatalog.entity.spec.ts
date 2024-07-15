@@ -29,16 +29,20 @@ describe('list catalog Parameter 324', () => {
 
         testEintraege = {
             '10807|186333|': {
-                Text: 'Escherichia coli'
+                Text: 'Escherichia coli',
+                Basiseintrag: true
             },
             '11475|2965|': {
-                Text: 'Salmonella Colindale'
+                Text: 'Salmonella Colindale',
+                Basiseintrag: true
             },
             '11488|1400|': {
-                Text: 'Salmonella Dublin'
+                Text: 'Salmonella Dublin',
+                Basiseintrag: true
             },
             '66684|57386|': {
-                Text: 'Escherichia coli Carbapenemase-bildend'
+                Text: 'Escherichia coli Carbapenemase-bildend',
+                Basiseintrag: true
             }
         };
 
@@ -52,19 +56,23 @@ describe('list catalog Parameter 324', () => {
         testFuzzyEintraege = [
             {
                 Kode: '10807|186333|',
-                Text: 'Escherichia coli'
+                Text: 'Escherichia coli',
+                Basiseintrag: true
             },
             {
                 Kode: '11475|2965|',
-                Text: 'Salmonella Colindale'
+                Text: 'Salmonella Colindale',
+                Basiseintrag: true
             },
             {
                 Kode: '11488|1400|',
-                Text: 'Salmonella Dublin'
+                Text: 'Salmonella Dublin',
+                Basiseintrag: true
             },
             {
                 Kode: '66684|57386|',
-                Text: 'Escherichia coli Carbapenemase-bildend'
+                Text: 'Escherichia coli Carbapenemase-bildend',
+                Basiseintrag: true
             }
         ];
 
@@ -101,7 +109,8 @@ describe('list catalog Parameter 324', () => {
 
     it('should get entry with avv code', () => {
         const eintrag = {
-            Text: 'Escherichia coli Carbapenemase-bildend'
+            Text: 'Escherichia coli Carbapenemase-bildend',
+            Basiseintrag: true
         };
         const code = '66684|57386|';
 
@@ -164,21 +173,25 @@ describe('monochierachical catalog Gemeindeschluessel 313', () => {
         testEintraege = {
             '37389|171950|': {
                 Text: 'Hagen',
+                Basiseintrag: true,
                 PLZ: '',
                 Name: '01060031'
             },
             '37387|171939|': {
                 Text: 'Groß Niendorf',
+                Basiseintrag: true,
                 PLZ: '',
                 Name: '01060029'
             },
             '37385|171933|': {
                 Text: 'Großenaspe',
+                Basiseintrag: true,
                 PLZ: '',
                 Name: '01060027'
             },
             '37386|171929|': {
                 Text: 'Groß Kummerfeld',
+                Basiseintrag: true,
                 PLZ: '',
                 Name: '01060028'
             }
@@ -214,6 +227,7 @@ describe('monochierachical catalog Gemeindeschluessel 313', () => {
     it('should get entry with avv code', () => {
         const eintrag = {
             Text: 'Groß Niendorf',
+            Basiseintrag: true,
             PLZ: '',
             Name: '01060029'
         };
@@ -270,10 +284,12 @@ describe('facetten catalog matrizes 319', () => {
         testEintraege = {
             '187036|183974|': {
                 Text: 'Kot (Hygieneproben (LFGB-Bereich))',
+                Basiseintrag: true,
                 FacettenIds: [942, 945]
             },
             '182166|184019|': {
                 Text: 'Bratwurst gebrüht',
+                Basiseintrag: true,
                 FacettenIds: [930, 938, 945, 935, 936, 939, 946, 949]
             }
         };
@@ -281,6 +297,7 @@ describe('facetten catalog matrizes 319', () => {
         testFacetten = {
             '8871': {
                 FacettenId: 942,
+                MehrfachAuswahl: true,
                 Text: 'Kontakt',
                 FacettenWerte: {
                     '8874': {
@@ -293,6 +310,7 @@ describe('facetten catalog matrizes 319', () => {
             },
             '183670': {
                 FacettenId: 945,
+                MehrfachAuswahl: true,
                 Text: 'Pflanze/Tier/Stoff/relevante Zutat',
                 FacettenWerte: {
                     '1086': {
@@ -308,6 +326,7 @@ describe('facetten catalog matrizes 319', () => {
             },
             '6843': {
                 FacettenId: 930,
+                MehrfachAuswahl: true,
                 Text: 'Be- und Verarbeitung',
                 FacettenWerte: {
                     '6844': {
@@ -359,6 +378,7 @@ describe('facetten catalog matrizes 319', () => {
     it('should get entry with avv code', () => {
         const eintrag = {
             Text: 'Kot (Hygieneproben (LFGB-Bereich))',
+            Basiseintrag: true,
             FacettenIds: [942, 945]
         };
         const code = '187036|183974|';
@@ -413,6 +433,7 @@ describe('facetten catalog matrizes 319', () => {
         const begriffsId = '8871';
         const expected = {
             FacettenId: 942,
+            MehrfachAuswahl: true,
             Text: 'Kontakt',
             FacettenWerte: {
                 '8874': {
