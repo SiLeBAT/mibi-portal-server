@@ -63,6 +63,7 @@ export interface AVVCatalog<T extends AVVCatalogData> {
     hasFacettenInfo(kode: string): boolean;
     isBasicCode(kode: string): boolean;
     getTextWithFacettenCode(kode: string): string;
+    getObligatoryFacettenzuordnungen(kode: string): MibiFacettenzuordnung[];
     getFuzzyIndex(
         options: Fuse.IFuseOptions<FuzzyEintrag>,
         enhancements?: FuzzyEintrag[]
@@ -96,6 +97,20 @@ export interface AVV324Data extends MibiCatalogData {
 
 export interface MibiCatalogFacettenData extends MibiCatalogData {
     facetten: MibiFacetten;
+    facettenIds?: MibiFacettenIds;
+}
+
+export interface MibiFacettenIds {
+    [key: string]: MibiFacettenId;
+}
+
+export interface MibiFacettenId {
+    [key: string]: MibiFacettenWertId;
+}
+
+export interface MibiFacettenWertId {
+    FacettenNameBegriffsId: number;
+    WertNameBegriffsId: number;
 }
 
 export interface MibiEintraege {
@@ -108,6 +123,7 @@ export interface AVV324Eintraege {
 
 export interface MibiEintrag {
     Text: string;
+    Basiseintrag: boolean;
 }
 
 export interface AVV313Eintrag extends MibiEintrag {
@@ -121,7 +137,14 @@ export interface FuzzyEintrag extends MibiEintrag {
 
 export interface MibiFacettenEintrag extends MibiEintrag {
     FacettenIds: number[];
+    Facettenzuordnungen?: MibiFacettenzuordnung[];
     Attribute?: string;
+}
+
+export interface MibiFacettenzuordnung {
+    FacettenId: number;
+    FacettenwertId: number;
+    Festgelegt: boolean;
 }
 
 export interface MibiFacetten {
@@ -130,6 +153,7 @@ export interface MibiFacetten {
 
 export interface MibiFacette {
     FacettenId: number;
+    MehrfachAuswahl: boolean;
     Text: string;
     FacettenWerte: MibiFacettenWerte;
 }

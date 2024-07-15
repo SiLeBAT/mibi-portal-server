@@ -288,6 +288,24 @@ export const genericValidationErrors = [
         level: 4,
         message:
             'Code für Betriebsart erkannt. Entsprechender Text wurde aus AVV DatA-Katalog Nr. 303 eingefügt.'
+    },
+    {
+        code: 110,
+        level: 1,
+        message:
+            'Dies ist ein Hierarchieeintrag. Er ist korrekt, aber so allgemein, dass er nur einen geringen informativen Nutzen hat. Bitte verwenden Sie möglichst einen Basiseintrag plus Facetten.'
+    },
+    {
+        code: 111,
+        level: 1,
+        message:
+            'Dies ist ein Hierarchieeintrag. Er ist korrekt, aber so allgemein, dass er nur einen geringen informativen Nutzen hat. Bitte verwenden Sie möglichst einen Basiseintrag.'
+    },
+    {
+        code: 112,
+        level: 2,
+        message:
+            'Dies ist ein Basiseintrag, der allerdings noch Facetten benötigt, damit es ein gültiger AVV DatA-Code wird. Bitte ergänzen Sie Facetten.'
     }
 ];
 export function getMockValidationErrorRepository(): ParseValidationErrorRepository {

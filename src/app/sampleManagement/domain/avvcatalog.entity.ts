@@ -8,6 +8,7 @@ import {
     MibiFacettenEintrag,
     MibiFacette,
     MibiFacettenWert,
+    MibiFacettenzuordnung,
     AVV324Data,
     AVV313Eintrag,
     AVVCatalogData,
@@ -179,6 +180,19 @@ class AVVDefaultCatalog<T extends AVVCatalogData> implements AVVCatalog<T> {
         }
 
         return generatedText;
+    }
+
+    getObligatoryFacettenzuordnungen(kode: string): MibiFacettenzuordnung[] {
+        if (this.isFacettenCatalog()) {
+            const eintrag = this.getEintragWithAVVKode(
+                kode
+            ) as MibiFacettenEintrag;
+            return eintrag.Facettenzuordnungen
+                ? eintrag.Facettenzuordnungen
+                : [];
+        }
+
+        return [];
     }
 
     hasFacettenInfo(kode: string): boolean {

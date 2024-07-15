@@ -329,6 +329,171 @@ function inAVVFacettenCatalog(
     };
 }
 
+function hasObligatoryFacettenValues(
+    catalogService: CatalogService
+): ValidatorFunction<InCatalogOptions> {
+    return (
+        value: string,
+        options: InCatalogOptions,
+        key: SampleProperty,
+        attributes: SampleDataValues
+    ) => {
+        const trimmedValue = value.trim();
+        if (attributes[key]) {
+            const [begriffsIdEintrag, id, facettenValues] =
+                trimmedValue.split('|');
+            const catalogName = options.catalog;
+            const catalog =
+                catalogService.getAVVCatalog<MibiCatalogFacettenData>(
+                    catalogName
+                );
+            if (catalog) {
+                if (begriffsIdEintrag && id) {
+                    const avvKode = catalog.assembleAVVKode(
+                        begriffsIdEintrag,
+                        id
+                    );
+                    const eintrag = catalog.getEintragWithAVVKode(avvKode);
+                    if (eintrag && eintrag.Basiseintrag === true) {
+                        const facettenZuordnungen =
+                            catalog.getObligatoryFacettenzuordnungen(avvKode);
+
+                        // The entry does not need obligatory facetten values
+                        if (facettenZuordnungen.length === 0) {
+                            return null;
+                        }
+
+                        // The entry needs obligatory facetten values but the values are missing in the avv code
+                        if (!facettenValues) {
+                            return { ...options.message };
+                        }
+
+                        // The entry needs obligatory facetten values, check if they are present
+                        const catalogData = catalog.dump();
+                        const facettenMap = createFacettenMap(facettenValues);
+                        let found = true;
+                        found =
+                            found &&
+                            facettenZuordnungen.every(facettenZuordnung => {
+                                const zuordnungFacettenId =
+                                    facettenZuordnung.FacettenId;
+                                const zuordnungFacettenWertId =
+                                    facettenZuordnung.FacettenwertId;
+                                const zuordnungFestgelegt =
+                                    facettenZuordnung.Festgelegt;
+                                const facettenWert =
+                                    catalogData.facettenIds?.[
+                                        zuordnungFacettenId
+                                    ]?.[zuordnungFacettenWertId];
+                                const facettenWertIds = !!facettenWert
+                                    ? facettenMap.get(
+                                          facettenWert?.FacettenNameBegriffsId
+                                      )
+                                    : undefined;
+                                if (zuordnungFestgelegt === true) {
+                                    found =
+                                        found &&
+                                        !!facettenWert &&
+                                        !!facettenWertIds
+                                            ? facettenWertIds.includes(
+                                                  facettenWert.WertNameBegriffsId
+                                              )
+                                            : false;
+                                }
+
+                                return found;
+                            });
+
+                        if (!found) {
+                            return { ...options.message };
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    };
+}
+
+function isHierarchyCode(
+    catalogService: CatalogService
+): ValidatorFunction<InCatalogOptions> {
+    return (
+        value: string,
+        options: InCatalogOptions,
+        key: SampleProperty,
+        attributes: SampleDataValues
+    ) => {
+        const trimmedValue = value.trim();
+        if (attributes[key]) {
+            const [begriffsIdEintrag, id, facettenValues] =
+                trimmedValue.split('|');
+            const catalogName = options.catalog;
+            const catalog =
+                catalogService.getAVVCatalog<MibiCatalogFacettenData>(
+                    catalogName
+                );
+            if (catalog) {
+                if (begriffsIdEintrag && id) {
+                    const avvKode = catalog.assembleAVVKode(
+                        begriffsIdEintrag,
+                        id
+                    );
+                    const eintrag = catalog.getEintragWithAVVKode(avvKode);
+
+                    if (facettenValues) {
+                        return null;
+                    }
+
+                    if (eintrag && eintrag.Basiseintrag === false) {
+                        return { ...options.message };
+                    }
+                }
+            }
+        }
+        return null;
+    };
+}
+
+function createFacettenMap(facettenValues: string): Map<number, number[]> {
+    const facettenMap: Map<number, number[]> = new Map();
+    const facetten = facettenValues.split(',');
+
+    facetten.forEach(facette => {
+        const ids = facette.split('-');
+        const facettenNameBegriffsId = convertStringToNumber(ids[0]);
+        // const facettenNameBegriffsId =  num instanceof Error ?  ids[0];
+
+        const wertNameBegriffsIds: number[] = [];
+        if (ids.length > 1) {
+            ids[1].split(':').forEach(wertNameBegriffsId => {
+                const id = convertStringToNumber(wertNameBegriffsId);
+                if (!(id instanceof Error)) {
+                    wertNameBegriffsIds.push(id);
+                }
+            });
+        }
+
+        if (!(facettenNameBegriffsId instanceof Error)) {
+            facettenMap.set(facettenNameBegriffsId, wertNameBegriffsIds);
+        }
+    });
+
+    return facettenMap;
+}
+
+function convertStringToNumber(str: string): number | Error {
+    if (!/^\d+\.?\d*$/.test(str)) {
+        return new Error();
+    }
+    const num = parseInt(str, 10);
+    if (isNaN(num)) {
+        return new Error();
+    }
+
+    return num;
+}
+
 function checkEintragAttributes<
     T extends MibiCatalogData | MibiCatalogFacettenData
 >(currentAttributes: string, avvKode: string, catalog: AVVCatalog<T>) {
@@ -762,6 +927,8 @@ export {
     dependentFields,
     inAVVCatalog,
     inAVVFacettenCatalog,
+    hasObligatoryFacettenValues,
+    isHierarchyCode,
     inCatalog,
     matchADVNumberOrString,
     matchAVVCodeOrString,

@@ -128,16 +128,20 @@ describe('Custom Auto-correction Functions', () => {
             let mockAVV324Entries: Partial<AVV324Data> = {
                 eintraege: {
                     '10807|186333|': {
-                        Text: 'Escherichia coli'
+                        Text: 'Escherichia coli',
+                        Basiseintrag: true
                     },
                     '11475|2965|': {
-                        Text: 'Salmonella Colindale'
+                        Text: 'Salmonella Colindale',
+                        Basiseintrag: true
                     },
                     '11488|1400|': {
-                        Text: 'Salmonella Dublin'
+                        Text: 'Salmonella Dublin',
+                        Basiseintrag: true
                     },
                     '66684|57386|': {
-                        Text: 'Escherichia coli Carbapenemase-bildend'
+                        Text: 'Escherichia coli Carbapenemase-bildend',
+                        Basiseintrag: true
                     }
                 },
                 textEintraege: {
@@ -149,19 +153,23 @@ describe('Custom Auto-correction Functions', () => {
                 fuzzyEintraege: [
                     {
                         Kode: '10807|186333|',
-                        Text: 'Escherichia coli'
+                        Text: 'Escherichia coli',
+                        Basiseintrag: true
                     },
                     {
                         Kode: '11475|2965|',
-                        Text: 'Salmonella Colindale'
+                        Text: 'Salmonella Colindale',
+                        Basiseintrag: true
                     },
                     {
                         Kode: '11488|1400|',
-                        Text: 'Salmonella Dublin'
+                        Text: 'Salmonella Dublin',
+                        Basiseintrag: true
                     },
                     {
                         Kode: '66684|57386|',
-                        Text: 'Escherichia coli Carbapenemase-bildend'
+                        Text: 'Escherichia coli Carbapenemase-bildend',
+                        Basiseintrag: true
                     }
                 ]
             };
