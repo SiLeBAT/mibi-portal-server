@@ -1,13 +1,12 @@
-import { Analysis } from './../model/sample.model';
-import { NRL_ID } from './../domain/enums';
-import { ApplicationDomainError } from './../../core/domain/domain.error';
-import { Sample } from '../model/sample.model';
-import { NRLService, NRL } from '../model/nrl.model';
-import _ from 'lodash';
+import { inject, injectable } from 'inversify';
 import { logger } from '../../../aspects';
-import { injectable, inject } from 'inversify';
 import { APPLICATION_TYPES } from '../../application.types';
+import { NRL, NRLService } from '../model/nrl.model';
 import { NRLRepository } from '../model/repository.model';
+import { Sample } from '../model/sample.model';
+import { ApplicationDomainError } from './../../core/domain/domain.error';
+import { NRL_ID } from './../domain/enums';
+import { Analysis } from './../model/sample.model';
 
 @injectable()
 export class DefaultNRLService implements NRLService {
@@ -16,6 +15,8 @@ export class DefaultNRLService implements NRLService {
             case 'NRL Überwachung von Bakterien in zweischaligen Weichtieren':
             case 'NRL-Vibrio':
                 return NRL_ID.NRL_Vibrio;
+            case 'KL-Vibrio':
+                return NRL_ID.KL_Vibrio;
             case 'NRL Escherichia coli einschließlich verotoxinbildende E. coli':
             case 'NRL Verotoxinbildende Escherichia coli':
             case 'NRL-VTEC':
