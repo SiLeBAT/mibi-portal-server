@@ -11,6 +11,7 @@ export enum ReceiveAs {
 export enum NRL_ID {
     UNKNOWN = 'Labor nicht erkannt',
     NRL_Vibrio = 'NRL-Vibrio',
+    KL_Vibrio = 'KL-Vibrio',
     NRL_VTEC = 'NRL-VTEC',
     L_Bacillus = 'L-Bacillus',
     NRL_AR = 'NRL-AR',

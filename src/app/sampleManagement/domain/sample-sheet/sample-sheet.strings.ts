@@ -145,6 +145,7 @@ export const sampleSheetNRLStrings: Record<NRL_ID, string> = {
     'NRL-Trichinella': 'NRL Trichinella',
     'NRL-Virus': 'NRL Überwachung von Viren in zweischaligen Weichtieren',
     'NRL-Vibrio': 'NRL Überwachung von Bakterien in zweischaligen Weichtieren',
+    'KL-Vibrio': 'NRL Überwachung von Bakterien in zweischaligen Weichtieren',
     'L-Bacillus': 'Bacillus spp. ',
     'L-Clostridium': 'Clostridium spp. (C. difficile)',
     'KL-Leptospira': 'Leptospira',
