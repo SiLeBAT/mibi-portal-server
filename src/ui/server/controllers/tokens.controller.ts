@@ -1,41 +1,32 @@
 import { Request, Response } from 'express';
-import { logger } from '../../../aspects';
-import { TokensController } from '../model/controller.model';
-import { TokenRefreshConfirmationResponseDTO } from '../model/response.model';
-import {
-    TokenPort,
-    TokenPayload,
-    AuthorizationError
-} from '../../../app/ports';
-import { AbstractController } from './abstract.controller';
-import { JsonWebTokenError } from 'jsonwebtoken';
-import { getTokenFromHeader } from '../middleware/token-validator.middleware';
 import {
     controller,
+    httpPost,
     request,
-    response,
-    httpPost
+    response
 } from 'inversify-express-utils';
-import { inject } from 'inversify';
-import { SERVER_ERROR_CODE, API_ROUTE } from '../model/enums';
+import { JsonWebTokenError } from 'jsonwebtoken';
+import {
+    AuthorizationError
+} from '../../../app/ports';
+import { logger } from '../../../aspects';
+import { getTokenFromHeader } from '../middleware/token-validator.middleware';
+import { TokensController } from '../model/controller.model';
+import { API_ROUTE, SERVER_ERROR_CODE } from '../model/enums';
+import { TokenRefreshConfirmationResponseDTO } from '../model/response.model';
 
-import { APPLICATION_TYPES } from './../../../app/application.types';
+import { AxiosResponse } from 'axios';
+import { RedirectionController } from './redirection.controller';
 enum TOKENS_ROUTE {
     ROOT = '/tokens'
 }
 @controller(API_ROUTE.V2 + TOKENS_ROUTE.ROOT)
 export class DefaultTokensController
-    extends AbstractController
-    implements TokensController
-{
-    constructor(
-        @inject(APPLICATION_TYPES.TokenService) private tokenService: TokenPort
-    ) {
-        super();
-    }
+    extends RedirectionController
+    implements TokensController {
 
     @httpPost('/')
-    postTokens(@request() req: Request, @response() res: Response) {
+    async postTokens(@request() req: Request, @response() res: Response) {
         logger.info(
             `${this.constructor.name}.${this.postTokens.name}, Request received`
         );
@@ -44,13 +35,16 @@ export class DefaultTokensController
             if (!oldToken) {
                 throw new AuthorizationError('Invalid token');
             }
-            const payload: TokenPayload =
-                this.tokenService.verifyToken(oldToken);
-            const token = this.tokenService.generateToken(payload.sub);
-            const dto: TokenRefreshConfirmationResponseDTO = {
-                refresh: true,
-                token: token
-            };
+            const dto = await this.redirectionTarget.post<TokenRefreshConfirmationResponseDTO, AxiosResponse<TokenRefreshConfirmationResponseDTO>, TokenRefreshConfirmationResponseDTO>(TOKENS_ROUTE.ROOT).then((response) => {
+                return response.data;
+            })
+                .catch(error => {
+                    logger.info(
+                        `${this.constructor.name}.${this.postTokens.name} has thrown an error. ${error}`
+                    );
+                    this.handleError(res, error);
+                });
+
             logger.info(
                 `${this.constructor.name}.${this.postTokens.name}, Response sent`
             );

@@ -1,19 +1,19 @@
 // core
 
 // npm
+import readFilePromise from 'fs-readfile-promise';
 import handlebars from 'handlebars';
 import nodemailer from 'nodemailer';
-import readFilePromise from 'fs-readfile-promise';
 
 // local
-import { logger } from './../../aspects';
+import { inject, injectable } from 'inversify';
 import { NotificationType } from '../../app/ports';
-import { injectable, inject } from 'inversify';
+import { logger } from './../../aspects';
 import {
-    MailService,
-    MailConfiguration,
     EmailData,
-    MailOptions
+    MailConfiguration,
+    MailOptions,
+    MailService
 } from './mail.model';
 import { MAIL_TYPES } from './mail.types';
 
@@ -27,7 +27,7 @@ export class DefaultMailService implements MailService {
     constructor(
         @inject(MAIL_TYPES.MailConfiguration)
         private mailConfiguration: MailConfiguration
-    ) {}
+    ) { }
 
     getMailHandler() {
         return async (data: EmailData) => {
