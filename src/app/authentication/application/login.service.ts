@@ -87,8 +87,10 @@ export class DefaultLoginService implements LoginService {
             }
             await this.userService.updateUser(user);
 
-            const institute = await this.parseInstituteRepository.findByInstituteId
-                (user.institution.uniqueId);
+            const institute =
+                await this.parseInstituteRepository.findByInstituteId(
+                    user.institution.uniqueId
+                );
             return {
                 user: user,
                 token: this.tokenService.generateToken({

@@ -53,8 +53,9 @@ export class DefaultPasswordService implements PasswordService {
         if (hasOldToken) {
             await this.tokenService.deleteTokenForUser(user, TokenType.RESET);
         }
-        const institute = await this.parseInstituteRepository.findByInstituteId
-            (user.institution.uniqueId);
+        const institute = await this.parseInstituteRepository.findByInstituteId(
+            user.institution.uniqueId
+        );
         const token = this.tokenService.generateToken({
             sub: user.uniqueId,
             firstName: user.firstName,
