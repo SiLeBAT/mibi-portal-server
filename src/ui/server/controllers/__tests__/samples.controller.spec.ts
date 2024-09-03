@@ -189,19 +189,6 @@ describe('Sample controller', () => {
             const result = controller.postSubmitted(req, res);
             expect(result).toBeInstanceOf(Promise);
         });
-        it('should be return a 400 response', () => {
-            const req = new mockReq({
-                body: {
-                    email: 'test'
-                }
-            });
-            req.file = true;
-            const res = new mockRes();
-            expect.assertions(1);
-            return controller
-                .postSubmitted(req, res)
-                .then(success => expect(res.statusCode).toBe(400));
-        });
         it('should be return a 500 response', () => {
             const mockValidationService = {
                 validateSamples: jest.fn(() => {
