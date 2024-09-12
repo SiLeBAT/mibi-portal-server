@@ -10,16 +10,22 @@ import {
 import moment from 'moment';
 import { logger } from '../../../aspects';
 import { SamplesController } from '../model/controller.model';
-import { MalformedRequestError } from '../model/domain.error';
+import { MalformedRequestError, TokenNotFoundError } from '../model/domain.error';
 import { API_ROUTE } from '../model/enums';
 import {
     PostSubmittedRequestDTO,
-    PutValidatedRequestDTO
+    PutValidatedRequestDTO,
+    RedirectedPostSubmittedRequestDTO,
+    RedirectedPutValidatedRequestDTO
 } from '../model/request.model';
 import { OrderDTO } from '../model/shared-dto.model';
 import { AbstractController, ParseSingleResponse } from './abstract.controller';
 
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { APPLICATION_TYPES } from '../../../app/application.types';
+import { TokenPayload, TokenPort } from '../../../app/authentication/model/token.model';
+import { User, UserPort } from '../../../app/authentication/model/user.model';
+import { getTokenFromHeader } from '../middleware/token-validator.middleware';
 import { AppServerConfiguration } from '../ports';
 import { SERVER_TYPES } from '../server.types';
 moment.locale('de');
@@ -45,10 +51,12 @@ type ParseFileRequest = {
 @controller(API_ROUTE.V2 + SAMPLES_ROUTE.ROOT)
 export class DefaultSamplesController
     extends AbstractController
-    implements SamplesController
-{
+    implements SamplesController {
     private redirectionTarget: AxiosInstance;
     constructor(
+
+        @inject(APPLICATION_TYPES.TokenService) private tokenService: TokenPort,
+        @inject(APPLICATION_TYPES.UserService) private userService: UserPort,
         @inject(SERVER_TYPES.AppServerConfiguration)
         configuration: AppServerConfiguration
     ) {
@@ -89,11 +97,21 @@ export class DefaultSamplesController
         );
         try {
             const requestDTO: PutValidatedRequestDTO = req.body;
+            const token = getTokenFromHeader(req);
+            let userId = null;
+            if (token) {
+                const user: User = await this.getUserFromToken(token);
+                userId = user.email;
+            }
+
             const parseResponse = await this.redirectionTarget.post<
                 ParseSingleResponse<OrderDTO>,
                 AxiosResponse<ParseSingleResponse<OrderDTO>>,
-                PutValidatedRequestDTO
-            >('functions/validateSampleData', requestDTO);
+                RedirectedPutValidatedRequestDTO
+            >('functions/validateSampleData', {
+                ...requestDTO,
+                userEmail: userId
+            });
             logger.info(
                 `${this.constructor.name}.${this.putValidated.name}, Response sent`
             );
@@ -114,11 +132,20 @@ export class DefaultSamplesController
         );
         try {
             const requestDTO: PostSubmittedRequestDTO = req.body;
+            const token = getTokenFromHeader(req);
+            if (!token) {
+                throw new TokenNotFoundError('Invalid user.');
+            }
+            const user: User = await this.getUserFromToken(token);
+
             const parseResponse = await this.redirectionTarget.post<
                 ParseSingleResponse<OrderDTO>,
                 AxiosResponse<ParseSingleResponse<OrderDTO>>,
-                PutValidatedRequestDTO
-            >('functions/submitSampleData', requestDTO);
+                RedirectedPostSubmittedRequestDTO
+            >('functions/submitSampleData', {
+                ...requestDTO,
+                userEmail: user.email
+            });
 
             logger.info(
                 `${this.constructor.name}.${this.postSubmitted.name}, Response sent`
@@ -131,6 +158,12 @@ export class DefaultSamplesController
             );
             this.handleError(res, error);
         }
+    }
+
+    private async getUserFromToken(token: string): Promise<User> {
+        const payload: TokenPayload = this.tokenService.verifyToken(token);
+        const userId = payload.sub;
+        return this.userService.getUserById(userId);
     }
 
     private async putSamplesTransformInput(
