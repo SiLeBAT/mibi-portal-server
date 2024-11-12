@@ -35,13 +35,13 @@
   },
   "dependencies": {
     "@parse/fs-files-adapter": "^2.0.1",
-    "@SiLeBAT/fg43-ne-server": "^1.2.1",
+    "@SiLeBAT/fg43-ne-server": "^1.4.1",
     "argon2": "0.30.3",
     "axios": "^1.6.7",
     "compression": "~1.7.4",
     "config": "~3.3.8",
     "cors": "~2.8.5",
-    "express": "~4.18.2",
+    "express": "~4.21.1",
     "express-jwt": "^8.3.0",
     "fs-readfile-promise": "~3.0.1",
     "fuse.js": "6.6.2",
@@ -58,8 +58,8 @@
     "multer": "^1.4.5-lts.1",
     "nodemailer": "6.8.0",
     "parse": "^5.1.0",
-    "parse-dashboard": "^5.4.0",
-    "parse-server": "^6.5.6",
+    "parse-dashboard": "^6.0.0",
+    "parse-server": "^6.5.11",
     "pdfmake": "0.2.8",
     "pm2": "~5.3.0",
     "reflect-metadata": "0.1.13",
@@ -117,7 +117,11 @@
       "ws": "8.17.1"
     },
     "parse-server": {
-      "ws": "8.17.1"
+      "ws": "8.17.1",
+      "path-to-regexp": "6.3.0"
+    },
+    "express": {
+      "path-to-regexp": "0.1.10"
     }
   },
   "mibiConfig": {
