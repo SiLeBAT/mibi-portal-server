@@ -122,7 +122,8 @@
     },
     "express": {
       "path-to-regexp": "0.1.10"
-    }
+    },
+    "cross-spawn": "7.0.6"
   },
   "mibiConfig": {
     "lastChange": "2019-04-16 11:25:17 +0200"

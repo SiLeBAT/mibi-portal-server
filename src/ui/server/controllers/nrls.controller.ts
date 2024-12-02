@@ -57,29 +57,38 @@ export class DefaultNRLsController
         );
 
         try {
+            const params = {
+                params: {
+                    include: ['standardProcedures', 'optionalProcedures']
+                }
+            };
+
             const parseResponse = await this.redirectionTarget.get<
                 ParseCollectionResponse<ParseNRLDTO>,
                 AxiosResponse<ParseCollectionResponse<ParseNRLDTO>>,
                 ParseNRLDTO
-            >('classes/nrls');
+            >('classes/NRL', params);
 
             const nrls: ParseNRLDTO[] = parseResponse.data.results;
 
             const dto: NRLCollectionDTO = { nrls: [] };
             for (let index = 0; index < nrls.length; index++) {
                 const element = nrls[index];
-                const standardProcedures = await this.getRelationalData(
-                    'standardProcedures',
-                    element.objectId
-                );
-                const optionalProcedures = await this.getRelationalData(
-                    'optionalProcedures',
-                    element.objectId
-                );
+
                 dto.nrls.push({
                     id: element.name,
-                    standardProcedures,
-                    optionalProcedures
+                    standardProcedures: element.standardProcedures.map(
+                        procedure => ({
+                            value: procedure.value,
+                            key: procedure.key
+                        })
+                    ),
+                    optionalProcedures: element.optionalProcedures.map(
+                        procedure => ({
+                            value: procedure.value,
+                            key: procedure.key
+                        })
+                    )
                 });
             }
 
@@ -94,19 +103,5 @@ export class DefaultNRLsController
 
     private handleError(res: Response) {
         this.fail(res);
-    }
-
-    private async getRelationalData(procedureRelation: string, id: string) {
-        const proceduresParseResponse = await this.redirectionTarget.get<
-            ParseCollectionResponse<ParseAnalysisProceduresDTO>,
-            AxiosResponse<ParseCollectionResponse<ParseAnalysisProceduresDTO>>,
-            ParseAnalysisProceduresDTO
-        >(
-            'classes/analysisprocedures?' +
-                `where={"$relatedTo":{"object":{"__type":"Pointer","className":"nrls","objectId":"${id}"},"key":"${procedureRelation}"}}`
-        );
-        const procedures: ParseAnalysisProceduresDTO[] =
-            proceduresParseResponse.data.results;
-        return procedures.map(p => ({ value: p.value, key: p.key }));
     }
 }
