@@ -1,3 +1,4 @@
+import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { Request, Response } from 'express';
 import { inject } from 'inversify';
 import {
@@ -37,8 +38,10 @@ import {
     RegistrationRequestResponseDTO,
     TokenizedUserDTO
 } from '../model/response.model';
+import { AppServerConfiguration } from '../ports';
+import { SERVER_TYPES } from '../server.types';
 import { APPLICATION_TYPES } from './../../../app/application.types';
-import { AbstractController } from './abstract.controller';
+import { AbstractController, ParseSingleResponse } from './abstract.controller';
 
 enum USERS_ROUTE {
     ROOT = '/users',
@@ -54,14 +57,21 @@ export class DefaultUsersController
     extends AbstractController
     implements UsersController
 {
+    private redirectionTarget: AxiosInstance;
     constructor(
         @inject(APPLICATION_TYPES.PasswordService)
         private passwordService: PasswordPort,
         @inject(APPLICATION_TYPES.LoginService) private loginService: LoginPort,
         @inject(APPLICATION_TYPES.RegistrationService)
-        private registrationService: RegistrationPort
+        private registrationService: RegistrationPort,
+        @inject(SERVER_TYPES.AppServerConfiguration)
+        configuration: AppServerConfiguration
     ) {
         super();
+        this.redirectionTarget = axios.create({
+            baseURL: configuration.parseAPI,
+            headers: { 'X-Parse-Application-Id': configuration.appId }
+        });
     }
     @httpPut(USERS_ROUTE.RESET_PASSWORD_REQUEST)
     async putResetPasswordRequest(
@@ -240,6 +250,26 @@ export class DefaultUsersController
             logger.info(
                 `${this.constructor.name}.${this.postRegistration.name}, Response sent`
             );
+
+            await this.redirectionTarget.post<
+                ParseSingleResponse<unknown>,
+                AxiosResponse<ParseSingleResponse<unknown>>,
+                {
+                    username: string;
+                    firstName: string;
+                    lastName: string;
+                    email: string;
+                    password: string;
+                    institution: string;
+                }
+            >('users', {
+                username: credentials.email,
+                password: credentials.password,
+                email: credentials.email,
+                firstName: credentials.firstName,
+                lastName: credentials.lastName,
+                institution: credentials.institution
+            });
             return this.ok(res, dto);
         } catch (error) {
             logger.info(
