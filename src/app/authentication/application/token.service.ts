@@ -28,6 +28,7 @@ export class DefaultTokenService implements TokenService {
     }
 
     generateToken(payload: TokenPayload): string {
+        delete payload.exp;
         return sign(payload, this.jwtSecret, {
             expiresIn: this.expirationTime
         });
