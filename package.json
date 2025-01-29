@@ -52,6 +52,7 @@
     "inversify-express-utils": "~6.4.3",
     "jsonwebtoken": "~9.0.0",
     "lodash": "~4.17.21",
+    "mibi-portal-server": "file:",
     "moment": "~2.29.4",
     "mongodb": "^5.1.0",
     "morgan": "~1.10.0",
