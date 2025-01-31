@@ -4,6 +4,7 @@ import { Controller } from '../model/controller.model';
 import { MalformedRequestError } from '../model/domain.error';
 import { SERVER_ERROR_CODE } from '../model/enums';
 import { DefaultServerErrorDTO } from '../model/response.model';
+import { AxiosError } from 'axios';
 
 export interface ParseCollectionResponse<T> {
     results: T[];
@@ -46,6 +47,16 @@ export abstract class AbstractController implements Controller {
             message: 'Malformed request'
         };
         return this.jsonResponse(response, 400, dto);
+    }
+
+    protected axiosError(response: Response, error: AxiosError): Response {
+        const dto: DefaultServerErrorDTO = {
+            code: SERVER_ERROR_CODE.INVALID_EMAIL,
+            message:
+                (error.response?.data as { error: string }).error ||
+                error.message
+        };
+        return this.jsonResponse(response, 422, dto);
     }
 
     protected fail(
