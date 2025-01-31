@@ -24,7 +24,7 @@ import {
 import { OrderDTO } from '../model/shared-dto.model';
 import { AbstractController, ParseSingleResponse } from './abstract.controller';
 
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
 import { APPLICATION_TYPES } from '../../../app/application.types';
 import {
     TokenPayload,
@@ -242,10 +242,27 @@ export class DefaultSamplesController
     }
 
     private handleError(res: Response, error: Error) {
+        if (axios.isAxiosError(error)) {
+            if (this.isEmailFailureError(error)) {
+                this.axiosError(res, error);
+            }
+        }
+
         if (error instanceof MalformedRequestError) {
             this.clientError(res);
-        } else {
-            this.fail(res);
         }
+
+        this.fail(res);
+    }
+
+    private isEmailFailureError(error: AxiosError): boolean {
+        const errorString = 'email validation failed';
+        const errorObj = error.response?.data as { error: string };
+
+        if (errorObj && errorObj.error.toLowerCase().includes(errorString)) {
+            return true;
+        }
+
+        return false;
     }
 }
