@@ -122,7 +122,7 @@
       "path-to-regexp": "6.3.0"
     },
     "express": {
-      "path-to-regexp": "0.1.10"
+      "path-to-regexp": "0.1.12"
     },
     "cross-spawn": "7.0.6"
   },
