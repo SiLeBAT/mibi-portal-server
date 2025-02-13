@@ -1,8 +1,8 @@
 import fs from 'fs';
 import _ from 'lodash';
 import { promisify } from 'util';
-var mps155JSON = require('./data/mps155_timezone_bug.json');
-var mps155ValidatedJSON = require('./data/mps155_timezone_bug_validated.json');
+var mps155JSON = require('./data/mps155_timezone_bug_v17.json');
+var mps155ValidatedJSON = require('./data/mps155_timezone_bug_v17_validated.json');
 import { Api } from './api';
 import CRC32 from 'crc-32';
 
@@ -12,7 +12,7 @@ describe('Test samples endpoint', () => {
     it('should convert excel to json', async () => {
         expect.assertions(1);
 
-        const MPS155 = 'mps155_timezone_bug.xlsx';
+        const MPS155 = 'mps155_timezone_bug_v17.xlsx';
         const mps155XLSX = await promisify(fs.readFile)(
             DATA_DIR + MPS155
         );
@@ -36,7 +36,7 @@ describe('Test samples endpoint', () => {
         const buf = Buffer.from(response.data, 'base64');
 
         const mps155ValidatedXLSX = await promisify(fs.readFile)(
-            DATA_DIR + 'mps155_timezone_bug_validated.xlsx'
+            DATA_DIR + 'mps155_timezone_bug_v17_validated.xlsx'
         );
         expect(CRC32.buf(buf)).toEqual(CRC32.buf(mps155ValidatedXLSX));
     });

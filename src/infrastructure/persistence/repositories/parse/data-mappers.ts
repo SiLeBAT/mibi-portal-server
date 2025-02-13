@@ -1,19 +1,18 @@
 import {
-    Institute,
-    createInstitution,
-    createUser,
-    User,
-    State,
-    ValidationError,
-    NRL,
     DefaultNRLService,
-    UserToken
+    Institute,
+    NRL,
+    State,
+    User,
+    UserToken,
+    ValidationError,
+    createInstitution,
+    createUser
 } from '../../../../app/ports';
 import { Institution } from '../../data-store/parse/schema/institution';
 import { Token } from '../../data-store/parse/schema/resettoken';
-import { Nrl as ParseNrl } from '../../data-store/parse/schema/nrl';
-import { User as ParseUser } from '../../data-store/parse/schema/user';
 import { State as ParseState } from '../../data-store/parse/schema/state';
+import { User as ParseUser } from '../../data-store/parse/schema/user';
 import { ValidationError as ParseValidationError } from '../../data-store/parse/schema/validationerror';
 
 export function mapToInstitution(institution: Institution): Institute {
@@ -34,7 +33,6 @@ export function mapToInstitution(institution: Institution): Institute {
 }
 
 export function mapToUser(user: ParseUser): User {
-
     const institution = mapToInstitution(user.getInstitution() as Institution);
 
     return createUser(
@@ -79,19 +77,20 @@ export function mapToValidationError(
     };
 }
 
-export function mapToNRL(nrl: ParseNrl): NRL {
+export function mapToNRL(nrl: Parse.Object): NRL {
+    const sp = nrl.get('standardProcedure') || [];
+    const op = nrl.get('optionalProcedure') || [];
     return {
-        id: DefaultNRLService.mapNRLStringToEnum(nrl.getName()),
-        selectors: nrl.getSelector() || [],
-        email: nrl.getEmail() || '',
-        standardProcedures: nrl.getStandardProcedureList().map(p => ({
-            value: p.getValue(),
-            key: p.getKey()
+        id: DefaultNRLService.mapNRLStringToEnum(nrl.get('name')),
+        selectors: nrl.get('selector') || [],
+        email: nrl.get('email') || '',
+        standardProcedures: sp.map((p: Parse.Object) => ({
+            value: p.get('value'),
+            key: p.get('key')
         })),
-        optionalProcedures: nrl.getOptionalProcedureList().map(p => ({
-            value: p.getValue(),
-            key: p.getKey()
+        optionalProcedures: op.map((p: Parse.Object) => ({
+            value: p.get('value'),
+            key: p.get('key')
         }))
     };
 }
-

@@ -4,26 +4,17 @@ import {
 } from '@SiLeBAT/fg43-ne-server';
 import path from 'path';
 import { logger } from '../../aspects';
-import {
-    GeneralConfiguration,
-    ServerConfiguration,
-} from '../../main.model';
-import {
-    API_ROUTE,
-    validateToken
-} from './ports';
+import { GeneralConfiguration, ServerConfiguration } from '../../main.model';
+import { API_ROUTE, validateToken } from './ports';
 
 import { Container } from 'inversify';
 import { configurationService } from '../../configuratioin.service';
 
-
 export function initialiseExpress(container: Container) {
-
     const serverConfig: ServerConfiguration =
         configurationService.getServerConfiguration();
     const generalConfig: GeneralConfiguration =
         configurationService.getGeneralConfiguration();
-
 
     const expressServerConfig: ExpressServerConfiguration = {
         container,
@@ -51,4 +42,3 @@ export function initialiseExpress(container: Container) {
         process.exit(1);
     });
 }
-

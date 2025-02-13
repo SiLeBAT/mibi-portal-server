@@ -54,8 +54,10 @@ function autoCorrectAVV324(catalogService: CatalogService): CorrectionFunction {
         }
 
         // Check AVV codes
-        const avvKode = /^\d+\|\d+\|$/;
-        if (avvKode.test(trimmedEntry) && catalog.containsEintragWithAVVKode(trimmedEntry)) {
+        if (
+            catalog.isBasicCode(trimmedEntry) &&
+            catalog.containsEintragWithAVVKode(trimmedEntry)
+        ) {
             const eintrag = catalog.getEintragWithAVVKode(trimmedEntry);
             if (eintrag) {
                 searchCache[trimmedEntry] = createCacheEntry(
@@ -211,6 +213,4 @@ function createCatalogEnhancements(
         .value();
 }
 
-export {
-    autoCorrectAVV324
-};
+export { autoCorrectAVV324 };

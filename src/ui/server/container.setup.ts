@@ -1,10 +1,10 @@
-import { configurationService } from '../../configuratioin.service';
 import {
     MiBiApplication,
     createApplication,
     getApplicationContainerModule
 } from '../../app/ports';
 import { createContainer } from '../../aspects';
+import { configurationService } from '../../configuratioin.service';
 import {
     MAIL_TYPES,
     MailService,
@@ -20,10 +20,7 @@ import {
     ParseConnectionConfiguration,
     ServerConfiguration
 } from '../../main.model';
-import {
-    getServerContainerModule
-} from './ports';
-
+import { getServerContainerModule } from './ports';
 
 export async function initialiseContainer(
     // tslint:disable-next-line: no-any
@@ -55,7 +52,6 @@ export async function initialiseContainer(
         username: parseConnectionConfig.username,
         password: parseConnectionConfig.password,
         authDatabase: parseConnectionConfig.authDatabase
-
     });
 
     const container = createContainer({ defaultScope: 'Singleton' });
@@ -75,7 +71,9 @@ export async function initialiseContainer(
             ...serverConfig,
             jwtSecret: generalConfig.jwtSecret,
             logLevel: generalConfig.logLevel,
-            supportContact: generalConfig.supportContact
+            supportContact: generalConfig.supportContact,
+            parseAPI: parseConnectionConfig.serverURL,
+            appId: parseConnectionConfig.appId
         }),
         getMailContainerModule(mailConfiguration)
     );
@@ -88,4 +86,3 @@ export async function initialiseContainer(
     );
     return container;
 }
-

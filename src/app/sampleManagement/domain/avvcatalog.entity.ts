@@ -8,6 +8,7 @@ import {
     MibiFacettenEintrag,
     MibiFacette,
     MibiFacettenWert,
+    MibiFacettenzuordnung,
     AVV324Data,
     AVV313Eintrag,
     AVVCatalogData,
@@ -15,8 +16,25 @@ import {
 } from '../model/catalog.model';
 
 class AVVDefaultCatalog<T extends AVVCatalogData> implements AVVCatalog<T> {
+    private readonly basicCodeRegex: RegExp = /^\d+\|\d+\|$/;
+    private readonly facettenPartRegex =
+        /((\d+-\d+(:\d+)*)?(,\d+-\d+(:\d+)*)*)?/;
+    private readonly basicCodeRegexSource =
+        this.basicCodeRegex.source.substring(
+            1,
+            this.basicCodeRegex.source.length - 1
+        );
+    private readonly facettenPartRegexSource = this.facettenPartRegex.source;
+    // facettenCodeRegex: /^(\d+\|\d+\|)((\d+-\d+(:\d+)*)?(,\d+-\d+(:\d+)*)*)?$/
+    private readonly facettenCodeRegex = new RegExp(
+        '^(' +
+            this.basicCodeRegexSource +
+            ')' +
+            this.facettenPartRegexSource +
+            '$'
+    );
 
-    constructor(private data: T, private uId: string = '') { }
+    constructor(private data: T, private uId: string = '') {}
 
     containsEintragWithAVVKode(kode: string): boolean {
         return kode in this.data.eintraege;
@@ -29,8 +47,12 @@ class AVVDefaultCatalog<T extends AVVCatalogData> implements AVVCatalog<T> {
         return false;
     }
 
-    getEintragWithAVVKode(kode: string): MibiEintrag | MibiFacettenEintrag | undefined {
-        return this.containsEintragWithAVVKode(kode) ? this.data.eintraege[kode] : undefined;
+    getEintragWithAVVKode(
+        kode: string
+    ): MibiEintrag | MibiFacettenEintrag | undefined {
+        return this.containsEintragWithAVVKode(kode)
+            ? this.data.eintraege[kode]
+            : undefined;
     }
 
     getAVV313EintragWithAVVKode(kode: string): AVV313Eintrag | undefined {
@@ -43,7 +65,11 @@ class AVVDefaultCatalog<T extends AVVCatalogData> implements AVVCatalog<T> {
 
     getAttributeWithAVVKode(kode: string): string[] | undefined {
         const eintrag = this.getEintragWithAVVKode(kode);
-        if (eintrag && this.isMibiFacettenEintrag(eintrag) && 'Attribute' in eintrag) {
+        if (
+            eintrag &&
+            this.isMibiFacettenEintrag(eintrag) &&
+            'Attribute' in eintrag
+        ) {
             return eintrag.Attribute?.split(':');
         }
         return undefined;
@@ -71,7 +97,10 @@ class AVVDefaultCatalog<T extends AVVCatalogData> implements AVVCatalog<T> {
         return undefined;
     }
 
-    getFacettenWertWithBegriffsId(facettenWertId: string, facettenBegriffsId: string): MibiFacettenWert | undefined {
+    getFacettenWertWithBegriffsId(
+        facettenWertId: string,
+        facettenBegriffsId: string
+    ): MibiFacettenWert | undefined {
         const facette = this.getFacetteWithBegriffsId(facettenBegriffsId);
         if (facette) {
             return facette.FacettenWerte[facettenWertId];
@@ -83,20 +112,29 @@ class AVVDefaultCatalog<T extends AVVCatalogData> implements AVVCatalog<T> {
         return `${begriffsIdEintrag}|${id}|`;
     }
 
-    getTextWithAVVKode(kode: string, includingFacettenName: boolean = true): string {
+    getTextWithAVVKode(
+        kode: string,
+        includingFacettenName: boolean = true
+    ): string {
         if (this.isFacettenCatalog()) {
             return this.getTextWithFacettenCode(kode, includingFacettenName);
         }
 
-        return this.containsEintragWithAVVKode(kode) ? this.data.eintraege[kode].Text : '';
+        return this.containsEintragWithAVVKode(kode)
+            ? this.data.eintraege[kode].Text
+            : '';
     }
 
-    getTextWithFacettenCode(kode: string, includingFacettenName: boolean = true): string {
+    getTextWithFacettenCode(
+        kode: string,
+        includingFacettenName: boolean = true
+    ): string {
         let generatedText = '';
 
         if (this.isMibiCatalogFacettenData(this.data)) {
             const trimmedValue = kode.trim();
-            const [begriffsIdEintrag, id, facettenValues] = trimmedValue.split('|');
+            const [begriffsIdEintrag, id, facettenValues] =
+                trimmedValue.split('|');
 
             if (!(begriffsIdEintrag && id)) {
                 return '';
@@ -111,16 +149,22 @@ class AVVDefaultCatalog<T extends AVVCatalogData> implements AVVCatalog<T> {
             const facettenIds = this.getFacettenIdsWithKode(avvKode);
             if (facettenIds && facettenValues) {
                 const currentFacetten = facettenValues.split(',');
-                currentFacetten.forEach((facettenValue) => {
-                    const [facettenBeginId, facettenEndeIds] = facettenValue.split('-');
+                currentFacetten.forEach(facettenValue => {
+                    const [facettenBeginId, facettenEndeIds] =
+                        facettenValue.split('-');
                     const facettenEndeList = facettenEndeIds.split(':');
-                    const facette = this.getFacetteWithBegriffsId(facettenBeginId);
+                    const facette =
+                        this.getFacetteWithBegriffsId(facettenBeginId);
                     if (facette && includingFacettenName) {
                         generatedText += ` ${facette.Text} -`;
                     }
                     if (facette && facettenIds.includes(facette.FacettenId)) {
-                        facettenEndeList.forEach((facettenEndeId) => {
-                            const facettenWert = this.getFacettenWertWithBegriffsId(facettenEndeId, facettenBeginId);
+                        facettenEndeList.forEach(facettenEndeId => {
+                            const facettenWert =
+                                this.getFacettenWertWithBegriffsId(
+                                    facettenEndeId,
+                                    facettenBeginId
+                                );
                             if (facettenWert) {
                                 generatedText += ` ${facettenWert.Text},`;
                             }
@@ -138,15 +182,40 @@ class AVVDefaultCatalog<T extends AVVCatalogData> implements AVVCatalog<T> {
         return generatedText;
     }
 
+    getObligatoryFacettenzuordnungen(kode: string): MibiFacettenzuordnung[] {
+        if (this.isFacettenCatalog()) {
+            const eintrag = this.getEintragWithAVVKode(
+                kode
+            ) as MibiFacettenEintrag;
+            return eintrag.Facettenzuordnungen
+                ? eintrag.Facettenzuordnungen
+                : [];
+        }
+
+        return [];
+    }
+
+    hasFacettenInfo(kode: string): boolean {
+        return this.isFacettenCatalog() && this.facettenCodeRegex.test(kode);
+    }
+
+    isBasicCode(kode: string): boolean {
+        return this.basicCodeRegex.test(kode);
+    }
+
     private isFacettenCatalog() {
         return this.data.facettenErlaubt;
     }
 
-    private isMibiCatalogFacettenData(data: MibiCatalogData | MibiCatalogFacettenData): data is MibiCatalogFacettenData {
+    private isMibiCatalogFacettenData(
+        data: MibiCatalogData | MibiCatalogFacettenData
+    ): data is MibiCatalogFacettenData {
         return 'facetten' in data;
     }
 
-    private isMibiFacettenEintrag(eintrag: MibiEintrag | MibiFacettenEintrag): eintrag is MibiFacettenEintrag {
+    private isMibiFacettenEintrag(
+        eintrag: MibiEintrag | MibiFacettenEintrag
+    ): eintrag is MibiFacettenEintrag {
         return 'FacettenIds' in eintrag;
     }
 
@@ -154,7 +223,9 @@ class AVVDefaultCatalog<T extends AVVCatalogData> implements AVVCatalog<T> {
         return 'fuzzyEintraege' in data && 'textEintraege' in data;
     }
 
-    private isAVV313Eintrag(eintrag: MibiEintrag | AVV313Eintrag): eintrag is AVV313Eintrag {
+    private isAVV313Eintrag(
+        eintrag: MibiEintrag | AVV313Eintrag
+    ): eintrag is AVV313Eintrag {
         return 'PLZ' in eintrag && 'Name' in eintrag;
     }
 

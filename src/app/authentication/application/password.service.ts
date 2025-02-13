@@ -23,7 +23,7 @@ export class DefaultPasswordService implements PasswordService {
     private clientUrl: string;
     private supportContact: string;
 
-    private legacySystemURL: string = "https://nolar-dev.bfr.berlin/";
+    private legacySystemURL: string = 'https://nolar-dev.bfr.berlin/';
 
     constructor(
         @inject(APPLICATION_TYPES.NotificationService)
@@ -53,8 +53,9 @@ export class DefaultPasswordService implements PasswordService {
         if (hasOldToken) {
             await this.tokenService.deleteTokenForUser(user, TokenType.RESET);
         }
-        const institute = await this.parseInstituteRepository.findByInstituteId
-            (user.institution.uniqueId);
+        const institute = await this.parseInstituteRepository.findByInstituteId(
+            user.institution.uniqueId
+        );
         const token = this.tokenService.generateToken({
             sub: user.uniqueId,
             firstName: user.firstName,
@@ -78,7 +79,11 @@ export class DefaultPasswordService implements PasswordService {
         this.notificationService.sendNotification(requestResetNotification);
     }
 
-    async resetPassword(token: string, password: string, legacySystem = false): Promise<void> {
+    async resetPassword(
+        token: string,
+        password: string,
+        legacySystem = false
+    ): Promise<void> {
         const userToken = await this.tokenService.getUserTokenByJWT(token);
         const userId = userToken.userId;
         this.tokenService.verifyTokenWithUser(token, String(userId));
@@ -86,8 +91,10 @@ export class DefaultPasswordService implements PasswordService {
         await user.updatePassword(password);
         await this.userService.updateUser(user);
         await this.tokenService.deleteTokenForUser(user, TokenType.RESET);
-        const resetSuccessNotification =
-            this.createResetSuccessNotification(user, legacySystem);
+        const resetSuccessNotification = this.createResetSuccessNotification(
+            user,
+            legacySystem
+        );
         this.notificationService.sendNotification(resetSuccessNotification);
     }
 
@@ -96,8 +103,9 @@ export class DefaultPasswordService implements PasswordService {
         recoveryData: RecoveryData,
         resetToken: UserToken
     ): Notification<ResetRequestNotificationPayload, EmailNotificationMeta> {
-
-        const targetURL = recoveryData.legacySystem ? this.legacySystemURL : this.clientUrl;
+        const targetURL = recoveryData.legacySystem
+            ? this.legacySystemURL
+            : this.clientUrl;
         return {
             type: NotificationType.REQUEST_RESET,
             payload: {

@@ -30,6 +30,16 @@ export interface PostSubmittedRequestDTO {
     readonly receiveAs?: string;
 }
 
+export interface RedirectedPostSubmittedRequestDTO
+    extends PostSubmittedRequestDTO {
+    readonly userEmail: string;
+}
+
 export interface PutValidatedRequestDTO {
     readonly order: OrderDTO;
+}
+
+export interface RedirectedPutValidatedRequestDTO
+    extends PutValidatedRequestDTO {
+    readonly userEmail: string | null;
 }

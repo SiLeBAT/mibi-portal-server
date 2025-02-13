@@ -20,7 +20,7 @@ export class DefaultTokenService implements TokenService {
         @inject(APPLICATION_TYPES.ConfigurationService)
         private configurationService: ConfigurationService,
         @inject(APPLICATION_TYPES.ParseTokenRepository)
-        private parseTokenRepository: ParseTokenRepository,
+        private parseTokenRepository: ParseTokenRepository
     ) {
         const serverConfig =
             this.configurationService.getApplicationConfiguration();
@@ -28,6 +28,7 @@ export class DefaultTokenService implements TokenService {
     }
 
     generateToken(payload: TokenPayload): string {
+        delete payload.exp;
         return sign(payload, this.jwtSecret, {
             expiresIn: this.expirationTime
         });

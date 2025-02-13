@@ -1,6 +1,9 @@
 import { injectable } from 'inversify';
 import { ParseRepositoryBase } from '../../data-store/parse/parse.repository';
-import { Institution, SCHEMA_FIELDS } from '../../data-store/parse/schema/institution';
+import {
+    Institution,
+    SCHEMA_FIELDS
+} from '../../data-store/parse/schema/institution';
 import {
     ParseInstituteRepository,
     Institute,
@@ -14,23 +17,21 @@ export class ParseDefaultInstituteRepository
     extends ParseRepositoryBase<Institution>
     implements ParseInstituteRepository
 {
-
     constructor() {
         super();
         super.setClassName(SCHEMA_FIELDS.className);
     }
 
     async retrieve(): Promise<Institute[]> {
-        return super
-            ._retrieve()
-            .then((institutions: Institution[]) => {
-            return institutions.map(institution => mapToInstitution(institution));
+        return super._retrieve().then((institutions: Institution[]) => {
+            return institutions.map(institution =>
+                mapToInstitution(institution)
+            );
         });
     }
 
     async findByInstituteId(id: string): Promise<Institute> {
-        return super._findById(id)
-            .then((institution: Institution) => {
+        return super._findById(id).then((institution: Institution) => {
             if (!institution) {
                 throw new InstituteNotFoundError(
                     `Institute not found. id=${id}`
@@ -41,8 +42,7 @@ export class ParseDefaultInstituteRepository
     }
 
     async findByInstituteName(name: string): Promise<Institute> {
-        return super._findOne(SCHEMA_FIELDS.name1, name)
-            .then(institution => {
+        return super._findOne(SCHEMA_FIELDS.name1, name).then(institution => {
             if (!institution) {
                 throw new InstituteNotFoundError(
                     `Institute not found. name=${name}`

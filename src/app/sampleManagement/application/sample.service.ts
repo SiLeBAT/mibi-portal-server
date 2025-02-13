@@ -83,7 +83,7 @@ export class DefaultSampleService implements SampleService {
         @inject(APPLICATION_TYPES.SampleSheetService)
         private sampleSheetService: SampleSheetService,
         @inject(APPLICATION_TYPES.CatalogService)
-        private catalogService: CatalogService,
+        private catalogService: CatalogService
     ) {
         this.appName =
             this.configurationService.getApplicationConfiguration().appName;
@@ -102,7 +102,8 @@ export class DefaultSampleService implements SampleService {
 
         const nrlPayloads = await this.createPayloads(
             nrlSampleSets,
-            sampleSheet => this.jsonMarshalService.createExcel(sampleSheet, true)
+            sampleSheet =>
+                this.jsonMarshalService.createExcel(sampleSheet, true)
         );
 
         let userPayloads: Payload[];
@@ -421,7 +422,10 @@ export class DefaultSampleService implements SampleService {
         };
 
         sampleSet.samples.forEach(sample => {
-            const nrlData: Partial<NrlSampleData> = this.getNrlDataForSample(sample, nrlDataFeatures);
+            const nrlData: Partial<NrlSampleData> = this.getNrlDataForSample(
+                sample,
+                nrlDataFeatures
+            );
             this.expandSampleWithNrlData(sample, nrlData);
         });
 
@@ -440,15 +444,21 @@ export class DefaultSampleService implements SampleService {
         return nrlSampleSet;
     }
 
-    private getNrlDataForSample(sample: Sample, nrlDataFeatures: NrlDataFeatures): Partial<NrlSampleData> {
-
+    private getNrlDataForSample(
+        sample: Sample,
+        nrlDataFeatures: NrlDataFeatures
+    ): Partial<NrlSampleData> {
         const nrlSampleData: Partial<NrlSampleData> = {};
 
         for (const props in nrlDataFeatures) {
             const nrlDataFeatureProperties = nrlDataFeatures[props];
-            const catalog = this.catalogService.getAVVCatalog(nrlDataFeatureProperties.catalog);
+            const catalog = this.catalogService.getAVVCatalog(
+                nrlDataFeatureProperties.catalog
+            );
             const avvProperty = nrlDataFeatureProperties.avvProperty;
-            const textValue = catalog.getTextWithAVVKode(sample.getAnnotatedData()[avvProperty].value);
+            const textValue = catalog.getTextWithAVVKode(
+                sample.getAnnotatedData()[avvProperty].value
+            );
             nrlSampleData[props] = {
                 value: textValue,
                 errors: [],
@@ -459,7 +469,10 @@ export class DefaultSampleService implements SampleService {
         return nrlSampleData as NrlSampleData;
     }
 
-    private expandSampleWithNrlData(sample: Sample, nrlData: Partial<NrlSampleData>) {
+    private expandSampleWithNrlData(
+        sample: Sample,
+        nrlData: Partial<NrlSampleData>
+    ) {
         const errorSampleDataEntry: AnnotatedSampleDataEntry = {
             value: '',
             errors: [],
@@ -467,7 +480,9 @@ export class DefaultSampleService implements SampleService {
         };
         const annotatedData: Partial<NrlSampleData> = sample.getAnnotatedData();
         for (const props in nrlData) {
-            annotatedData[props] = nrlData[props] ? nrlData[props] : errorSampleDataEntry;
+            annotatedData[props] = nrlData[props]
+                ? nrlData[props]
+                : errorSampleDataEntry;
         }
     }
 
@@ -534,7 +549,10 @@ export class DefaultSampleService implements SampleService {
         sampleDataEntry1: AnnotatedSampleDataEntry,
         sampleDataEntryToRemove: AnnotatedSampleDataEntry
     ) {
-        if (sampleDataEntry1.value.trim() === sampleDataEntryToRemove.value.trim()) {
+        if (
+            sampleDataEntry1.value.trim() ===
+            sampleDataEntryToRemove.value.trim()
+        ) {
             sampleDataEntryToRemove.value = '';
         }
     }

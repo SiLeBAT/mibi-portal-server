@@ -1,19 +1,22 @@
 import { injectable } from 'inversify';
 import { ParseUserRepository, User, createUser } from '../../../../app/ports';
 import { ParseRepositoryBase } from '../../data-store/parse/parse.repository';
-import { SCHEMA_FIELDS as INSTITUTION_FIELDS, Institution } from '../../data-store/parse/schema/institution';
-import { User as ParseUser, SCHEMA_FIELDS as USER_FIELDS } from '../../data-store/parse/schema/user';
 import {
-    UserNotFoundError,
-    UserUpdateError
-} from '../../model/domain.error';
+    SCHEMA_FIELDS as INSTITUTION_FIELDS,
+    Institution
+} from '../../data-store/parse/schema/institution';
+import {
+    User as ParseUser,
+    SCHEMA_FIELDS as USER_FIELDS
+} from '../../data-store/parse/schema/user';
+import { UserNotFoundError, UserUpdateError } from '../../model/domain.error';
 import { mapToUser } from './data-mappers';
 
 @injectable()
 export class ParseDefaultUserRepository
     extends ParseRepositoryBase<ParseUser>
-    implements ParseUserRepository {
-
+    implements ParseUserRepository
+{
     constructor() {
         super();
         super.setClassName(USER_FIELDS.className);
@@ -28,7 +31,10 @@ export class ParseDefaultUserRepository
     }
 
     async createUser(user: User, legacySystem = false): Promise<User> {
-        const institution: Institution = await super._findById(user.institution.uniqueId, INSTITUTION_FIELDS.className) as Institution;
+        const institution: Institution = (await super._findById(
+            user.institution.uniqueId,
+            INSTITUTION_FIELDS.className
+        )) as Institution;
 
         const newUser = new ParseUser({
             institution: institution,
@@ -67,7 +73,11 @@ export class ParseDefaultUserRepository
                 }
                 const institution = user.getInstitution();
                 if (!institution) {
-                    return super._retrieveIncludingWith([USER_FIELDS.institution], USER_FIELDS.email, user.getEmail());
+                    return super._retrieveIncludingWith(
+                        [USER_FIELDS.institution],
+                        USER_FIELDS.email,
+                        user.getEmail()
+                    );
                 }
                 return user;
             })
@@ -83,7 +93,6 @@ export class ParseDefaultUserRepository
     }
 
     async updateUser(user: User): Promise<User> {
-
         const updatedUser = {
             firstName: user.firstName,
             lastName: user.lastName,
@@ -95,17 +104,22 @@ export class ParseDefaultUserRepository
             lastAttempt: user.getLastLoginAttempt()
         };
 
-        return super._findById(user.uniqueId)
+        return super
+            ._findById(user.uniqueId)
             .then(async (parseUser: ParseUser) => {
                 if (!parseUser) {
-                    throw new UserNotFoundError(`User not found. id=${user.uniqueId}`);
+                    throw new UserNotFoundError(
+                        `User not found. id=${user.uniqueId}`
+                    );
                 }
 
                 return super._update(parseUser, updatedUser);
             })
             .then(async (parseUser: ParseUser) => {
                 if (!parseUser) {
-                    throw new UserUpdateError(` Updated user not found. id=${user.uniqueId}`);
+                    throw new UserUpdateError(
+                        ` Updated user not found. id=${user.uniqueId}`
+                    );
                 }
 
                 return mapToUser(parseUser);
@@ -126,13 +140,19 @@ export class ParseDefaultUserRepository
                 }
                 const institution = parseUser.getInstitution();
                 if (!institution) {
-                    return super._retrieveIncludingWith([USER_FIELDS.institution], USER_FIELDS.email, parseUser.getEmail());
+                    return super._retrieveIncludingWith(
+                        [USER_FIELDS.institution],
+                        USER_FIELDS.email,
+                        parseUser.getEmail()
+                    );
                 }
                 return parseUser;
             })
             .then(async parseUser => {
                 if (!parseUser) {
-                    throw new UserNotFoundError(`User not found. username=${username}`);
+                    throw new UserNotFoundError(
+                        `User not found. username=${username}`
+                    );
                 }
                 if (Array.isArray(parseUser) && parseUser.length > 0) {
                     return mapToUser(parseUser[0]);

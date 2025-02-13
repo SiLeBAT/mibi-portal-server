@@ -20,7 +20,10 @@ const mockCatalog: AVVCatalog<any> = {
     getFacettenWertWithBegriffsId: jest.fn(),
     assembleAVVKode: jest.fn(),
     getTextWithAVVKode: jest.fn(),
+    hasFacettenInfo: jest.fn(),
     getTextWithFacettenCode: jest.fn(),
+    getObligatoryFacettenzuordnungen: jest.fn(),
+    isBasicCode: jest.fn(),
     getUniqueId: jest.fn(),
     getFuzzyIndex: jest.fn(() => mockFuse),
     dump: jest.fn()

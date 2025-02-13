@@ -1,0 +1,319 @@
+{
+  "order": {
+    "sampleSet": {
+      "samples": [
+        {
+          "sampleData": {
+            "sample_id": {
+              "value": "1",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sample_id_avv": {
+              "value": "1-ABC",
+              "errors": [
+                {
+                  "code": 72,
+                  "level": 1,
+                  "message": "Das Format der Probenummer nach AVV DatA scheint nicht korrekt zu sein."
+                }
+              ],
+              "correctionOffer": []
+            },
+            "partial_sample_id": {
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "pathogen_avv": {
+              "value": "Escherichia coli",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "pathogen_text": {
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_date": {
+              "value": "01.01.2019",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "isolation_date": {
+              "value": "02.01.2019",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_location_avv": {
+              "value": "45398|173159|",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_location_zip": {
+              "value": "10178",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_location_text": {
+              "value": "Berlin",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "animal_avv": {
+              "value": "2464|186528|",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "matrix_avv": {
+              "value": "182336|184855|183670-2296,185085-6986",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "animal_matrix_text": {
+              "value": "Fleischteilstück roh; Pflanze/Tier/Stoff/relevante Zutat - Fleisch; Produktmerkmal - Roh",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "primary_production_avv": {
+              "value": "59138|50593|",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "control_program_avv": {
+              "value": "70555|59517|",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_reason_avv": {
+              "value": "22562|126354|",
+              "errors": [
+                {
+                  "code": 95,
+                  "level": 1,
+                  "message": "Planproben sind normalerweise nicht für das NRL Antibiotikaresistenz bestimmt."
+                }
+              ],
+              "correctionOffer": []
+            },
+            "program_reason_text": {
+              "value": "Amtliche Kontrolle in Betrieben, Planprobe",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "operations_mode_avv": {
+              "value": "62727|57609|2-2464,63421-1512",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "operations_mode_text": {
+              "value": "Tierhaltung; Tiere - Hühner; Nutzungs- und Produktionsrichtung - Zur Mast",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "vvvo": {
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "program_avv": {
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "comment": {
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
+            }
+          },
+          "sampleMeta": {
+            "nrl": "NRL-AR",
+            "analysis": {
+              "species": false,
+              "serological": false,
+              "resistance": false,
+              "vaccination": false,
+              "molecularTyping": false,
+              "toxin": false,
+              "esblAmpCCarbapenemasen": false,
+              "sample": false,
+              "other": "",
+              "compareHuman": {
+                "value": "",
+                "active": false
+              }
+            },
+            "urgency": "NORMAL"
+          }
+        },
+        {
+          "sampleData": {
+            "sample_id": {
+              "value": "2",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sample_id_avv": {
+              "value": "2-ABC",
+              "errors": [
+                {
+                  "code": 72,
+                  "level": 1,
+                  "message": "Das Format der Probenummer nach AVV DatA scheint nicht korrekt zu sein."
+                }
+              ],
+              "correctionOffer": []
+            },
+            "partial_sample_id": {
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "pathogen_avv": {
+              "value": "Escherichia coli Carbapenemase-bildend",
+              "errors": [
+                {
+                  "code": 88,
+                  "level": 4,
+                  "message": "Erreger erkannt. Eingegebener Code wurde durch Text aus AVV DatA-Katalog Nr. 324 ersetzt."
+                }
+              ],
+              "correctionOffer": [],
+              "oldValue": "66684|57386|"
+            },
+            "pathogen_text": {
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_date": {
+              "value": "31.12.2018",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "isolation_date": {
+              "value": "01.01.2019",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_location_avv": {
+              "value": "45398|173159|",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_location_zip": {
+              "value": "10178",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_location_text": {
+              "value": "Berlin",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "animal_avv": {
+              "value": "1566|57806|",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "matrix_avv": {
+              "value": "182272|184169|6843-6909,183670-2296,185085-6986",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "animal_matrix_text": {
+              "value": "Rohschinken; Be- und Verarbeitung - Gepökelt; Pflanze/Tier/Stoff/relevante Zutat - Fleisch; Produktmerkmal - Roh",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "primary_production_avv": {
+              "value": "59138|50593|",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "control_program_avv": {
+              "value": "70555|59517|",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "sampling_reason_avv": {
+              "value": "22562|126354|",
+              "errors": [
+                {
+                  "code": 95,
+                  "level": 1,
+                  "message": "Planproben sind normalerweise nicht für das NRL Antibiotikaresistenz bestimmt."
+                }
+              ],
+              "correctionOffer": []
+            },
+            "program_reason_text": {
+              "value": "Amtliche Kontrolle in Betrieben, Planprobe",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "operations_mode_avv": {
+              "value": "62727|57609|2-1566,63421-1512",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "operations_mode_text": {
+              "value": "Tierhaltung; Tiere - Schweine; Nutzungs- und Produktionsrichtung - Zur Mast",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "vvvo": {
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "program_avv": {
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
+            },
+            "comment": {
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
+            }
+          },
+          "sampleMeta": {
+            "nrl": "NRL-AR",
+            "analysis": {
+              "species": false,
+              "serological": false,
+              "resistance": false,
+              "vaccination": false,
+              "molecularTyping": false,
+              "toxin": false,
+              "esblAmpCCarbapenemasen": false,
+              "sample": false,
+              "other": "",
+              "compareHuman": {
+                "value": "",
+                "active": false
+              }
+            },
+            "urgency": "NORMAL"
+          }
+        }
+      ],
+      "meta": {
+        "sender": {
+          "instituteName": "",
+          "department": "",
+          "street": "",
+          "zip": "",
+          "city": "",
+          "contactPerson": "",
+          "telephone": "",
+          "email": ""
+        },
+        "fileName": "mps155_timezone_bug_v17.xlsx",
+        "version": "17"
+      }
+    }
+  }
+}

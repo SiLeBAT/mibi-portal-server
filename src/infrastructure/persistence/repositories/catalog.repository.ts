@@ -2,12 +2,10 @@ import {
     Catalog,
     CatalogData,
     CatalogRepository,
-    createCatalog,
+    createCatalog
 } from '../../../app/ports';
 import { logger } from '../../../aspects';
-import {
-    loadJSONFile
-} from '../data-store/file/file-loader';
+import { loadJSONFile } from '../data-store/file/file-loader';
 
 class FileCatalogRepository implements CatalogRepository {
     private catalogs: {
@@ -35,24 +33,25 @@ class FileCatalogRepository implements CatalogRepository {
                 return loadJSONFile(`${catalogName}.json`, this.dataDir)
                     .then(
                         // tslint:disable-next-line:no-any
-                        (jsonData: {
-                            data: CatalogData[],
-                            uId: string
-                        }) => {
-                            this.catalogs[catalogName] = createCatalog(jsonData.data, jsonData.uId);
+                        (jsonData: { data: CatalogData[]; uId: string }) => {
+                            this.catalogs[catalogName] = createCatalog(
+                                jsonData.data,
+                                jsonData.uId
+                            );
                             return;
                         }
                     )
                     .catch(error => {
-                        logger.warn(`Error loading catalog from json file: ${error}`);
+                        logger.warn(
+                            `Error loading catalog from json file: ${error}`
+                        );
                     });
-            }))
-            .then(() => {
-                logger.info(
-                    `${this.constructor.name}.${this.initialise.name}, finished initialising Catalog Repository from Filesystem.`
-                );
-
-            });
+            })
+        ).then(() => {
+            logger.info(
+                `${this.constructor.name}.${this.initialise.name}, finished initialising Catalog Repository from Filesystem.`
+            );
+        });
     }
 
     getCatalog<T extends CatalogData>(catalogName: string): Catalog<T> {

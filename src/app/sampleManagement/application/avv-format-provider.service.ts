@@ -32,6 +32,8 @@ export class DefaultAVVFormatProvider implements AVVFormatProvider {
         return usedFormats;
     }
 }
-export function createService(repository: ParseStateRepository): AVVFormatProvider {
+export function createService(
+    repository: ParseStateRepository
+): AVVFormatProvider {
     return new DefaultAVVFormatProvider(repository);
 }

@@ -38,7 +38,6 @@ describe('Test validation errors', () => {
     it('should give correct error codes', async () => {
         const fileNames = getFilesToTest(DATA_DIR).concat(getFilesToTest(DATA_DIR_YEAR));
         const requests = await Promise.all(fileNames.map((fileName) => getRequestDTOFromFile(fileName)));
-
         let count = 0;
         requests.map(req => count += req.order.sampleSet.samples.length);
         logger.info(`${count} samples are to be tested`);
@@ -79,6 +78,7 @@ function getFilesToTest(dataDir: string): string[] {
 
     });
     logger.info(`${fileNames.length} datafiles in directory ${dataDir} are to be tested`);
+
     return fileNames;
 }
 

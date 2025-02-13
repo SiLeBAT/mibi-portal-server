@@ -1,45 +1,16 @@
-import { ParseNRLRepository, NRL } from '../../../../app/ports';
-import { ParseRepositoryBase } from '../../data-store/parse/parse.repository';
+import { NRL, ParseNRLRepository } from '../../../../app/ports';
 
-import { mapToNRL } from './data-mappers';
 import { injectable } from 'inversify';
-import { Nrl as ParseNrl, SCHEMA_FIELDS } from '../../data-store/parse/schema/nrl';
-import { AnalysisProcedure } from '../../data-store/parse/schema/analysisprocedure';
+import { mapToNRL } from './data-mappers';
 
 @injectable()
-export class ParseDefaultNRLRepository
-    extends ParseRepositoryBase<ParseNrl>
-    implements ParseNRLRepository
-{
-
-    constructor() {
-        super();
-        super.setClassName(SCHEMA_FIELDS.className);
-    }
-
+export class ParseDefaultNRLRepository implements ParseNRLRepository {
     async retrieve(): Promise<NRL[]> {
-        const nrls: ParseNrl[] = await this._retrieveIncludingWith([SCHEMA_FIELDS.standardProcedures, SCHEMA_FIELDS.optionalProcedures]);
-
-        const nrlsWithStandardProcedures = await Promise.all(
-            nrls.map(async (nrl: ParseNrl) => {
-                return this._retrieveRelationObjects(nrl.getStandardProcedures())
-                    .then((procedures: AnalysisProcedure[]) => {
-                        nrl.setStandardProcedureList(procedures);
-                        return nrl;
-                    });
-            })
-        );
-        const populatedNrls = await Promise.all(
-            nrlsWithStandardProcedures.map(async (nrl: ParseNrl) => {
-                return this._retrieveRelationObjects(nrl.getOptionalProcedures())
-                    .then((procedures: AnalysisProcedure[]) => {
-                        nrl.setOptionalProcedureList(procedures);
-                        return nrl;
-                    });
-            })
-        );
-
-        const result = populatedNrls.map(nrl => mapToNRL(nrl));
+        const query = new Parse.Query('NRL');
+        query.include('standardProcedures');
+        query.include('optionalProcedures');
+        const nrlObjects: Parse.Object[] = await query.find();
+        const result = nrlObjects.map(nrl => mapToNRL(nrl));
         return result;
     }
 }

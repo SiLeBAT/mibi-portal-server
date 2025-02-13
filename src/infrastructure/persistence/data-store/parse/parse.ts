@@ -27,11 +27,14 @@ class ParseDataStore implements DataStore {
             parseConnectionInfo.database +
             '" }';
 
-        Parse.initialize(parseConnectionInfo.appId, undefined, parseConnectionInfo.masterKey);
+        Parse.initialize(
+            parseConnectionInfo.appId,
+            undefined,
+            parseConnectionInfo.masterKey
+        );
         Parse.serverURL = parseConnectionInfo.serverURL;
 
-        Parse.Schema
-            .all()
+        Parse.Schema.all()
             .then(() => {
                 logger.info('Connected to DB', logString);
                 return;
@@ -44,7 +47,9 @@ class ParseDataStore implements DataStore {
     }
 }
 
-export async function createDataStore(parseConnectionInfo: ParseConnectionInfo): Promise<DataStore> {
+export async function createDataStore(
+    parseConnectionInfo: ParseConnectionInfo
+): Promise<DataStore> {
     logger.info('Creating parse datastore');
     const dataStore = new ParseDataStore(parseConnectionInfo);
     await initSchema(parseConnectionInfo);

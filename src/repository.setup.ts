@@ -5,17 +5,11 @@ import {
     initialiseSearchAliasRepository,
     initialiseAVVCatalogRepository
 } from './infrastructure/ports';
-import {
-    DataStoreConfiguration
-} from './main.model';
-
+import { DataStoreConfiguration } from './main.model';
 
 export async function initialiseRepositories() {
-
     const dataStoreConfig: DataStoreConfiguration =
         configurationService.getDataStoreConfiguration();
-
-
 
     const catalogRepository = await initialiseCatalogRepository(
         dataStoreConfig.dataDir
@@ -47,8 +41,8 @@ export async function initialiseRepositories() {
     });
 
     return {
-        searchAliasRepository, catalogRepository, avvCatalogRepository
+        searchAliasRepository,
+        catalogRepository,
+        avvCatalogRepository
     };
-
 }
-

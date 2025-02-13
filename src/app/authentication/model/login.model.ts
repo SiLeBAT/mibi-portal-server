@@ -14,7 +14,7 @@ export interface LoginPort {
     loginUser(credentials: UserLoginInformation): Promise<LoginResponse>;
 }
 
-export interface LoginService extends LoginPort { }
+export interface LoginService extends LoginPort {}
 
 export interface RecoveryData {
     email: string;
@@ -24,10 +24,14 @@ export interface RecoveryData {
 }
 export interface PasswordPort {
     requestPasswordReset(recoveryData: RecoveryData): Promise<void>;
-    resetPassword(token: string, password: string, legacySystem?: boolean): Promise<void>;
+    resetPassword(
+        token: string,
+        password: string,
+        legacySystem?: boolean
+    ): Promise<void>;
 }
 
-export interface PasswordService extends PasswordPort { }
+export interface PasswordService extends PasswordPort {}
 
 interface BaseResetNotificationPayload {
     name: string;

@@ -10,7 +10,10 @@ import {
 import { UserAlreadyExistsError } from '../domain/domain.error';
 import { TokenType } from '../domain/enums';
 import { createUser } from '../domain/user.entity';
-import { InstituteService, ParseInstituteRepository } from '../model/institute.model';
+import {
+    InstituteService,
+    ParseInstituteRepository
+} from '../model/institute.model';
 import { RecoveryData } from '../model/login.model';
 import {
     AdminActivationNotificationPayload,
@@ -30,7 +33,7 @@ export class DefaultRegistrationService implements RegistrationService {
     private appName: string;
     private clientUrl: string;
     private supportContact: string;
-    private legacySystemURL: string = "https://nolar-dev.bfr.berlin/";
+    private legacySystemURL: string = 'https://nolar-dev.bfr.berlin/';
     constructor(
         @inject(APPLICATION_TYPES.NotificationService)
         private notificationService: NotificationService,
@@ -111,7 +114,10 @@ export class DefaultRegistrationService implements RegistrationService {
         );
 
         await newUser.updatePassword(credentials.password);
-        const user = await this.userService.createUser(newUser, credentials.legacySystem);
+        const user = await this.userService.createUser(
+            newUser,
+            credentials.legacySystem
+        );
         const recoveryData: RecoveryData = {
             userAgent: credentials.userAgent,
             email: user.email,
@@ -130,8 +136,9 @@ export class DefaultRegistrationService implements RegistrationService {
         if (hasOldToken) {
             await this.tokenService.deleteTokenForUser(user);
         }
-        const institute = await this.parseInstituteRepository.findByInstituteId
-            (user.institution.uniqueId);
+        const institute = await this.parseInstituteRepository.findByInstituteId(
+            user.institution.uniqueId
+        );
         const token = this.tokenService.generateToken({
             sub: user.uniqueId,
             firstName: user.firstName,
@@ -227,7 +234,9 @@ export class DefaultRegistrationService implements RegistrationService {
         RequestActivationNotificationPayload,
         EmailNotificationMeta
     > {
-        const targetURL = recoveryData.legacySystem ? this.legacySystemURL : this.clientUrl;
+        const targetURL = recoveryData.legacySystem
+            ? this.legacySystemURL
+            : this.clientUrl;
         return {
             type: NotificationType.REQUEST_ACTIVATION,
             payload: {

@@ -57,25 +57,25 @@ export function getPersistenceContainerModule({
                 ParseDefaultUserRepository
             );
 
-            bind<ParseInstituteRepository>(APPLICATION_TYPES.ParseInstituteRepository).to(
-                ParseDefaultInstituteRepository
-            );
+            bind<ParseInstituteRepository>(
+                APPLICATION_TYPES.ParseInstituteRepository
+            ).to(ParseDefaultInstituteRepository);
 
             bind<ParseNRLRepository>(APPLICATION_TYPES.ParseNRLRepository).to(
                 ParseDefaultNRLRepository
             );
 
-            bind<ParseTokenRepository>(APPLICATION_TYPES.ParseTokenRepository).to(
-                ParseDefaultTokenRepository
-            );
+            bind<ParseTokenRepository>(
+                APPLICATION_TYPES.ParseTokenRepository
+            ).to(ParseDefaultTokenRepository);
 
-            bind<ParseStateRepository>(APPLICATION_TYPES.ParseStateRepository).to(
-                ParseDefaultStateRepository
-            );
+            bind<ParseStateRepository>(
+                APPLICATION_TYPES.ParseStateRepository
+            ).to(ParseDefaultStateRepository);
 
-            bind<ParseValidationErrorRepository>(APPLICATION_TYPES.ParseValidationErrorRepository).to(
-                ParseDefaultValidationErrorRepository
-            );
+            bind<ParseValidationErrorRepository>(
+                APPLICATION_TYPES.ParseValidationErrorRepository
+            ).to(ParseDefaultValidationErrorRepository);
         }
     );
 }

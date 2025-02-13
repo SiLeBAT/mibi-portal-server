@@ -59,10 +59,15 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
         private fileRepository: FileRepository,
         @inject(APPLICATION_TYPES.SampleSheetConstants)
         private sampleSheetConstants: SampleSheetConstants
-    ) { }
+    ) {}
 
-    async createExcel(sampleSheet: SampleSheet, nrlSampleSheet: boolean = false): Promise<FileBuffer> {
-        const templateFileName = nrlSampleSheet ? this.TEMPLATE_FILE_NAME_NRL : this.TEMPLATE_FILE_NAME;
+    async createExcel(
+        sampleSheet: SampleSheet,
+        nrlSampleSheet: boolean = false
+    ): Promise<FileBuffer> {
+        const templateFileName = nrlSampleSheet
+            ? this.TEMPLATE_FILE_NAME_NRL
+            : this.TEMPLATE_FILE_NAME;
 
         const buffer = await this.fileRepository.getFileBuffer(
             templateFileName
@@ -76,7 +81,10 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
         sampleSheet.samples.forEach((sample: Sample) => {
             highlights.push(sample.getOldValues());
         });
-        const dataToSave = this.fromDataObjToAOO(sampleSheet.samples, nrlSampleSheet);
+        const dataToSave = this.fromDataObjToAOO(
+            sampleSheet.samples,
+            nrlSampleSheet
+        );
         let workbook = await this.fromFileToWorkbook(buffer);
         workbook = this.addValidatedDataToWorkbook(
             workbook,
@@ -101,9 +109,14 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
         return workbook;
     }
 
-    private fromDataObjToAOO(sampleCollection: Sample[], nrlSampleSheet: boolean = false): string[][] {
+    private fromDataObjToAOO(
+        sampleCollection: Sample[],
+        nrlSampleSheet: boolean = false
+    ): string[][] {
         const dataToSave: string[][] = [];
-        const formProperties: string[] = nrlSampleSheet ? [...FORM_PROPERTIES_NRL] : [...FORM_PROPERTIES];
+        const formProperties: string[] = nrlSampleSheet
+            ? [...FORM_PROPERTIES_NRL]
+            : [...FORM_PROPERTIES];
 
         _.forEach(sampleCollection, (sample: Sample) => {
             const row: string[] = [];
@@ -236,7 +249,9 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
     ) {
         const searchTerm = 'Ihre Probe-';
         const sheet = workbook.sheet(VALID_SHEET_NAME);
-        const formProperties: string[] = nrlSampleSheet ? [...FORM_PROPERTIES_NRL] : [...FORM_PROPERTIES];
+        const formProperties: string[] = nrlSampleSheet
+            ? [...FORM_PROPERTIES_NRL]
+            : [...FORM_PROPERTIES];
 
         if (sheet) {
             const startCol = 'A';
@@ -274,7 +289,6 @@ export class DefaultJSONMarshalService implements JSONMarshalService {
                         'Unable to apply styling to Excel'
                     );
                 }
-
             }
         }
         return workbook;

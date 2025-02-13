@@ -21,11 +21,6 @@
     }
   },
   "dataStore": {
-    "host": "localhost:27017",
-    "dataBase": "epilab",
-    "username": "mibiPortal",
-    "password": "localPortal",
-    "authDatabase": "epilab",
     "dataDir": "./data"
   },
   "parseConnection": {
@@ -33,10 +28,7 @@
     "appId": "appId",
     "masterKey": "masterKey",
     "host": "localhost:27017",
-    "database": "mibiportal",
-    "username": "mibiPortal",
-    "password": "localPortal",
-    "authDatabase": "mibiportal"
+    "database": "mibiportal"
   },
   "mail": {
     "fromAddress": "",

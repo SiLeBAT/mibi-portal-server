@@ -1,8 +1,6 @@
 import _ from 'lodash';
 import { logger } from '../../../aspects';
-import {
-    autoCorrectAVV324
-} from '../domain/custom-auto-correction-functions';
+import { autoCorrectAVV324 } from '../domain/custom-auto-correction-functions';
 import {
     CorrectionFunction,
     FormAutoCorrectionService,

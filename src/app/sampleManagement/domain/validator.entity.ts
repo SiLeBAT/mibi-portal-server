@@ -11,6 +11,8 @@ import {
     inCatalog,
     inAVVCatalog,
     inAVVFacettenCatalog,
+    hasObligatoryFacettenValues,
+    isHierarchyCode,
     registeredZoMo,
     matchADVNumberOrString,
     matchAVVCodeOrString,
@@ -90,7 +92,14 @@ class SampleValidator implements Validator {
         validate.validators.matchesIdToSpecificYear = matchesIdToSpecificYear;
         validate.validators.inCatalog = inCatalog(this.catalogService);
         validate.validators.inAVVCatalog = inAVVCatalog(this.catalogService);
-        validate.validators.inAVVFacettenCatalog = inAVVFacettenCatalog(this.catalogService);
+        validate.validators.inAVVFacettenCatalog = inAVVFacettenCatalog(
+            this.catalogService
+        );
+        validate.validators.hasObligatoryFacettenValues =
+            hasObligatoryFacettenValues(this.catalogService);
+        validate.validators.isHierarchyCode = isHierarchyCode(
+            this.catalogService
+        );
         validate.validators.matchADVNumberOrString = matchADVNumberOrString(
             this.catalogService
         );

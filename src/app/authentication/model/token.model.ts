@@ -18,6 +18,7 @@ export interface TokenUserInfo {
 }
 export interface TokenPayload extends TokenUserInfo {
     sub: string;
+    exp?: number;
 }
 
 export interface AdminTokenPayload extends TokenPayload {

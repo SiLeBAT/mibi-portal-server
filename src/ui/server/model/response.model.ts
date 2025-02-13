@@ -44,7 +44,7 @@ interface ErrorDTO {
     message: string;
 }
 
-export interface DefaultServerErrorDTO extends ErrorDTO { }
+export interface DefaultServerErrorDTO extends ErrorDTO {}
 
 export interface InvalidExcelVersionErrorDTO extends ErrorDTO {
     version: string;

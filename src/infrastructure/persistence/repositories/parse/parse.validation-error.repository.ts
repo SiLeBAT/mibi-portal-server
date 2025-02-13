@@ -1,8 +1,14 @@
-import { ParseValidationErrorRepository, ValidationError } from '../../../../app/ports';
+import {
+    ParseValidationErrorRepository,
+    ValidationError
+} from '../../../../app/ports';
 import { mapToValidationError } from './data-mappers';
 import { ParseRepositoryBase } from '../../data-store/parse/parse.repository';
 import { injectable } from 'inversify';
-import { ValidationError as ParseValidationError, SCHEMA_FIELDS as ERROR_FIELDS } from '../../data-store/parse/schema/validationerror';
+import {
+    ValidationError as ParseValidationError,
+    SCHEMA_FIELDS as ERROR_FIELDS
+} from '../../data-store/parse/schema/validationerror';
 
 @injectable()
 export class ParseDefaultValidationErrorRepository

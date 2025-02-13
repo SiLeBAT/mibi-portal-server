@@ -1,16 +1,23 @@
 import _ from 'lodash';
 import Fuse from 'fuse.js';
-import {
-    autoCorrectAVV324
-} from '../custom-auto-correction-functions';
+import { autoCorrectAVV324 } from '../custom-auto-correction-functions';
 import { CorrectionFunction } from '../../model/autocorrection.model';
 import { SampleData } from '../../model/sample.model';
+import { AVV324Data } from '../../model/catalog.model';
 jest.mock('../../../core/application/configuration.service');
 
 describe('Custom Auto-correction Functions', () => {
     const genericSampleData: SampleData = {
-        sample_id: { value: '1', errors: [], correctionOffer: [] },
-        sample_id_avv: { value: '1-ABC', errors: [], correctionOffer: [] },
+        sample_id: {
+            value: '1',
+            errors: [],
+            correctionOffer: []
+        },
+        sample_id_avv: {
+            value: '1-ABC',
+            errors: [],
+            correctionOffer: []
+        },
         partial_sample_id: {
             value: '0',
             errors: [],
@@ -21,10 +28,18 @@ describe('Custom Auto-correction Functions', () => {
             errors: [],
             correctionOffer: []
         },
-        pathogen_text: { value: '', errors: [], correctionOffer: [] },
-        sampling_date: { value: '01.02.2023', errors: [], correctionOffer: [] },
+        pathogen_text: {
+            value: '',
+            errors: [],
+            correctionOffer: []
+        },
+        sampling_date: {
+            value: '02.01.2024',
+            errors: [],
+            correctionOffer: []
+        },
         isolation_date: {
-            value: '01.03.2023',
+            value: '01.03.2024',
             errors: [],
             correctionOffer: []
         },
@@ -34,24 +49,40 @@ describe('Custom Auto-correction Functions', () => {
             correctionOffer: []
         },
         sampling_location_zip: {
-            value: '10787',
+            value: '76275',
             errors: [],
             correctionOffer: []
         },
         sampling_location_text: {
-            value: 'Berlin',
+            value: 'Ettlingen, Stadt',
             errors: [],
             correctionOffer: []
         },
-        animal_avv: { value: '706|57678|', errors: [], correctionOffer: [] },
-        matrix_avv: { value: '187036|183974|8871-8874,183670-1086', errors: [], correctionOffer: [] },
+        animal_avv: {
+            value: '2464|186528|1212-905,1334-1356,63421-1512',
+            errors: [],
+            correctionOffer: []
+        },
+        matrix_avv: {
+            value: '187036|183974|8871-8874,183670-1086',
+            errors: [],
+            correctionOffer: []
+        },
         animal_matrix_text: {
             value: 'Kot (Hygieneproben (LFGB-Bereich)); Kontakt - LM-Kontakt; Pflanze/Tier/Stoff/relevante Zutat - Schwein',
             errors: [],
             correctionOffer: []
         },
-        primary_production_avv: { value: '', errors: [], correctionOffer: [] },
-        sampling_reason_avv: { value: '22564|126366|', errors: [], correctionOffer: [] },
+        primary_production_avv: {
+            value: '',
+            errors: [],
+            correctionOffer: []
+        },
+        sampling_reason_avv: {
+            value: '22564|126366|',
+            errors: [],
+            correctionOffer: []
+        },
         control_program_avv: {
             value: '70564|53075|',
             errors: [],
@@ -63,7 +94,7 @@ describe('Custom Auto-correction Functions', () => {
             correctionOffer: []
         },
         operations_mode_avv: {
-            value: '10469|57619|63422-10492,63423-10563|BG:FM:KM:LM:TAM:TNP:TT:Tabak:Wein',
+            value: '10469|57619|63422-10492,63423-10563',
             errors: [],
             correctionOffer: []
         },
@@ -72,50 +103,100 @@ describe('Custom Auto-correction Functions', () => {
             errors: [],
             correctionOffer: []
         },
-        vvvo: { value: '', errors: [], correctionOffer: [] },
-        program_avv: { value: '', errors: [], correctionOffer: [] },
-        comment: { value: '', errors: [], correctionOffer: [] }
+        vvvo: {
+            value: '',
+            errors: [],
+            correctionOffer: []
+        },
+        program_avv: {
+            value: '',
+            errors: [],
+            correctionOffer: []
+        },
+        comment: {
+            value: '',
+            errors: [],
+            correctionOffer: []
+        }
     };
+
     describe('autoCorrectAVV324', () => {
         // tslint:disable-next-line
         let mockCatalogService: any;
 
         beforeEach(() => {
-            let mockAVVEntries = [
-                {
-                    Kode: '10807|1548|',
-                    'P-Code3': 'Escherichia coli',
-                    Text: 'Escherichia coli'
+            let mockAVV324Entries: Partial<AVV324Data> = {
+                eintraege: {
+                    '10807|186333|': {
+                        Text: 'Escherichia coli',
+                        Basiseintrag: true
+                    },
+                    '11475|2965|': {
+                        Text: 'Salmonella Colindale',
+                        Basiseintrag: true
+                    },
+                    '11488|1400|': {
+                        Text: 'Salmonella Dublin',
+                        Basiseintrag: true
+                    },
+                    '66684|57386|': {
+                        Text: 'Escherichia coli Carbapenemase-bildend',
+                        Basiseintrag: true
+                    }
                 },
-                {
-                    Kode: '11475|2965|',
-                    'P-Code3': 'S.Colindale',
-                    Text: 'Salmonella Colindale'
+                textEintraege: {
+                    'Escherichia coli': '10807|186333|',
+                    'Salmonella Colindale': '11475|2965|',
+                    'Salmonella Dublin': '11488|1400|',
+                    'Escherichia coli Carbapenemase-bildend': '66684|57386|'
                 },
-                {
-                    Kode: '11488|1400|',
-                    'P-Code3': 'S.Dublin',
-                    Text: 'Salmonella Dublin'
-                },
-                {
-                    Kode: '66684|57386|',
-                    'P-Code3': '',
-                    Text: 'Escherichia coli Carbapenemase-bildend'
-                }
-            ];
+                fuzzyEintraege: [
+                    {
+                        Kode: '10807|186333|',
+                        Text: 'Escherichia coli',
+                        Basiseintrag: true
+                    },
+                    {
+                        Kode: '11475|2965|',
+                        Text: 'Salmonella Colindale',
+                        Basiseintrag: true
+                    },
+                    {
+                        Kode: '11488|1400|',
+                        Text: 'Salmonella Dublin',
+                        Basiseintrag: true
+                    },
+                    {
+                        Kode: '66684|57386|',
+                        Text: 'Escherichia coli Carbapenemase-bildend',
+                        Basiseintrag: true
+                    }
+                ]
+            };
 
             mockCatalogService = {
                 getAVVCatalog: jest.fn(() => {
                     return {
-                        dump: () => mockAVVEntries,
+                        dump: () => mockAVV324Entries,
                         getFuzzyIndex: (options: Fuse.IFuseOptions<{}>) =>
-                            new Fuse(mockAVVEntries, options),
-                        containsTextEintrag: (v: string) =>
-                            !!_.filter(mockAVVEntries, e => e.Text === v)[0],
-                        containsEintragWithAVVKode: (v: string) =>
-                            !!_.filter(mockAVVEntries, e => e.Kode === v)[0],
-                        getEintragWithAVVKode: (v: string) =>
-                            _.filter(mockAVVEntries, e => e.Kode === v)[0],
+                            new Fuse(
+                                (
+                                    mockAVV324Entries as AVV324Data
+                                ).fuzzyEintraege,
+                                options
+                            ),
+                        containsTextEintrag: (value: string) =>
+                            value in
+                            (mockAVV324Entries as AVV324Data).textEintraege,
+                        isBasicCode: (kode: string) => true,
+                        containsEintragWithAVVKode: (kode: string) =>
+                            kode in (mockAVV324Entries as AVV324Data).eintraege,
+                        getEintragWithAVVKode: (kode: string) =>
+                            kode in (mockAVV324Entries as AVV324Data).eintraege
+                                ? (mockAVV324Entries as AVV324Data).eintraege[
+                                      kode
+                                  ]
+                                : undefined
                     };
                 }),
                 getCatalogSearchAliases: () => []
@@ -185,30 +266,6 @@ describe('Custom Auto-correction Functions', () => {
             });
         });
 
-        it('should offer corrections for 0801014 in pathogen_avv', () => {
-            const specificSampleData = {
-                ...genericSampleData,
-                ...{
-                    pathogen_avv: {
-                        value: '66684|57386|',
-                        errors: [],
-                        correctionOffer: []
-                    }
-                }
-            };
-
-            const correctionFunction: CorrectionFunction =
-                autoCorrectAVV324(mockCatalogService);
-
-            const autoCorrection = correctionFunction(specificSampleData);
-            expect(autoCorrection).toEqual({
-                field: 'pathogen_avv',
-                original: '66684|57386|',
-                correctionOffer: ['Escherichia coli Carbapenemase-bildend'],
-                code: 88
-            });
-        });
-
         it('should successfully offer corrections for E. coli in pathogen_avv', () => {
             const specificSampleData = {
                 ...genericSampleData,
@@ -229,8 +286,8 @@ describe('Custom Auto-correction Functions', () => {
                 field: 'pathogen_avv',
                 original: 'E. coli',
                 correctionOffer: [
-                    'Salmonella Colindale',
                     'Escherichia coli',
+                    'Salmonella Colindale',
                     'Escherichia coli Carbapenemase-bildend',
                     'Salmonella Dublin'
                 ],

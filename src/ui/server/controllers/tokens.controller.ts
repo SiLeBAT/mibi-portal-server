@@ -26,7 +26,8 @@ enum TOKENS_ROUTE {
 @controller(API_ROUTE.V2 + TOKENS_ROUTE.ROOT)
 export class DefaultTokensController
     extends AbstractController
-    implements TokensController {
+    implements TokensController
+{
     constructor(
         @inject(APPLICATION_TYPES.TokenService) private tokenService: TokenPort
     ) {

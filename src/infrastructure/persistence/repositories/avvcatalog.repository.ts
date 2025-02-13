@@ -7,9 +7,7 @@ import {
     MibiCatalogData,
     MibiCatalogFacettenData
 } from '../../../app/ports';
-import {
-    loadJSONFile
-} from '../data-store/file/file-loader';
+import { loadJSONFile } from '../data-store/file/file-loader';
 import _ from 'lodash';
 
 class AVVFileCatalogRepository implements AVVCatalogRepository {
@@ -25,7 +23,7 @@ class AVVFileCatalogRepository implements AVVCatalogRepository {
         'avv324',
         'avv326',
         'avv328',
-        'avv339',
+        'avv339'
         // `zsp${new Date().getFullYear().toString()}`,
         // `zsp${(new Date().getFullYear() + 1).toString()}`,
         // `zsp${(new Date().getFullYear() - 1).toString()}`
@@ -46,26 +44,32 @@ class AVVFileCatalogRepository implements AVVCatalogRepository {
                     .then(
                         // tslint:disable-next-line:no-any
                         (jsonData: {
-                            data: MibiCatalogData | MibiCatalogFacettenData,
-                            uId: string
+                            data: MibiCatalogData | MibiCatalogFacettenData;
+                            uId: string;
                         }) => {
-                            this.catalogs[catalogName] = createAVVCatalog(jsonData.data, jsonData.uId);
+                            this.catalogs[catalogName] = createAVVCatalog(
+                                jsonData.data,
+                                jsonData.uId
+                            );
                             return;
                         }
                     )
                     .catch(error => {
-                        logger.warn(`Error loading AVV catalog from json file: ${error}`);
+                        logger.warn(
+                            `Error loading AVV catalog from json file: ${error}`
+                        );
                     });
-            }))
-            .then(() => {
-                logger.info(
-                    `${this.constructor.name}.${this.initialise.name}, finished initialising AVV Catalog Repository from Filesystem.`
-                );
-
-            });
+            })
+        ).then(() => {
+            logger.info(
+                `${this.constructor.name}.${this.initialise.name}, finished initialising AVV Catalog Repository from Filesystem.`
+            );
+        });
     }
 
-    getAVVCatalog<T extends AVVCatalogData>(catalogName: string): AVVCatalog<T> {
+    getAVVCatalog<T extends AVVCatalogData>(
+        catalogName: string
+    ): AVVCatalog<T> {
         return this.catalogs[catalogName] as AVVCatalog<T>;
     }
 }
