@@ -19,6 +19,10 @@ export interface InstitutesController extends Controller {
     getInstitutes(req: Request, res: Response): Promise<void>;
 }
 
+export interface ClientDashboardController extends Controller {
+    getDashboardInfo(req: Request, res: Response): Promise<void>;
+}
+
 export interface NRLsController extends Controller {
     getNRLs(req: Request, res: Response): Promise<void>;
 }
