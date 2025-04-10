@@ -14,7 +14,7 @@ import {
     MalformedRequestError,
     TokenNotFoundError
 } from '../model/domain.error';
-import { API_ROUTE } from '../model/enums';
+import { API_ROUTE, SERVER_ERROR_CODE } from '../model/enums';
 import {
     PostSubmittedRequestDTO,
     PutValidatedRequestDTO,
@@ -34,6 +34,10 @@ import { User, UserPort } from '../../../app/authentication/model/user.model';
 import { getTokenFromHeader } from '../middleware/token-validator.middleware';
 import { AppServerConfiguration } from '../ports';
 import { SERVER_TYPES } from '../server.types';
+import {
+    DefaultServerErrorDTO,
+    InvalidExcelVersionErrorDTO
+} from '../model/response.model';
 moment.locale('de');
 
 enum RESOURCE_VIEW_TYPE {
@@ -244,7 +248,27 @@ export class DefaultSamplesController
     private handleError(res: Response, error: Error) {
         if (axios.isAxiosError(error)) {
             if (this.isEmailFailureError(error)) {
-                this.axiosError(res, error);
+                const errorDTO: DefaultServerErrorDTO = {
+                    code: SERVER_ERROR_CODE.INVALID_EMAIL,
+                    message:
+                        (error.response?.data as { error: string }).error ||
+                        error.message
+                };
+                this.axiosError(res, errorDTO);
+            }
+
+            if (this.isExcelVersionError(error)) {
+                const message = error.response?.data.error as string;
+                const version = message.includes(':')
+                    ? error.response?.data.error.split(':')[1]
+                    : '';
+
+                const errorDTO: InvalidExcelVersionErrorDTO = {
+                    code: SERVER_ERROR_CODE.INVALID_VERSION,
+                    message: message,
+                    version: version
+                };
+                this.axiosError(res, errorDTO);
             }
         }
 
@@ -257,6 +281,17 @@ export class DefaultSamplesController
 
     private isEmailFailureError(error: AxiosError): boolean {
         const errorString = 'email validation failed';
+        const errorObj = error.response?.data as { error: string };
+
+        if (errorObj && errorObj.error.toLowerCase().includes(errorString)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private isExcelVersionError(error: AxiosError): boolean {
+        const errorString = 'invalid excel version';
         const errorObj = error.response?.data as { error: string };
 
         if (errorObj && errorObj.error.toLowerCase().includes(errorString)) {
