@@ -75,4 +75,10 @@ export abstract class AbstractController implements Controller {
             );
         }
     }
+
+    protected isDefaultServerErrorDTO<T extends DefaultServerErrorDTO>(
+        obj: T
+    ): obj is T {
+        return obj != null && 'code' in obj && 'message' in obj;
+    }
 }
