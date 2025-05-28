@@ -11,13 +11,7 @@ class FileCatalogRepository implements CatalogRepository {
     private catalogs: {
         [key: string]: Catalog<CatalogData>;
     };
-    private catalogNames: string[] = [
-        'adv16',
-        'plz',
-        `zsp${new Date().getFullYear().toString()}`,
-        `zsp${(new Date().getFullYear() + 1).toString()}`,
-        `zsp${(new Date().getFullYear() - 1).toString()}`
-    ];
+    private catalogNames: string[] = [];
 
     constructor(private dataDir: string) {
         this.catalogs = {};
@@ -43,13 +37,13 @@ class FileCatalogRepository implements CatalogRepository {
                     )
                     .catch(error => {
                         logger.warn(
-                            `Error loading catalog from json file: ${error}`
+                            `mibi-server: Error loading catalog from json file: ${error}`
                         );
                     });
             })
         ).then(() => {
             logger.info(
-                `${this.constructor.name}.${this.initialise.name}, finished initialising Catalog Repository from Filesystem.`
+                `mibi-server: ${this.constructor.name}.${this.initialise.name}, finished initialising Catalog Repository from Filesystem.`
             );
         });
     }
@@ -59,12 +53,8 @@ class FileCatalogRepository implements CatalogRepository {
     }
 }
 
-let repo: FileCatalogRepository;
-
 export async function initialiseRepository(
     dataDir: string
 ): Promise<CatalogRepository> {
-    const repository = repo ? repo : new FileCatalogRepository(dataDir);
-    repo = repository;
-    return repository.initialise().then(() => repository);
+    return new FileCatalogRepository(dataDir);
 }

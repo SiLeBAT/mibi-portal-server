@@ -14,20 +14,7 @@ class AVVFileCatalogRepository implements AVVCatalogRepository {
     private catalogs: {
         [key: string]: AVVCatalog<AVVCatalogData>;
     };
-    private catalogNames: string[] = [
-        'avv303',
-        'avv313',
-        'avv316',
-        'avv319',
-        'avv322',
-        'avv324',
-        'avv326',
-        'avv328',
-        'avv339'
-        // `zsp${new Date().getFullYear().toString()}`,
-        // `zsp${(new Date().getFullYear() + 1).toString()}`,
-        // `zsp${(new Date().getFullYear() - 1).toString()}`
-    ];
+    private catalogNames: string[] = [];
 
     constructor(private dataDir: string) {
         this.catalogs = {};
@@ -74,12 +61,8 @@ class AVVFileCatalogRepository implements AVVCatalogRepository {
     }
 }
 
-let repo: AVVFileCatalogRepository;
-
 export async function initialiseRepository(
     dataDir: string
 ): Promise<AVVCatalogRepository> {
-    const repository = repo ? repo : new AVVFileCatalogRepository(dataDir);
-    repo = repository;
-    return repository.initialise().then(() => repository);
+    return new AVVFileCatalogRepository(dataDir);
 }
