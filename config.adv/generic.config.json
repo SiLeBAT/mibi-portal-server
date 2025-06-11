@@ -1,0 +1,43 @@
+{
+    "application": {
+        "appName": "MiBi-Portal",
+        "jobRecipient": "",
+        "login": {
+            "threshold": 0,
+            "secondsDelay": 0
+        },
+        "clientUrl": ""
+    },
+    "server": {
+        "port": 3000,
+        "apiRoot": "",
+        "publicAPIDoc": { }
+    },
+    "dataStore": {
+      "host": "",
+      "dataBase": "",
+      "username": "",
+      "password": "",
+      "authDatabase": "",
+      "dataDir": ""
+    },
+    "parseConnection": {
+      "serverURL": "",
+      "appId": "",
+      "masterKey": "",
+      "host": "",
+      "database": "",
+      "username": "",
+      "password": "",
+      "authDatabase": ""
+    },
+    "mail": {
+        "fromAddress": "",
+        "replyToAddress": ""
+    },
+    "general":{
+        "supportContact": "",
+        "logLevel": "info",
+        "jwtSecret": ""
+    }
+}

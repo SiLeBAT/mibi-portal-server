@@ -1,0 +1,64 @@
+{
+  "application": {
+    "appName": "MiBi-Portal",
+    "jobRecipient": "birgit.lewicki@berlin.de",
+    "login": {
+      "threshold": 5,
+      "secondsDelay": 600
+    },
+    "clientUrl": "http://localhost:4200"
+  },
+  "server": {
+    "port": 3000,
+    "apiRoot": "",
+    "publicAPIDoc": {
+        "/info": ["get"],
+        "/samples/submitted": ["post"],
+        "/samples/validated": ["put"],
+        "/samples": ["put"],
+        "/users/login": ["post"],
+        "/tokens": ["post"]
+    }
+  },
+  "dataStore": {
+    "host": "localhost:27017",
+    "dataBase": "epilab",
+    "username": "mibiPortal",
+    "password": "JCgeM0bhCLWFqKzFirTL",
+    "authDatabase": "epilab",
+    "dataDir": "./data"
+  },
+  "parseConnection": {
+    "serverURL": "http://127.0.0.1:3001/admin/parse",
+    "appId": "MIBI_LOCAL",
+    "masterKey": "sfDGET(*KLJIUW*)&DyksdfejfrAFrVt",
+    "host": "localhost:27017",
+    "database": "mibiportal",
+    "username": "mibiUpdate",
+    "password": "localUpdate",
+    "authDatabase": "mibiportal"
+  },
+  "parseServer": {
+    "serverURL": "http://127.0.0.1:1337/admin/parse",
+    "appId": "MIBI_LOCAL",
+    "masterKey": "sfDGET(*KLJIUW*)&DyksdfejfrAFrVt",
+    "security": {
+      "enableCheck": true,
+      "enableCheckLog": true
+    },
+    "databaseURI": "mongodb://localhost:27017/mibiportal",
+    "cloud": "/home/bpo/data/projects/workspace/epilab/github/mibi-parse-cloud/lib/src/main.js",
+    "preventLoginWithUnverifiedEmail": true,
+    "preserveFileName":true,
+    "maxUploadSize": "50mb"
+  },
+  "mail": {
+    "fromAddress": "Mibi-Portal <birgit.lewicki@berlin.de>",
+    "replyToAddress": "Mibi-Portal <birgit.lewicki@berlin.de>"
+  },
+  "general": {
+    "supportContact": "birgit.lewicki@berlin.de",
+    "logLevel": "trace",
+    "jwtSecret": "ou3987kfjsahdo9f;mghporttrh"
+  }
+}

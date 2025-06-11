@@ -1,0 +1,6 @@
+{
+    "appId": "MIBI_LOCAL",
+    "masterKey": "sfDGET(*KLJIUW*)&DyksdfejfrAFrVt",
+    "databaseURI": "mongodb://localhost:27017/mibiportal",
+    "cloud": "/home/bpo/data/projects/workspace/epilab/github/mibi-parse-cloud/dist/main.js"
+}
