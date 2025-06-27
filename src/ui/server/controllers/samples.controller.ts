@@ -24,7 +24,7 @@ import {
 import { OrderDTO } from '../model/shared-dto.model';
 import { AbstractController, ParseSingleResponse } from './abstract.controller';
 
-import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
+import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { APPLICATION_TYPES } from '../../../app/application.types';
 import {
     TokenPayload,
@@ -34,6 +34,8 @@ import { User, UserPort } from '../../../app/authentication/model/user.model';
 import { getTokenFromHeader } from '../middleware/token-validator.middleware';
 import { AppServerConfiguration } from '../ports';
 import { SERVER_TYPES } from '../server.types';
+import { DefaultServerErrorDTO } from '../model/response.model';
+
 moment.locale('de');
 
 enum RESOURCE_VIEW_TYPE {
@@ -176,7 +178,21 @@ export class DefaultSamplesController
                     Accept: accept
                 }
             });
-            this.ok(res, parseResponse.data.result);
+
+            if (
+                this.isDefaultServerErrorDTO(
+                    parseResponse.data
+                        .result as unknown as DefaultServerErrorDTO
+                )
+            ) {
+                this.axiosError(
+                    res,
+                    parseResponse.data
+                        .result as unknown as DefaultServerErrorDTO
+                );
+            } else {
+                this.ok(res, parseResponse.data.result);
+            }
         } catch (error) {
             logger.info(
                 `${this.constructor.name}.${this.putSamples.name} has thrown an error. ${error}`
@@ -242,27 +258,10 @@ export class DefaultSamplesController
     }
 
     private handleError(res: Response, error: Error) {
-        if (axios.isAxiosError(error)) {
-            if (this.isEmailFailureError(error)) {
-                this.axiosError(res, error);
-            }
-        }
-
         if (error instanceof MalformedRequestError) {
             this.clientError(res);
+        } else {
+            this.fail(res);
         }
-
-        this.fail(res);
-    }
-
-    private isEmailFailureError(error: AxiosError): boolean {
-        const errorString = 'email validation failed';
-        const errorObj = error.response?.data as { error: string };
-
-        if (errorObj && errorObj.error.toLowerCase().includes(errorString)) {
-            return true;
-        }
-
-        return false;
     }
 }

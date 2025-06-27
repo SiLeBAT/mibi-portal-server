@@ -7,6 +7,7 @@ function validateToken(apiRoute: string, secret: string) {
         apiRoute + '/info',
         apiRoute + '/institutes',
         apiRoute + '/nrls',
+        apiRoute + '/client-dashboard-info',
         apiRoute + '/users/login',
         apiRoute + '/users/registration',
         apiRoute + '/users/reset-password-request',
