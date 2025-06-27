@@ -1,0 +1,10 @@
+{
+  "apps": [
+    {
+      "appId": "MIBI_LOCAL",
+      "masterKey": "sfDGET(*KLJIUW*)&DyksdfejfrAFrVt",
+      "appName": "mibi-portal",
+      "serverURL": "http://127.0.0.1:3001/admin/parse"
+    }
+  ]
+}
