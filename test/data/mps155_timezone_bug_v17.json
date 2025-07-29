@@ -1,88 +1,118 @@
 {
   "order": {
     "sampleSet": {
-      "meta": {
-        "sender": {
-          "instituteName": "",
-          "department": "",
-          "street": "",
-          "zip": "",
-          "city": "",
-          "contactPerson": "",
-          "telephone": "",
-          "email": ""
-        },
-        "fileName": "mps155_timezone_bug_v17.xlsx",
-        "version": "17"
-      },
       "samples": [
         {
           "sampleData": {
             "sample_id": {
-              "value": "1"
+              "value": "1",
+              "errors": [],
+              "correctionOffer": []
             },
             "sample_id_avv": {
-              "value": "1-ABC"
+              "value": "1-ABC",
+              "errors": [],
+              "correctionOffer": []
             },
             "partial_sample_id": {
-              "value": ""
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
             },
             "pathogen_avv": {
-              "value": "Escherichia coli"
+              "value": "Escherichia coli",
+              "errors": [],
+              "correctionOffer": []
             },
             "pathogen_text": {
-              "value": ""
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
             },
             "sampling_date": {
-              "value": "01.01.2019"
+              "value": "01.01.2019",
+              "errors": [],
+              "correctionOffer": []
             },
             "isolation_date": {
-              "value": "02.01.2019"
+              "value": "02.01.2019",
+              "errors": [],
+              "correctionOffer": []
             },
             "sampling_location_avv": {
-              "value": "45398|173159|"
+              "value": "45398|173159|",
+              "errors": [],
+              "correctionOffer": []
             },
             "sampling_location_zip": {
-              "value": "10178"
+              "value": "10178",
+              "errors": [],
+              "correctionOffer": []
             },
             "sampling_location_text": {
-              "value": "Berlin"
+              "value": "Berlin",
+              "errors": [],
+              "correctionOffer": []
             },
             "animal_avv": {
-              "value": "2464|186528|"
+              "value": "2464|186528|",
+              "errors": [],
+              "correctionOffer": []
             },
             "matrix_avv": {
-              "value": "182336|184855|183670-2296,185085-6986"
+              "value": "182336|184855|183670-2296,185085-6986",
+              "errors": [],
+              "correctionOffer": []
             },
             "animal_matrix_text": {
-              "value": "Fleischteilstück roh; Pflanze/Tier/Stoff/relevante Zutat - Fleisch; Produktmerkmal - Roh"
+              "value": "Fleischteilstück roh; Pflanze/Tier/Stoff/relevante Zutat - Fleisch; Produktmerkmal - Roh",
+              "errors": [],
+              "correctionOffer": []
             },
             "primary_production_avv": {
-              "value": "59138|50593|"
+              "value": "59138|50593|",
+              "errors": [],
+              "correctionOffer": []
             },
             "control_program_avv": {
-              "value": "70555|59517|"
+              "value": "70555|59517|",
+              "errors": [],
+              "correctionOffer": []
             },
             "sampling_reason_avv": {
-              "value": "22562|126354|"
+              "value": "22562|126354|",
+              "errors": [],
+              "correctionOffer": []
             },
             "program_reason_text": {
-              "value": "Amtliche Kontrolle in Betrieben, Planprobe"
+              "value": "Amtliche Kontrolle in Betrieben, Planprobe",
+              "errors": [],
+              "correctionOffer": []
             },
             "operations_mode_avv": {
-              "value": "62727|57609|2-2464,63421-1512"
+              "value": "62727|57609|2-2464,63421-1512",
+              "errors": [],
+              "correctionOffer": []
             },
             "operations_mode_text": {
-              "value": "Tierhaltung; Tiere - Hühner; Nutzungs- und Produktionsrichtung - Zur Mast"
+              "value": "Tierhaltung; Tiere - Hühner; Nutzungs- und Produktionsrichtung - Zur Mast",
+              "errors": [],
+              "correctionOffer": []
             },
             "vvvo": {
-              "value": ""
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
             },
             "program_avv": {
-              "value": ""
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
             },
             "comment": {
-              "value": ""
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
             }
           },
           "sampleMeta": {
@@ -90,11 +120,11 @@
             "analysis": {
               "species": false,
               "serological": false,
-              "resistance": false,
+              "resistance": true,
               "vaccination": false,
               "molecularTyping": false,
               "toxin": false,
-              "esblAmpCCarbapenemasen": false,
+              "esblAmpCCarbapenemasen": true,
               "sample": false,
               "other": "",
               "compareHuman": {
@@ -108,70 +138,114 @@
         {
           "sampleData": {
             "sample_id": {
-              "value": "2"
+              "value": "2",
+              "errors": [],
+              "correctionOffer": []
             },
             "sample_id_avv": {
-              "value": "2-ABC"
+              "value": "2-ABC",
+              "errors": [],
+              "correctionOffer": []
             },
             "partial_sample_id": {
-              "value": ""
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
             },
             "pathogen_avv": {
-              "value": "66684|57386|"
+              "value": "66684|57386|",
+              "errors": [],
+              "correctionOffer": []
             },
             "pathogen_text": {
-              "value": ""
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
             },
             "sampling_date": {
-              "value": "31.12.2018"
+              "value": "31.12.2018",
+              "errors": [],
+              "correctionOffer": []
             },
             "isolation_date": {
-              "value": "01.01.2019"
+              "value": "01.01.2019",
+              "errors": [],
+              "correctionOffer": []
             },
             "sampling_location_avv": {
-              "value": "45398|173159|"
+              "value": "45398|173159|",
+              "errors": [],
+              "correctionOffer": []
             },
             "sampling_location_zip": {
-              "value": "10178"
+              "value": "10178",
+              "errors": [],
+              "correctionOffer": []
             },
             "sampling_location_text": {
-              "value": "Berlin"
+              "value": "Berlin",
+              "errors": [],
+              "correctionOffer": []
             },
             "animal_avv": {
-              "value": "1566|57806|"
+              "value": "1566|57806|",
+              "errors": [],
+              "correctionOffer": []
             },
             "matrix_avv": {
-              "value": "182272|184169|6843-6909,183670-2296,185085-6986"
+              "value": "182272|184169|6843-6909,183670-2296,185085-6986",
+              "errors": [],
+              "correctionOffer": []
             },
             "animal_matrix_text": {
-              "value": "Rohschinken; Be- und Verarbeitung - Gepökelt; Pflanze/Tier/Stoff/relevante Zutat - Fleisch; Produktmerkmal - Roh"
+              "value": "Rohschinken; Be- und Verarbeitung - Gepökelt; Pflanze/Tier/Stoff/relevante Zutat - Fleisch; Produktmerkmal - Roh",
+              "errors": [],
+              "correctionOffer": []
             },
             "primary_production_avv": {
-              "value": "59138|50593|"
+              "value": "59138|50593|",
+              "errors": [],
+              "correctionOffer": []
             },
             "control_program_avv": {
-              "value": "70555|59517|"
+              "value": "70555|59517|",
+              "errors": [],
+              "correctionOffer": []
             },
             "sampling_reason_avv": {
-              "value": "22562|126354|"
+              "value": "22562|126354|",
+              "errors": [],
+              "correctionOffer": []
             },
             "program_reason_text": {
-              "value": "Amtliche Kontrolle in Betrieben, Planprobe"
+              "value": "Amtliche Kontrolle in Betrieben, Planprobe",
+              "errors": [],
+              "correctionOffer": []
             },
             "operations_mode_avv": {
-              "value": "62727|57609|2-1566,63421-1512"
+              "value": "62727|57609|2-1566,63421-1512",
+              "errors": [],
+              "correctionOffer": []
             },
             "operations_mode_text": {
-              "value": "Tierhaltung; Tiere - Schweine; Nutzungs- und Produktionsrichtung - Zur Mast"
+              "value": "Tierhaltung; Tiere - Schweine; Nutzungs- und Produktionsrichtung - Zur Mast",
+              "errors": [],
+              "correctionOffer": []
             },
             "vvvo": {
-              "value": ""
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
             },
             "program_avv": {
-              "value": ""
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
             },
             "comment": {
-              "value": ""
+              "value": "",
+              "errors": [],
+              "correctionOffer": []
             }
           },
           "sampleMeta": {
@@ -194,7 +268,23 @@
             "urgency": "NORMAL"
           }
         }
-      ]
+      ],
+      "meta": {
+        "sender": {
+          "instituteName": "",
+          "department": "",
+          "street": "",
+          "zip": "",
+          "city": "",
+          "contactPerson": "",
+          "telephone": "",
+          "email": "test@test.de"
+        },
+        "fileName": "mps155_timezone_bug_v17.xlsx",
+        "customerRefNumber": "",
+        "signatureDate": "",
+        "version": "17"
+      }
     }
   }
 }
