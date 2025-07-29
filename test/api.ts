@@ -1,52 +1,87 @@
 import config from 'config';
 import { PutValidatedRequestDTO, PutSamplesJSONRequestDTO } from '../src/ui/server/model/request.model';
 import { PutValidatedResponseDTO, PutSamplesJSONResponseDTO, PutSamplesXLSXResponseDTO } from '../src/ui/server/model/response.model';
-import rp from 'request-promise-native';
-import * as request from 'request'; 
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import FormData from 'form-data';
 import { API_ROUTE } from '../src/ui/server/model/enums';
 
 const API_URL = config.get('apiUrl');
 
 export class Api {
-    private static readonly requestOptions: rp.RequestPromiseOptions = {
-        json: true,
-    };
-
     static readonly SAMPLES_ENDPOINT = API_ROUTE.V2 + '/samples';
     static readonly SAMPLES_VALIDATED_ENDPOINT = API_ROUTE.V2 + '/samples/validated';
 
-    static putSamplesXLSX(file: Buffer, fileName: string): Promise<PutSamplesJSONResponseDTO> {
-        const formData = {
-            file: {
-                value: file,
-                options: {
-                    filename: fileName
-                }
-            }
-        }
-        return rp.put(API_URL + this.SAMPLES_ENDPOINT, { ...this.requestOptions, formData: formData, headers: { ...this.requestOptions.headers, 'accept': 'application/json' } });
-    }
-
-    static putSamplesJSON(body: PutSamplesJSONRequestDTO): Promise<PutSamplesXLSXResponseDTO> {
-        return rp.put(API_URL + this.SAMPLES_ENDPOINT, { ...this.requestOptions, body: body, headers: { ...this.requestOptions.headers, 'accept': 'multipart/form-data' } });
-    }
-
-    static putValidated(body: PutValidatedRequestDTO): Promise<PutValidatedResponseDTO> {
-        return rp.put(API_URL + this.SAMPLES_VALIDATED_ENDPOINT, { ...this.requestOptions, body: body });
-    }
-
-    static freeRequest(endpoint: string, method: string, headers: request.Headers, body: any): Promise<rp.FullResponse> {
-        const options: rp.RequestPromiseOptions = {
-            ...this.requestOptions,
-            method: method,
-            body: body,
+    static async putSamplesXLSX(file: Buffer, fileName: string): Promise<PutSamplesJSONResponseDTO> {
+        const formData = new FormData();
+        formData.append('file', file, { filename: fileName });
+        const formHeaders = formData.getHeaders();
+        const axiosConfig: AxiosRequestConfig = {
+            method: 'PUT',
+            url: API_URL + this.SAMPLES_ENDPOINT,
+            data: formData,
             headers: {
-                ...this.requestOptions.headers,
+                ...formHeaders,
+                'accept': 'application/json'
+            },
+            responseType: 'json'
+        };
+
+        const response = await axios.request(axiosConfig);
+
+        return response.data;
+    }
+
+    static async putSamplesJSON(body: PutSamplesJSONRequestDTO): Promise<PutSamplesXLSXResponseDTO> {
+        const axiosConfig: AxiosRequestConfig = {
+            method: 'PUT',
+            url: API_URL + this.SAMPLES_ENDPOINT,
+            data: body,
+            headers: {
+                'accept': 'multipart/form-data',
+            },
+            responseType: 'json'
+        };
+
+        const response = await axios.request(axiosConfig);
+
+        return response.data;
+    }
+
+    static async putValidated(body: PutValidatedRequestDTO): Promise<PutValidatedResponseDTO> {
+        const axiosConfig: AxiosRequestConfig = {
+            method: 'PUT',
+            url: API_URL + this.SAMPLES_VALIDATED_ENDPOINT,
+            data: body,
+            headers: {
+                'accept': 'application/json',
+            },
+            responseType: 'json'
+        };
+
+        const response = await axios.request(axiosConfig);
+
+        return response.data;
+    }
+
+    static async freeRequest(
+        endpoint: string,
+        method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'OPTIONS' | 'HEAD',
+        headers: Record<string, string>,
+        body: any): Promise<AxiosResponse>
+    {
+        const configOptions: AxiosRequestConfig = {
+            method: method,
+            url: API_URL + endpoint,
+            headers: {
                 ...headers
             },
-            resolveWithFullResponse: true,
-            simple: false
+            data: body,
+            validateStatus: () => true,
+            responseType: 'json'
         };
-        return rp(API_URL + endpoint, options);
+
+        const response = await axios.request(configOptions);
+
+        return response;
     }
 }
