@@ -12,23 +12,56 @@ export class Api {
     static readonly SAMPLES_VALIDATED_ENDPOINT = API_ROUTE.V2 + '/samples/validated';
 
     static async putSamplesXLSX(file: Buffer, fileName: string): Promise<PutSamplesJSONResponseDTO> {
+
+        console.log('api.ts, API_URL: ', API_URL);
+
         const formData = new FormData();
         formData.append('file', file, { filename: fileName });
         const formHeaders = formData.getHeaders();
+
+
+        // const axiosConfig: AxiosRequestConfig = {
+        //     method: 'PUT',
+        //     url: API_URL + this.SAMPLES_ENDPOINT,
+        //     data: formData,
+        //     headers: {
+        //         ...formHeaders,
+        //         'accept': 'application/json'
+        //     },
+        //     responseType: 'json'
+        // };
+
+        // const response = await axios.request(axiosConfig);
+
+        // console.log('putSamplesXLSX, /samples endpoint, response: ', JSON.stringify(response, null, 2));
+
+        // return response.data;
+
+
+
+        // Merge in any extra headers you need. We set Accept to application/json.
         const axiosConfig: AxiosRequestConfig = {
-            method: 'PUT',
-            url: API_URL + this.SAMPLES_ENDPOINT,
-            data: formData,
             headers: {
                 ...formHeaders,
                 'accept': 'application/json'
-            },
-            responseType: 'json'
+            }
         };
 
-        const response = await axios.request(axiosConfig);
+        // Execute the PUT request using axios.
+        const response = await axios.put(
+            API_URL + this.SAMPLES_ENDPOINT,
+            formData,
+            axiosConfig
+        );
 
+        console.log('putSamplesXLSX, /samples endpoint, response.data: ', JSON.stringify(response.data, null, 2));
+
+        // Return the data field of the response.
         return response.data;
+
+
+
+
     }
 
     static async putSamplesJSON(body: PutSamplesJSONRequestDTO): Promise<PutSamplesXLSXResponseDTO> {
