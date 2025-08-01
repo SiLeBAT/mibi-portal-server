@@ -18,7 +18,6 @@ describe('Test samples endpoint', () => {
         );
 
         const response = await Api.putSamplesXLSX(mps155XLSX, MPS155);
-        
         expect(response).toEqual(mps155JSON);
     });
 

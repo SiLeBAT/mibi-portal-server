@@ -63,7 +63,7 @@ async function getRequestDTOFromFile(fileName: string): Promise<PutValidatedRequ
     const file: Buffer = await promisify(fs.readFile)(fileName);
     const putSamplesJSONResponseDTO = await Api.putSamplesXLSX(file, fileName);
 
-    return putSamplesJSONResponseDTO;
+    return putSamplesJSONResponseDTO as PutValidatedRequestDTO;
 }
 
 function getReceivedCodes(sample: SampleDTO): number[] {
