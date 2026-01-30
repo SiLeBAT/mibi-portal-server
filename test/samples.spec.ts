@@ -18,7 +18,7 @@ describe('Test samples endpoint', () => {
         );
 
         const response = await Api.putSamplesXLSX(mps155XLSX, MPS155);
-
+        
         expect(response).toEqual(mps155JSON);
     });
 
@@ -30,7 +30,6 @@ describe('Test samples endpoint', () => {
         let fileName: string = mps155ValidatedJSON.order.sampleSet.meta.fileName;
         fileName = fileName.split('.')[0];
         expect(response.fileName).toMatch(new RegExp('^' + fileName + '\\.MP_[0-9]{10}\\.xlsx$'));
-
         expect(response.type).toEqual('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 
         const buf = Buffer.from(response.data, 'base64');
