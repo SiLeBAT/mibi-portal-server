@@ -4,6 +4,7 @@ export const SERVER_TYPES = {
     InstitutesController: Symbol.for('InstitutesController'),
     NRLsController: Symbol.for('NRLsController'),
     ClientDashboardController: Symbol.for('ClientDashboardController'),
+    ZomoPlanFilesController: Symbol.for('ZomoPlanFilesController'),
     UsersController: Symbol.for('UsersController'),
     SamplesController: Symbol.for('SamplesController'),
     TokensController: Symbol.for('TokensController'),
