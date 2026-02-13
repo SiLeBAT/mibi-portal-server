@@ -76,6 +76,15 @@ export interface SystemInformationDTO {
     supportContact: string;
 }
 
+export interface ZomoPlanFileCollectionDTO {
+    zomoPlanFiles: ZomoPlanFileDTO[];
+}
+
+export interface ZomoPlanFileDTO {
+    url: string;
+    year: string;
+}
+
 export interface NRLCollectionDTO {
     nrls: NRLDTO[];
 }
