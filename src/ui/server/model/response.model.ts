@@ -77,11 +77,11 @@ export interface SystemInformationDTO {
 }
 
 export interface ZomoPlanFileCollectionDTO {
-    zomoPlanFiles: ZomoPlanFileDTO[];
+    zomoPlanFiles: ZomoPlanFileInfoDTO[];
 }
 
-export interface ZomoPlanFileDTO {
-    url: string;
+export interface ZomoPlanFileInfoDTO {
+    id: string;
     year: string;
 }
 
