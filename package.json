@@ -1,6 +1,6 @@
 {
   "name": "mibi-portal-server",
-  "version": "4.4.3",
+  "version": "4.4.4",
   "license": "MIT",
   "private": true,
   "type": "commonjs",
@@ -127,7 +127,9 @@
     },
     "@pm2/js-api": {
       "axios": "1.6.2"
-    }
+    },
+    "fast-xml-parser": "5.3.7",
+    "basic-ftp": "5.2.0"
   },
   "mibiConfig": {
     "lastChange": "2019-04-16 11:25:17 +0200"
