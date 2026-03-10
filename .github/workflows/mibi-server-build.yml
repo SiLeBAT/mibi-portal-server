@@ -1,0 +1,79 @@
+name: Mibi Server Build and Dependency Check Reusable
+on: 
+  workflow_call:
+    inputs:
+      node-version:
+        description: Nodejs version to run ci
+        required: true
+        type: string
+# on:   
+#   workflow_dispatch:
+#   pull_request:
+#     branches:
+#       - develop
+#   push:
+#     branches:
+#       - develop
+#       - task/mpc656
+env:
+  ENVIRONMENT: qa
+  AUDIT_FAIL_LEVEL: critical
+  # NODE_VERSION: 16.17.1
+
+jobs:
+  static-analysis:
+    name: static analysis
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Get code
+        uses: actions/checkout@v5
+        with:
+          ref: task/mpc656
+
+      - name: Install NodeJS
+        uses: actions/setup-node@v5
+        with:
+          # node-version: ${{ env.NODE_VERSION }}
+          node-version: ${{ inputs.node-version }}
+
+      - name: show node version
+        run: node -v
+
+      - name: replace lastChange in package.json with the commit date
+        run: |
+          out=$(git log -1 --format=%cd --date=iso | xargs)
+          sed -i '/"mibiConfig"/,/\}/ s/"lastChange": "[^"]*"/"lastChange": "'"${out}"'"/' package.json
+          grep lastChange package.json
+
+      - name: Cache dependencies
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
+          
+      - name: install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: run dependency check qa
+        id: dependencyCheckQA
+        if: env.ENVIRONMENT == 'qa'
+        continue-on-error: true
+        run: npm audit --audit-level=low --parseable > dependency-check-output.log
+
+      - name: run dependency check prod
+        id: dependencyCheckPROD
+        if: env.ENVIRONMENT == 'production'
+        continue-on-error: true
+        run: npm audit --audit-level=low --production --parseable > dependency-check-output.log
+
+      - name: dependency check catch
+        if: steps.dependencyCheckQA.outcome == 'failure' || steps.dependencyCheckPROD.outcome == 'failure'
+        run: npm audit --audit-level=${{ env.AUDIT_FAIL_LEVEL }} --production --parseable > dependency-check-output-production.log
+
+      - name: run static analysis
+        # if: always()
+        run: npm run lint
