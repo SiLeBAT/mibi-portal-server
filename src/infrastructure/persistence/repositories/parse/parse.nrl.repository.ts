@@ -2,6 +2,7 @@ import { NRL, ParseNRLRepository } from '../../../../app/ports';
 
 import { injectable } from 'inversify';
 import { mapToNRL } from './data-mappers';
+import Parse from 'parse';
 
 @injectable()
 export class ParseDefaultNRLRepository implements ParseNRLRepository {

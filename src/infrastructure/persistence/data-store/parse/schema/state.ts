@@ -62,7 +62,7 @@ export class State extends Parse.Object<IState> {
         super(SCHEMA_FIELDS.className, attributes);
     }
 
-    getId(): string {
+    getId(): string | undefined {
         return this.id;
     }
 

@@ -80,7 +80,7 @@ export class Nrl extends Parse.Object<INrl> {
         super(SCHEMA_FIELDS.className, attributes);
     }
 
-    getId(): string {
+    getId(): string | undefined {
         return this.id;
     }
 

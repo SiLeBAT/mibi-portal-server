@@ -48,7 +48,7 @@ export class ParseDefaultInstituteRepository
                     `Institute not found. name=${name}`
                 );
             }
-            return createInstitution(institution.getId());
+            return createInstitution(institution.getId() ?? '');
         });
     }
 
@@ -64,6 +64,6 @@ export class ParseDefaultInstituteRepository
 
         return super
             ._create(newInstitution)
-            .then(institution => createInstitution(institution.getId()));
+            .then(institution => createInstitution(institution.getId() ?? ''));
     }
 }

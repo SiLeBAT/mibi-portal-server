@@ -32,7 +32,7 @@ export class ParseRepositoryBase<T extends Parse.Object<Parse.Attributes>> {
     protected async _retrieveIncludingWith(
         paths: string[],
         key?: string,
-        value?: T['attributes'][string | number]
+        value?: T['attributes'][string]
     ): Promise<T[]> {
         const query = new Parse.Query<T>(this._className);
         if (key && value) {
@@ -90,7 +90,7 @@ export class ParseRepositoryBase<T extends Parse.Object<Parse.Attributes>> {
 
     protected async _findOne(
         key: string,
-        value: T['attributes'][string | number]
+        value: T['attributes'][string]
     ): Promise<T | undefined> {
         return new Parse.Query<T>(this._className)
             .equalTo(key, value)

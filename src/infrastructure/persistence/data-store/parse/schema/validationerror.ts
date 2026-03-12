@@ -66,7 +66,7 @@ export class ValidationError extends Parse.Object<IValidationError> {
         super(SCHEMA_FIELDS.className, attributes);
     }
 
-    getId(): string {
+    getId(): string | undefined {
         return this.id;
     }
 

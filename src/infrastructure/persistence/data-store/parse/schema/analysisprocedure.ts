@@ -61,7 +61,7 @@ export class AnalysisProcedure extends Parse.Object<IAnalysisProcedure> {
         super(SCHEMA_FIELDS.className, attributes);
     }
 
-    getId(): string {
+    getId(): string | undefined {
         return this.id;
     }
 

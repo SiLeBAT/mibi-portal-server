@@ -111,7 +111,7 @@ export class User extends Parse.Object<IUser> {
         super(SCHEMA_FIELDS.className, attributes);
     }
 
-    getId(): string {
+    getId(): string | undefined {
         return this.id;
     }
 

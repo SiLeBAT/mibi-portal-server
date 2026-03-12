@@ -73,7 +73,7 @@ export class Token extends Parse.Object<IToken> {
         super(SCHEMA_FIELDS.className, attributes);
     }
 
-    getId(): string {
+    getId(): string | undefined {
         return this.id;
     }
 

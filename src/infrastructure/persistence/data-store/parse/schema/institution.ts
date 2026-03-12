@@ -80,7 +80,7 @@ export class Institution extends Parse.Object<IInstitution> {
         super(SCHEMA_FIELDS.className, attributes);
     }
 
-    getId(): string {
+    getId(): string | undefined {
         return this.id;
     }
 

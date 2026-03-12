@@ -49,7 +49,7 @@ export class ParseDefaultUserRepository
             ._create(newUser)
             .then(async (savedUser: ParseUser) =>
                 createUser(
-                    savedUser.getId(),
+                    savedUser.getId() ?? '',
                     user.email,
                     user.firstName,
                     user.lastName,
