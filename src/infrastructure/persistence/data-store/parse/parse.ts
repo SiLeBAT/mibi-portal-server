@@ -16,6 +16,12 @@ export interface ParseConnectionInfo {
 
 class ParseDataStore implements DataStore {
     constructor(parseConnectionInfo: ParseConnectionInfo) {
+        // console.log('@@@@@ starting ParseDataStore constructor() 1');
+
+        // const appId = 'MIBI_LOCAL';
+        // const masterKey = 'sfDGET(*KLJIUW*)&DyksdfejfrAFrVt';
+        // const serverUrl = 'http://127.0.0.1:1337/admin/parse';
+
         const logString =
             '{ "host":"' +
             parseConnectionInfo.host +
@@ -33,6 +39,8 @@ class ParseDataStore implements DataStore {
             parseConnectionInfo.masterKey
         );
         Parse.serverURL = parseConnectionInfo.serverURL;
+
+        // console.log('@@@@@ starting ParseDataStore constructor() 2');
 
         Parse.Schema.all()
             .then(() => {

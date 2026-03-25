@@ -1,7 +1,8 @@
 const FSFilesAdapter = require('@parse/fs-files-adapter');
 import config from 'config';
 import express from 'express';
-import { ParseServer } from 'parse-server';
+// import { ParseServer } from 'parse-server';
+const ParseServer = require('parse-server').ParseServer;
 import { logger } from './../../aspects';
 
 // tslint:disable-next-line: no-any
@@ -14,12 +15,11 @@ const app = express();
 const parseConfig = { ...parseServer, filesAdapter: fsAdapter };
 const server = new ParseServer(parseConfig);
 
-// Start server
-server.start().then(() => {
-    // Serve the Parse API on the /parse URL prefix
+export async function startParseServer() {
+    await server.start();
     app.use('/admin/parse', server.app);
-
-    app.listen(1337, function () {
-        logger.info('Parse-server running on port 1337.');
+    app.listen(1337, () => {
+        logger.info(`Parse Server connected to DB ${parseConfig.databaseURI}`);
+        logger.info(`Parse Server running at ${parseConfig.serverURL}`);
     });
-});
+}
