@@ -11,7 +11,7 @@ import {
     response
 } from 'inversify-express-utils';
 import { JsonWebTokenError } from 'jsonwebtoken';
-import Parse from 'parse/node';
+import * as Parse from 'parse/node';
 import {
     AuthorizationError,
     LoginPort,

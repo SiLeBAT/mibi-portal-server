@@ -1,7 +1,7 @@
-import Parse from 'parse/node';
+import ParseDefault, * as Parse from 'parse/node';
 import { DataStore } from '../../model/data-store.model';
-import { initSchema } from './schema/init-schema';
 import { logger } from './../../../../aspects';
+import { initSchema } from './schema/init-schema';
 
 export interface ParseConnectionInfo {
     serverURL: string;
@@ -33,12 +33,13 @@ class ParseDataStore implements DataStore {
             parseConnectionInfo.database +
             '" }';
 
-        Parse.initialize(
+        ParseDefault.initialize(
             parseConnectionInfo.appId,
             undefined,
             parseConnectionInfo.masterKey
         );
-        Parse.serverURL = parseConnectionInfo.serverURL;
+        // tslint:disable-next-line:no-any
+        (ParseDefault as any).serverURL = parseConnectionInfo.serverURL;
 
         // console.log('@@@@@ starting ParseDataStore constructor() 2');
 

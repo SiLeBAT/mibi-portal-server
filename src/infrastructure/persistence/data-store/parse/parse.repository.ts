@@ -1,5 +1,5 @@
-import Parse from 'parse/node';
 import { injectable } from 'inversify';
+import * as Parse from 'parse/node';
 
 @injectable()
 export class ParseRepositoryBase<T extends Parse.Object<Parse.Attributes>> {

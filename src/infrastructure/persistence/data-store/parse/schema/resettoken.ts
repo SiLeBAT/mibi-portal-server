@@ -1,6 +1,6 @@
-import Parse from 'parse/node';
-import { User, SCHEMA_FIELDS as USER_FIELDS } from './user';
+import * as Parse from 'parse/node';
 import { logger } from './../../../../../aspects';
+import { User, SCHEMA_FIELDS as USER_FIELDS } from './user';
 
 export const SCHEMA_FIELDS = {
     className: 'resettokens',

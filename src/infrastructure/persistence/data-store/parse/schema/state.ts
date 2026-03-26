@@ -1,4 +1,4 @@
-import Parse from 'parse/node';
+import * as Parse from 'parse/node';
 import { logger } from './../../../../../aspects';
 
 export const SCHEMA_FIELDS = {
