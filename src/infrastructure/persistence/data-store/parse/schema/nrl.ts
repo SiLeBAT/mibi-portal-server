@@ -1,9 +1,9 @@
-import Parse from 'parse/node';
+import * as Parse from 'parse/node';
+import { logger } from './../../../../../aspects';
 import {
     AnalysisProcedure,
     SCHEMA_FIELDS as ANALYSISPROCEDURE_FIELDS
 } from './analysisprocedure';
-import { logger } from './../../../../../aspects';
 
 export const SCHEMA_FIELDS = {
     className: 'nrls',

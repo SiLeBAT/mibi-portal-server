@@ -1,5 +1,5 @@
-import Parse from 'parse/node';
 import { injectable } from 'inversify';
+import * as Parse from 'parse/node';
 
 @injectable()
 export class ParseRepositoryBase<T extends Parse.Object<Parse.Attributes>> {
@@ -84,8 +84,10 @@ export class ParseRepositoryBase<T extends Parse.Object<Parse.Attributes>> {
             .find({ useMasterKey: true });
     }
 
-    protected async _delete(parseObject: T): Promise<T> {
-        return parseObject.destroy({ useMasterKey: true });
+    protected async _delete(parseObject: T): Promise<T | undefined> {
+        return parseObject.destroy({ useMasterKey: true }) as Promise<
+            T | undefined
+        >;
     }
 
     protected async _findOne(

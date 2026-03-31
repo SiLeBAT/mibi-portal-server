@@ -1,13 +1,16 @@
 import { logger } from './aspects';
 import { configurationService } from './configuratioin.service';
-import './infrastructure/parse';
+import { startParseServer } from './infrastructure/parse';
 import { initialiseRepositories } from './repository.setup';
 import { initialiseContainer } from './ui/server/container.setup';
 import { initialiseExpress } from './ui/server/express.setup';
 async function init() {
+    await startParseServer();
+
     const appConfiguration = configurationService.getApplicationConfiguration();
 
     logger.info(`Starting MiBi-Portal. appName=${appConfiguration.appName}`);
+
     const repositories = await initialiseRepositories();
     const container = await initialiseContainer(
         repositories.searchAliasRepository,
