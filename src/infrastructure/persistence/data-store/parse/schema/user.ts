@@ -1,9 +1,9 @@
-import Parse from 'parse/node';
+import * as Parse from 'parse/node';
+import { logger } from './../../../../../aspects';
 import {
     Institution,
     SCHEMA_FIELDS as INSTITUTION_FIELDS
 } from './institution';
-import { logger } from './../../../../../aspects';
 
 export const SCHEMA_FIELDS = {
     className: 'users',
@@ -111,7 +111,7 @@ export class User extends Parse.Object<IUser> {
         super(SCHEMA_FIELDS.className, attributes);
     }
 
-    getId(): string {
+    getId(): string | undefined {
         return this.id;
     }
 

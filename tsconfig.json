@@ -4,7 +4,8 @@
         "baseUrl": "./src",
         "module": "CommonJS",
         "moduleResolution":"Node",
-        "types": ["node", "jest", "mockExpressRequest", "mockExpressResponse", "reflect-metadata","parse-server"],
+        "skipLibCheck": true,
+        "types": ["node", "jest", "mockExpressRequest", "mockExpressResponse", "reflect-metadata", "parse-server"],
         "typeRoots": [
             "./node_modules/@types",
             "./typings"

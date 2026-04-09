@@ -1,6 +1,6 @@
-import Parse from 'parse/node';
-import { User, SCHEMA_FIELDS as USER_FIELDS } from './user';
+import * as Parse from 'parse/node';
 import { logger } from './../../../../../aspects';
+import { User, SCHEMA_FIELDS as USER_FIELDS } from './user';
 
 export const SCHEMA_FIELDS = {
     className: 'resettokens',
@@ -73,7 +73,7 @@ export class Token extends Parse.Object<IToken> {
         super(SCHEMA_FIELDS.className, attributes);
     }
 
-    getId(): string {
+    getId(): string | undefined {
         return this.id;
     }
 

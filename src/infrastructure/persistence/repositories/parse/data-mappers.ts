@@ -16,7 +16,7 @@ import { User as ParseUser } from '../../data-store/parse/schema/user';
 import { ValidationError as ParseValidationError } from '../../data-store/parse/schema/validationerror';
 
 export function mapToInstitution(institution: Institution): Institute {
-    const inst = createInstitution(institution.getId());
+    const inst = createInstitution(institution.getId() ?? '');
     return {
         ...inst,
         ...{
@@ -36,7 +36,7 @@ export function mapToUser(user: ParseUser): User {
     const institution = mapToInstitution(user.getInstitution() as Institution);
 
     return createUser(
-        user.getId(),
+        user.getId() ?? '',
         user.getEmail(),
         user.getFirstName(),
         user.getLastName(),

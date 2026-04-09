@@ -1,4 +1,4 @@
-import Parse from 'parse/node';
+import * as Parse from 'parse/node';
 import { logger } from './../../../../../aspects';
 
 export const SCHEMA_FIELDS = {
@@ -61,7 +61,7 @@ export class AnalysisProcedure extends Parse.Object<IAnalysisProcedure> {
         super(SCHEMA_FIELDS.className, attributes);
     }
 
-    getId(): string {
+    getId(): string | undefined {
         return this.id;
     }
 

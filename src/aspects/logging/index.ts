@@ -43,7 +43,8 @@ export class Logger {
     }
 
     static mapLogMessage(info: TransformableInfo): string {
-        let logMsg = `${info.level} ${info.message}`;
+        // eslint-disable-next-line
+        let logMsg = `${info.level} ${info.message as string}`;
         logMsg =
             info.meta !== undefined
                 ? logMsg +

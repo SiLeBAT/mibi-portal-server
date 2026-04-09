@@ -1,0 +1,23 @@
+name: Hello World Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      node_version:
+        description: 'This is the nodejs version used to do the build'
+        required: true
+        type: string
+
+jobs:
+  hello:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create HelloWorld.txt
+        run: echo "Hello World!" > HelloWorld.txt
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hello-world-artifact
+          path: HelloWorld.txt
+          retention-days: 1

@@ -56,8 +56,8 @@ export class ParseDefaultTokenRepository
         if (!token || token.length === 0) {
             return false;
         }
-        const deletedToken: ParseToken = await super._delete(token[0]);
-        return !!deletedToken;
+        const deletedToken = await super._delete(token[0]);
+        return deletedToken !== undefined;
     }
 
     async saveToken(token: UserToken): Promise<UserToken> {
