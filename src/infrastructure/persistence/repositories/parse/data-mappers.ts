@@ -1,19 +1,13 @@
 import {
-    DefaultNRLService,
     Institute,
-    NRL,
-    State,
     User,
     UserToken,
-    ValidationError,
     createInstitution,
     createUser
 } from '../../../../app/ports';
 import { Institution } from '../../data-store/parse/schema/institution';
 import { Token } from '../../data-store/parse/schema/resettoken';
-import { State as ParseState } from '../../data-store/parse/schema/state';
 import { User as ParseUser } from '../../data-store/parse/schema/user';
-import { ValidationError as ParseValidationError } from '../../data-store/parse/schema/validationerror';
 
 export function mapToInstitution(institution: Institution): Institute {
     const inst = createInstitution(institution.getId() ?? '');
@@ -55,42 +49,5 @@ export function mapToUserToken(token: Token): UserToken {
         token: token.getToken(),
         type: Number.parseInt(token.getType(), 10),
         userId: userId ? userId : ''
-    };
-}
-
-export function mapToState(state: ParseState): State {
-    const avv = state.getAVV();
-    return {
-        name: state.getName(),
-        short: state.getShort(),
-        AVV: avv ? avv : []
-    };
-}
-
-export function mapToValidationError(
-    error: ParseValidationError
-): ValidationError {
-    return {
-        code: error.getCode(),
-        level: error.getLevel(),
-        message: error.getMessage()
-    };
-}
-
-export function mapToNRL(nrl: Parse.Object): NRL {
-    const sp = nrl.get('standardProcedure') || [];
-    const op = nrl.get('optionalProcedure') || [];
-    return {
-        id: DefaultNRLService.mapNRLStringToEnum(nrl.get('name')),
-        selectors: nrl.get('selector') || [],
-        email: nrl.get('email') || '',
-        standardProcedures: sp.map((p: Parse.Object) => ({
-            value: p.get('value'),
-            key: p.get('key')
-        })),
-        optionalProcedures: op.map((p: Parse.Object) => ({
-            value: p.get('value'),
-            key: p.get('key')
-        }))
     };
 }

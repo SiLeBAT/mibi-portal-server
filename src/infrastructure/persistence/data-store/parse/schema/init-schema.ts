@@ -1,18 +1,12 @@
 import { MongoClient } from 'mongodb';
 import { ParseConnectionInfo } from '../parse';
 import { logger } from './../../../../../aspects';
-import {
-    SCHEMA_FIELDS as PROCEDURE_FIELDS,
-    registerParseClass as registerAnalysisprocedure
-} from './analysisprocedure';
 import { registerParseClass as registerInstitution } from './institution';
 import { registerParseClass as registerToken } from './resettoken';
-import { registerParseClass as registerState } from './state';
 import {
     SCHEMA_FIELDS as USER_FIELDS,
     registerParseClass as registerUser
 } from './user';
-import { registerParseClass as registerValidationError } from './validationerror';
 
 /**
  * +++++++ IMPORTANT +++++++
@@ -21,10 +15,7 @@ import { registerParseClass as registerValidationError } from './validationerror
  * For each new schema subclass add here the registration function that should be defined in each schema subclass.
  */
 const REGISTER_FUNCTION_ARRAY: RegisterFunc[] = [
-    registerState,
     registerInstitution,
-    registerValidationError,
-    registerAnalysisprocedure,
     registerUser,
     registerToken
 ];
@@ -44,10 +35,6 @@ async function createUniqueIndex(
         {
             collection: USER_FIELDS.className,
             field: USER_FIELDS.email
-        },
-        {
-            collection: PROCEDURE_FIELDS.className,
-            field: PROCEDURE_FIELDS.key
         }
     ];
 
