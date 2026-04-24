@@ -14,7 +14,6 @@ import {
 } from '../../infrastructure/ports';
 import {
     AppConfiguration,
-    DataStoreConfiguration,
     GeneralConfiguration,
     MailConfiguration,
     ParseConnectionConfiguration,
@@ -22,20 +21,11 @@ import {
 } from '../../main.model';
 import { getServerContainerModule } from './ports';
 
-export async function initialiseContainer(
-    // tslint:disable-next-line: no-any
-    searchAliasRepository: any,
-    // tslint:disable-next-line: no-any
-    catalogRepository: any,
-    // tslint:disable-next-line: no-any
-    avvCatalogRepository: any
-) {
+export async function initialiseContainer() {
     const serverConfig: ServerConfiguration =
         configurationService.getServerConfiguration();
     const generalConfig: GeneralConfiguration =
         configurationService.getGeneralConfiguration();
-    const dataStoreConfig: DataStoreConfiguration =
-        configurationService.getDataStoreConfiguration();
     const parseConnectionConfig: ParseConnectionConfiguration =
         configurationService.getParseConnectionConfiguration();
     const appConfiguration: AppConfiguration =
@@ -61,12 +51,7 @@ export async function initialiseContainer(
             supportContact: generalConfig.supportContact,
             jwtSecret: generalConfig.jwtSecret
         }),
-        getPersistenceContainerModule({
-            searchAliasRepository,
-            catalogRepository,
-            avvCatalogRepository,
-            dataDir: dataStoreConfig.dataDir
-        }),
+        getPersistenceContainerModule(),
         getServerContainerModule({
             ...serverConfig,
             jwtSecret: generalConfig.jwtSecret,

@@ -56,11 +56,6 @@ export class DefaultMailService implements MailService {
                         this.viewsDir + 'pwreset.html'
                     );
                     break;
-                case NotificationType.REQUEST_JOB:
-                    templateFile = await readFilePromise(
-                        this.viewsDir + 'jobnotification.html'
-                    );
-                    break;
                 case NotificationType.REQUEST_ADMIN_ACTIVATION:
                     templateFile = await readFilePromise(
                         this.viewsDir + 'adminactivation.html'
@@ -84,11 +79,6 @@ export class DefaultMailService implements MailService {
                 case NotificationType.REMINDER_ADMIN_ACTIVATION:
                     templateFile = await readFilePromise(
                         this.viewsDir + 'adminactivationReminder.html'
-                    );
-                    break;
-                case NotificationType.NOTIFICATION_SENT:
-                    templateFile = await readFilePromise(
-                        this.viewsDir + 'sentnotification.html'
                     );
                     break;
                 default:
