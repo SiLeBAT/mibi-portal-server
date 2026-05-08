@@ -53,3 +53,9 @@ export {
     TokenPayload,
     ParseTokenRepository
 } from './authentication/model/token.model';
+
+export {
+    Actor,
+    ActorRepository,
+    ActorContextService
+} from './authentication/model/actor.model';

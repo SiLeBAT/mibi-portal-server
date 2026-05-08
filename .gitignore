@@ -18,6 +18,7 @@
 .settings/
 *.sublime-workspace
 .vscode
+.claude/
 
 # IDE - VSCode
 .vscode/*
@@ -54,3 +55,12 @@ Thumbs.db
 server-patch.patch
 /tmp
 /logs
+/docs
+.gitnexus
+.scratch
+
+
+# AI
+AGENTS.md
+CLAUDE.md
+CONTEXT.md

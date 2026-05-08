@@ -20,6 +20,8 @@ import {
 } from './authentication/model/login.model';
 import { DefaultPasswordService } from './authentication/application/password.service';
 import { DefaultLoginService } from './authentication/application/login.service';
+import { DefaultActorContextService } from './authentication/application/actor-context.service';
+import { ActorContextService } from './authentication/model/actor.model';
 import { APPLICATION_TYPES } from './application.types';
 
 export function getApplicationContainerModule(
@@ -60,6 +62,10 @@ export function getApplicationContainerModule(
             );
             bind<LoginService>(APPLICATION_TYPES.LoginService).to(
                 DefaultLoginService
+            );
+
+            bind<ActorContextService>(APPLICATION_TYPES.ActorContextService).to(
+                DefaultActorContextService
             );
         }
     );

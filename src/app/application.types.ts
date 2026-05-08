@@ -13,5 +13,10 @@ export const APPLICATION_TYPES = {
 
     ParseUserRepository: Symbol.for('ParseUserRepository'),
     ParseInstituteRepository: Symbol.for('ParseInstituteRepository'),
-    ParseTokenRepository: Symbol.for('ParseTokenRepository')
+    ParseTokenRepository: Symbol.for('ParseTokenRepository'),
+    ParseActorRepository: Symbol.for('ParseActorRepository'),
+
+    KeycloakOidcService: Symbol.for('KeycloakOidcService'),
+    ActorContextService: Symbol.for('ActorContextService'),
+    KeycloakActorsService: Symbol.for('KeycloakActorsService')
 };

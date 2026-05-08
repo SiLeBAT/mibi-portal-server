@@ -16,6 +16,11 @@ function validateToken(apiRoute: string, secret: string) {
         apiRoute + '/samples/validated',
         apiRoute + '/samples',
         apiRoute + '/orders',
+        // Keycloak session-based auth routes (no JWT required)
+        apiRoute + '/auth/login',
+        apiRoute + '/auth/callback',
+        apiRoute + '/auth/logout',
+        apiRoute + '/me',
         new RegExp(apiRoute + '/users/reset-password'),
         new RegExp(apiRoute + '/users/verification'),
         new RegExp(apiRoute + '/users/activation')
@@ -40,4 +45,5 @@ function getTokenFromHeader(req: Request): string | null {
     return null;
 }
 
-export { validateToken, getTokenFromHeader };
+export { getTokenFromHeader, validateToken };
+

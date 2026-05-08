@@ -44,10 +44,24 @@ export interface MailConfiguration {
     replyToAddress: string;
 }
 
+export interface KeycloakConfiguration {
+    issuerUrl: string;
+    clientId: string;
+    clientSecret: string;
+    callbackUrl: string;
+}
+
+export interface SessionConfiguration {
+    secret: string;
+    ttlSeconds: number;
+}
+
 export interface SystemConfigurationService {
     getServerConfiguration(): ServerConfiguration;
     getDataStoreConfiguration(): DataStoreConfiguration;
     getApplicationConfiguration(): AppConfiguration;
     getGeneralConfiguration(): GeneralConfiguration;
     getMailConfiguration(): MailConfiguration;
+    getKeycloakConfiguration(): KeycloakConfiguration;
+    getSessionConfiguration(): SessionConfiguration;
 }

@@ -3,10 +3,12 @@ import {
     AppConfiguration,
     DataStoreConfiguration,
     GeneralConfiguration,
+    KeycloakConfiguration,
     LoginConfiguration,
     MailConfiguration,
     ParseConnectionConfiguration,
     ServerConfiguration,
+    SessionConfiguration,
     SystemConfigurationService
 } from './main.model';
 
@@ -63,6 +65,14 @@ class DefaultConfigurationService implements SystemConfigurationService {
         }
 
         return appConfiguration;
+    }
+
+    getKeycloakConfiguration(): KeycloakConfiguration {
+        return config.get('keycloak');
+    }
+
+    getSessionConfiguration(): SessionConfiguration {
+        return config.get('session');
     }
 
     getGeneralConfiguration(): GeneralConfiguration {
