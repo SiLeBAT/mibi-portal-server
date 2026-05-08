@@ -38,5 +38,15 @@
         "supportContact": "",
         "logLevel": "trace",
         "jwtSecret": "0"
+    },
+    "keycloak": {
+        "issuerUrl": "",
+        "clientId": "mibi-portal-bff",
+        "clientSecret": "",
+        "callbackUrl": "http://localhost:3000/v2/auth/callback"
+    },
+    "session": {
+        "secret": "change-me-in-production",
+        "ttlSeconds": 7200
     }
 }

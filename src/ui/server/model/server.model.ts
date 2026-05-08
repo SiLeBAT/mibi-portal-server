@@ -1,6 +1,14 @@
 export interface APIDocConfig {
     [keys: string]: string[];
 }
+
+export interface KeycloakServerConfig {
+    issuerUrl: string;
+    clientId: string;
+    clientSecret: string;
+    callbackUrl: string;
+}
+
 export interface AppServerConfiguration {
     port: number;
     apiRoot: string;
@@ -10,4 +18,6 @@ export interface AppServerConfiguration {
     supportContact: string;
     parseAPI: string;
     appId: string;
+    clientUrl?: string;
+    keycloak?: KeycloakServerConfig;
 }

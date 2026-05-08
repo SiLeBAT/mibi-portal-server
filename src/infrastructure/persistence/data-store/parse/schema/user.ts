@@ -17,7 +17,9 @@ export const SCHEMA_FIELDS = {
     lastAttempt: 'lastAttempt',
     institution: 'institution',
     oriCreatedAt: 'oriCreatedAt',
-    oriUpdatedAt: 'oriUpdatedAt'
+    oriUpdatedAt: 'oriUpdatedAt',
+    sub: 'sub',
+    instituteId: 'instituteId'
 } as const;
 
 async function createSchema(): Promise<boolean> {
@@ -103,6 +105,8 @@ export interface IUser extends Parse.Attributes {
     institution?: Institution;
     oriCreatedAt?: Date;
     oriUpdatedAt?: Date;
+    sub?: string;
+    instituteId?: string;
 }
 
 export class User extends Parse.Object<IUser> {
@@ -201,6 +205,14 @@ export class User extends Parse.Object<IUser> {
 
     getOriUpdatedAt() {
         return this.get(SCHEMA_FIELDS.oriUpdatedAt);
+    }
+
+    getSub(): string | undefined {
+        return this.get(SCHEMA_FIELDS.sub);
+    }
+
+    getInstituteId(): string | undefined {
+        return this.get(SCHEMA_FIELDS.instituteId);
     }
 }
 

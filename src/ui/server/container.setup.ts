@@ -15,11 +15,13 @@ import {
 import {
     AppConfiguration,
     GeneralConfiguration,
+    KeycloakConfiguration,
     MailConfiguration,
     ParseConnectionConfiguration,
     ServerConfiguration
 } from '../../main.model';
 import { getServerContainerModule } from './ports';
+import { getKeycloakContainerModule } from './keycloak.module';
 
 export async function initialiseContainer() {
     const serverConfig: ServerConfiguration =
@@ -32,6 +34,8 @@ export async function initialiseContainer() {
         configurationService.getApplicationConfiguration();
     const mailConfiguration: MailConfiguration =
         configurationService.getMailConfiguration();
+    const keycloakConfig: KeycloakConfiguration =
+        configurationService.getKeycloakConfiguration();
 
     await createParseDataStore({
         serverURL: parseConnectionConfig.serverURL,
@@ -58,9 +62,12 @@ export async function initialiseContainer() {
             logLevel: generalConfig.logLevel,
             supportContact: generalConfig.supportContact,
             parseAPI: parseConnectionConfig.serverURL,
-            appId: parseConnectionConfig.appId
+            appId: parseConnectionConfig.appId,
+            clientUrl: appConfiguration.clientUrl,
+            keycloak: keycloakConfig
         }),
-        getMailContainerModule(mailConfiguration)
+        getMailContainerModule(mailConfiguration),
+        getKeycloakContainerModule(keycloakConfig)
     );
 
     const application: MiBiApplication = createApplication(container);

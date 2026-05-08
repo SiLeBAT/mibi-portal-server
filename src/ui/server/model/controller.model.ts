@@ -51,6 +51,13 @@ export interface SystemInfoController extends Controller {
     getSystemInfo(res: Response): void;
 }
 
+export interface KeycloakAuthController extends Controller {
+    getLogin(req: Request, res: Response): Promise<void>;
+    getCallback(req: Request, res: Response): Promise<void>;
+    getMe(req: Request, res: Response): void;
+    postLogout(req: Request, res: Response): Promise<void>;
+}
+
 export interface SamplesController extends Controller {
     putValidated(req: Request, res: Response): Promise<void>;
     postSubmitted(req: Request, res: Response): Promise<void>;

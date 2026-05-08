@@ -31,10 +31,16 @@ async function createUniqueIndex(
     const indices: {
         collection: string;
         field: string;
+        sparse?: boolean;
     }[] = [
         {
             collection: USER_FIELDS.className,
             field: USER_FIELDS.email
+        },
+        {
+            collection: USER_FIELDS.className,
+            field: USER_FIELDS.sub,
+            sparse: true
         }
     ];
 
@@ -51,6 +57,7 @@ async function createUniqueIndex(
                 },
                 {
                     unique: true,
+                    sparse: entry.sparse ?? false,
                     name: `${entry.field}_idx`
                 }
             );

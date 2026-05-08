@@ -1,30 +1,32 @@
-import { DefaultTokensController } from './controllers/tokens.controller';
+import { RequestHandler } from 'express';
 import { ContainerModule, interfaces } from 'inversify';
-import {
-    SystemInfoController,
-    InstitutesController,
-    UsersController,
-    SamplesController,
-    VersionRootController,
-    TokensController,
-    NRLsController,
-    ClientDashboardController,
-    ZomoPlanFilesController,
-    OrdersController
-} from './model/controller.model';
-import { SERVER_TYPES } from './server.types';
+import { DefaultClientDashboardController } from './controllers/client-dashboard.controller';
 import { DefaultSystemInfoController } from './controllers/info.controller';
 import { DefaultInstituteController } from './controllers/institutes.controller';
-import { DefaultUsersController } from './controllers/users.controller';
-import { DefaultSamplesController } from './controllers/samples.controller';
-import { RequestHandler } from 'express';
-import { uploadToMemory } from './middleware/file-upload.middleware';
-import { DefaultVersionRootController } from './controllers/version-root.controller';
-import { AppServerConfiguration } from './model/server.model';
+import { DefaultKeycloakAuthController } from './controllers/keycloak-auth.controller';
 import { DefaultNRLsController } from './controllers/nrls.controller';
-import { DefaultClientDashboardController } from './controllers/client-dashboard.controller';
-import { DefaultZomoPlanFilesController } from './controllers/zomo-plan-files.controller';
 import { DefaultOrdersController } from './controllers/orders.controller';
+import { DefaultSamplesController } from './controllers/samples.controller';
+import { DefaultTokensController } from './controllers/tokens.controller';
+import { DefaultUsersController } from './controllers/users.controller';
+import { DefaultVersionRootController } from './controllers/version-root.controller';
+import { DefaultZomoPlanFilesController } from './controllers/zomo-plan-files.controller';
+import { uploadToMemory } from './middleware/file-upload.middleware';
+import {
+    ClientDashboardController,
+    InstitutesController,
+    KeycloakAuthController,
+    NRLsController,
+    OrdersController,
+    SamplesController,
+    SystemInfoController,
+    TokensController,
+    UsersController,
+    VersionRootController,
+    ZomoPlanFilesController
+} from './model/controller.model';
+import { AppServerConfiguration } from './model/server.model';
+import { SERVER_TYPES } from './server.types';
 
 export function getServerContainerModule(
     serverCongfiguration: AppServerConfiguration
@@ -65,6 +67,9 @@ export function getServerContainerModule(
             bind<VersionRootController>(SERVER_TYPES.VersionRootController).to(
                 DefaultVersionRootController
             );
+            bind<KeycloakAuthController>(
+                SERVER_TYPES.KeycloakAuthController
+            ).to(DefaultKeycloakAuthController);
             bind<RequestHandler>(SERVER_TYPES.MulterMW).toConstantValue(
                 uploadToMemory
             );
