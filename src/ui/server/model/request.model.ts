@@ -43,3 +43,7 @@ export interface RedirectedPutValidatedRequestDTO
     extends PutValidatedRequestDTO {
     readonly userEmail: string | null;
 }
+
+export interface RedirectedCreateOrderListRequestDTO {
+    readonly userEmail: string;
+}

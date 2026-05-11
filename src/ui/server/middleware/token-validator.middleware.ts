@@ -14,6 +14,7 @@ function validateToken(apiRoute: string, secret: string) {
         apiRoute + '/users/reset-password-request',
         apiRoute + '/samples/validated',
         apiRoute + '/samples',
+        apiRoute + '/orders',
         new RegExp(apiRoute + '/users/reset-password'),
         new RegExp(apiRoute + '/users/verification'),
         new RegExp(apiRoute + '/users/activation')

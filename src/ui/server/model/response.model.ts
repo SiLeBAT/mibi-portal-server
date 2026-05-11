@@ -117,3 +117,18 @@ export interface InstituteDTO {
     fax: string;
     email: string[];
 }
+
+export interface OrderCollectionDTO {
+    orders: OrderEntryDTO[];
+}
+
+export interface OrderEntryDTO {
+    id: string;
+    createdAt: Date;
+    sampleCount: number;
+    version: string;
+    fileName: string;
+    nrls: string[];
+    pathogens: string[];
+    results: string;
+}
