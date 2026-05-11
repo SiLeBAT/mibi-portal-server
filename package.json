@@ -36,8 +36,8 @@
   "dependencies": {
     "@parse/fs-files-adapter": "^3.0.0",
     "@SiLeBAT/fg43-ne-server": "^1.4.1",
-    "argon2": "0.30.3",
-    "axios": "^1.12.2",
+    "argon2": "0.44.0",
+    "axios": "^1.16.0",
     "compression": "~1.7.4",
     "config": "~3.3.8",
     "cors": "~2.8.5",
@@ -49,7 +49,7 @@
     "http-proxy-middleware": "^2.0.6",
     "inversify": "~6.0.2",
     "inversify-express-utils": "~6.4.3",
-    "jsonwebtoken": "~9.0.0",
+    "jsonwebtoken": "~9.0.3",
     "lodash": "~4.18.1",
     "mibi-portal-server": "file:",
     "moment": "~2.29.4",
@@ -59,7 +59,7 @@
     "nodemailer": "8.0.7",
     "parse": "^8.6.0",
     "parse-server": "^9.9.0",
-    "pm2": "~6.0.14",
+    "pm2": "~7.0.1",
     "reflect-metadata": "0.1.14",
     "swagger-ui-express": "~4.5.0",
     "winston": "~3.10.0"

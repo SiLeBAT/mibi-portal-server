@@ -132,20 +132,23 @@ export class DefaultZomoPlanFilesController
             const fileResponse = await axios.get(fileUrl, {
                 responseType: 'stream'
             });
+            const rawContentType = fileResponse.headers['content-type'];
             const contentType =
-                fileResponse.headers['content-type'] ||
-                'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+                typeof rawContentType === 'string'
+                    ? rawContentType
+                    : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
             res.setHeader('Content-Type', contentType);
             res.setHeader(
                 'Content-Disposition',
                 `attachment; filename="${encodeURIComponent(fileName)}"`
             );
 
-            if (fileResponse.headers['content-length']) {
-                res.setHeader(
-                    'Content-Length',
-                    fileResponse.headers['content-length']
-                );
+            const rawContentLength = fileResponse.headers['content-length'];
+            if (
+                typeof rawContentLength === 'string' ||
+                typeof rawContentLength === 'number'
+            ) {
+                res.setHeader('Content-Length', rawContentLength);
             }
 
             await new Promise<void>((resolve, reject) => {
