@@ -7,6 +7,7 @@ export const SERVER_TYPES = {
     ZomoPlanFilesController: Symbol.for('ZomoPlanFilesController'),
     UsersController: Symbol.for('UsersController'),
     SamplesController: Symbol.for('SamplesController'),
+    OrdersController: Symbol.for('OrdersController'),
     TokensController: Symbol.for('TokensController'),
     VersionRootController: Symbol.for('VersionRootController'),
     APIDocsController: Symbol.for('APIDocsController'),

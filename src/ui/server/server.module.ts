@@ -9,7 +9,8 @@ import {
     TokensController,
     NRLsController,
     ClientDashboardController,
-    ZomoPlanFilesController
+    ZomoPlanFilesController,
+    OrdersController
 } from './model/controller.model';
 import { SERVER_TYPES } from './server.types';
 import { DefaultSystemInfoController } from './controllers/info.controller';
@@ -23,6 +24,7 @@ import { AppServerConfiguration } from './model/server.model';
 import { DefaultNRLsController } from './controllers/nrls.controller';
 import { DefaultClientDashboardController } from './controllers/client-dashboard.controller';
 import { DefaultZomoPlanFilesController } from './controllers/zomo-plan-files.controller';
+import { DefaultOrdersController } from './controllers/orders.controller';
 
 export function getServerContainerModule(
     serverCongfiguration: AppServerConfiguration
@@ -57,6 +59,9 @@ export function getServerContainerModule(
             bind<ZomoPlanFilesController>(
                 SERVER_TYPES.ZomoPlanFilesController
             ).to(DefaultZomoPlanFilesController);
+            bind<OrdersController>(SERVER_TYPES.OrdersController).to(
+                DefaultOrdersController
+            );
             bind<VersionRootController>(SERVER_TYPES.VersionRootController).to(
                 DefaultVersionRootController
             );
