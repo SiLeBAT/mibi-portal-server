@@ -45,7 +45,7 @@ export class ParseSessionStore extends Store {
             .equalTo('sid', sid)
             .first({ useMasterKey: true })
             .then(async existing => {
-                const obj =
+                const obj: Parse.Object =
                     existing ?? new Parse.Object(SESSION_CLASS, { sid });
                 obj.set('data', JSON.stringify(session));
                 obj.set(

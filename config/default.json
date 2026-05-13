@@ -45,7 +45,11 @@
         "clientSecret": "",
         "callbackUrl": "http://localhost:3000/v2/auth/callback",
         "adminClientId": "mibi-portal-admin",
-        "adminClientSecret": ""
+        "adminClientSecret": "",
+        "reminder": {
+            "olderThanDays": 7,
+            "scheduleHours": 24
+        }
     },
     "session": {
         "secret": "change-me-in-production",

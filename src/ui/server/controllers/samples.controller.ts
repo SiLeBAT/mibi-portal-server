@@ -10,10 +10,7 @@ import {
 import moment from 'moment';
 import { logger } from '../../../aspects';
 import { SamplesController } from '../model/controller.model';
-import {
-    MalformedRequestError,
-    TokenNotFoundError
-} from '../model/domain.error';
+import { MalformedRequestError } from '../model/domain.error';
 import { API_ROUTE } from '../model/enums';
 import {
     PostSubmittedRequestDTO,
@@ -25,13 +22,6 @@ import { OrderDTO } from '../model/shared-dto.model';
 import { AbstractController, ParseSingleResponse } from './abstract.controller';
 
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
-import { APPLICATION_TYPES } from '../../../app/application.types';
-import {
-    TokenPayload,
-    TokenPort
-} from '../../../app/authentication/model/token.model';
-import { User, UserPort } from '../../../app/authentication/model/user.model';
-import { getTokenFromHeader } from '../middleware/token-validator.middleware';
 import { AppServerConfiguration } from '../ports';
 import { SERVER_TYPES } from '../server.types';
 import { DefaultServerErrorDTO } from '../model/response.model';
@@ -63,8 +53,6 @@ export class DefaultSamplesController
 {
     private redirectionTarget: AxiosInstance;
     constructor(
-        @inject(APPLICATION_TYPES.TokenService) private tokenService: TokenPort,
-        @inject(APPLICATION_TYPES.UserService) private userService: UserPort,
         @inject(SERVER_TYPES.AppServerConfiguration)
         configuration: AppServerConfiguration
     ) {
@@ -99,12 +87,7 @@ export class DefaultSamplesController
         );
         try {
             const requestDTO: PutValidatedRequestDTO = req.body;
-            const token = getTokenFromHeader(req);
-            let userId = null;
-            if (token) {
-                const user: User = await this.getUserFromToken(token);
-                userId = user.email;
-            }
+            const userEmail = req.currentActor?.email ?? null;
 
             const parseResponse = await this.redirectionTarget.post<
                 ParseSingleResponse<OrderDTO>,
@@ -112,7 +95,7 @@ export class DefaultSamplesController
                 RedirectedPutValidatedRequestDTO
             >('functions/validateSampleData', {
                 ...requestDTO,
-                userEmail: userId
+                userEmail
             });
             logger.info(
                 `${this.constructor.name}.${this.putValidated.name}, Response sent`
@@ -133,12 +116,11 @@ export class DefaultSamplesController
             `${this.constructor.name}.${this.postSubmitted.name}, Request received`
         );
         try {
-            const requestDTO: PostSubmittedRequestDTO = req.body;
-            const token = getTokenFromHeader(req);
-            if (!token) {
-                throw new TokenNotFoundError('Invalid user.');
+            if (!req.currentActor) {
+                this.unauthorized(res, { message: 'Not authenticated' });
+                return;
             }
-            const user: User = await this.getUserFromToken(token);
+            const requestDTO: PostSubmittedRequestDTO = req.body;
 
             const parseResponse = await this.redirectionTarget.post<
                 ParseSingleResponse<OrderDTO>,
@@ -146,7 +128,7 @@ export class DefaultSamplesController
                 RedirectedPostSubmittedRequestDTO
             >('functions/submitSampleData', {
                 ...requestDTO,
-                userEmail: user.email
+                userEmail: req.currentActor.email
             });
 
             logger.info(
@@ -199,12 +181,6 @@ export class DefaultSamplesController
             );
             this.handleError(res, error);
         }
-    }
-
-    private async getUserFromToken(token: string): Promise<User> {
-        const payload: TokenPayload = this.tokenService.verifyToken(token);
-        const userId = payload.sub;
-        return this.userService.getUserById(userId);
     }
 
     // N.B. This functionality will probably move to the FE

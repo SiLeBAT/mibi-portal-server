@@ -89,8 +89,9 @@ function adaptSdkClient(
                 ),
             update: async (query, payload) =>
                 withReauth(() => kc.users.update(query, payload)),
-            addToGroup: async query =>
-                withReauth(() => kc.users.addToGroup(query)),
+            addToGroup: async query => {
+                await withReauth(() => kc.users.addToGroup(query));
+            },
             executeActionsEmail: async query =>
                 withReauth(() =>
                     kc.users.executeActionsEmail({

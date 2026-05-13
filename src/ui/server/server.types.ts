@@ -8,7 +8,6 @@ export const SERVER_TYPES = {
     UsersController: Symbol.for('UsersController'),
     SamplesController: Symbol.for('SamplesController'),
     OrdersController: Symbol.for('OrdersController'),
-    TokensController: Symbol.for('TokensController'),
     VersionRootController: Symbol.for('VersionRootController'),
     APIDocsController: Symbol.for('APIDocsController'),
     MulterMW: Symbol.for('MulterMW'),

@@ -185,36 +185,6 @@
         }
       }
     },
-    "/users/login": {
-      "post": {
-        "operationId": "postLogin",
-        "tags": [
-          "User"
-        ],
-        "summary": "Logs user into the system and provides an access token",
-        "requestBody": {
-          "$ref": "#/components/requestBodies/LoginRequest"
-        },
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/LoginSuccessResponse"
-          },
-          "401": {
-            "description": "Unauthorized access",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FailedLoginError"
-                }
-              }
-            }
-          },
-          "500": {
-            "$ref": "#/components/responses/Standard500ErrorResponse"
-          }
-        }
-      }
-    },
     "/users/registration": {
       "post": {
         "operationId": "postRegistration",
@@ -400,38 +370,6 @@
             "$ref": "#/components/responses/Standard500ErrorResponse"
           }
         }
-      }
-    },
-    "/tokens": {
-      "post": {
-        "operationId": "postTokens",
-        "tags": [
-          "Token"
-        ],
-        "summary": "Refreshes the jwt token",
-        "responses": {
-          "200": {
-            "description": "successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TokenRefreshConfirmation"
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedErrorResponse"
-          },
-          "500": {
-            "$ref": "#/components/responses/Standard500ErrorResponse"
-          }
-        },
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ]
       }
     }
   },

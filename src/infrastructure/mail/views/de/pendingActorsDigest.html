@@ -1,0 +1,132 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>Ausstehende Kontoaktivierungen – {{ appName }}</title>
+        <style type="text/css" rel="stylesheet" media="all">
+            *:not(br):not(tr):not(html) {
+                font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+                box-sizing: border-box;
+            }
+            body {
+                width: 100% !important;
+                height: 100%;
+                margin: 0;
+                line-height: 1.4;
+                background-color: #f2f4f6;
+                color: #74787e;
+                -webkit-text-size-adjust: none;
+            }
+            h1, h2, h3 { margin-top: 0; color: #2f3133; text-align: left; }
+            h1 { font-size: 19px; font-weight: bold; }
+            h2 { font-size: 16px; font-weight: bold; }
+            p { margin-top: 0; color: #74787e; font-size: 16px; line-height: 1.5em; }
+            a { color: #3869d4; }
+            td { word-break: break-word; }
+            .email-wrapper { width: 100%; background-color: #f2f4f6; }
+            .email-body { background-color: #ffffff; border-top: 1px solid #edeff2; border-bottom: 1px solid #edeff2; }
+            .email-body_inner { width: 570px; margin: 0 auto; background-color: #ffffff; }
+            .email-footer { width: 570px; margin: 0 auto; text-align: center; }
+            .email-footer p { color: #aeaeae; }
+            .email-masthead { padding: 25px 0; text-align: center; }
+            .email-masthead_name { font-size: 16px; font-weight: bold; color: #bbbfc3; text-decoration: none; }
+            .content-cell { padding: 35px; }
+            .institute-block { margin-bottom: 24px; }
+            .actor-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+            .actor-table th { background-color: #edeff2; color: #2f3133; font-size: 13px; padding: 6px 10px; text-align: left; }
+            .actor-table td { padding: 6px 10px; font-size: 14px; border-bottom: 1px solid #edeff2; color: #74787e; }
+            .button {
+                background-color: #3869d4;
+                border-top: 10px solid #3869d4; border-right: 18px solid #3869d4;
+                border-bottom: 10px solid #3869d4; border-left: 18px solid #3869d4;
+                display: inline-block; color: #fff !important; text-decoration: none;
+                border-radius: 3px; box-shadow: 0 2px 3px rgba(0,0,0,0.16);
+            }
+            p.sub { font-size: 12px; }
+            @media only screen and (max-width: 600px) {
+                .email-body_inner, .email-footer { width: 100% !important; }
+            }
+        </style>
+    </head>
+    <body>
+        <table class="email-wrapper" width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+                <td align="center">
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td class="email-masthead">
+                                <a href="{{client_url}}" class="email-masthead_name">{{ appName }}</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="email-body" width="100%" cellpadding="0" cellspacing="0">
+                                <table class="email-body_inner" align="center" width="570" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <td class="content-cell">
+                                            <h1>Hallo {{ appName }} Admin,</h1>
+                                            <p>
+                                                die folgenden Nutzerinnen und Nutzer warten auf die Aktivierung ihres {{ appName }}-Kontos:
+                                            </p>
+
+                                            {{#each institutes}}
+                                            <div class="institute-block">
+                                                <h2>Institut: {{ this.id }}</h2>
+                                                <table class="actor-table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Name</th>
+                                                            <th>E-Mail</th>
+                                                            <th>Wartet seit</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {{#each this.actors}}
+                                                        <tr>
+                                                            <td>{{ this.displayName }}</td>
+                                                            <td>{{ this.email }}</td>
+                                                            <td>{{ this.registeredAgo }}</td>
+                                                        </tr>
+                                                        {{/each}}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            {{/each}}
+
+                                            <p style="margin-top: 24px;">
+                                                <a href="{{client_url}}/admin/pending-actors" class="button">
+                                                    Zur Aktivierungsübersicht
+                                                </a>
+                                            </p>
+                                            <p>
+                                                <br />Der {{ appName }} Registrierungsprozess
+                                            </p>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <table class="email-footer" align="center" width="570" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <td class="content-cell" align="center">
+                                            <p class="sub align-center">
+                                                &copy; {{copyrightYear}} {{ appName }}. All rights reserved.
+                                            </p>
+                                            <p class="sub align-center">
+                                                BfR - Bundesinstitut für Risikobewertung
+                                                <br />Max-Dohrn-Str. 8-10
+                                                <br />10589 Berlin
+                                            </p>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>

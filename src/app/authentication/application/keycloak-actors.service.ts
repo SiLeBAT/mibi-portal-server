@@ -4,6 +4,7 @@ import {
     AdminClientPort,
     AdminUserRepresentation,
     KeycloakActorsPort,
+    PendingActorSummary,
     RegisterActorCommand
 } from '../model/keycloak-actors.model';
 import { UserAlreadyExistsError } from '../domain/domain.error';
@@ -90,6 +91,14 @@ export class DefaultKeycloakActorsService implements KeycloakActorsPort {
         return users.map(toActor);
     }
 
+    async listPendingActorSummaries(): Promise<PendingActorSummary[]> {
+        const users = await this.client.users.find({
+            realm: this.realm,
+            enabled: false
+        });
+        return users.map(toPendingActorSummary);
+    }
+
     async findActorBySub(sub: string): Promise<Actor | null> {
         const users = await this.client.users.find({ realm: this.realm });
         const user = users.find(u => u.id === sub);
@@ -146,6 +155,15 @@ function toActor(user: AdminUserRepresentation): Actor {
         instituteId: '',
         email: user.email ?? '',
         displayName: [user.firstName, user.lastName].filter(Boolean).join(' ')
+    };
+}
+
+function toPendingActorSummary(
+    user: AdminUserRepresentation
+): PendingActorSummary {
+    return {
+        ...toActor(user),
+        registeredAt: new Date(user.createdTimestamp ?? 0)
     };
 }
 
