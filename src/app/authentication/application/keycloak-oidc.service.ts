@@ -41,12 +41,16 @@ export class DefaultKeycloakOidcService implements KeycloakOidcPort {
             { code_verifier: codeVerifier, state }
         );
         const claims = tokenSet.claims();
+        const realmAccess = claims.realm_access as
+            | { roles?: string[] }
+            | undefined;
         return {
             sub: claims.sub,
             email: claims.email ?? '',
             preferred_username: (claims.preferred_username as string) ?? '',
             id_token: tokenSet.id_token,
-            groups: (claims.groups as string[]) ?? []
+            groups: (claims.groups as string[]) ?? [],
+            roles: realmAccess?.roles ?? []
         };
     }
 

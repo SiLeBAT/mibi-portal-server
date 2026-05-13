@@ -18,5 +18,13 @@
         "supportContact": "MIBI_SUPPORT_CONTACT",
         "logLevel": "MIBI_LOG_LEVEL",
         "jwtSecret": "MIBI_JWT_SECRET"
+    },
+    "keycloak": {
+        "issuerUrl": "MIBI_KEYCLOAK_ISSUER_URL",
+        "clientId": "MIBI_KEYCLOAK_CLIENT_ID",
+        "clientSecret": "MIBI_KEYCLOAK_CLIENT_SECRET",
+        "callbackUrl": "MIBI_KEYCLOAK_CALLBACK_URL",
+        "adminClientId": "MIBI_KEYCLOAK_ADMIN_CLIENT_ID",
+        "adminClientSecret": "MIBI_KEYCLOAK_ADMIN_CLIENT_SECRET"
     }
 }

@@ -56,6 +56,18 @@ export class DefaultKeycloakActorsService implements KeycloakActorsPort {
         };
     }
 
+    async activateActor(sub: string): Promise<void> {
+        await this.client.users.update(
+            { id: sub, realm: this.realm },
+            { enabled: true }
+        );
+        await this.client.users.executeActionsEmail({
+            id: sub,
+            realm: this.realm,
+            actions: ['VERIFY_EMAIL', 'UPDATE_PASSWORD']
+        });
+    }
+
     async enableActor(sub: string): Promise<void> {
         await this.client.users.update(
             { id: sub, realm: this.realm },

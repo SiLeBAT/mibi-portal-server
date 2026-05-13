@@ -1,10 +1,13 @@
 import { ContainerModule, interfaces } from 'inversify';
+import KcAdminClient from '@keycloak/keycloak-admin-client';
 import { APPLICATION_TYPES } from '../../app/application.types';
 import { DefaultKeycloakOidcService } from '../../app/authentication/application/keycloak-oidc.service';
 import { DefaultKeycloakActorsService } from '../../app/authentication/application/keycloak-actors.service';
 import { KeycloakOidcPort } from '../../app/authentication/model/oidc.model';
 import {
     AdminClientPort,
+    AdminUserRepresentation,
+    GroupRepresentation,
     KeycloakActorsPort
 } from '../../app/authentication/model/keycloak-actors.model';
 import { KeycloakServerConfig } from './model/server.model';
@@ -18,41 +21,138 @@ function realmFromIssuerUrl(issuerUrl: string): string {
     return match[1];
 }
 
-export function getKeycloakContainerModule(
+// Strips the /realms/{realm} suffix to get the Keycloak base URL
+function baseUrlFromIssuerUrl(issuerUrl: string): string {
+    return issuerUrl.replace(/\/realms\/[^/]+\/?$/, '');
+}
+
+/**
+ * Builds and authenticates a KcAdminClient using service-account credentials,
+ * then wraps it behind AdminClientPort.
+ *
+ * Called once at startup (awaited in container.setup.ts before the container
+ * is loaded), matching the same pattern as createParseDataStore.
+ */
+export async function buildKeycloakAdminClient(
     config: KeycloakServerConfig
+): Promise<AdminClientPort> {
+    const realm = realmFromIssuerUrl(config.issuerUrl);
+    const kc = new KcAdminClient({
+        baseUrl: baseUrlFromIssuerUrl(config.issuerUrl),
+        realmName: realm
+    });
+
+    const reauth = () =>
+        kc.auth({
+            grantType: 'client_credentials',
+            clientId: config.adminClientId,
+            clientSecret: config.adminClientSecret
+        });
+
+    await reauth();
+
+    return adaptSdkClient(kc, reauth);
+}
+
+/**
+ * Wraps KcAdminClient behind AdminClientPort.
+ *
+ * Two translation responsibilities:
+ *  1. `realm` param on every port call is dropped — the SDK reads realm from
+ *     the client instance, set once at construction.
+ *  2. `roles.findUsersWithRole({ roleName })` → SDK's `({ name })`.
+ *
+ * Every call is wrapped in withReauth so an expired service-account token
+ * triggers a single re-authentication and then retries transparently.
+ */
+function adaptSdkClient(
+    kc: KcAdminClient,
+    reauth: () => Promise<void>
+): AdminClientPort {
+    async function withReauth<T>(op: () => Promise<T>): Promise<T> {
+        try {
+            return await op();
+        } catch (err: unknown) {
+            if (isUnauthorized(err)) {
+                await reauth();
+                return op();
+            }
+            throw err;
+        }
+    }
+
+    return {
+        users: {
+            create: async payload =>
+                withReauth(() =>
+                    kc.users.create(payload).then(r => ({ id: r.id }))
+                ),
+            update: async (query, payload) =>
+                withReauth(() => kc.users.update(query, payload)),
+            addToGroup: async query =>
+                withReauth(() => kc.users.addToGroup(query)),
+            executeActionsEmail: async query =>
+                withReauth(() =>
+                    kc.users.executeActionsEmail({
+                        id: query.id,
+                        redirectUri: query.redirectUri,
+                        actions: query.actions
+                    })
+                ),
+            find: async query =>
+                withReauth(() =>
+                    kc.users
+                        .find({ enabled: query.enabled })
+                        .then(us => us as AdminUserRepresentation[])
+                )
+        },
+        groups: {
+            find: async query =>
+                withReauth(() =>
+                    kc.groups
+                        .find({ search: query.search })
+                        .then(gs => gs as GroupRepresentation[])
+                ),
+            create: async payload =>
+                withReauth(() =>
+                    kc.groups
+                        .create({ name: payload.name, path: payload.path })
+                        .then(r => ({ id: r.id }))
+                )
+        },
+        roles: {
+            findUsersWithRole: async query =>
+                withReauth(() =>
+                    kc.roles
+                        .findUsersWithRole({ name: query.roleName })
+                        .then(us => (us ?? []) as AdminUserRepresentation[])
+                )
+        }
+    };
+}
+
+function isUnauthorized(err: unknown): boolean {
+    return (
+        err instanceof Object &&
+        'response' in err &&
+        (err as { response: { status: number } }).response.status === 401
+    );
+}
+
+export function getKeycloakContainerModule(
+    config: KeycloakServerConfig,
+    adminClient: AdminClientPort
 ): ContainerModule {
     return new ContainerModule((bind: interfaces.Bind) => {
         bind<KeycloakOidcPort>(APPLICATION_TYPES.KeycloakOidcService)
             .toDynamicValue(() => new DefaultKeycloakOidcService(config))
             .inSingletonScope();
 
-        // TODO (slice 05): install @keycloak/keycloak-admin-client and replace
-        // this placeholder with a real KcAdminClient bound to AdminClientPort.
-        // The admin client must be the only place importing that package (ADR-0003).
         bind<KeycloakActorsPort>(APPLICATION_TYPES.KeycloakActorsService)
             .toDynamicValue(() => {
-                const adminClient = buildAdminClientPlaceholder();
                 const realm = realmFromIssuerUrl(config.issuerUrl);
                 return new DefaultKeycloakActorsService(adminClient, realm);
             })
             .inSingletonScope();
     });
-}
-
-// Placeholder until @keycloak/keycloak-admin-client is wired (slice 05).
-function buildAdminClientPlaceholder(): AdminClientPort {
-    const notImplemented = (): never => {
-        throw new Error('KcAdminClient not yet wired — see slice 05');
-    };
-    return {
-        users: {
-            create: notImplemented,
-            update: notImplemented,
-            addToGroup: notImplemented,
-            executeActionsEmail: notImplemented,
-            find: notImplemented
-        },
-        groups: { find: notImplemented, create: notImplemented },
-        roles: { findUsersWithRole: notImplemented }
-    };
 }

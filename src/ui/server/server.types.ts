@@ -13,5 +13,6 @@ export const SERVER_TYPES = {
     APIDocsController: Symbol.for('APIDocsController'),
     MulterMW: Symbol.for('MulterMW'),
     SwaggerMW: Symbol.for('SwaggerMW'),
-    KeycloakAuthController: Symbol.for('KeycloakAuthController')
+    KeycloakAuthController: Symbol.for('KeycloakAuthController'),
+    KeycloakAdminController: Symbol.for('KeycloakAdminController')
 };

@@ -168,6 +168,25 @@ describe('DefaultKeycloakActorsService', () => {
         });
     });
 
+    describe('activateActor', () => {
+        it('enables the user and sends VERIFY_EMAIL + UPDATE_PASSWORD email', async () => {
+            const client = mockAdminClient();
+            const svc = new DefaultKeycloakActorsService(client, REALM);
+
+            await svc.activateActor('sub-alice');
+
+            expect(client.users.update).toHaveBeenCalledWith(
+                { id: 'sub-alice', realm: REALM },
+                { enabled: true }
+            );
+            expect(client.users.executeActionsEmail).toHaveBeenCalledWith({
+                id: 'sub-alice',
+                realm: REALM,
+                actions: ['VERIFY_EMAIL', 'UPDATE_PASSWORD']
+            });
+        });
+    });
+
     describe('enableActor', () => {
         it('sets enabled=true on the Keycloak user', async () => {
             const client = mockAdminClient();

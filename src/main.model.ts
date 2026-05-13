@@ -49,6 +49,8 @@ export interface KeycloakConfiguration {
     clientId: string;
     clientSecret: string;
     callbackUrl: string;
+    adminClientId: string;
+    adminClientSecret: string;
 }
 
 export interface SessionConfiguration {

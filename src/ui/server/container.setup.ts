@@ -21,7 +21,10 @@ import {
     ServerConfiguration
 } from '../../main.model';
 import { getServerContainerModule } from './ports';
-import { getKeycloakContainerModule } from './keycloak.module';
+import {
+    buildKeycloakAdminClient,
+    getKeycloakContainerModule
+} from './keycloak.module';
 
 export async function initialiseContainer() {
     const serverConfig: ServerConfiguration =
@@ -36,6 +39,8 @@ export async function initialiseContainer() {
         configurationService.getMailConfiguration();
     const keycloakConfig: KeycloakConfiguration =
         configurationService.getKeycloakConfiguration();
+
+    const adminClient = await buildKeycloakAdminClient(keycloakConfig);
 
     await createParseDataStore({
         serverURL: parseConnectionConfig.serverURL,
@@ -67,7 +72,7 @@ export async function initialiseContainer() {
             keycloak: keycloakConfig
         }),
         getMailContainerModule(mailConfiguration),
-        getKeycloakContainerModule(keycloakConfig)
+        getKeycloakContainerModule(keycloakConfig, adminClient)
     );
 
     const application: MiBiApplication = createApplication(container);

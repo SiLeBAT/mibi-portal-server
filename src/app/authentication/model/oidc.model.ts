@@ -4,6 +4,7 @@ export interface OidcUser {
     preferred_username: string;
     id_token?: string;
     groups: string[];
+    roles: string[];
 }
 
 export interface OidcAuthParams {

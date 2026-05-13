@@ -7,6 +7,8 @@ export interface KeycloakServerConfig {
     clientId: string;
     clientSecret: string;
     callbackUrl: string;
+    adminClientId: string;
+    adminClientSecret: string;
 }
 
 export interface AppServerConfiguration {

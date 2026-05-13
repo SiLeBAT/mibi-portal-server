@@ -10,6 +10,9 @@ const ADMIN: Actor = {
 
 export function getMockKeycloakActorsService() {
     return {
+        activateActor: jest.fn(
+            (_sub: string): Promise<void> => Promise.resolve()
+        ),
         registerPendingActor: jest.fn(
             (_cmd: RegisterActorCommand): Promise<Actor> =>
                 Promise.resolve({
