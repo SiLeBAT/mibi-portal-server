@@ -58,6 +58,12 @@ export interface KeycloakAuthController extends Controller {
     postLogout(req: Request, res: Response): Promise<void>;
 }
 
+export interface KeycloakAdminController extends Controller {
+    getPendingActors(req: Request, res: Response): Promise<void>;
+    postEnableActor(req: Request, res: Response): Promise<void>;
+    postDisableActor(req: Request, res: Response): Promise<void>;
+}
+
 export interface SamplesController extends Controller {
     putValidated(req: Request, res: Response): Promise<void>;
     postSubmitted(req: Request, res: Response): Promise<void>;

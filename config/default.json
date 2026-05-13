@@ -43,7 +43,9 @@
         "issuerUrl": "",
         "clientId": "mibi-portal-bff",
         "clientSecret": "",
-        "callbackUrl": "http://localhost:3000/v2/auth/callback"
+        "callbackUrl": "http://localhost:3000/v2/auth/callback",
+        "adminClientId": "mibi-portal-admin",
+        "adminClientSecret": ""
     },
     "session": {
         "secret": "change-me-in-production",

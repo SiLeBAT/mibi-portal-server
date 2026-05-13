@@ -40,6 +40,14 @@ export abstract class AbstractController implements Controller {
         return this.jsonResponse<T>(response, 401, dto);
     }
 
+    protected forbidden(response: Response): Response {
+        const dto: DefaultServerErrorDTO = {
+            code: SERVER_ERROR_CODE.AUTHORIZATION_ERROR,
+            message: 'Forbidden'
+        };
+        return this.jsonResponse(response, 403, dto);
+    }
+
     protected clientError(response: Response): Response {
         const dto: DefaultServerErrorDTO = {
             code: SERVER_ERROR_CODE.INPUT_ERROR,

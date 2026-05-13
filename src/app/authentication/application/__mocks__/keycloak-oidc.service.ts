@@ -17,7 +17,8 @@ export function getMockKeycloakOidcService() {
                     email: 'user@example.com',
                     preferred_username: 'testuser',
                     id_token: 'id-token-xyz',
-                    groups: ['/institutes/BfR']
+                    groups: ['/institutes/BfR'],
+                    roles: ['mibi-admin']
                 })
         ),
         getEndSessionUrl: jest.fn(

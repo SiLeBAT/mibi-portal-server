@@ -10,6 +10,7 @@ export interface RegisterActorCommand {
 
 export interface KeycloakActorsPort {
     registerPendingActor(cmd: RegisterActorCommand): Promise<Actor>;
+    activateActor(sub: string): Promise<void>;
     enableActor(sub: string): Promise<void>;
     disableActor(sub: string): Promise<void>;
     listPendingActors(): Promise<Actor[]>;

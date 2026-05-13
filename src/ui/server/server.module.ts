@@ -3,6 +3,7 @@ import { ContainerModule, interfaces } from 'inversify';
 import { DefaultClientDashboardController } from './controllers/client-dashboard.controller';
 import { DefaultSystemInfoController } from './controllers/info.controller';
 import { DefaultInstituteController } from './controllers/institutes.controller';
+import { DefaultKeycloakAdminController } from './controllers/keycloak-admin.controller';
 import { DefaultKeycloakAuthController } from './controllers/keycloak-auth.controller';
 import { DefaultNRLsController } from './controllers/nrls.controller';
 import { DefaultOrdersController } from './controllers/orders.controller';
@@ -15,6 +16,7 @@ import { uploadToMemory } from './middleware/file-upload.middleware';
 import {
     ClientDashboardController,
     InstitutesController,
+    KeycloakAdminController,
     KeycloakAuthController,
     NRLsController,
     OrdersController,
@@ -70,6 +72,9 @@ export function getServerContainerModule(
             bind<KeycloakAuthController>(
                 SERVER_TYPES.KeycloakAuthController
             ).to(DefaultKeycloakAuthController);
+            bind<KeycloakAdminController>(
+                SERVER_TYPES.KeycloakAdminController
+            ).to(DefaultKeycloakAdminController);
             bind<RequestHandler>(SERVER_TYPES.MulterMW).toConstantValue(
                 uploadToMemory
             );
