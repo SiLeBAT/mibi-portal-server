@@ -9,21 +9,13 @@ import {
 } from 'inversify-express-utils';
 import { logger } from '../../../aspects';
 import { OrdersController } from '../model/controller.model';
-import { TokenNotFoundError } from '../model/domain.error';
-import { API_ROUTE } from '../model/enums';
+import { API_ROUTE, SERVER_ERROR_CODE } from '../model/enums';
 import { RedirectedCreateOrderListRequestDTO } from '../model/request.model';
 import { OrderCollectionDTO } from '../model/response.model';
 import { AppServerConfiguration } from '../ports';
 import { SERVER_TYPES } from '../server.types';
 import { AbstractController, ParseSingleResponse } from './abstract.controller';
-
-import { APPLICATION_TYPES } from '../../../app/application.types';
-import {
-    TokenPayload,
-    TokenPort
-} from '../../../app/authentication/model/token.model';
-import { User, UserPort } from '../../../app/authentication/model/user.model';
-import { getTokenFromHeader } from '../middleware/token-validator.middleware';
+import '../middleware/session.augment';
 
 enum ORDER_ROUTE {
     ROOT = '/orders'
@@ -36,8 +28,6 @@ export class DefaultOrdersController
 {
     private redirectionTarget!: AxiosInstance;
     constructor(
-        @inject(APPLICATION_TYPES.TokenService) private tokenService: TokenPort,
-        @inject(APPLICATION_TYPES.UserService) private userService: UserPort,
         @inject(SERVER_TYPES.AppServerConfiguration)
         configuration: AppServerConfiguration
     ) {
@@ -54,18 +44,21 @@ export class DefaultOrdersController
         );
 
         try {
-            const token = getTokenFromHeader(req);
-            if (!token) {
-                throw new TokenNotFoundError('Invalid user.');
+            const sessionUser = req.session.user;
+            if (!sessionUser) {
+                this.unauthorized(res, {
+                    code: SERVER_ERROR_CODE.AUTHORIZATION_ERROR,
+                    message: 'Not authenticated'
+                });
+                return;
             }
-            const user: User = await this.getUserFromToken(token);
 
             const parseResponse = await this.redirectionTarget.post<
                 ParseSingleResponse<OrderCollectionDTO>,
                 AxiosResponse<ParseSingleResponse<OrderCollectionDTO>>,
                 RedirectedCreateOrderListRequestDTO
             >('functions/createOrderList', {
-                userEmail: user.email
+                userEmail: sessionUser.email
             });
 
             logger.info(
@@ -76,17 +69,7 @@ export class DefaultOrdersController
             logger.info(
                 `${this.constructor.name}.${this.getOrders.name} has thrown an error. ${error}`
             );
-            this.handleError(res);
+            this.fail(res);
         }
-    }
-
-    private handleError(res: Response) {
-        this.fail(res);
-    }
-
-    private async getUserFromToken(token: string): Promise<User> {
-        const payload: TokenPayload = this.tokenService.verifyToken(token);
-        const userId = payload.sub;
-        return this.userService.getUserById(userId);
     }
 }

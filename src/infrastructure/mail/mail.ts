@@ -81,6 +81,11 @@ export class DefaultMailService implements MailService {
                         this.viewsDir + 'adminactivationReminder.html'
                     );
                     break;
+                case NotificationType.DIGEST_PENDING_ACTORS:
+                    templateFile = await readFilePromise(
+                        this.viewsDir + 'pendingActorsDigest.html'
+                    );
+                    break;
                 default:
                     logger.warn('Unknown notification type', {
                         notification: data.type

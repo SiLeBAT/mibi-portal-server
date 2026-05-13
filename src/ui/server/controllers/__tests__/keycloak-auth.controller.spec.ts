@@ -188,7 +188,8 @@ describe('KeycloakAuthController', () => {
             expect(mockOidc.exchangeCode).toHaveBeenCalledWith(
                 'auth-code',
                 'saved-state',
-                'saved-verifier'
+                'saved-verifier',
+                undefined
             );
             expect((session as any).user).toMatchObject({
                 sub: 'user-123',

@@ -18,7 +18,8 @@ export interface KeycloakOidcPort {
     exchangeCode(
         code: string,
         state: string,
-        codeVerifier: string
+        codeVerifier: string,
+        iss?: string
     ): Promise<OidcUser>;
     getEndSessionUrl(idToken?: string): string;
 }

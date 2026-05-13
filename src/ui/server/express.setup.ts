@@ -5,10 +5,11 @@ import {
 import path from 'path';
 import { logger } from '../../aspects';
 import { GeneralConfiguration, ServerConfiguration } from '../../main.model';
-import { API_ROUTE, validateToken } from './ports';
+import { API_ROUTE } from './ports';
 
 import express from 'express';
 import session from 'express-session';
+import cookieParser from 'cookie-parser';
 import { doubleCsrf } from 'csrf-csrf';
 import { ParseSessionStore } from './middleware/parse-session.store';
 import { Container } from 'inversify';
@@ -28,10 +29,18 @@ export function initialiseExpress(container: Container) {
             sameSite: 'lax',
             secure: process.env.NODE_ENV === 'production'
         },
-        getTokenFromRequest: req => req.headers['x-xsrf-token'] as string
+        // Angular's HttpClientXsrfModule sends the full cookie value (token|hash)
+        // as the header. csrf-csrf expects just the token, so strip the hash here.
+        // The hash is still validated server-side against the secret.
+        getTokenFromRequest: req => {
+            const header = req.headers['x-xsrf-token'] as string | undefined;
+            return header ? header.split('|')[0] : '';
+        }
     });
 
     const customApp = express();
+
+    customApp.use(cookieParser());
 
     customApp.use(
         session({
@@ -58,6 +67,30 @@ export function initialiseExpress(container: Container) {
 
     customApp.use(doubleCsrfProtection);
 
+    // fg43-ne-server's error handler only responds to err.status === 401 and
+    // silently drops everything else, so we have to terminate CSRF rejections here
+    // or the request hangs forever.
+    customApp.use(
+        (
+            err: { code?: string } & Error,
+            req: express.Request,
+            res: express.Response,
+            next: express.NextFunction
+        ) => {
+            if (
+                err?.code === 'EBADCSRFTOKEN' ||
+                err?.code === 'ERR_BAD_CSRF_TOKEN'
+            ) {
+                res.status(403).json({
+                    code: 2,
+                    message: 'Invalid CSRF token'
+                });
+                return;
+            }
+            next(err);
+        }
+    );
+
     const expressServerConfig: ExpressServerConfiguration = {
         container,
         api: {
@@ -69,10 +102,6 @@ export function initialiseExpress(container: Container) {
         logging: {
             logger,
             logLevel: generalConfig.logLevel
-        },
-        tokenValidation: {
-            validator: validateToken,
-            jwtSecret: generalConfig.jwtSecret
         },
         publicDir: path.join(__dirname + '/public/de'),
         customApp

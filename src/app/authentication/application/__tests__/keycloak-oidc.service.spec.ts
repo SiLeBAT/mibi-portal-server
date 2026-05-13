@@ -19,6 +19,7 @@ const BASE_CONFIG = {
     clientId: 'mibi-portal-bff',
     clientSecret: 'secret',
     callbackUrl: 'http://localhost:3000/v2/auth/callback',
+    clientUrl: 'http://localhost:4200',
     adminClientId: 'mibi-portal-admin',
     adminClientSecret: 'admin-secret'
 };
@@ -92,7 +93,15 @@ describe('DefaultKeycloakOidcService.getEndSessionUrl', () => {
         expect(result).toContain('id_token_hint=tok-123');
         expect(result).toContain(
             'post_logout_redirect_uri=' +
-                encodeURIComponent('http://localhost:3000/v2/auth')
+                encodeURIComponent('http://localhost:4200')
+        );
+    });
+
+    it('omits query params when clientUrl is not configured', () => {
+        const { clientUrl: _omit, ...configNoClientUrl } = BASE_CONFIG;
+        const svc = new DefaultKeycloakOidcService(configNoClientUrl);
+        expect(svc.getEndSessionUrl('tok-123')).toBe(
+            'https://keycloak.example.com/realms/mibi/protocol/openid-connect/logout'
         );
     });
 

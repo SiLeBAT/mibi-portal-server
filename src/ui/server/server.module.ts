@@ -8,7 +8,6 @@ import { DefaultKeycloakAuthController } from './controllers/keycloak-auth.contr
 import { DefaultNRLsController } from './controllers/nrls.controller';
 import { DefaultOrdersController } from './controllers/orders.controller';
 import { DefaultSamplesController } from './controllers/samples.controller';
-import { DefaultTokensController } from './controllers/tokens.controller';
 import { DefaultUsersController } from './controllers/users.controller';
 import { DefaultVersionRootController } from './controllers/version-root.controller';
 import { DefaultZomoPlanFilesController } from './controllers/zomo-plan-files.controller';
@@ -22,7 +21,6 @@ import {
     OrdersController,
     SamplesController,
     SystemInfoController,
-    TokensController,
     UsersController,
     VersionRootController,
     ZomoPlanFilesController
@@ -50,9 +48,6 @@ export function getServerContainerModule(
             );
             bind<SamplesController>(SERVER_TYPES.SamplesController).to(
                 DefaultSamplesController
-            );
-            bind<TokensController>(SERVER_TYPES.TokensController).to(
-                DefaultTokensController
             );
             bind<NRLsController>(SERVER_TYPES.NRLsController).to(
                 DefaultNRLsController

@@ -10,15 +10,10 @@ import {
     requestParam,
     response
 } from 'inversify-express-utils';
-import { JsonWebTokenError } from 'jsonwebtoken';
-import * as Parse from 'parse/node';
 import {
     AuthorizationError,
-    LoginPort,
-    LoginResponse,
     PasswordPort,
     RegistrationPort,
-    UserLoginInformation,
     UserRegistration
 } from '../../../app/ports';
 import { logger } from '../../../aspects';
@@ -35,8 +30,7 @@ import {
     FailedLoginErrorDTO,
     PasswordResetRequestResponseDTO,
     PasswordResetResponseDTO,
-    RegistrationRequestResponseDTO,
-    TokenizedUserDTO
+    RegistrationRequestResponseDTO
 } from '../model/response.model';
 import { AppServerConfiguration } from '../ports';
 import { SERVER_TYPES } from '../server.types';
@@ -47,7 +41,6 @@ enum USERS_ROUTE {
     ROOT = '/users',
     RESET_PASSWORD_REQUEST = '/reset-password-request',
     RESET_PASSWORD = '/reset-password',
-    LOGIN = '/login',
     VERIFICATION = '/verification',
     ACTIVATION = '/activation',
     REGISTRATION = '/registration'
@@ -61,7 +54,6 @@ export class DefaultUsersController
     constructor(
         @inject(APPLICATION_TYPES.PasswordService)
         private passwordService: PasswordPort,
-        @inject(APPLICATION_TYPES.LoginService) private loginService: LoginPort,
         @inject(APPLICATION_TYPES.RegistrationService)
         private registrationService: RegistrationPort,
         @inject(SERVER_TYPES.AppServerConfiguration)
@@ -144,45 +136,6 @@ export class DefaultUsersController
             this.handleError(res, error);
         }
     }
-    @httpPost(USERS_ROUTE.LOGIN)
-    async postLogin(@request() req: Request, @response() res: Response) {
-        logger.info(
-            `${this.constructor.name}.${this.postLogin.name}, Request received`
-        );
-        try {
-            const userLoginInfo: UserLoginInformation =
-                this.mapRequestDTOToUserLoginInfo(req);
-            const response: LoginResponse = await this.loginService.loginUser(
-                userLoginInfo
-            );
-
-            const dto: TokenizedUserDTO =
-                this.fromLoginResponseToResponseDTO(response);
-            logger.info(
-                `${this.constructor.name}.${this.postLogin.name}, Response sent`
-            );
-
-            try {
-                await Parse.User.signUp(
-                    userLoginInfo.email,
-                    userLoginInfo.password,
-                    {
-                        email: userLoginInfo.email
-                    }
-                );
-            } catch (error) {
-                logger.error(error);
-            } finally {
-                this.ok(res, dto);
-            }
-        } catch (error) {
-            logger.info(
-                `${this.constructor.name}.${this.postLogin.name} has thrown an error. ${error}`
-            );
-            this.handleError(res, error);
-        }
-    }
-
     @httpPatch(USERS_ROUTE.VERIFICATION + '/:token')
     async patchVerification(
         @requestParam('token') token: string,
@@ -283,12 +236,6 @@ export class DefaultUsersController
     private handleError(res: Response, error: Error) {
         if (error instanceof MalformedRequestError) {
             this.clientError(res);
-        } else if (error instanceof JsonWebTokenError) {
-            const dto = {
-                code: SERVER_ERROR_CODE.AUTHORIZATION_ERROR,
-                message: 'Unauthorized request'
-            };
-            this.unauthorized(res, dto);
         } else if (error instanceof AuthorizationError) {
             let dto: FailedLoginErrorDTO = {
                 code: SERVER_ERROR_CODE.AUTHENTICATION_ERROR,
@@ -343,25 +290,5 @@ export class DefaultUsersController
             );
             throw new MalformedRequestError('Registration details invalid');
         }
-    }
-
-    private mapRequestDTOToUserLoginInfo(req: Request) {
-        return {
-            email: req.body.email,
-            password: req.body.password,
-            userAgent: req.headers['user-agent'],
-            host: req.headers['host']
-        };
-    }
-    private fromLoginResponseToResponseDTO(
-        response: LoginResponse
-    ): TokenizedUserDTO {
-        return {
-            firstName: response.user.firstName,
-            lastName: response.user.lastName,
-            email: response.user.email,
-            token: response.token,
-            instituteId: response.user.institution.uniqueId
-        };
     }
 }

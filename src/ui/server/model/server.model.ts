@@ -7,6 +7,7 @@ export interface KeycloakServerConfig {
     clientId: string;
     clientSecret: string;
     callbackUrl: string;
+    clientUrl?: string;
     adminClientId: string;
     adminClientSecret: string;
 }

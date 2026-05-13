@@ -8,12 +8,17 @@ export interface RegisterActorCommand {
     instituteName: string;
 }
 
+export interface PendingActorSummary extends Actor {
+    registeredAt: Date;
+}
+
 export interface KeycloakActorsPort {
     registerPendingActor(cmd: RegisterActorCommand): Promise<Actor>;
     activateActor(sub: string): Promise<void>;
     enableActor(sub: string): Promise<void>;
     disableActor(sub: string): Promise<void>;
     listPendingActors(): Promise<Actor[]>;
+    listPendingActorSummaries(): Promise<PendingActorSummary[]>;
     findActorBySub(sub: string): Promise<Actor | null>;
     listMibiAdmins(): Promise<Actor[]>;
 }
@@ -23,6 +28,7 @@ export interface AdminUserRepresentation {
     email?: string;
     firstName?: string;
     lastName?: string;
+    createdTimestamp?: number;
 }
 
 export interface GroupRepresentation {

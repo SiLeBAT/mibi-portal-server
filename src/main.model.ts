@@ -44,6 +44,11 @@ export interface MailConfiguration {
     replyToAddress: string;
 }
 
+export interface ReminderConfiguration {
+    olderThanDays: number;
+    scheduleHours: number;
+}
+
 export interface KeycloakConfiguration {
     issuerUrl: string;
     clientId: string;
@@ -51,6 +56,7 @@ export interface KeycloakConfiguration {
     callbackUrl: string;
     adminClientId: string;
     adminClientSecret: string;
+    reminder: ReminderConfiguration;
 }
 
 export interface SessionConfiguration {

@@ -1,5 +1,8 @@
 import { Actor } from '../../model/actor.model';
-import { RegisterActorCommand } from '../../model/keycloak-actors.model';
+import {
+    PendingActorSummary,
+    RegisterActorCommand
+} from '../../model/keycloak-actors.model';
 
 const ADMIN: Actor = {
     sub: 'admin-sub',
@@ -29,6 +32,9 @@ export function getMockKeycloakActorsService() {
             (_sub: string): Promise<void> => Promise.resolve()
         ),
         listPendingActors: jest.fn((): Promise<Actor[]> => Promise.resolve([])),
+        listPendingActorSummaries: jest.fn(
+            (): Promise<PendingActorSummary[]> => Promise.resolve([])
+        ),
         findActorBySub: jest.fn(
             (_sub: string): Promise<Actor | null> => Promise.resolve(null)
         ),

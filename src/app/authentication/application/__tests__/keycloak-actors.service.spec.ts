@@ -214,4 +214,45 @@ describe('DefaultKeycloakActorsService', () => {
             );
         });
     });
+
+    describe('listPendingActorSummaries', () => {
+        it('maps disabled users to PendingActorSummary with registeredAt from createdTimestamp', async () => {
+            const createdTimestamp = new Date('2026-04-01T08:00:00Z').getTime();
+            const client = mockAdminClient();
+            client.users.find.mockResolvedValue([
+                {
+                    id: 'sub-alice',
+                    email: 'alice@lab.de',
+                    firstName: 'Alice',
+                    lastName: 'Mueller',
+                    createdTimestamp
+                }
+            ]);
+            const svc = new DefaultKeycloakActorsService(client, REALM);
+
+            const summaries = await svc.listPendingActorSummaries();
+
+            expect(client.users.find).toHaveBeenCalledWith({
+                realm: REALM,
+                enabled: false
+            });
+            expect(summaries).toHaveLength(1);
+            expect(summaries[0].sub).toBe('sub-alice');
+            expect(summaries[0].registeredAt).toEqual(
+                new Date(createdTimestamp)
+            );
+        });
+
+        it('uses epoch when createdTimestamp is absent', async () => {
+            const client = mockAdminClient();
+            client.users.find.mockResolvedValue([
+                { id: 'sub-x', email: 'x@lab.de' }
+            ]);
+            const svc = new DefaultKeycloakActorsService(client, REALM);
+
+            const summaries = await svc.listPendingActorSummaries();
+
+            expect(summaries[0].registeredAt).toEqual(new Date(0));
+        });
+    });
 });

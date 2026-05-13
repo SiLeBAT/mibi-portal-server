@@ -32,12 +32,17 @@ export class DefaultKeycloakOidcService implements KeycloakOidcPort {
     async exchangeCode(
         code: string,
         state: string,
-        codeVerifier: string
+        codeVerifier: string,
+        iss?: string
     ): Promise<OidcUser> {
         const client = await this.clientPromise;
+        const params: Record<string, string> = { code, state };
+        if (iss) {
+            params.iss = iss;
+        }
         const tokenSet = await client.callback(
             this.config.callbackUrl,
-            { code, state },
+            params,
             { code_verifier: codeVerifier, state }
         );
         const claims = tokenSet.claims();
@@ -58,11 +63,11 @@ export class DefaultKeycloakOidcService implements KeycloakOidcPort {
         // Keycloak end-session endpoint is at {issuerUrl}/protocol/openid-connect/logout
         const base = this.config.issuerUrl.replace(/\/$/, '');
         const url = `${base}/protocol/openid-connect/logout`;
-        if (idToken) {
+        if (idToken && this.config.clientUrl) {
             return `${url}?id_token_hint=${encodeURIComponent(
                 idToken
             )}&post_logout_redirect_uri=${encodeURIComponent(
-                this.config.callbackUrl.replace('/callback', '')
+                this.config.clientUrl
             )}`;
         }
         return url;

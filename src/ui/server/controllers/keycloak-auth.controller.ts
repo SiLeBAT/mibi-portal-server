@@ -58,9 +58,10 @@ export class DefaultKeycloakAuthController
     async getCallback(@request() req: Request, @response() res: Response) {
         logger.info(`${this.constructor.name}.getCallback, Request received`);
         try {
-            const { code, state } = req.query as {
+            const { code, state, iss } = req.query as {
                 code?: string;
                 state?: string;
+                iss?: string;
             };
             if (!code || !state || state !== req.session.oidcState) {
                 this.clientError(res);
@@ -70,7 +71,8 @@ export class DefaultKeycloakAuthController
             const user = await this.oidcService.exchangeCode(
                 code,
                 state,
-                codeVerifier
+                codeVerifier,
+                iss
             );
             req.session.oidcState = undefined;
             req.session.codeVerifier = undefined;
@@ -84,7 +86,7 @@ export class DefaultKeycloakAuthController
         }
     }
 
-    @httpGet(AUTH_ROUTE.ME)
+    @httpGet(AUTH_ROUTE.ROOT + AUTH_ROUTE.ME)
     getMe(@request() req: Request, @response() res: Response) {
         if (!req.session?.user) {
             this.unauthorized(res, {

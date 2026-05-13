@@ -25,6 +25,16 @@
         "clientSecret": "MIBI_KEYCLOAK_CLIENT_SECRET",
         "callbackUrl": "MIBI_KEYCLOAK_CALLBACK_URL",
         "adminClientId": "MIBI_KEYCLOAK_ADMIN_CLIENT_ID",
-        "adminClientSecret": "MIBI_KEYCLOAK_ADMIN_CLIENT_SECRET"
+        "adminClientSecret": "MIBI_KEYCLOAK_ADMIN_CLIENT_SECRET",
+        "reminder": {
+            "olderThanDays": {
+                "__name": "MIBI_REMINDER_OLDER_THAN_DAYS",
+                "__format": "number"
+            },
+            "scheduleHours": {
+                "__name": "MIBI_REMINDER_SCHEDULE_HOURS",
+                "__format": "number"
+            }
+        }
     }
 }
