@@ -20,7 +20,7 @@ function validateToken(apiRoute: string, secret: string) {
         apiRoute + '/auth/login',
         apiRoute + '/auth/callback',
         apiRoute + '/auth/logout',
-        apiRoute + '/me',
+        apiRoute + '/auth/me',
         new RegExp(apiRoute + '/users/reset-password'),
         new RegExp(apiRoute + '/users/verification'),
         new RegExp(apiRoute + '/users/activation')
@@ -46,4 +46,3 @@ function getTokenFromHeader(req: Request): string | null {
 }
 
 export { getTokenFromHeader, validateToken };
-

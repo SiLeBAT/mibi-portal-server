@@ -57,7 +57,7 @@ describe('DefaultKeycloakActorsService', () => {
                 })
             );
             expect(actor).toEqual({
-                sub: 'sub-alice',
+                keycloakSub: 'sub-alice',
                 instituteId: 'BfR',
                 email: 'alice@lab.de',
                 displayName: 'Alice Mueller'
@@ -163,7 +163,7 @@ describe('DefaultKeycloakActorsService', () => {
                 realm: REALM
             });
             expect(admins).toHaveLength(1);
-            expect(admins[0].sub).toBe('admin-sub');
+            expect(admins[0].keycloakSub).toBe('admin-sub');
             expect(admins[0].email).toBe('admin@bfr.de');
         });
     });
@@ -237,7 +237,7 @@ describe('DefaultKeycloakActorsService', () => {
                 enabled: false
             });
             expect(summaries).toHaveLength(1);
-            expect(summaries[0].sub).toBe('sub-alice');
+            expect(summaries[0].keycloakSub).toBe('sub-alice');
             expect(summaries[0].registeredAt).toEqual(
                 new Date(createdTimestamp)
             );

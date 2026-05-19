@@ -50,7 +50,7 @@ export class DefaultKeycloakActorsService implements KeycloakActorsPort {
         await this.notifyAdmins();
 
         return {
-            sub: userId,
+            keycloakSub: userId,
             instituteId: cmd.instituteId,
             email: cmd.email,
             displayName: `${cmd.firstName} ${cmd.lastName}`
@@ -138,7 +138,7 @@ export class DefaultKeycloakActorsService implements KeycloakActorsPort {
             realm: this.realm
         });
         await Promise.all(
-            admins.map(admin =>
+            admins.map(async admin =>
                 this.client.users.executeActionsEmail({
                     id: admin.id,
                     realm: this.realm,
@@ -151,7 +151,7 @@ export class DefaultKeycloakActorsService implements KeycloakActorsPort {
 
 function toActor(user: AdminUserRepresentation): Actor {
     return {
-        sub: user.id,
+        keycloakSub: user.id,
         instituteId: '',
         email: user.email ?? '',
         displayName: [user.firstName, user.lastName].filter(Boolean).join(' ')

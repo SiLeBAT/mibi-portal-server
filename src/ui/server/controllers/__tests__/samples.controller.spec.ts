@@ -70,7 +70,7 @@ describe('DefaultSamplesController', () => {
                 session: {},
                 body: {},
                 currentActor: {
-                    sub: 'u2',
+                    keycloakSub: 'u2',
                     email: 'validator@example.com',
                     instituteId: 'inst2',
                     displayName: 'Validator'
@@ -119,7 +119,7 @@ describe('DefaultSamplesController', () => {
                 session: {},
                 body: { samples: [] },
                 currentActor: {
-                    sub: 'u1',
+                    keycloakSub: 'u1',
                     email: 'user@example.com',
                     instituteId: 'inst1',
                     displayName: 'User One'

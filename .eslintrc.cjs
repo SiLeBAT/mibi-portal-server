@@ -11,6 +11,7 @@ module.exports = {
     'test/**',
     'dist/*',
     'lib/*',
+    'config/**',
     'jest.config.js',
     'jest-integration.config.js',
     'pm2.config.js'

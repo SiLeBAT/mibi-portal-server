@@ -5,15 +5,18 @@ import {
 import path from 'path';
 import { logger } from '../../aspects';
 import { GeneralConfiguration, ServerConfiguration } from '../../main.model';
-import { API_ROUTE } from './ports';
+import { API_ROUTE, validateToken } from './ports';
 
 import express from 'express';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import { doubleCsrf } from 'csrf-csrf';
 import { ParseSessionStore } from './middleware/parse-session.store';
+import { resolveActorContext } from './middleware/actor-context.middleware';
 import { Container } from 'inversify';
 import { configurationService } from '../../configuratioin.service';
+import { APPLICATION_TYPES } from '../../app/application.types';
+import { ActorContextService } from '../../app/authentication/model/actor.model';
 
 export function initialiseExpress(container: Container) {
     const serverConfig: ServerConfiguration =
@@ -91,6 +94,11 @@ export function initialiseExpress(container: Container) {
         }
     );
 
+    const actorContextService = container.get<ActorContextService>(
+        APPLICATION_TYPES.ActorContextService
+    );
+    customApp.use(resolveActorContext(actorContextService));
+
     const expressServerConfig: ExpressServerConfiguration = {
         container,
         api: {
@@ -102,6 +110,10 @@ export function initialiseExpress(container: Container) {
         logging: {
             logger,
             logLevel: generalConfig.logLevel
+        },
+        tokenValidation: {
+            validator: validateToken,
+            jwtSecret: generalConfig.jwtSecret
         },
         publicDir: path.join(__dirname + '/public/de'),
         customApp

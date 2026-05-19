@@ -42,7 +42,7 @@ export async function buildKeycloakAdminClient(
         realmName: realm
     });
 
-    const reauth = () =>
+    const reauth = async () =>
         kc.auth({
             grantType: 'client_credentials',
             clientId: config.adminClientId,
@@ -84,16 +84,16 @@ function adaptSdkClient(
     return {
         users: {
             create: async payload =>
-                withReauth(() =>
+                withReauth(async () =>
                     kc.users.create(payload).then(r => ({ id: r.id }))
                 ),
             update: async (query, payload) =>
-                withReauth(() => kc.users.update(query, payload)),
+                withReauth(async () => kc.users.update(query, payload)),
             addToGroup: async query => {
-                await withReauth(() => kc.users.addToGroup(query));
+                await withReauth(async () => kc.users.addToGroup(query));
             },
             executeActionsEmail: async query =>
-                withReauth(() =>
+                withReauth(async () =>
                     kc.users.executeActionsEmail({
                         id: query.id,
                         redirectUri: query.redirectUri,
@@ -101,7 +101,7 @@ function adaptSdkClient(
                     })
                 ),
             find: async query =>
-                withReauth(() =>
+                withReauth(async () =>
                     kc.users
                         .find({ enabled: query.enabled })
                         .then(us => us as AdminUserRepresentation[])
@@ -109,13 +109,13 @@ function adaptSdkClient(
         },
         groups: {
             find: async query =>
-                withReauth(() =>
+                withReauth(async () =>
                     kc.groups
                         .find({ search: query.search })
                         .then(gs => gs as GroupRepresentation[])
                 ),
             create: async payload =>
-                withReauth(() =>
+                withReauth(async () =>
                     kc.groups
                         .create({ name: payload.name, path: payload.path })
                         .then(r => ({ id: r.id }))
@@ -123,7 +123,7 @@ function adaptSdkClient(
         },
         roles: {
             findUsersWithRole: async query =>
-                withReauth(() =>
+                withReauth(async () =>
                     kc.roles
                         .findUsersWithRole({ name: query.roleName })
                         .then(us => (us ?? []) as AdminUserRepresentation[])

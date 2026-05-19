@@ -21,7 +21,7 @@ function makeSummary(
     overrides: Partial<PendingActorSummary> = {}
 ): PendingActorSummary {
     return {
-        sub: 'sub-1',
+        keycloakSub: 'sub-1',
         email: 'alice@lab.de',
         displayName: 'Alice Mueller',
         instituteId: 'BfR',
@@ -32,7 +32,7 @@ function makeSummary(
 
 function makeAdmin(overrides: Partial<Actor> = {}): Actor {
     return {
-        sub: 'admin-1',
+        keycloakSub: 'admin-1',
         email: 'admin@bfr.de',
         displayName: 'Admin One',
         instituteId: '',
@@ -110,11 +110,11 @@ describe('PendingActorReminderJob', () => {
 
         it('filters out actors within the threshold and only includes those past it', async () => {
             const oldActor = makeSummary({
-                sub: 'old',
+                keycloakSub: 'old',
                 registeredAt: OLD_ENOUGH
             });
             const newActor = makeSummary({
-                sub: 'new',
+                keycloakSub: 'new',
                 registeredAt: TOO_RECENT
             });
             const actors = makeActors([oldActor, newActor], [makeAdmin()]);

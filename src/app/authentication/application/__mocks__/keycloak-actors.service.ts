@@ -5,7 +5,7 @@ import {
 } from '../../model/keycloak-actors.model';
 
 const ADMIN: Actor = {
-    sub: 'admin-sub',
+    keycloakSub: 'admin-sub',
     instituteId: '',
     email: 'admin@bfr.de',
     displayName: 'Admin User'
@@ -19,7 +19,7 @@ export function getMockKeycloakActorsService() {
         registerPendingActor: jest.fn(
             (_cmd: RegisterActorCommand): Promise<Actor> =>
                 Promise.resolve({
-                    sub: 'new-sub',
+                    keycloakSub: 'new-sub',
                     instituteId: _cmd.instituteId,
                     email: _cmd.email,
                     displayName: `${_cmd.firstName} ${_cmd.lastName}`
