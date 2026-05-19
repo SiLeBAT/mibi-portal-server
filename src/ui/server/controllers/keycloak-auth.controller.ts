@@ -108,9 +108,15 @@ export class DefaultKeycloakAuthController
         try {
             const idToken = req.session.user?.id_token;
             const endSessionUrl = this.oidcService.getEndSessionUrl(idToken);
-            await new Promise<void>((resolve, reject) =>
-                req.session.destroy(err => (err ? reject(err) : resolve()))
-            );
+            await new Promise<void>((resolve, reject) => {
+                req.session.destroy(err => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve();
+                    }
+                });
+            });
             this.ok(res, { endSessionUrl });
         } catch (error) {
             logger.error(`${this.constructor.name}.postLogout error: ${error}`);

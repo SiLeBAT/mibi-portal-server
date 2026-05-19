@@ -10,6 +10,10 @@ export interface VersionRootController extends Controller {
     getAPIDefinition(res: Response): void;
 }
 
+export interface TokensController extends Controller {
+    postTokens(req: Request, res: Response): void;
+}
+
 export interface InstitutesController extends Controller {
     getInstitutes(req: Request, res: Response): Promise<void>;
 }
@@ -40,6 +44,7 @@ export interface UsersController extends Controller {
     postRegistration(req: Request, res: Response): void;
     patchVerification(token: string, res: Response): Promise<void>;
     patchActivation(token: string, res: Response): Promise<void>;
+    postLogin(req: Request, res: Response): Promise<void>;
 }
 
 export interface SystemInfoController extends Controller {

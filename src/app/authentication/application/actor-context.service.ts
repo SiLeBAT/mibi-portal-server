@@ -26,7 +26,7 @@ export class DefaultActorContextService implements ActorContextService {
     }
 
     async resolveActor(
-        sub: string,
+        keycloakSub: string,
         email: string,
         displayName: string,
         groups: string[],
@@ -35,11 +35,16 @@ export class DefaultActorContextService implements ActorContextService {
         if (cachedActor) {
             return cachedActor;
         }
-        const instituteId = this.extractInstituteId(groups);
-        const existing = await this.repo.findBySub(sub);
+        const existing = await this.repo.findByKeycloakSub(keycloakSub);
         if (existing) {
             return existing;
         }
-        return this.repo.materialize({ sub, instituteId, email, displayName });
+        const instituteId = this.extractInstituteId(groups);
+        return this.repo.materialize({
+            keycloakSub,
+            instituteId,
+            email,
+            displayName
+        });
     }
 }

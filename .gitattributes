@@ -1,0 +1,16 @@
+# Force LF on all text files so Windows checkouts don't silently convert to
+# CRLF and re-show every file as modified in git status. Matches .editorconfig.
+* text=auto eol=lf
+
+# Generated lockfiles also LF.
+package-lock.json text eol=lf
+
+# Common binaries — never touch.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.xlsx binary

@@ -4,13 +4,13 @@ import { DefaultActorContextService } from '../actor-context.service';
 
 function mockRepo(): jest.Mocked<ActorRepository> {
     return {
-        findBySub: jest.fn(),
+        findByKeycloakSub: jest.fn(),
         materialize: jest.fn()
     };
 }
 
 const ALICE: Actor = {
-    sub: 'sub-alice',
+    keycloakSub: 'sub-alice',
     instituteId: 'BfR',
     email: 'alice@lab.de',
     displayName: 'alice'
@@ -23,7 +23,7 @@ describe('DefaultActorContextService', () => {
             const svc = new DefaultActorContextService(repo);
 
             const result = await svc.resolveActor(
-                ALICE.sub,
+                ALICE.keycloakSub,
                 ALICE.email,
                 ALICE.displayName,
                 ['/institutes/BfR'],
@@ -31,15 +31,15 @@ describe('DefaultActorContextService', () => {
             );
 
             expect(result).toBe(ALICE);
-            expect(repo.findBySub).not.toHaveBeenCalled();
+            expect(repo.findByKeycloakSub).not.toHaveBeenCalled();
             expect(repo.materialize).not.toHaveBeenCalled();
         });
 
         it('materializes and writes new _User actor when none exists', async () => {
             const repo = mockRepo();
-            repo.findBySub.mockResolvedValue(null);
+            repo.findByKeycloakSub.mockResolvedValue(null);
             const created: Actor = {
-                sub: 'sub-bob',
+                keycloakSub: 'sub-bob',
                 instituteId: 'BfR',
                 email: 'bob@lab.de',
                 displayName: 'bob'
@@ -55,7 +55,7 @@ describe('DefaultActorContextService', () => {
             );
 
             expect(repo.materialize).toHaveBeenCalledWith({
-                sub: 'sub-bob',
+                keycloakSub: 'sub-bob',
                 instituteId: 'BfR',
                 email: 'bob@lab.de',
                 displayName: 'bob'
@@ -82,51 +82,56 @@ describe('DefaultActorContextService', () => {
             ).rejects.toThrow('exactly one institute group');
         });
 
-        it('two actors in the same institute group resolve independently by sub', async () => {
+        it('two actors in the same institute group resolve independently by keycloakSub', async () => {
             const BOB: Actor = {
-                sub: 'sub-bob',
+                keycloakSub: 'sub-bob',
                 instituteId: 'BfR',
                 email: 'bob@lab.de',
                 displayName: 'bob'
             };
             const repo = mockRepo();
-            repo.findBySub.mockImplementation(sub =>
-                Promise.resolve(sub === 'sub-alice' ? ALICE : BOB)
+            repo.findByKeycloakSub.mockImplementation(keycloakSub =>
+                Promise.resolve(keycloakSub === 'sub-alice' ? ALICE : BOB)
             );
             const svc = new DefaultActorContextService(repo);
 
             const [resultAlice, resultBob] = await Promise.all([
-                svc.resolveActor(ALICE.sub, ALICE.email, ALICE.displayName, [
-                    '/institutes/BfR'
-                ]),
-                svc.resolveActor(BOB.sub, BOB.email, BOB.displayName, [
+                svc.resolveActor(
+                    ALICE.keycloakSub,
+                    ALICE.email,
+                    ALICE.displayName,
+                    ['/institutes/BfR']
+                ),
+                svc.resolveActor(BOB.keycloakSub, BOB.email, BOB.displayName, [
                     '/institutes/BfR'
                 ])
             ]);
 
-            expect(resultAlice.sub).toBe('sub-alice');
+            expect(resultAlice.keycloakSub).toBe('sub-alice');
             expect(resultAlice.instituteId).toBe('BfR');
-            expect(resultBob.sub).toBe('sub-bob');
+            expect(resultBob.keycloakSub).toBe('sub-bob');
             expect(resultBob.instituteId).toBe('BfR');
-            expect(repo.findBySub).toHaveBeenCalledWith('sub-alice');
-            expect(repo.findBySub).toHaveBeenCalledWith('sub-bob');
+            expect(repo.findByKeycloakSub).toHaveBeenCalledWith('sub-alice');
+            expect(repo.findByKeycloakSub).toHaveBeenCalledWith('sub-bob');
             expect(repo.materialize).not.toHaveBeenCalled();
         });
 
         it('returns existing _User actor from repo without writing on cache miss', async () => {
             const repo = mockRepo();
-            repo.findBySub.mockResolvedValue(ALICE);
+            repo.findByKeycloakSub.mockResolvedValue(ALICE);
             const svc = new DefaultActorContextService(repo);
 
             const result = await svc.resolveActor(
-                ALICE.sub,
+                ALICE.keycloakSub,
                 ALICE.email,
                 ALICE.displayName,
                 ['/institutes/BfR']
             );
 
             expect(result).toEqual(ALICE);
-            expect(repo.findBySub).toHaveBeenCalledWith(ALICE.sub);
+            expect(repo.findByKeycloakSub).toHaveBeenCalledWith(
+                ALICE.keycloakSub
+            );
             expect(repo.materialize).not.toHaveBeenCalled();
         });
     });

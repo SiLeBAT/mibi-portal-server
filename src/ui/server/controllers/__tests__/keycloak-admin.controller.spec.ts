@@ -113,7 +113,7 @@ describe('KeycloakAdminController', () => {
             const mockActors = getMockKeycloakActorsService();
             mockActors.listPendingActors.mockResolvedValue([
                 {
-                    sub: 'pending-1',
+                    keycloakSub: 'pending-1',
                     email: 'pending@lab.de',
                     instituteId: 'BfR',
                     displayName: 'Pending User'
@@ -137,7 +137,7 @@ describe('KeycloakAdminController', () => {
             expect(res.statusCode).toBe(200);
             expect(res._getJSON()).toEqual([
                 {
-                    sub: 'pending-1',
+                    keycloakSub: 'pending-1',
                     email: 'pending@lab.de',
                     instituteId: 'BfR',
                     displayName: 'Pending User'
