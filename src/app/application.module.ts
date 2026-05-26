@@ -26,7 +26,7 @@ export function getApplicationContainerModule(
     appConfiguration: ApplicationConfiguration
 ): ContainerModule {
     return new ContainerModule(
-        (bind: interfaces.Bind, unbind: interfaces.Unbind) => {
+        (bind: interfaces.Bind, _unbind: interfaces.Unbind) => {
             bind(APPLICATION_TYPES.ApplicationConfiguration).toConstantValue(
                 appConfiguration
             );

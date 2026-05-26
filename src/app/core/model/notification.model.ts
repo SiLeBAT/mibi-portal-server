@@ -7,8 +7,12 @@ export interface Notification<T, V extends NotificationMeta> {
     meta?: V;
 }
 
+export type NotificationHandler = (
+    notification: unknown
+) => void | Promise<void>;
+
 export interface NotificationPort {
-    addHandler(handler: Function): void;
+    addHandler(handler: NotificationHandler): void;
 }
 
 export interface NotificationService extends NotificationPort {

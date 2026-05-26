@@ -25,6 +25,8 @@ export interface MailOptions {
     attachments: Attachment[];
 }
 
+export type MailHandler = (data: EmailData) => Promise<void>;
+
 export interface MailService {
-    getMailHandler(): Function;
+    getMailHandler(): MailHandler;
 }

@@ -22,7 +22,7 @@
     "test:coverage": "npm test -- --coverage && open coverage/lcov-report/index.html",
     "test:report": "npm test -- --reporters default jest-stare --testResultsProcessor=jest-stare && open jest-stare/index.html",
     "clean": "rimraf lib/*",
-    "lint": "tslint --project tsconfig.json -c tslint.json -e \"src/**/__mocks__/*.ts\" -e \"src/**/__tests__/*.ts\" -e \"test/**/*.ts\" \"src/**/*.ts\"",
+    "lint": "eslint .",
     "pretty": "prettier --write \"src/**/*.ts\"",
     "prepare": "(husky -v && husky ) || echo husky not installed",
     "lint:fix": "npm run lint -- --fix"
@@ -89,10 +89,10 @@
     "prettier": "2.6.2",
     "rimraf": "~3.0.2",
     "ts-jest": "29.1.1",
+    "@typescript-eslint/eslint-plugin": "^8.59.3",
+    "@typescript-eslint/parser": "^8.59.3",
+    "eslint": "^8.57.1",
     "ts-node": "^10.9.2",
-    "tslint": "~6.1.3",
-    "tslint-config-prettier": "~1.18.0",
-    "tslint-config-standard": "9.0.0",
     "typescript": "5.4.5"
   },
   "mibiConfig": {

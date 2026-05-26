@@ -88,7 +88,9 @@ export async function initSchema(dbConfig: ParseConnectionInfo): Promise<void> {
                     logger.error(' error creating unique indices: ', error);
                     return;
                 })
-                .finally(() => client.close());
+                .finally(async () => {
+                    await client.close();
+                });
 
             return;
         },

@@ -1,12 +1,18 @@
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const FSFilesAdapter = require('@parse/fs-files-adapter');
 import config from 'config';
 import express from 'express';
-// import { ParseServer } from 'parse-server';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const ParseServer = require('parse-server').ParseServer;
 import { logger } from './../../aspects';
 
-// tslint:disable-next-line: no-any
-const parseServer: any = config.get('parseServer');
+interface ParseServerConfig {
+    databaseURI: string;
+    serverURL: string;
+    [key: string]: unknown;
+}
+
+const parseServer: ParseServerConfig = config.get('parseServer');
 const dataDir: string = config.get('dataStore.dataDir');
 const fsAdapter = new FSFilesAdapter({
     filesSubDirectory: '../' + dataDir

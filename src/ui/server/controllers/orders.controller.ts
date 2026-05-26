@@ -34,7 +34,6 @@ export class DefaultOrdersController
     extends AbstractController
     implements OrdersController
 {
-    // @ts-ignore
     private redirectionTarget: AxiosInstance;
     constructor(
         @inject(APPLICATION_TYPES.TokenService) private tokenService: TokenPort,

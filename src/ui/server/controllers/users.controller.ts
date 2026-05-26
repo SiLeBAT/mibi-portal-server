@@ -234,7 +234,10 @@ export class DefaultUsersController
         }
     }
     @httpPost(USERS_ROUTE.REGISTRATION)
-    async postRegistration(@request() req: Request, @response() res: Response) {
+    async postRegistration(
+        @request() req: Request,
+        @response() res: Response
+    ): Promise<void> {
         logger.info(
             `${this.constructor.name}.${this.postRegistration.name}, Request received`
         );
@@ -270,7 +273,7 @@ export class DefaultUsersController
                 lastName: credentials.lastName,
                 institution: credentials.institution
             });
-            return this.ok(res, dto);
+            this.ok(res, dto);
         } catch (error) {
             logger.info(
                 `${this.constructor.name}.${this.postRegistration.name} has thrown an error. ${error}`

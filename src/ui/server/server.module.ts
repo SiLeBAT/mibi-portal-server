@@ -30,7 +30,7 @@ export function getServerContainerModule(
     serverCongfiguration: AppServerConfiguration
 ): ContainerModule {
     return new ContainerModule(
-        (bind: interfaces.Bind, unbind: interfaces.Unbind) => {
+        (bind: interfaces.Bind, _unbind: interfaces.Unbind) => {
             bind(SERVER_TYPES.AppServerConfiguration).toConstantValue(
                 serverCongfiguration
             );

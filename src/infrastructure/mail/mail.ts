@@ -99,15 +99,14 @@ export class DefaultMailService implements MailService {
     }
 
     private sendMail(
-        // tslint:disable-next-line
-        templateData: any,
+        templateData: Record<string, unknown>,
         templateFile: string,
         options: MailOptions
     ) {
         templateData.copyrightYear = new Date().getFullYear();
 
-        let template = handlebars.compile(templateFile);
-        let result = template(templateData);
+        const template = handlebars.compile(templateFile);
+        const result = template(templateData);
 
         const transporter = nodemailer.createTransport({
             host: this.host,

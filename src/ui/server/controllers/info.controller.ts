@@ -9,7 +9,11 @@ import { API_ROUTE } from '../model/enums';
 import { SERVER_TYPES } from '../server.types';
 import { AppServerConfiguration } from '../model/server.model';
 import { UnknownPackageConfigurationError } from '../model/domain.error';
-const pjson = require('../../../../package.json');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const pjson = require('../../../../package.json') as {
+    version: string;
+    mibiConfig: { lastChange: string };
+};
 
 enum INFO_ROUTE {
     ROOT = '/info'

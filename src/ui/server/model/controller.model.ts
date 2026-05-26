@@ -3,8 +3,7 @@ import { Request, Response } from 'express';
 export interface Controller {}
 
 export interface ControllerFactory {
-    // tslint:disable-next-line: no-any
-    getController(controllerName: string): any;
+    getController(controllerName: string): unknown;
 }
 
 export interface VersionRootController extends Controller {
@@ -42,7 +41,7 @@ export interface UsersController extends Controller {
         req: Request,
         res: Response
     ): Promise<void>;
-    postRegistration(req: Request, res: Response): void;
+    postRegistration(req: Request, res: Response): Promise<void>;
     patchVerification(token: string, res: Response): Promise<void>;
     patchActivation(token: string, res: Response): Promise<void>;
     postLogin(req: Request, res: Response): Promise<void>;

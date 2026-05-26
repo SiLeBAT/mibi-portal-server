@@ -47,7 +47,7 @@ export class ParseDefaultUserRepository
         });
         return super
             ._create(newUser)
-            .then(async (savedUser: ParseUser) =>
+            .then((savedUser: ParseUser) =>
                 createUser(
                     savedUser.getId() ?? '',
                     user.email,
@@ -69,11 +69,11 @@ export class ParseDefaultUserRepository
             ._findById(id, undefined, true)
             .then(async (user: ParseUser) => {
                 if (!user) {
-                    return Promise.reject(null);
+                    throw null;
                 }
                 const institution = user.getInstitution();
                 if (!institution) {
-                    return super._retrieveIncludingWith(
+                    return await super._retrieveIncludingWith(
                         [USER_FIELDS.institution],
                         USER_FIELDS.email,
                         user.getEmail()
@@ -81,7 +81,7 @@ export class ParseDefaultUserRepository
                 }
                 return user;
             })
-            .then(async (user: ParseUser) => {
+            .then((user: ParseUser) => {
                 if (!user) {
                     throw new UserNotFoundError(`User not found. id=${id}`);
                 }
@@ -113,9 +113,9 @@ export class ParseDefaultUserRepository
                     );
                 }
 
-                return super._update(parseUser, updatedUser);
+                return await super._update(parseUser, updatedUser);
             })
-            .then(async (parseUser: ParseUser) => {
+            .then((parseUser: ParseUser) => {
                 if (!parseUser) {
                     throw new UserUpdateError(
                         ` Updated user not found. id=${user.uniqueId}`
@@ -136,11 +136,11 @@ export class ParseDefaultUserRepository
             ._matches(USER_FIELDS.email, nameRegex, 'i')
             .then(async parseUser => {
                 if (!parseUser) {
-                    return Promise.reject(null);
+                    throw null;
                 }
                 const institution = parseUser.getInstitution();
                 if (!institution) {
-                    return super._retrieveIncludingWith(
+                    return await super._retrieveIncludingWith(
                         [USER_FIELDS.institution],
                         USER_FIELDS.email,
                         parseUser.getEmail()
@@ -148,7 +148,7 @@ export class ParseDefaultUserRepository
                 }
                 return parseUser;
             })
-            .then(async parseUser => {
+            .then(parseUser => {
                 if (!parseUser) {
                     throw new UserNotFoundError(
                         `User not found. username=${username}`
@@ -169,7 +169,7 @@ export class ParseDefaultUserRepository
 
         return super
             ._matches(USER_FIELDS.email, nameRegex, 'i')
-            .then(async parseUser => {
+            .then(parseUser => {
                 if (!parseUser) {
                     throw new UserNotFoundError(
                         `User not found. username=${username}`

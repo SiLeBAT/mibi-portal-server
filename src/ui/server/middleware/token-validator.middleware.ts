@@ -1,4 +1,5 @@
 import { expressjwt } from 'express-jwt';
+import { Request } from 'express';
 
 function validateToken(apiRoute: string, secret: string) {
     const whiteList = [
@@ -29,8 +30,7 @@ function validateToken(apiRoute: string, secret: string) {
     });
 }
 
-// tslint:disable-next-line: no-any
-function getTokenFromHeader(req: any): string | null {
+function getTokenFromHeader(req: Request): string | null {
     if (
         req.headers.authorization &&
         req.headers.authorization.split(' ')[0] === 'Bearer'

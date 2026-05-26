@@ -30,8 +30,8 @@ class ParseDataStore implements DataStore {
             undefined,
             parseConnectionInfo.masterKey
         );
-        // tslint:disable-next-line:no-any
-        (ParseDefault as any).serverURL = parseConnectionInfo.serverURL;
+        (ParseDefault as unknown as { serverURL: string }).serverURL =
+            parseConnectionInfo.serverURL;
 
         Parse.Schema.all()
             .then(() => {
