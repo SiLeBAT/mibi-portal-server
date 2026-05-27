@@ -13,7 +13,7 @@ import { APPLICATION_TYPES } from './../../app/application.types';
 
 export function getPersistenceContainerModule(): ContainerModule {
     return new ContainerModule(
-        (bind: interfaces.Bind, unbind: interfaces.Unbind) => {
+        (bind: interfaces.Bind, _unbind: interfaces.Unbind) => {
             bind<ParseUserRepository>(APPLICATION_TYPES.ParseUserRepository).to(
                 ParseDefaultUserRepository
             );

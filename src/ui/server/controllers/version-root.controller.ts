@@ -8,9 +8,9 @@ import { AppServerConfiguration } from '../model/server.model';
 import { controller, response, httpGet } from 'inversify-express-utils';
 import { inject } from 'inversify';
 import { SERVER_TYPES } from '../server.types';
-const openAPI = require('./../doc/openapi_v2.json');
+import openAPI from './../doc/openapi_v2.json';
 
-// tslint:disable-next-line: no-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare type APIDefinition = any;
 
 @controller(API_ROUTE.V2)
@@ -47,12 +47,11 @@ export class DefaultVersionRootController
         }
     }
 
-    private handleError(res: Response, error: Error) {
+    private handleError(res: Response, _error: unknown) {
         this.fail(res, 'Unable to retrieve documentation');
     }
 
-    // tslint:disable-next-line: no-any
-    private search(term: string, object: APIDefinition, found: any[] = []) {
+    private search(term: string, object: APIDefinition, found: string[] = []) {
         Object.keys(object).forEach(key => {
             if (key === term) {
                 found.push(object[key]);

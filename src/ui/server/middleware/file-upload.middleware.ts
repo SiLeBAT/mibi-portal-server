@@ -1,4 +1,4 @@
-import multer = require('multer');
+import multer from 'multer';
 
 export const uploadToMemory = multer({
     // multer settings

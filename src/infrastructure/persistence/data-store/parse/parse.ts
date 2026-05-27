@@ -30,7 +30,7 @@ class ParseDataStore implements DataStore {
             undefined,
             parseConnectionInfo.masterKey
         );
-        // tslint:disable-next-line:no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (ParseDefault as any).serverURL = parseConnectionInfo.serverURL;
 
         Parse.Schema.all()

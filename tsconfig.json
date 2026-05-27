@@ -12,6 +12,8 @@
         ],
 
         // Emit
+        "resolveJsonModule": true,
+        "rootDir": "./src",
         "outDir": "lib",
         "sourceMap": true,
         "removeComments": true,

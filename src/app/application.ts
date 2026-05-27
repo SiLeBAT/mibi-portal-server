@@ -3,7 +3,7 @@ import { NotificationService } from './core/model/notification.model';
 import { APPLICATION_TYPES } from './application.types';
 
 export interface MiBiApplication {
-    addNotificationHandler(handler: Function): void;
+    addNotificationHandler(handler: (...args: unknown[]) => void): void;
 }
 
 export function createApplication(container: Container) {
@@ -12,7 +12,7 @@ export function createApplication(container: Container) {
             APPLICATION_TYPES.NotificationService
         );
     return {
-        addNotificationHandler: (handler: Function) => {
+        addNotificationHandler: (handler: (...args: unknown[]) => void) => {
             notificationService.addHandler(handler);
         }
     };

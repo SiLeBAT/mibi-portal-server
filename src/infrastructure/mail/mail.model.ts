@@ -26,5 +26,5 @@ export interface MailOptions {
 }
 
 export interface MailService {
-    getMailHandler(): Function;
+    getMailHandler(): (...args: unknown[]) => void;
 }
