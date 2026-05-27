@@ -233,6 +233,7 @@ export class DefaultUsersController
             this.handleError(res, error);
         }
     }
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     @httpPost(USERS_ROUTE.REGISTRATION)
     async postRegistration(@request() req: Request, @response() res: Response) {
         logger.info(

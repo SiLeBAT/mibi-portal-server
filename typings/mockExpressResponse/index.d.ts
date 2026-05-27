@@ -1,5 +1,5 @@
 declare module 'mock-express-response' {
-    // tslint:disable-next-line
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const mockExpressResponse: any;
     export = mockExpressResponse;
 }

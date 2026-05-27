@@ -167,7 +167,7 @@ export class DefaultSamplesController
         res: Response,
         parseRequest: ParseFileRequest
     ) {
-        let accept = req.headers['accept'];
+        const accept = req.headers['accept'];
         try {
             const parseResponse = await this.redirectionTarget.post<
                 ParseSingleResponse<OrderDTO>,
@@ -208,11 +208,11 @@ export class DefaultSamplesController
     }
 
     // N.B. This functionality will probably move to the FE
-    private async putSamplesTransformInput(
+    private putSamplesTransformInput(
         req: Request,
-        res: Response
-    ): Promise<ParseFileRequest> {
-        let contype = req.headers['content-type'];
+        _res: Response
+    ): ParseFileRequest {
+        const contype = req.headers['content-type'];
         const type = this.getResourceViewType(contype);
         let typeAsString: RESOURCE_VIEW_TYPE_STRING = 'xml';
         let data = '';

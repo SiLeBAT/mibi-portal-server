@@ -86,7 +86,11 @@ class GenericUser implements User {
     }
 
     updateNumberOfFailedAttempts(increment: boolean) {
-        increment ? this.numAttempt++ : (this.numAttempt = 0);
+        if (increment) {
+            this.numAttempt++;
+        } else {
+            this.numAttempt = 0;
+        }
     }
 
     updateLastLoginAttempt() {

@@ -7,7 +7,7 @@ export function getMailContainerModule(
     mailConfig: MailConfiguration
 ): ContainerModule {
     return new ContainerModule(
-        (bind: interfaces.Bind, unbind: interfaces.Unbind) => {
+        (bind: interfaces.Bind, _unbind: interfaces.Unbind) => {
             bind(MAIL_TYPES.MailConfiguration).toConstantValue(mailConfig);
             bind(MAIL_TYPES.MailService).to(DefaultMailService);
         }

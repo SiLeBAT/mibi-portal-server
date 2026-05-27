@@ -1,23 +1,27 @@
-import { Container } from 'inversify';
+import { Container, interfaces } from 'inversify';
 import 'reflect-metadata';
 
 class MiBiContainer extends Container {
-    // tslint:disable-next-line: no-any
-    constructor(...args: any[]) {
+    // eslint-disable-next-line @typescript-eslint/no-useless-constructor
+    constructor(...args: ConstructorParameters<typeof Container>) {
         super(...args);
     }
 
-    // tslint:disable-next-line: no-any
-    bindDependencies(func: Function, dependencies: any[]) {
-        let injections = dependencies.map(dependency => {
+    bindDependencies(
+        func: (...args: unknown[]) => unknown,
+        dependencies: interfaces.ServiceIdentifier<unknown>[]
+    ) {
+        const injections = dependencies.map(dependency => {
             return this.get(dependency);
         });
         return func.bind(func, ...injections);
     }
 }
-// tslint:disable-next-line: no-any
-function createContainer(...args: any[]): MiBiContainer {
-    return new MiBiContainer(...args);
+
+function createContainer(...args: unknown[]): MiBiContainer {
+    return new MiBiContainer(
+        ...(args as ConstructorParameters<typeof Container>)
+    );
 }
 
 export { MiBiContainer, createContainer };

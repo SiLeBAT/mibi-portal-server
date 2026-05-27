@@ -25,8 +25,8 @@ export class Logger {
         let logLevel: string = 'error';
         try {
             logLevel = logConfiguration.logLevel;
-        } catch (err) {
-            // tslint:disable-next-line:no-console
+        } catch (_err) {
+            // eslint-disable-next-line no-console
             console.warn(
                 'Log Level configuration not found. Using default: ' + logLevel
             );
@@ -78,33 +78,27 @@ export class Logger {
         }
     }
 
-    // tslint:disable-next-line
-    error(msg: string, meta?: any) {
+    error(msg: string, meta?: unknown) {
         this._logger.log('error', msg, { meta: meta });
     }
 
-    // tslint:disable-next-line
-    warn(msg: string, meta?: any) {
+    warn(msg: string, meta?: unknown) {
         this._logger.log('warn', msg, { meta: meta });
     }
 
-    // tslint:disable-next-line
-    info(msg: string, meta?: any) {
+    info(msg: string, meta?: unknown) {
         this._logger.log('info', msg, { meta: meta });
     }
 
-    // tslint:disable-next-line
-    verbose(msg: string, meta?: any) {
+    verbose(msg: string, meta?: unknown) {
         this._logger.log('verbose', msg, { meta: meta });
     }
 
-    // tslint:disable-next-line
-    debug(msg: string, meta?: any) {
+    debug(msg: string, meta?: unknown) {
         this._logger.log('debug', msg, { meta: meta });
     }
 
-    // tslint:disable-next-line
-    trace(msg: string, meta?: any) {
+    trace(msg: string, meta?: unknown) {
         this._logger.log('silly', msg, { meta: meta });
     }
 }

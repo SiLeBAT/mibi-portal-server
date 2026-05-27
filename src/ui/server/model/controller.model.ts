@@ -3,8 +3,7 @@ import { Request, Response } from 'express';
 export interface Controller {}
 
 export interface ControllerFactory {
-    // tslint:disable-next-line: no-any
-    getController(controllerName: string): any;
+    getController(controllerName: string): unknown;
 }
 
 export interface VersionRootController extends Controller {
