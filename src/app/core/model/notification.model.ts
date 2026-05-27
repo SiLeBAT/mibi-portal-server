@@ -8,7 +8,9 @@ export interface Notification<T, V extends NotificationMeta> {
 }
 
 export interface NotificationPort {
-    addHandler(handler: (...args: unknown[]) => void): void;
+    addHandler<T, V extends NotificationMeta>(
+        handler: (notification: Notification<T, V>) => void
+    ): void;
 }
 
 export interface NotificationService extends NotificationPort {

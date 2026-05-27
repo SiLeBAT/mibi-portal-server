@@ -1,9 +1,15 @@
 import { Container } from 'inversify';
-import { NotificationService } from './core/model/notification.model';
+import {
+    Notification,
+    NotificationMeta,
+    NotificationService
+} from './core/model/notification.model';
 import { APPLICATION_TYPES } from './application.types';
 
 export interface MiBiApplication {
-    addNotificationHandler(handler: (...args: unknown[]) => void): void;
+    addNotificationHandler<T, V extends NotificationMeta>(
+        handler: (notification: Notification<T, V>) => void
+    ): void;
 }
 
 export function createApplication(container: Container) {
@@ -12,7 +18,9 @@ export function createApplication(container: Container) {
             APPLICATION_TYPES.NotificationService
         );
     return {
-        addNotificationHandler: (handler: (...args: unknown[]) => void) => {
+        addNotificationHandler: <T, V extends NotificationMeta>(
+            handler: (notification: Notification<T, V>) => void
+        ) => {
             notificationService.addHandler(handler);
         }
     };
