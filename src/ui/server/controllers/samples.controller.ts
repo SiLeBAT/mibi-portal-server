@@ -229,7 +229,7 @@ export class DefaultSamplesController
             default: {
                 typeAsString = 'xml';
                 filename = decodeURIComponent(req.file!.originalname);
-                data = Buffer.from(req.file!.buffer).toString('base64');
+                data = req.file!.buffer.toString('base64');
             }
         }
         return {
