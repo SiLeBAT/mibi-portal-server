@@ -9,7 +9,8 @@ const app = express();
 app.use(
     '/admin/parse',
     createProxyMiddleware({
-        target: 'http://127.0.0.1:1337'
+        target: 'http://127.0.0.1:1337/admin/parse'
+        // target: 'http://127.0.0.1:1337'
     })
 );
 
