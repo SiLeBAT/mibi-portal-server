@@ -197,6 +197,37 @@ The approach was validated end-to-end before being scripted:
    second user (Bob) deliberately hashed with non-default params (m=4096,
    t=2, p=1) to prove per-credential params are honoured.
 
+## Activating Keycloak on the server
+
+The server ships with the full Keycloak BFF/OIDC stack wired up but **dormant**.
+A single config flag, `keycloak.enabled`, gates it:
+
+| `keycloak.enabled` | Behaviour |
+|---|---|
+| `false` (default) | Server boots and runs on the **legacy JWT auth** stack only. It never contacts Keycloak at startup — no admin-client authentication, no pending-actor reminder job — so it boots fine even if no Keycloak server exists yet. The Keycloak routes (`/v2/auth/*`, `/v2/admin/actors/*`) stay registered but are inert. |
+| `true` | Full Keycloak integration: admin client authenticates at boot (the server will **fail to start** if Keycloak is unreachable), reminder job runs, OIDC login flow is live. |
+
+Set it via environment variable in deployed environments:
+
+```bash
+MIBI_KEYCLOAK_ENABLED=true
+```
+
+…or, for local development, add `"enabled": true` to the `keycloak` block in
+`config/local.json` (untracked).
+
+**Recommended cutover sequence** once the Keycloak PROD server is up:
+
+1. Migrate users (above) and verify a few can log in directly against Keycloak.
+2. Set the Keycloak connection vars (`MIBI_KEYCLOAK_ISSUER_URL`,
+   `MIBI_KEYCLOAK_CLIENT_SECRET`, `MIBI_KEYCLOAK_ADMIN_CLIENT_SECRET`, …).
+3. Flip `MIBI_KEYCLOAK_ENABLED=true` and restart the server.
+4. Switch the frontend over to the BFF login flow (separate `mibi-portal-client`
+   change — out of scope here; the legacy token flow keeps working until then).
+
+To roll back, set `MIBI_KEYCLOAK_ENABLED=false` and restart — the legacy auth
+path is untouched and remains fully functional.
+
 ## Rollback
 
 If something goes wrong during a real run, individual users can be removed

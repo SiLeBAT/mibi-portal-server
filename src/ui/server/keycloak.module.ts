@@ -55,6 +55,40 @@ export async function buildKeycloakAdminClient(
 }
 
 /**
+ * Inert AdminClientPort used when the Keycloak integration is disabled.
+ *
+ * It performs no network calls at construction, so the server boots without a
+ * reachable Keycloak. The Keycloak-backed services (actor administration,
+ * pending-actor reminder) are only reachable through the OIDC session flow,
+ * which never runs in legacy-auth mode — so in practice these methods are
+ * never invoked. If one is, it rejects loudly rather than failing silently.
+ */
+export function buildDisabledAdminClient(): AdminClientPort {
+    // eslint-disable-next-line @typescript-eslint/require-await -- rejecting stub; async keeps the port's Promise-returning signature
+    const disabled = async (): Promise<never> => {
+        throw new Error(
+            'Keycloak integration is disabled (keycloak.enabled=false)'
+        );
+    };
+    return {
+        users: {
+            create: disabled,
+            update: disabled,
+            addToGroup: disabled,
+            executeActionsEmail: disabled,
+            find: disabled
+        },
+        groups: {
+            find: disabled,
+            create: disabled
+        },
+        roles: {
+            findUsersWithRole: disabled
+        }
+    };
+}
+
+/**
  * Wraps KcAdminClient behind AdminClientPort.
  *
  * Two translation responsibilities:

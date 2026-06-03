@@ -40,6 +40,7 @@
         "jwtSecret": "0"
     },
     "keycloak": {
+        "enabled": false,
         "issuerUrl": "",
         "clientId": "mibi-portal-bff",
         "clientSecret": "",

@@ -121,3 +121,42 @@ describe('DefaultKeycloakOidcService.getEndSessionUrl', () => {
         expect(result).toContain('id_token_hint=a%2Bb%3Dc');
     });
 });
+
+describe('DefaultKeycloakOidcService lazy discovery', () => {
+    it('does not contact the issuer when constructed', () => {
+        const { Issuer } = require('openid-client');
+        Issuer.discover.mockClear();
+
+        new DefaultKeycloakOidcService(BASE_CONFIG);
+
+        // Construction happens at server boot; discovery is a network call and
+        // must be deferred so the server boots without a reachable Keycloak.
+        expect(Issuer.discover).not.toHaveBeenCalled();
+    });
+
+    it('does not contact the issuer for getEndSessionUrl', () => {
+        const { Issuer } = require('openid-client');
+        Issuer.discover.mockClear();
+
+        const svc = new DefaultKeycloakOidcService(BASE_CONFIG);
+        svc.getEndSessionUrl('tok');
+
+        expect(Issuer.discover).not.toHaveBeenCalled();
+    });
+
+    it('discovers the issuer only once across multiple authorization URLs', async () => {
+        const { Issuer } = require('openid-client');
+        Issuer.discover.mockClear();
+        Issuer.discover.mockResolvedValue({
+            Client: jest
+                .fn()
+                .mockImplementation(() => ({ authorizationUrl: () => 'url' }))
+        });
+
+        const svc = new DefaultKeycloakOidcService(BASE_CONFIG);
+        await svc.buildAuthorizationUrl();
+        await svc.buildAuthorizationUrl();
+
+        expect(Issuer.discover).toHaveBeenCalledTimes(1);
+    });
+});

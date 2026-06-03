@@ -50,12 +50,59 @@ describe('Info controller', () => {
 
     it('should respond with JSON', function () {
         const res = new mockRes();
-        expect.assertions(4);
+        expect.assertions(5);
         controller.getSystemInfo(res);
         expect(res.statusCode).toBe(200);
         const body = res._getJSON();
         expect(body).toHaveProperty('version');
         expect(body).toHaveProperty('supportContact');
         expect(body).toHaveProperty('lastChange');
+        expect(body).toHaveProperty('keycloakEnabled');
+    });
+
+    it('defaults keycloakEnabled to false when no keycloak config is present', function () {
+        const res = new mockRes();
+        controller.getSystemInfo(res);
+        expect(res._getJSON().keycloakEnabled).toBe(false);
+    });
+
+    it('reflects keycloak.enabled from the server configuration', function () {
+        const enabledContainer = createContainer();
+        enabledContainer.load(
+            getServerContainerModule({
+                port: 1,
+                apiRoot: '',
+                publicAPIDoc: {},
+                jwtSecret: 'test',
+                logLevel: 'info',
+                supportContact: 'test',
+                parseAPI: '',
+                appId: '',
+                keycloak: {
+                    enabled: true,
+                    issuerUrl: '',
+                    clientId: '',
+                    clientSecret: '',
+                    callbackUrl: '',
+                    adminClientId: '',
+                    adminClientSecret: ''
+                }
+            }),
+            getApplicationContainerModule({
+                appName: 'test',
+                jobRecipient: 'test',
+                login: { threshold: 0, secondsDelay: 0 },
+                clientUrl: 'test',
+                supportContact: 'test',
+                jwtSecret: 'test'
+            }),
+            mockPersistenceContainerModule
+        );
+        const enabledController = enabledContainer.get<SystemInfoController>(
+            SERVER_TYPES.InfoController
+        );
+        const res = new mockRes();
+        enabledController.getSystemInfo(res);
+        expect(res._getJSON().keycloakEnabled).toBe(true);
     });
 });
