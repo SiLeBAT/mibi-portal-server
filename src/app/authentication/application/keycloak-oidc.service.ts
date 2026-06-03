@@ -9,14 +9,23 @@ import { KeycloakServerConfig } from '../../../ui/server/model/server.model';
 
 @injectable()
 export class DefaultKeycloakOidcService implements KeycloakOidcPort {
-    private clientPromise: Promise<Client>;
+    // Built lazily on first use rather than in the constructor: the service is
+    // instantiated at server boot (controllers are resolved up-front), but
+    // Issuer.discover() is a network call. Deferring it keeps the server
+    // bootable when Keycloak is unreachable (legacy-auth-only mode).
+    private clientPromise?: Promise<Client>;
 
-    constructor(private readonly config: KeycloakServerConfig) {
-        this.clientPromise = this.buildClient();
+    constructor(private readonly config: KeycloakServerConfig) {}
+
+    private async getClient(): Promise<Client> {
+        if (!this.clientPromise) {
+            this.clientPromise = this.buildClient();
+        }
+        return this.clientPromise;
     }
 
     async buildAuthorizationUrl(): Promise<OidcAuthParams> {
-        const client = await this.clientPromise;
+        const client = await this.getClient();
         const codeVerifier = generators.codeVerifier();
         const codeChallenge = generators.codeChallenge(codeVerifier);
         const state = generators.state();
@@ -35,7 +44,7 @@ export class DefaultKeycloakOidcService implements KeycloakOidcPort {
         codeVerifier: string,
         iss?: string
     ): Promise<OidcUser> {
-        const client = await this.clientPromise;
+        const client = await this.getClient();
         const params: Record<string, string> = { code, state };
         if (iss) {
             params.iss = iss;

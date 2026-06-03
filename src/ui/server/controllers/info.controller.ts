@@ -21,12 +21,14 @@ export class DefaultSystemInfoController
     implements SystemInfoController
 {
     private supportContact = '';
+    private keycloakEnabled = false;
     constructor(
         @inject(SERVER_TYPES.AppServerConfiguration)
         configuration: AppServerConfiguration
     ) {
         super();
         this.supportContact = configuration.supportContact;
+        this.keycloakEnabled = configuration.keycloak?.enabled ?? false;
     }
 
     @httpGet('/')
@@ -43,7 +45,8 @@ export class DefaultSystemInfoController
             const dto: SystemInformationDTO = {
                 version: pjson.version,
                 lastChange: pjson.mibiConfig.lastChange,
-                supportContact: this.supportContact
+                supportContact: this.supportContact,
+                keycloakEnabled: this.keycloakEnabled
             };
             logger.info(
                 `${this.constructor.name}.${this.getSystemInfo.name}, Response sent`

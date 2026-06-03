@@ -20,6 +20,10 @@
         "jwtSecret": "MIBI_JWT_SECRET"
     },
     "keycloak": {
+        "enabled": {
+            "__name": "MIBI_KEYCLOAK_ENABLED",
+            "__format": "boolean"
+        },
         "issuerUrl": "MIBI_KEYCLOAK_ISSUER_URL",
         "clientId": "MIBI_KEYCLOAK_CLIENT_ID",
         "clientSecret": "MIBI_KEYCLOAK_CLIENT_SECRET",

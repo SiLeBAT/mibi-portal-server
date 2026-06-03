@@ -79,6 +79,9 @@ export interface SystemInformationDTO {
     version: string;
     lastChange: string;
     supportContact: string;
+    // Mirrors the server's keycloak.enabled flag so the SPA can pick the legacy
+    // login form vs. the Keycloak SSO redirect at runtime, without a rebuild.
+    keycloakEnabled: boolean;
 }
 
 export interface ZomoPlanFileCollectionDTO {

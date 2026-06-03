@@ -22,6 +22,7 @@ import {
 } from '../../main.model';
 import { getServerContainerModule } from './ports';
 import {
+    buildDisabledAdminClient,
     buildKeycloakAdminClient,
     getKeycloakContainerModule
 } from './keycloak.module';
@@ -45,7 +46,21 @@ export async function initialiseContainer() {
     const keycloakConfig: KeycloakConfiguration =
         configurationService.getKeycloakConfiguration();
 
-    const adminClient = await buildKeycloakAdminClient(keycloakConfig);
+    // When Keycloak is disabled the server must boot without contacting it, so
+    // we skip the eager admin-client authentication and hand the Keycloak
+    // container module an inert stub. The Keycloak controllers stay registered
+    // (their routes simply fail if hit), but nothing reaches out to Keycloak.
+    const adminClient = keycloakConfig.enabled
+        ? await buildKeycloakAdminClient(keycloakConfig)
+        : buildDisabledAdminClient();
+
+    if (keycloakConfig.enabled) {
+        logger.info('Keycloak IAM integration enabled');
+    } else {
+        logger.info(
+            'Keycloak IAM integration disabled — running on legacy JWT auth'
+        );
+    }
 
     await createParseDataStore({
         serverURL: parseConnectionConfig.serverURL,
@@ -90,7 +105,13 @@ export async function initialiseContainer() {
         mailService.getMailHandler().bind(mailService)
     );
 
-    startPendingActorReminderJob(container, keycloakConfig, appConfiguration);
+    if (keycloakConfig.enabled) {
+        startPendingActorReminderJob(
+            container,
+            keycloakConfig,
+            appConfiguration
+        );
+    }
 
     return container;
 }

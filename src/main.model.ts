@@ -50,6 +50,12 @@ export interface ReminderConfiguration {
 }
 
 export interface KeycloakConfiguration {
+    // Master switch for the Keycloak IAM integration. While false (the default),
+    // the server boots and runs entirely on the legacy JWT auth stack and never
+    // contacts Keycloak at startup — no admin-client authentication, no reminder
+    // job. Flip to true (e.g. MIBI_KEYCLOAK_ENABLED=true) once a reachable
+    // Keycloak server is available to activate the BFF/OIDC flow.
+    enabled: boolean;
     issuerUrl: string;
     clientId: string;
     clientSecret: string;

@@ -3,6 +3,7 @@ export interface APIDocConfig {
 }
 
 export interface KeycloakServerConfig {
+    enabled?: boolean;
     issuerUrl: string;
     clientId: string;
     clientSecret: string;
