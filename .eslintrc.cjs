@@ -3,7 +3,7 @@ module.exports = {
   extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint'],
-  parserOptions: { project: ['./tsconfig.json'] },
+  parserOptions: { project: ['./tsconfig.eslint.json'] },
   root: true,
   ignorePatterns: [
     'src/**/__mocks__/**',
@@ -33,5 +33,14 @@ module.exports = {
     '@typescript-eslint/no-invalid-void-type': ['error', { allowInGenericTypeArguments: true }],
     '@typescript-eslint/explicit-member-accessibility': ['error', { accessibility: 'no-public' }],
     '@typescript-eslint/consistent-type-assertions': ['error', { assertionStyle: 'as', objectLiteralTypeAssertions: 'never' }]
-  }
+  },
+  overrides: [
+    {
+      // Standalone CLI scripts (migration, smoke tests): console is their intended output.
+      files: ['scripts/**/*.ts'],
+      rules: {
+        'no-console': 'off'
+      }
+    }
+  ]
 };
