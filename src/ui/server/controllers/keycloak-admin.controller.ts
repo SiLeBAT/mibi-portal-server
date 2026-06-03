@@ -51,7 +51,7 @@ export class DefaultKeycloakAdminController
             this.forbidden(res);
             return;
         }
-        const sub = req.params.sub;
+        const sub = String(req.params.sub);
         try {
             await this.actorsService.activateActor(sub);
             logger.info(`admin=${req.session.user!.sub} enabled actor=${sub}`);
@@ -70,7 +70,7 @@ export class DefaultKeycloakAdminController
             this.forbidden(res);
             return;
         }
-        const sub = req.params.sub;
+        const sub = String(req.params.sub);
         try {
             await this.actorsService.disableActor(sub);
             logger.info(`admin=${req.session.user!.sub} disabled actor=${sub}`);
