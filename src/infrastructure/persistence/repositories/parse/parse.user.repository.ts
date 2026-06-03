@@ -1,3 +1,4 @@
+import { escapeRegExp } from 'lodash';
 import { injectable } from 'inversify';
 import { ParseUserRepository, User, createUser } from '../../../../app/ports';
 import { ParseRepositoryBase } from '../../data-store/parse/parse.repository';
@@ -23,7 +24,7 @@ export class ParseDefaultUserRepository
     }
 
     async hasUserWithEmail(username: string): Promise<boolean> {
-        const nameRegex = new RegExp(username, 'i');
+        const nameRegex = new RegExp('^' + escapeRegExp(username) + '$', 'i');
 
         return super
             ._matches(USER_FIELDS.email, nameRegex, 'i')
@@ -130,7 +131,7 @@ export class ParseDefaultUserRepository
     }
 
     async findByUsername(username: string): Promise<User> {
-        const nameRegex = new RegExp(username, 'i');
+        const nameRegex = new RegExp('^' + escapeRegExp(username) + '$', 'i');
 
         return super
             ._matches(USER_FIELDS.email, nameRegex, 'i')
@@ -165,7 +166,7 @@ export class ParseDefaultUserRepository
     }
 
     async getPasswordForUser(username: string): Promise<string> {
-        const nameRegex = new RegExp(username, 'i');
+        const nameRegex = new RegExp('^' + escapeRegExp(username) + '$', 'i');
 
         return super
             ._matches(USER_FIELDS.email, nameRegex, 'i')
