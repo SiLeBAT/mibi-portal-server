@@ -135,7 +135,7 @@ async function buildFixtures(): Promise<Fixture[]> {
     ];
 }
 
-function sh(
+async function sh(
     cmd: string,
     args: string[],
     opts: { env?: NodeJS.ProcessEnv } = {}
@@ -149,7 +149,9 @@ function sh(
         let stderr = '';
         child.stdout.on('data', d => (stdout += d.toString()));
         child.stderr.on('data', d => (stderr += d.toString()));
-        child.on('close', code => resolve({ code: code ?? -1, stdout, stderr }));
+        child.on('close', code => {
+            resolve({ code: code ?? -1, stdout, stderr });
+        });
     });
 }
 
