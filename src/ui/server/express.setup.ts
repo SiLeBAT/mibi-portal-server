@@ -1,11 +1,7 @@
-import {
-    ServerConfiguration as ExpressServerConfiguration,
-    createServer
-} from '@SiLeBAT/fg43-ne-server';
 import path from 'path';
 import { logger } from '../../aspects';
 import { GeneralConfiguration, ServerConfiguration } from '../../main.model';
-import { API_ROUTE, validateToken } from './ports';
+import { API_ROUTE } from './ports';
 
 import express from 'express';
 import session from 'express-session';
@@ -17,6 +13,7 @@ import { Container } from 'inversify';
 import { configurationService } from '../../configuratioin.service';
 import { APPLICATION_TYPES } from '../../app/application.types';
 import { ActorContextService } from '../../app/authentication/model/actor.model';
+import { startHttpServer } from './http-server';
 
 export function initialiseExpress(container: Container) {
     const serverConfig: ServerConfiguration =
@@ -70,7 +67,7 @@ export function initialiseExpress(container: Container) {
 
     customApp.use(doubleCsrfProtection);
 
-    // fg43-ne-server's error handler only responds to err.status === 401 and
+    // The HTTP server's error handler only responds to err.status === 401 and
     // silently drops everything else, so we have to terminate CSRF rejections here
     // or the request hangs forever.
     customApp.use(
@@ -99,27 +96,16 @@ export function initialiseExpress(container: Container) {
     );
     customApp.use(resolveActorContext(actorContextService));
 
-    const expressServerConfig: ExpressServerConfiguration = {
+    startHttpServer({
         container,
-        api: {
-            root: serverConfig.apiRoot,
-            version: API_ROUTE.V2,
-            port: serverConfig.port,
-            docPath: '/'
-        },
-        logging: {
-            logger,
-            logLevel: generalConfig.logLevel
-        },
-        tokenValidation: {
-            validator: validateToken,
-            jwtSecret: generalConfig.jwtSecret
-        },
-        publicDir: path.join(__dirname + '/public/de'),
-        customApp
-    };
-    const server = createServer(expressServerConfig);
-    server.startServer();
+        customApp,
+        apiRoot: serverConfig.apiRoot,
+        apiVersion: API_ROUTE.V2,
+        port: serverConfig.port,
+        logLevel: generalConfig.logLevel,
+        jwtSecret: generalConfig.jwtSecret,
+        publicDir: path.join(__dirname + '/public/de')
+    });
 
     process.on('uncaughtException', error => {
         logger.error(`Uncaught Exception. error=${String(error)}`);

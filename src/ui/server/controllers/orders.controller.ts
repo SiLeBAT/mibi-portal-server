@@ -15,6 +15,13 @@ import { OrderCollectionDTO } from '../model/response.model';
 import { AppServerConfiguration } from '../ports';
 import { SERVER_TYPES } from '../server.types';
 import { AbstractController, ParseSingleResponse } from './abstract.controller';
+import { APPLICATION_TYPES } from '../../../app/application.types';
+import {
+    TokenPayload,
+    TokenPort
+} from '../../../app/authentication/model/token.model';
+import { User, UserPort } from '../../../app/authentication/model/user.model';
+import { getTokenFromHeader } from '../middleware/token-validator.middleware';
 import '../middleware/session.augment';
 
 enum ORDER_ROUTE {
@@ -28,6 +35,8 @@ export class DefaultOrdersController
 {
     private redirectionTarget!: AxiosInstance;
     constructor(
+        @inject(APPLICATION_TYPES.TokenService) private tokenService: TokenPort,
+        @inject(APPLICATION_TYPES.UserService) private userService: UserPort,
         @inject(SERVER_TYPES.AppServerConfiguration)
         configuration: AppServerConfiguration
     ) {
@@ -44,21 +53,22 @@ export class DefaultOrdersController
         );
 
         try {
-            const sessionUser = req.session.user;
-            if (!sessionUser) {
+           const token = getTokenFromHeader(req);
+            if (!token) {
                 this.unauthorized(res, {
                     code: SERVER_ERROR_CODE.AUTHORIZATION_ERROR,
                     message: 'Not authenticated'
                 });
                 return;
             }
+            const user: User = await this.getUserFromToken(token);
 
             const parseResponse = await this.redirectionTarget.post<
                 ParseSingleResponse<OrderCollectionDTO>,
                 AxiosResponse<ParseSingleResponse<OrderCollectionDTO>>,
                 RedirectedCreateOrderListRequestDTO
             >('functions/createOrderList', {
-                userEmail: sessionUser.email
+                userEmail: user.email
             });
 
             logger.info(
@@ -72,4 +82,11 @@ export class DefaultOrdersController
             this.fail(res);
         }
     }
+
+    private async getUserFromToken(token: string): Promise<User> {
+        const payload: TokenPayload = this.tokenService.verifyToken(token);
+        const userId = payload.sub;
+        return this.userService.getUserById(userId);
+    }
+
 }
