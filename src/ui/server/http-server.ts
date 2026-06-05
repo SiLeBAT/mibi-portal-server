@@ -43,7 +43,7 @@ export function startHttpServer(config: HttpServerConfiguration): void {
 
         const scriptSources = ["'self'", "'unsafe-inline'", "'unsafe-eval'"];
         const styleSources = ["'self'", "'unsafe-inline'"];
-        const connectSources = ['https://mibi-portal.bfr.bund.de/', "'self'"];
+        const connectSources = ['https://mibi-portal.bfr.bund.de/', 'https://fg43-support.bfr.berlin', "'self'"];
 
         // Common security headers
         app.use(
