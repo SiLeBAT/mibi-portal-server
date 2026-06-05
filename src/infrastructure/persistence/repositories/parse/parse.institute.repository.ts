@@ -1,4 +1,3 @@
-import { injectable } from 'inversify';
 import { ParseRepositoryBase } from '../../data-store/parse/parse.repository';
 import {
     Institution,
@@ -12,7 +11,6 @@ import {
 import { mapToInstitution } from './data-mappers';
 import { InstituteNotFoundError } from '../../model/domain.error';
 
-@injectable()
 export class ParseDefaultInstituteRepository
     extends ParseRepositoryBase<Institution>
     implements ParseInstituteRepository

@@ -1,20 +1,19 @@
-import { Container } from 'inversify';
 import { rebindMocks } from '../../../../__mocks__/util';
-import { createContainer } from '../../../../aspects/container/container';
-import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
+import {
+    TestContainer,
+    createTestContainer
+} from '../../../../__mocks__/test-container';
 import { APPLICATION_TYPES } from '../../../application.types';
-import { getApplicationContainerModule } from '../../../ports';
 import { LoginService } from '../../model/login.model';
 import { getMockTokenService } from '../__mocks__/token.service';
 import { genericUser, getMockUserService } from '../__mocks__/user.service';
 
 describe('Login User Use Case', () => {
     let service: LoginService;
-    let container: Container | null;
+    let container: TestContainer | null;
     beforeEach(() => {
-        container = createContainer();
-        container.load(
-            getApplicationContainerModule({
+        container = createTestContainer({
+            appConfig: {
                 appName: 'test',
                 jobRecipient: 'test',
                 login: {
@@ -24,9 +23,8 @@ describe('Login User Use Case', () => {
                 clientUrl: 'test',
                 supportContact: 'test',
                 jwtSecret: 'test'
-            }),
-            mockPersistenceContainerModule
-        );
+            }
+        });
         service = container.get<LoginService>(APPLICATION_TYPES.LoginService);
     });
     afterEach(() => {

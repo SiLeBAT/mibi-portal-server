@@ -1,4 +1,3 @@
-import { injectable } from 'inversify';
 import { ParseRepositoryBase } from '../../data-store/parse/parse.repository';
 import {
     Token as ParseToken,
@@ -17,7 +16,6 @@ import {
 } from './../../../../app/ports';
 import { mapToUserToken } from './data-mappers';
 
-@injectable()
 export class ParseDefaultTokenRepository
     extends ParseRepositoryBase<ParseToken>
     implements ParseTokenRepository

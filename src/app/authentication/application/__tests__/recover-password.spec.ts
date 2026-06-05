@@ -1,8 +1,8 @@
-import { Container } from 'inversify';
 import { rebindMocks } from '../../../../__mocks__/util';
-import { createContainer } from '../../../../aspects/container/container';
-import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
-import { getApplicationContainerModule } from '../../../application.module';
+import {
+    TestContainer,
+    createTestContainer
+} from '../../../../__mocks__/test-container';
 import { APPLICATION_TYPES } from '../../../application.types';
 import { getMockNotificationService } from '../../../core/application/__mocks__/notification.service';
 import { PasswordService, RecoveryData } from '../../model/login.model';
@@ -12,11 +12,10 @@ import { getMockUserService } from '../__mocks__/user.service';
 describe('Recover Password Use Case', () => {
     let service: PasswordService;
     let credentials: RecoveryData;
-    let container: Container | null;
+    let container: TestContainer | null;
     beforeEach(() => {
-        container = createContainer();
-        container.load(
-            getApplicationContainerModule({
+        container = createTestContainer({
+            appConfig: {
                 appName: 'test',
                 jobRecipient: 'test',
                 login: {
@@ -26,9 +25,8 @@ describe('Recover Password Use Case', () => {
                 clientUrl: 'test',
                 supportContact: 'test',
                 jwtSecret: 'test'
-            }),
-            mockPersistenceContainerModule
-        );
+            }
+        });
         service = container.get<PasswordService>(
             APPLICATION_TYPES.PasswordService
         );

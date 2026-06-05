@@ -1,4 +1,3 @@
-import { inject, injectable } from 'inversify';
 import { sign, verify } from 'jsonwebtoken';
 import { ConfigurationService } from '../../core/model/configuration.model';
 import { TokenType } from '../domain/enums';
@@ -9,17 +8,13 @@ import {
     TokenService
 } from '../model/token.model';
 import { User, UserToken } from '../model/user.model';
-import { APPLICATION_TYPES } from './../../application.types';
 
-@injectable()
 export class DefaultTokenService implements TokenService {
     private expirationTime = 60 * 60 * 24;
     private adminExpirationTime = 60 * 60 * 24 * 7;
     private jwtSecret: string;
     constructor(
-        @inject(APPLICATION_TYPES.ConfigurationService)
         private configurationService: ConfigurationService,
-        @inject(APPLICATION_TYPES.ParseTokenRepository)
         private parseTokenRepository: ParseTokenRepository
     ) {
         const serverConfig =

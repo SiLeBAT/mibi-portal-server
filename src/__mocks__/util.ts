@@ -1,17 +1,15 @@
-import { Container, interfaces } from 'inversify';
+import { TestContainer } from './test-container';
 
 interface NewBindings {
-    // tslint:disable-next-line: no-any
-    id: interfaces.ServiceIdentifier<any>;
-    // tslint:disable-next-line: no-any
-    instance: any;
+    id: symbol;
+    instance: unknown;
 }
 
 export function rebindMocks<T>(
-    container: Container | null,
-    serviceId: interfaces.ServiceIdentifier<T>,
+    container: TestContainer | null,
+    serviceId: symbol,
     newBindings: NewBindings[]
-) {
+): T {
     if (!container) {
         throw Error();
     }
@@ -19,5 +17,5 @@ export function rebindMocks<T>(
         container.rebind(binding.id).toConstantValue(binding.instance);
     });
 
-    return container.get(serviceId);
+    return container.get<T>(serviceId);
 }

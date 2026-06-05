@@ -1,23 +1,21 @@
 /// <reference types='jest' />
 
-import { Container } from 'inversify';
 import mockRes from 'mock-express-response';
-import { getApplicationContainerModule } from '../../../../app/ports';
-import { createContainer } from '../../../../aspects/container/container';
-import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
+import {
+    TestContainer,
+    createTestContainer
+} from '../../../../__mocks__/test-container';
 import { SystemInfoController } from '../../model/controller.model';
-import { getServerContainerModule } from '../../server.module';
 import { SERVER_TYPES } from '../../server.types';
 
 // tslint:disable
 describe('Info controller', () => {
     let controller: SystemInfoController;
 
-    let container: Container | null;
+    let container: TestContainer | null;
     beforeEach(() => {
-        container = createContainer();
-        container.load(
-            getServerContainerModule({
+        container = createTestContainer({
+            serverConfig: {
                 port: 1,
                 apiRoot: '',
                 publicAPIDoc: {},
@@ -26,8 +24,8 @@ describe('Info controller', () => {
                 supportContact: 'test',
                 parseAPI: '',
                 appId: ''
-            }),
-            getApplicationContainerModule({
+            },
+            appConfig: {
                 appName: 'test',
                 jobRecipient: 'test',
                 login: {
@@ -37,9 +35,8 @@ describe('Info controller', () => {
                 clientUrl: 'test',
                 supportContact: 'test',
                 jwtSecret: 'test'
-            }),
-            mockPersistenceContainerModule
-        );
+            }
+        });
         controller = container.get<SystemInfoController>(
             SERVER_TYPES.InfoController
         );
@@ -67,9 +64,8 @@ describe('Info controller', () => {
     });
 
     it('reflects keycloak.enabled from the server configuration', function () {
-        const enabledContainer = createContainer();
-        enabledContainer.load(
-            getServerContainerModule({
+        const enabledContainer = createTestContainer({
+            serverConfig: {
                 port: 1,
                 apiRoot: '',
                 publicAPIDoc: {},
@@ -87,17 +83,16 @@ describe('Info controller', () => {
                     adminClientId: '',
                     adminClientSecret: ''
                 }
-            }),
-            getApplicationContainerModule({
+            },
+            appConfig: {
                 appName: 'test',
                 jobRecipient: 'test',
                 login: { threshold: 0, secondsDelay: 0 },
                 clientUrl: 'test',
                 supportContact: 'test',
                 jwtSecret: 'test'
-            }),
-            mockPersistenceContainerModule
-        );
+            }
+        });
         const enabledController = enabledContainer.get<SystemInfoController>(
             SERVER_TYPES.InfoController
         );

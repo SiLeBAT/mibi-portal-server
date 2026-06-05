@@ -1,4 +1,3 @@
-import 'reflect-metadata';
 import { Actor, ActorRepository } from '../../model/actor.model';
 import { DefaultActorContextService } from '../actor-context.service';
 

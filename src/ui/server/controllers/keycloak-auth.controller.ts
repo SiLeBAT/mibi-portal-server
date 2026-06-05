@@ -1,46 +1,24 @@
 import { Request, Response } from 'express';
-import { inject } from 'inversify';
-import {
-    controller,
-    httpGet,
-    httpPost,
-    request,
-    response
-} from 'inversify-express-utils';
-import { APPLICATION_TYPES } from '../../../app/application.types';
 import { KeycloakOidcPort } from '../../../app/authentication/model/oidc.model';
 import { logger } from '../../../aspects';
 import { KeycloakAuthController } from '../model/controller.model';
 import { SERVER_ERROR_CODE } from '../model/enums';
 import { AppServerConfiguration } from '../model/server.model';
-import { SERVER_TYPES } from '../server.types';
 import { AbstractController } from './abstract.controller';
 import '../middleware/session.augment';
 
-enum AUTH_ROUTE {
-    ROOT = '/auth',
-    LOGIN = '/login',
-    CALLBACK = '/callback',
-    LOGOUT = '/logout',
-    ME = '/me'
-}
-
-@controller('/v2')
 export class DefaultKeycloakAuthController
     extends AbstractController
     implements KeycloakAuthController
 {
     constructor(
-        @inject(APPLICATION_TYPES.KeycloakOidcService)
         private oidcService: KeycloakOidcPort,
-        @inject(SERVER_TYPES.AppServerConfiguration)
         private configuration: AppServerConfiguration
     ) {
         super();
     }
 
-    @httpGet(AUTH_ROUTE.ROOT + AUTH_ROUTE.LOGIN)
-    async getLogin(@request() req: Request, @response() res: Response) {
+    async getLogin(req: Request, res: Response) {
         logger.info(`${this.constructor.name}.getLogin, Request received`);
         try {
             const { authorizationUrl, state, codeVerifier } =
@@ -54,8 +32,7 @@ export class DefaultKeycloakAuthController
         }
     }
 
-    @httpGet(AUTH_ROUTE.ROOT + AUTH_ROUTE.CALLBACK)
-    async getCallback(@request() req: Request, @response() res: Response) {
+    async getCallback(req: Request, res: Response) {
         logger.info(`${this.constructor.name}.getCallback, Request received`);
         try {
             const { code, state, iss } = req.query as {
@@ -86,8 +63,7 @@ export class DefaultKeycloakAuthController
         }
     }
 
-    @httpGet(AUTH_ROUTE.ROOT + AUTH_ROUTE.ME)
-    getMe(@request() req: Request, @response() res: Response) {
+    getMe(req: Request, res: Response) {
         if (!req.session?.user) {
             this.unauthorized(res, {
                 code: SERVER_ERROR_CODE.AUTHORIZATION_ERROR,
@@ -102,8 +78,7 @@ export class DefaultKeycloakAuthController
         });
     }
 
-    @httpPost(AUTH_ROUTE.ROOT + AUTH_ROUTE.LOGOUT)
-    async postLogout(@request() req: Request, @response() res: Response) {
+    async postLogout(req: Request, res: Response) {
         logger.info(`${this.constructor.name}.postLogout, Request received`);
         try {
             const idToken = req.session.user?.id_token;

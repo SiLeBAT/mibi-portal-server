@@ -1,11 +1,10 @@
 import '../../middleware/session.augment';
 import axios from 'axios';
-import { Container } from 'inversify';
-import { getApplicationContainerModule } from '../../../../app/ports';
-import { createContainer } from '../../../../aspects/container/container';
-import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
+import {
+    TestContainer,
+    createTestContainer
+} from '../../../../__mocks__/test-container';
 import { SamplesController } from '../../model/controller.model';
-import { getServerContainerModule } from '../../server.module';
 import { SERVER_TYPES } from '../../server.types';
 
 var mockReq = require('mock-express-request');
@@ -33,12 +32,12 @@ const APP_CONFIG = {
     jwtSecret: 'test'
 };
 
-function buildController(container: Container): SamplesController {
+function buildController(container: TestContainer): SamplesController {
     return container.get<SamplesController>(SERVER_TYPES.SamplesController);
 }
 
 describe('DefaultSamplesController', () => {
-    let container: Container | null;
+    let container: TestContainer | null;
     let mockAxiosPost: jest.Mock;
 
     beforeEach(() => {
@@ -47,12 +46,10 @@ describe('DefaultSamplesController', () => {
             post: mockAxiosPost
         });
 
-        container = createContainer();
-        container.load(
-            getServerContainerModule(SERVER_CONFIG as any),
-            getApplicationContainerModule(APP_CONFIG),
-            mockPersistenceContainerModule
-        );
+        container = createTestContainer({
+            serverConfig: SERVER_CONFIG as any,
+            appConfig: APP_CONFIG
+        });
     });
 
     afterEach(() => {

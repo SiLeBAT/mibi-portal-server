@@ -1,5 +1,4 @@
 import { randomBytes } from 'crypto';
-import { injectable } from 'inversify';
 import * as Parse from 'parse/node';
 import {
     Actor,
@@ -7,7 +6,6 @@ import {
 } from '../../../../app/authentication/model/actor.model';
 import { logger } from '../../../../aspects';
 
-@injectable()
 export class ParseDefaultActorRepository implements ActorRepository {
     async findByKeycloakSub(keycloakSub: string): Promise<Actor | null> {
         const user = await new Parse.Query(Parse.User)

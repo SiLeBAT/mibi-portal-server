@@ -1,5 +1,4 @@
 import { Response } from 'express';
-import { controller } from 'inversify-express-utils';
 import { Controller } from '../model/controller.model';
 import { MalformedRequestError } from '../model/domain.error';
 import { SERVER_ERROR_CODE } from '../model/enums';
@@ -18,7 +17,6 @@ export interface ParseEntityDTO {
     updatedAt: string;
 }
 
-@controller('')
 export abstract class AbstractController implements Controller {
     protected jsonResponse<T>(
         response: Response,

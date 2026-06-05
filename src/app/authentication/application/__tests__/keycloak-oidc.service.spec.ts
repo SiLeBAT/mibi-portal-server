@@ -1,4 +1,3 @@
-import 'reflect-metadata';
 import { DefaultKeycloakOidcService } from '../keycloak-oidc.service';
 
 jest.mock('openid-client', () => ({

@@ -1,7 +1,10 @@
 /**
  * core exports
  */
-export { getApplicationContainerModule } from './application.module';
+export {
+    createApplicationServices,
+    ApplicationServices
+} from './application.factory';
 export { ApplicationConfiguration } from './core/model/configuration.model';
 export { createApplication, MiBiApplication } from './application';
 export {

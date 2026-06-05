@@ -1,13 +1,4 @@
 import { Request, Response } from 'express';
-import { inject } from 'inversify';
-import {
-    controller,
-    httpGet,
-    httpPost,
-    request,
-    response
-} from 'inversify-express-utils';
-import { APPLICATION_TYPES } from '../../../app/application.types';
 import { KeycloakActorsPort } from '../../../app/authentication/model/keycloak-actors.model';
 import { logger } from '../../../aspects';
 import { KeycloakAdminController } from '../model/controller.model';
@@ -16,20 +7,15 @@ import '../middleware/session.augment';
 
 const MIBI_ADMIN_ROLE = 'mibi-admin';
 
-@controller('/v2/admin/actors')
 export class DefaultKeycloakAdminController
     extends AbstractController
     implements KeycloakAdminController
 {
-    constructor(
-        @inject(APPLICATION_TYPES.KeycloakActorsService)
-        private actorsService: KeycloakActorsPort
-    ) {
+    constructor(private actorsService: KeycloakActorsPort) {
         super();
     }
 
-    @httpGet('/pending')
-    async getPendingActors(@request() req: Request, @response() res: Response) {
+    async getPendingActors(req: Request, res: Response) {
         if (!this.isMibiAdmin(req)) {
             this.forbidden(res);
             return;
@@ -45,8 +31,7 @@ export class DefaultKeycloakAdminController
         }
     }
 
-    @httpPost('/:sub/enable')
-    async postEnableActor(@request() req: Request, @response() res: Response) {
+    async postEnableActor(req: Request, res: Response) {
         if (!this.isMibiAdmin(req)) {
             this.forbidden(res);
             return;
@@ -64,8 +49,7 @@ export class DefaultKeycloakAdminController
         }
     }
 
-    @httpPost('/:sub/disable')
-    async postDisableActor(@request() req: Request, @response() res: Response) {
+    async postDisableActor(req: Request, res: Response) {
         if (!this.isMibiAdmin(req)) {
             this.forbidden(res);
             return;

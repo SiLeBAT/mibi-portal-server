@@ -1,10 +1,10 @@
-import { Container } from 'inversify';
 import { rebindMocks } from '../../../../__mocks__/util';
-import { createContainer } from '../../../../aspects/container/container';
-import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
+import {
+    TestContainer,
+    createTestContainer
+} from '../../../../__mocks__/test-container';
 import { APPLICATION_TYPES } from '../../../application.types';
 import { getMockNotificationService } from '../../../core/application/__mocks__/notification.service';
-import { getApplicationContainerModule } from '../../../ports';
 import { createUser } from '../../domain/user.entity';
 import { RecoveryData } from '../../model/login.model';
 import { RegistrationService } from '../../model/registration.model';
@@ -22,11 +22,10 @@ describe('Prepare User for Activation Use Case', () => {
     let service: RegistrationService;
     let user: User;
     let recoveryData: RecoveryData;
-    let container: Container | null;
+    let container: TestContainer | null;
     beforeEach(() => {
-        container = createContainer();
-        container.load(
-            getApplicationContainerModule({
+        container = createTestContainer({
+            appConfig: {
                 appName: 'test',
                 jobRecipient: 'test',
                 login: {
@@ -36,9 +35,8 @@ describe('Prepare User for Activation Use Case', () => {
                 clientUrl: 'test',
                 supportContact: 'test',
                 jwtSecret: 'test'
-            }),
-            mockPersistenceContainerModule
-        );
+            }
+        });
         service = container.get<RegistrationService>(
             APPLICATION_TYPES.RegistrationService
         );

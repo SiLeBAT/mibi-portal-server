@@ -1,4 +1,3 @@
-import 'reflect-metadata';
 
 // The real admin-client is shipped as ESM and is not transformed by jest; it is
 // irrelevant to the disabled stub, so mock it out to keep the module loadable.

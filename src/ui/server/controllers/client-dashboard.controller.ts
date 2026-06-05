@@ -1,42 +1,25 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { Request, Response } from 'express';
-import { inject } from 'inversify';
-import {
-    controller,
-    httpGet,
-    request,
-    response
-} from 'inversify-express-utils';
 import { logger } from '../../../aspects';
 import { ClientDashboardController } from '../model/controller.model';
-import { API_ROUTE } from '../model/enums';
 import { AppServerConfiguration } from '../ports';
-import { SERVER_TYPES } from '../server.types';
 import {
     AbstractController,
     ParseCollectionResponse,
     ParseEntityDTO
 } from './abstract.controller';
 
-enum CLIENT_DASHBOARD_ROUTE {
-    ROOT = '/client-dashboard-info'
-}
-
 interface ParseClientDashboardDTO extends ParseEntityDTO {
     readonly name: string;
     readonly isActive: boolean;
 }
 
-@controller(API_ROUTE.V2 + CLIENT_DASHBOARD_ROUTE.ROOT)
 export class DefaultClientDashboardController
     extends AbstractController
     implements ClientDashboardController
 {
     private redirectionTarget: AxiosInstance;
-    constructor(
-        @inject(SERVER_TYPES.AppServerConfiguration)
-        configuration: AppServerConfiguration
-    ) {
+    constructor(configuration: AppServerConfiguration) {
         super();
 
         this.redirectionTarget = axios.create({
@@ -45,8 +28,7 @@ export class DefaultClientDashboardController
         });
     }
 
-    @httpGet('/')
-    async getDashboardInfo(@request() req: Request, @response() res: Response) {
+    async getDashboardInfo(req: Request, res: Response) {
         logger.info(
             `${this.constructor.name}.${this.getDashboardInfo.name}, Request received`
         );

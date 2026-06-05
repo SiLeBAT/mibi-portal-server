@@ -9,13 +9,11 @@ import cookieParser from 'cookie-parser';
 import { doubleCsrf } from 'csrf-csrf';
 import { ParseSessionStore } from './middleware/parse-session.store';
 import { resolveActorContext } from './middleware/actor-context.middleware';
-import { Container } from 'inversify';
 import { configurationService } from '../../configuratioin.service';
-import { APPLICATION_TYPES } from '../../app/application.types';
-import { ActorContextService } from '../../app/authentication/model/actor.model';
 import { startHttpServer } from './http-server';
+import { AppComposition } from './composition-root';
 
-export function initialiseExpress(container: Container) {
+export function initialiseExpress(composition: AppComposition) {
     const serverConfig: ServerConfiguration =
         configurationService.getServerConfiguration();
     const generalConfig: GeneralConfiguration =
@@ -91,13 +89,10 @@ export function initialiseExpress(container: Container) {
         }
     );
 
-    const actorContextService = container.get<ActorContextService>(
-        APPLICATION_TYPES.ActorContextService
-    );
-    customApp.use(resolveActorContext(actorContextService));
+    customApp.use(resolveActorContext(composition.actorContextService));
 
     startHttpServer({
-        container,
+        controllers: composition.controllers,
         customApp,
         apiRoot: serverConfig.apiRoot,
         apiVersion: API_ROUTE.V2,

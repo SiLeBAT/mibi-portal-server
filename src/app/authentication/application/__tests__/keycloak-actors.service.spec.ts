@@ -1,4 +1,3 @@
-import 'reflect-metadata';
 import { RegisterActorCommand } from '../../model/keycloak-actors.model';
 import { UserAlreadyExistsError } from '../../domain/domain.error';
 import { DefaultKeycloakActorsService } from '../keycloak-actors.service';

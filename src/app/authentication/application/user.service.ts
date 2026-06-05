@@ -1,13 +1,7 @@
-import { inject, injectable } from 'inversify';
 import { ParseUserRepository } from '../../ports';
 import { User, UserService } from '../model/user.model';
-import { APPLICATION_TYPES } from './../../application.types';
-@injectable()
 export class DefaultUserService implements UserService {
-    constructor(
-        @inject(APPLICATION_TYPES.ParseUserRepository)
-        private parseUserRepository: ParseUserRepository
-    ) {}
+    constructor(private parseUserRepository: ParseUserRepository) {}
 
     async getUserByEmail(email: string): Promise<User> {
         return this.parseUserRepository.findByUsername(email);

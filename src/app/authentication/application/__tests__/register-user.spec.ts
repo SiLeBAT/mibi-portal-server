@@ -1,9 +1,9 @@
-import { Container } from 'inversify';
 import { rebindMocks } from '../../../../__mocks__/util';
-import { createContainer } from '../../../../aspects/container/container';
-import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
+import {
+    TestContainer,
+    createTestContainer
+} from '../../../../__mocks__/test-container';
 import { APPLICATION_TYPES } from '../../../application.types';
-import { getApplicationContainerModule } from '../../../ports';
 import { createUser } from '../../domain/user.entity';
 import {
     RegistrationService,
@@ -20,11 +20,10 @@ jest.mock('./../../domain/user.entity', () => ({
 describe('Register User Use Case', () => {
     let service: RegistrationService;
     let credentials: UserRegistration;
-    let container: Container | null;
+    let container: TestContainer | null;
     beforeEach(() => {
-        container = createContainer();
-        container.load(
-            getApplicationContainerModule({
+        container = createTestContainer({
+            appConfig: {
                 appName: 'test',
                 jobRecipient: 'test',
                 login: {
@@ -34,9 +33,8 @@ describe('Register User Use Case', () => {
                 clientUrl: 'test',
                 supportContact: 'test',
                 jwtSecret: 'test'
-            }),
-            mockPersistenceContainerModule
-        );
+            }
+        });
         service = container.get<RegistrationService>(
             APPLICATION_TYPES.RegistrationService
         );

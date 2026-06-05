@@ -1,17 +1,11 @@
-import { inject, injectable } from 'inversify';
 import {
     Actor,
     ActorContextService,
     ActorRepository
 } from '../model/actor.model';
-import { APPLICATION_TYPES } from '../../application.types';
 
-@injectable()
 export class DefaultActorContextService implements ActorContextService {
-    constructor(
-        @inject(APPLICATION_TYPES.ParseActorRepository)
-        private readonly repo: ActorRepository
-    ) {}
+    constructor(private readonly repo: ActorRepository) {}
 
     private extractInstituteId(groups: string[]): string {
         const instituteGroups = groups.filter(g =>

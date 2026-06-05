@@ -1,26 +1,13 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { Request, Response } from 'express';
-import { inject } from 'inversify';
-import {
-    controller,
-    httpGet,
-    request,
-    response
-} from 'inversify-express-utils';
 import { logger } from '../../../aspects';
 import { InstitutesController } from '../model/controller.model';
-import { API_ROUTE } from '../model/enums';
 import { AppServerConfiguration } from '../ports';
-import { SERVER_TYPES } from '../server.types';
 import {
     AbstractController,
     ParseCollectionResponse,
     ParseEntityDTO
 } from './abstract.controller';
-
-enum INSTITUTES_ROUTE {
-    ROOT = '/institutes'
-}
 
 interface ParseInstitutionDTO extends ParseEntityDTO {
     readonly state_short: string;
@@ -33,16 +20,12 @@ interface ParseInstitutionDTO extends ParseEntityDTO {
     readonly email: string[];
 }
 
-@controller(API_ROUTE.V2 + INSTITUTES_ROUTE.ROOT)
 export class DefaultInstituteController
     extends AbstractController
     implements InstitutesController
 {
     private redirectionTarget: AxiosInstance;
-    constructor(
-        @inject(SERVER_TYPES.AppServerConfiguration)
-        configuration: AppServerConfiguration
-    ) {
+    constructor(configuration: AppServerConfiguration) {
         super();
 
         this.redirectionTarget = axios.create({
@@ -51,8 +34,7 @@ export class DefaultInstituteController
         });
     }
 
-    @httpGet('/')
-    async getInstitutes(@request() req: Request, @response() res: Response) {
+    async getInstitutes(req: Request, res: Response) {
         logger.info(
             `${this.constructor.name}.${this.getInstitutes.name}, Request received`
         );

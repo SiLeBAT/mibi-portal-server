@@ -1,5 +1,4 @@
 import { escapeRegExp } from 'lodash';
-import { injectable } from 'inversify';
 import { ParseUserRepository, User, createUser } from '../../../../app/ports';
 import { ParseRepositoryBase } from '../../data-store/parse/parse.repository';
 import {
@@ -13,7 +12,6 @@ import {
 import { UserNotFoundError, UserUpdateError } from '../../model/domain.error';
 import { mapToUser } from './data-mappers';
 
-@injectable()
 export class ParseDefaultUserRepository
     extends ParseRepositoryBase<ParseUser>
     implements ParseUserRepository

@@ -3,15 +3,9 @@ import {
     Institute,
     ParseInstituteRepository
 } from '../model/institute.model';
-import { injectable, inject } from 'inversify';
-import { APPLICATION_TYPES } from './../../application.types';
 
-@injectable()
 export class DefaultInstituteService implements InstituteService {
-    constructor(
-        @inject(APPLICATION_TYPES.ParseInstituteRepository)
-        private parseInstituteRepository: ParseInstituteRepository
-    ) {}
+    constructor(private parseInstituteRepository: ParseInstituteRepository) {}
 
     async retrieveInstitutes(): Promise<Institute[]> {
         return this.parseInstituteRepository.retrieve();

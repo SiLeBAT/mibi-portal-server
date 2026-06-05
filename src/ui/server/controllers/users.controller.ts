@@ -1,15 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { Request, Response } from 'express';
-import { inject } from 'inversify';
-import {
-    controller,
-    httpPatch,
-    httpPost,
-    httpPut,
-    request,
-    requestParam,
-    response
-} from 'inversify-express-utils';
 import { JsonWebTokenError } from 'jsonwebtoken';
 import * as Parse from 'parse/node';
 import {
@@ -24,7 +14,7 @@ import {
 import { logger } from '../../../aspects';
 import { UsersController } from '../model/controller.model';
 import { MalformedRequestError } from '../model/domain.error';
-import { API_ROUTE, SERVER_ERROR_CODE } from '../model/enums';
+import { SERVER_ERROR_CODE } from '../model/enums';
 import {
     NewPasswordRequestDTO,
     RegistrationDetailsDTO,
@@ -39,32 +29,17 @@ import {
     TokenizedUserDTO
 } from '../model/response.model';
 import { AppServerConfiguration } from '../ports';
-import { SERVER_TYPES } from '../server.types';
-import { APPLICATION_TYPES } from './../../../app/application.types';
 import { AbstractController, ParseSingleResponse } from './abstract.controller';
 
-enum USERS_ROUTE {
-    ROOT = '/users',
-    RESET_PASSWORD_REQUEST = '/reset-password-request',
-    RESET_PASSWORD = '/reset-password',
-    LOGIN = '/login',
-    VERIFICATION = '/verification',
-    ACTIVATION = '/activation',
-    REGISTRATION = '/registration'
-}
-@controller(API_ROUTE.V2 + USERS_ROUTE.ROOT)
 export class DefaultUsersController
     extends AbstractController
     implements UsersController
 {
     private redirectionTarget: AxiosInstance;
     constructor(
-        @inject(APPLICATION_TYPES.PasswordService)
         private passwordService: PasswordPort,
-        @inject(APPLICATION_TYPES.LoginService) private loginService: LoginPort,
-        @inject(APPLICATION_TYPES.RegistrationService)
+        private loginService: LoginPort,
         private registrationService: RegistrationPort,
-        @inject(SERVER_TYPES.AppServerConfiguration)
         configuration: AppServerConfiguration
     ) {
         super();
@@ -73,10 +48,9 @@ export class DefaultUsersController
             headers: { 'X-Parse-Application-Id': configuration.appId }
         });
     }
-    @httpPut(USERS_ROUTE.RESET_PASSWORD_REQUEST)
     async putResetPasswordRequest(
-        @request() req: Request,
-        @response() res: Response
+        req: Request,
+        res: Response
     ) {
         logger.info(
             `${this.constructor.name}.${this.putResetPasswordRequest.name}, Request received`
@@ -109,11 +83,10 @@ export class DefaultUsersController
             this.handleError(res, error);
         }
     }
-    @httpPatch(USERS_ROUTE.RESET_PASSWORD + '/:token')
     async patchResetPassword(
-        @requestParam('token') token: string,
-        @request() req: Request,
-        @response() res: Response
+        token: string,
+        req: Request,
+        res: Response
     ) {
         logger.info(
             `${this.constructor.name}.${this.patchResetPassword.name}, Request received`
@@ -144,8 +117,7 @@ export class DefaultUsersController
             this.handleError(res, error);
         }
     }
-    @httpPost(USERS_ROUTE.LOGIN)
-    async postLogin(@request() req: Request, @response() res: Response) {
+    async postLogin(req: Request, res: Response) {
         logger.info(
             `${this.constructor.name}.${this.postLogin.name}, Request received`
         );
@@ -183,10 +155,9 @@ export class DefaultUsersController
         }
     }
 
-    @httpPatch(USERS_ROUTE.VERIFICATION + '/:token')
     async patchVerification(
-        @requestParam('token') token: string,
-        @response() res: Response
+        token: string,
+        res: Response
     ) {
         logger.info(
             `${this.constructor.name}.${this.patchVerification.name}, Request received`
@@ -208,10 +179,9 @@ export class DefaultUsersController
             this.handleError(res, error);
         }
     }
-    @httpPatch(USERS_ROUTE.ACTIVATION + '/:token')
     async patchActivation(
-        @requestParam('token') token: string,
-        @response() res: Response
+        token: string,
+        res: Response
     ) {
         logger.info(
             `${this.constructor.name}.${this.patchActivation.name}, Request received`
@@ -234,8 +204,7 @@ export class DefaultUsersController
         }
     }
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    @httpPost(USERS_ROUTE.REGISTRATION)
-    async postRegistration(@request() req: Request, @response() res: Response) {
+    async postRegistration(req: Request, res: Response) {
         logger.info(
             `${this.constructor.name}.${this.postRegistration.name}, Request received`
         );
