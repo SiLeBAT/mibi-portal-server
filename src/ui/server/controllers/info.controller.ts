@@ -3,36 +3,24 @@ import { logger } from '../../../aspects';
 import { SystemInfoController } from '../model/controller.model';
 import { SystemInformationDTO } from '../model/response.model';
 import { AbstractController } from './abstract.controller';
-import { controller, httpGet, response } from 'inversify-express-utils';
-import { inject } from 'inversify';
-import { API_ROUTE } from '../model/enums';
-import { SERVER_TYPES } from '../server.types';
 import { AppServerConfiguration } from '../model/server.model';
 import { UnknownPackageConfigurationError } from '../model/domain.error';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const pjson = require('../../../../package.json');
 
-enum INFO_ROUTE {
-    ROOT = '/info'
-}
-@controller(API_ROUTE.V2 + INFO_ROUTE.ROOT)
 export class DefaultSystemInfoController
     extends AbstractController
     implements SystemInfoController
 {
     private supportContact = '';
     private keycloakEnabled = false;
-    constructor(
-        @inject(SERVER_TYPES.AppServerConfiguration)
-        configuration: AppServerConfiguration
-    ) {
+    constructor(configuration: AppServerConfiguration) {
         super();
         this.supportContact = configuration.supportContact;
         this.keycloakEnabled = configuration.keycloak?.enabled ?? false;
     }
 
-    @httpGet('/')
-    getSystemInfo(@response() res: Response) {
+    getSystemInfo(res: Response) {
         logger.info(
             `${this.constructor.name}.${this.getSystemInfo.name}, Request received`
         );

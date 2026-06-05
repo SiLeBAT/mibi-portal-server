@@ -1,18 +1,16 @@
-import { Container } from 'inversify';
-import { getApplicationContainerModule } from '../../../../app/ports';
-import { createContainer } from '../../../../aspects/container/container';
-import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
-import { getServerContainerModule } from '../../server.module';
+import {
+    TestContainer,
+    createTestContainer
+} from '../../../../__mocks__/test-container';
 import { SERVER_TYPES } from '../../server.types';
 import { UsersController } from '../../model/controller.model';
 
 describe('UsersController', () => {
-    let container: Container | null;
+    let container: TestContainer | null;
 
     beforeEach(() => {
-        container = createContainer();
-        container.load(
-            getServerContainerModule({
+        container = createTestContainer({
+            serverConfig: {
                 port: 1,
                 apiRoot: '',
                 publicAPIDoc: {},
@@ -21,17 +19,16 @@ describe('UsersController', () => {
                 supportContact: 'test',
                 parseAPI: '',
                 appId: ''
-            }),
-            getApplicationContainerModule({
+            },
+            appConfig: {
                 appName: 'test',
                 jobRecipient: 'test',
                 login: { threshold: 0, secondsDelay: 0 },
                 clientUrl: 'test',
                 supportContact: 'test',
                 jwtSecret: 'test'
-            }),
-            mockPersistenceContainerModule
-        );
+            }
+        });
     });
 
     afterEach(() => {

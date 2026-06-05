@@ -1,14 +1,12 @@
 import '../../middleware/session.augment';
-import { Container } from 'inversify';
 import { rebindMocks } from '../../../../__mocks__/util';
+import {
+    TestContainer,
+    createTestContainer
+} from '../../../../__mocks__/test-container';
 import { APPLICATION_TYPES } from '../../../../app/application.types';
 import { getMockKeycloakOidcService } from '../../../../app/authentication/application/__mocks__/keycloak-oidc.service';
-import { mockKeycloakOidcModule } from '../../../../app/authentication/application/__mocks__/keycloak-oidc.module';
-import { getApplicationContainerModule } from '../../../../app/ports';
-import { createContainer } from '../../../../aspects/container/container';
-import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
 import { KeycloakAuthController } from '../../model/controller.model';
-import { getServerContainerModule } from '../../server.module';
 import { SERVER_TYPES } from '../../server.types';
 
 var mockReq = require('mock-express-request');
@@ -41,23 +39,20 @@ const APP_CONFIG = {
     jwtSecret: 'test'
 };
 
-function buildController(container: Container): KeycloakAuthController {
+function buildController(container: TestContainer): KeycloakAuthController {
     return container.get<KeycloakAuthController>(
         SERVER_TYPES.KeycloakAuthController
     );
 }
 
 describe('KeycloakAuthController', () => {
-    let container: Container | null;
+    let container: TestContainer | null;
 
     beforeEach(() => {
-        container = createContainer();
-        container.load(
-            getServerContainerModule(SERVER_CONFIG as any),
-            getApplicationContainerModule(APP_CONFIG),
-            mockPersistenceContainerModule,
-            mockKeycloakOidcModule
-        );
+        container = createTestContainer({
+            serverConfig: SERVER_CONFIG as any,
+            appConfig: APP_CONFIG
+        });
     });
 
     afterEach(() => {

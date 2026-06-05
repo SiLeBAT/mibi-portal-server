@@ -28,8 +28,6 @@
 
         // Language and Environment
         "target": "ES2019",
-        "experimentalDecorators": true,
-        "emitDecoratorMetadata": true,
 
         // Type Checking: strict mode
         "alwaysStrict": true,

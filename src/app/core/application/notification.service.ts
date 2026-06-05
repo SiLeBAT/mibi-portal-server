@@ -6,10 +6,8 @@ import {
     EmailNotificationMeta,
     Attachment
 } from '../model/notification.model';
-import { injectable } from 'inversify';
 import { logger } from '../../../aspects';
 
-@injectable()
 export class DefaultNotificationService implements NotificationService {
     private notificationName = 'mibi-notification';
 

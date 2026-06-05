@@ -1,16 +1,16 @@
-import {
-    MiBiApplication,
-    createApplication,
-    getApplicationContainerModule
-} from '../../app/ports';
-import { createContainer, logger } from '../../aspects';
+import { createApplication, createApplicationServices } from '../../app/ports';
+import { ActorContextService } from '../../app/authentication/model/actor.model';
+import { KeycloakActorsPort } from '../../app/authentication/model/keycloak-actors.model';
+import { NotificationService } from '../../app/core/model/notification.model';
+import { MailPendingActorDigest } from '../../app/authentication/application/mail-pending-actor-digest';
+import { PendingActorReminderJob } from '../../app/authentication/application/pending-actor-reminder.job';
+import { logger } from '../../aspects';
 import { configurationService } from '../../configuratioin.service';
 import {
-    MAIL_TYPES,
     MailService,
+    createMailService,
     createParseDataStore,
-    getMailContainerModule,
-    getPersistenceContainerModule
+    createPersistenceRepositories
 } from '../../infrastructure/ports';
 import {
     AppConfiguration,
@@ -20,19 +20,27 @@ import {
     ParseConnectionConfiguration,
     ServerConfiguration
 } from '../../main.model';
-import { getServerContainerModule } from './ports';
 import {
     buildDisabledAdminClient,
     buildKeycloakAdminClient,
-    getKeycloakContainerModule
+    createKeycloakServices
 } from './keycloak.module';
-import { APPLICATION_TYPES } from '../../app/application.types';
-import { NotificationService } from '../../app/core/model/notification.model';
-import { KeycloakActorsPort } from '../../app/authentication/model/keycloak-actors.model';
-import { MailPendingActorDigest } from '../../app/authentication/application/mail-pending-actor-digest';
-import { PendingActorReminderJob } from '../../app/authentication/application/pending-actor-reminder.job';
+import { AppServerConfiguration } from './model/server.model';
+import { Controllers, createControllers } from './server.factory';
 
-export async function initialiseContainer() {
+/**
+ * Result of wiring the application together: everything express.setup needs to
+ * stand up the HTTP layer.
+ */
+export interface AppComposition {
+    controllers: Controllers;
+    actorContextService: ActorContextService;
+}
+
+/**
+ * Composition root: constructs the full object graph by hand (no DI container).
+ */
+export async function initialiseServices(): Promise<AppComposition> {
     const serverConfig: ServerConfiguration =
         configurationService.getServerConfiguration();
     const generalConfig: GeneralConfiguration =
@@ -47,9 +55,7 @@ export async function initialiseContainer() {
         configurationService.getKeycloakConfiguration();
 
     // When Keycloak is disabled the server must boot without contacting it, so
-    // we skip the eager admin-client authentication and hand the Keycloak
-    // container module an inert stub. The Keycloak controllers stay registered
-    // (their routes simply fail if hit), but nothing reaches out to Keycloak.
+    // we skip the eager admin-client authentication and use an inert stub.
     const adminClient = keycloakConfig.enabled
         ? await buildKeycloakAdminClient(keycloakConfig)
         : buildDisabledAdminClient();
@@ -73,51 +79,64 @@ export async function initialiseContainer() {
         authDatabase: parseConnectionConfig.authDatabase
     });
 
-    const container = createContainer({ defaultScope: 'Singleton' });
-    container.load(
-        getApplicationContainerModule({
+    const repositories = createPersistenceRepositories();
+
+    const appServices = createApplicationServices(
+        {
             ...appConfiguration,
             supportContact: generalConfig.supportContact,
             jwtSecret: generalConfig.jwtSecret
-        }),
-        getPersistenceContainerModule(),
-        getServerContainerModule({
-            ...serverConfig,
-            jwtSecret: generalConfig.jwtSecret,
-            logLevel: generalConfig.logLevel,
-            supportContact: generalConfig.supportContact,
-            parseAPI: parseConnectionConfig.serverURL,
-            appId: parseConnectionConfig.appId,
-            clientUrl: appConfiguration.clientUrl,
-            keycloak: keycloakConfig
-        }),
-        getMailContainerModule(mailConfiguration),
-        getKeycloakContainerModule(
-            { ...keycloakConfig, clientUrl: appConfiguration.clientUrl ?? '' },
-            adminClient
-        )
+        },
+        repositories
     );
 
-    const application: MiBiApplication = createApplication(container);
+    const mailService: MailService = createMailService(mailConfiguration);
 
-    const mailService = container.get<MailService>(MAIL_TYPES.MailService);
+    const keycloakServices = createKeycloakServices(
+        { ...keycloakConfig, clientUrl: appConfiguration.clientUrl ?? '' },
+        adminClient
+    );
+
+    const serverConfiguration: AppServerConfiguration = {
+        ...serverConfig,
+        jwtSecret: generalConfig.jwtSecret,
+        logLevel: generalConfig.logLevel,
+        supportContact: generalConfig.supportContact,
+        parseAPI: parseConnectionConfig.serverURL,
+        appId: parseConnectionConfig.appId,
+        clientUrl: appConfiguration.clientUrl,
+        keycloak: keycloakConfig
+    };
+
+    const controllers = createControllers(
+        serverConfiguration,
+        appServices,
+        keycloakServices
+    );
+
+    const application = createApplication(appServices.notificationService);
     application.addNotificationHandler(
         mailService.getMailHandler().bind(mailService)
     );
 
     if (keycloakConfig.enabled) {
         startPendingActorReminderJob(
-            container,
+            appServices.notificationService,
+            keycloakServices.keycloakActorsService,
             keycloakConfig,
             appConfiguration
         );
     }
 
-    return container;
+    return {
+        controllers,
+        actorContextService: appServices.actorContextService
+    };
 }
 
 function startPendingActorReminderJob(
-    container: ReturnType<typeof createContainer>,
+    notificationService: NotificationService,
+    actorsService: KeycloakActorsPort,
     keycloakConfig: KeycloakConfiguration,
     appConfiguration: AppConfiguration
 ): void {
@@ -125,12 +144,6 @@ function startPendingActorReminderJob(
     const olderThanMs = olderThanDays * 24 * 60 * 60 * 1000;
     const windowMs = scheduleHours * 60 * 60 * 1000;
 
-    const notificationService = container.get<NotificationService>(
-        APPLICATION_TYPES.NotificationService
-    );
-    const actorsService = container.get<KeycloakActorsPort>(
-        APPLICATION_TYPES.KeycloakActorsService
-    );
     const digest = new MailPendingActorDigest(
         notificationService,
         appConfiguration.appName,

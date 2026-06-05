@@ -1,5 +1,4 @@
 import { Client, Issuer, generators } from 'openid-client';
-import { injectable } from 'inversify';
 import {
     KeycloakOidcPort,
     OidcAuthParams,
@@ -7,7 +6,6 @@ import {
 } from '../model/oidc.model';
 import { KeycloakServerConfig } from '../../../ui/server/model/server.model';
 
-@injectable()
 export class DefaultKeycloakOidcService implements KeycloakOidcPort {
     // Built lazily on first use rather than in the constructor: the service is
     // instantiated at server boot (controllers are resolved up-front), but

@@ -1,6 +1,4 @@
-import { ContainerModule, interfaces } from 'inversify';
 import KcAdminClient from '@keycloak/keycloak-admin-client';
-import { APPLICATION_TYPES } from '../../app/application.types';
 import { DefaultKeycloakOidcService } from '../../app/authentication/application/keycloak-oidc.service';
 import { DefaultKeycloakActorsService } from '../../app/authentication/application/keycloak-actors.service';
 import { KeycloakOidcPort } from '../../app/authentication/model/oidc.model';
@@ -174,20 +172,20 @@ function isUnauthorized(err: unknown): boolean {
     );
 }
 
-export function getKeycloakContainerModule(
+export interface KeycloakServices {
+    keycloakOidcService: KeycloakOidcPort;
+    keycloakActorsService: KeycloakActorsPort;
+}
+
+export function createKeycloakServices(
     config: KeycloakServerConfig,
     adminClient: AdminClientPort
-): ContainerModule {
-    return new ContainerModule((bind: interfaces.Bind) => {
-        bind<KeycloakOidcPort>(APPLICATION_TYPES.KeycloakOidcService)
-            .toDynamicValue(() => new DefaultKeycloakOidcService(config))
-            .inSingletonScope();
-
-        bind<KeycloakActorsPort>(APPLICATION_TYPES.KeycloakActorsService)
-            .toDynamicValue(() => {
-                const realm = realmFromIssuerUrl(config.issuerUrl);
-                return new DefaultKeycloakActorsService(adminClient, realm);
-            })
-            .inSingletonScope();
-    });
+): KeycloakServices {
+    return {
+        keycloakOidcService: new DefaultKeycloakOidcService(config),
+        keycloakActorsService: new DefaultKeycloakActorsService(
+            adminClient,
+            realmFromIssuerUrl(config.issuerUrl)
+        )
+    };
 }

@@ -1,27 +1,14 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { Request, Response } from 'express';
-import { inject } from 'inversify';
-import {
-    controller,
-    httpGet,
-    request,
-    response
-} from 'inversify-express-utils';
 import { logger } from '../../../aspects';
 import { NRLsController } from '../model/controller.model';
-import { API_ROUTE } from '../model/enums';
 import { NRLCollectionDTO } from '../model/response.model';
 import { AppServerConfiguration } from '../ports';
-import { SERVER_TYPES } from '../server.types';
 import {
     AbstractController,
     ParseCollectionResponse,
     ParseEntityDTO
 } from './abstract.controller';
-
-enum NRL_ROUTE {
-    ROOT = '/nrls'
-}
 
 interface ParseNRLDTO extends ParseEntityDTO {
     readonly name: string;
@@ -34,24 +21,19 @@ interface ParseAnalysisProceduresDTO extends ParseEntityDTO {
     readonly key: number;
 }
 
-@controller(API_ROUTE.V2 + NRL_ROUTE.ROOT)
 export class DefaultNRLsController
     extends AbstractController
     implements NRLsController
 {
     private redirectionTarget: AxiosInstance;
-    constructor(
-        @inject(SERVER_TYPES.AppServerConfiguration)
-        configuration: AppServerConfiguration
-    ) {
+    constructor(configuration: AppServerConfiguration) {
         super();
         this.redirectionTarget = axios.create({
             baseURL: configuration.parseAPI,
             headers: { 'X-Parse-Application-Id': configuration.appId }
         });
     }
-    @httpGet('/')
-    async getNRLs(@request() req: Request, @response() res: Response) {
+    async getNRLs(req: Request, res: Response) {
         logger.info(
             `${this.constructor.name}.${this.getNRLs.name}, Request received`
         );

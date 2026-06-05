@@ -1,4 +1,3 @@
-import { inject, injectable } from 'inversify';
 import moment from 'moment';
 import { ConfigurationService } from '../../core/model/configuration.model';
 import { ParseInstituteRepository } from '../../ports';
@@ -10,26 +9,20 @@ import {
 import { RegistrationService } from '../model/registration.model';
 import { TokenService } from '../model/token.model';
 import { User, UserService } from '../model/user.model';
-import { APPLICATION_TYPES } from './../../application.types';
 import {
     AuthorizationError,
     UserNotActivatedError,
     UserNotVerifiedError
 } from './../domain/domain.error';
-@injectable()
 export class DefaultLoginService implements LoginService {
     private threshold: number;
     private secondsDelay: number;
 
     constructor(
-        @inject(APPLICATION_TYPES.RegistrationService)
         private registrationService: RegistrationService,
-        @inject(APPLICATION_TYPES.TokenService)
         private tokenService: TokenService,
-        @inject(APPLICATION_TYPES.ConfigurationService)
         private configurationService: ConfigurationService,
-        @inject(APPLICATION_TYPES.UserService) private userService: UserService,
-        @inject(APPLICATION_TYPES.ParseInstituteRepository)
+        private userService: UserService,
         private parseInstituteRepository: ParseInstituteRepository
     ) {
         this.threshold =

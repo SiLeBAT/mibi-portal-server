@@ -1,15 +1,12 @@
 import '../../middleware/session.augment';
-import { Container } from 'inversify';
 import { rebindMocks } from '../../../../__mocks__/util';
+import {
+    TestContainer,
+    createTestContainer
+} from '../../../../__mocks__/test-container';
 import { APPLICATION_TYPES } from '../../../../app/application.types';
 import { getMockKeycloakActorsService } from '../../../../app/authentication/application/__mocks__/keycloak-actors.service';
-import { mockKeycloakActorsModule } from '../../../../app/authentication/application/__mocks__/keycloak-actors.module';
-import { mockKeycloakOidcModule } from '../../../../app/authentication/application/__mocks__/keycloak-oidc.module';
-import { getApplicationContainerModule } from '../../../../app/ports';
-import { createContainer } from '../../../../aspects/container/container';
-import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
 import { KeycloakAdminController } from '../../model/controller.model';
-import { getServerContainerModule } from '../../server.module';
 import { SERVER_TYPES } from '../../server.types';
 
 var mockReq = require('mock-express-request');
@@ -60,24 +57,20 @@ const NON_ADMIN_SESSION_USER = {
     id_token: 'tok'
 };
 
-function buildController(container: Container): KeycloakAdminController {
+function buildController(container: TestContainer): KeycloakAdminController {
     return container.get<KeycloakAdminController>(
         SERVER_TYPES.KeycloakAdminController
     );
 }
 
 describe('KeycloakAdminController', () => {
-    let container: Container | null;
+    let container: TestContainer | null;
 
     beforeEach(() => {
-        container = createContainer();
-        container.load(
-            getServerContainerModule(SERVER_CONFIG as any),
-            getApplicationContainerModule(APP_CONFIG),
-            mockPersistenceContainerModule,
-            mockKeycloakOidcModule,
-            mockKeycloakActorsModule
-        );
+        container = createTestContainer({
+            serverConfig: SERVER_CONFIG as any,
+            appConfig: APP_CONFIG
+        });
     });
 
     afterEach(() => {

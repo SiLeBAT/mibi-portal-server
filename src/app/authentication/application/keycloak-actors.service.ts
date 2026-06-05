@@ -1,4 +1,3 @@
-import { injectable } from 'inversify';
 import { Actor } from '../model/actor.model';
 import {
     AdminClientPort,
@@ -12,7 +11,6 @@ import { UserAlreadyExistsError } from '../domain/domain.error';
 const MIBI_ADMIN_ROLE = 'mibi-admin';
 const INSTITUTES_PATH_PREFIX = '/institutes/';
 
-@injectable()
 export class DefaultKeycloakActorsService implements KeycloakActorsPort {
     constructor(
         private readonly client: AdminClientPort,

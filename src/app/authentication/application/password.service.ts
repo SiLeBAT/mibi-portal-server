@@ -1,4 +1,3 @@
-import { inject, injectable } from 'inversify';
 import { NotificationType } from '../../core/domain/enums';
 import { ConfigurationService } from '../../core/model/configuration.model';
 import {
@@ -14,10 +13,8 @@ import {
     ResetSuccessNotificationPayload
 } from '../model/login.model';
 import { TokenService } from '../model/token.model';
-import { APPLICATION_TYPES } from './../../application.types';
 import { TokenType } from './../domain/enums';
 import { User, UserService, UserToken } from './../model/user.model';
-@injectable()
 export class DefaultPasswordService implements PasswordService {
     private appName: string;
     private clientUrl: string;
@@ -26,14 +23,10 @@ export class DefaultPasswordService implements PasswordService {
     private legacySystemURL: string = 'https://nolar-dev.bfr.berlin/';
 
     constructor(
-        @inject(APPLICATION_TYPES.NotificationService)
         private notificationService: NotificationService,
-        @inject(APPLICATION_TYPES.TokenService)
         private tokenService: TokenService,
-        @inject(APPLICATION_TYPES.ConfigurationService)
         private configurationService: ConfigurationService,
-        @inject(APPLICATION_TYPES.UserService) private userService: UserService,
-        @inject(APPLICATION_TYPES.ParseInstituteRepository)
+        private userService: UserService,
         private parseInstituteRepository: ParseInstituteRepository
     ) {
         this.appName =

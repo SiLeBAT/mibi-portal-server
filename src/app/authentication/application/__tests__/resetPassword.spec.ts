@@ -1,11 +1,11 @@
-import { Container } from 'inversify';
 import { sign } from 'jsonwebtoken';
 import { rebindMocks } from '../../../../__mocks__/util';
-import { createContainer } from '../../../../aspects/container/container';
-import { mockPersistenceContainerModule } from '../../../../infrastructure/persistence/__mocks__/persistence-mock.module';
+import {
+    TestContainer,
+    createTestContainer
+} from '../../../../__mocks__/test-container';
 import { APPLICATION_TYPES } from '../../../application.types';
 import { getMockNotificationService } from '../../../core/application/__mocks__/notification.service';
-import { getApplicationContainerModule } from '../../../ports';
 import { PasswordService } from '../../model/login.model';
 import { getMockTokenService } from '../__mocks__/token.service';
 import { getMockUserService } from '../__mocks__/user.service';
@@ -14,11 +14,10 @@ describe('Reset Password Use Case', () => {
     let service: PasswordService;
     let token: string;
     let password: string;
-    let container: Container | null;
+    let container: TestContainer | null;
     beforeEach(() => {
-        container = createContainer();
-        container.load(
-            getApplicationContainerModule({
+        container = createTestContainer({
+            appConfig: {
                 appName: 'test',
                 jobRecipient: 'test',
                 login: {
@@ -28,9 +27,8 @@ describe('Reset Password Use Case', () => {
                 clientUrl: 'test',
                 supportContact: 'test',
                 jwtSecret: 'test'
-            }),
-            mockPersistenceContainerModule
-        );
+            }
+        });
         service = container.get<PasswordService>(
             APPLICATION_TYPES.PasswordService
         );

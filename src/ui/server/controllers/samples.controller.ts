@@ -1,12 +1,4 @@
 import { Request, Response } from 'express';
-import { inject } from 'inversify';
-import {
-    controller,
-    httpPost,
-    httpPut,
-    request,
-    response
-} from 'inversify-express-utils';
 import moment from 'moment';
 import { logger } from '../../../aspects';
 import { SamplesController } from '../model/controller.model';
@@ -14,7 +6,6 @@ import {
     MalformedRequestError,
     TokenNotFoundError
 } from '../model/domain.error';
-import { API_ROUTE } from '../model/enums';
 import {
     PostSubmittedRequestDTO,
     PutValidatedRequestDTO,
@@ -25,7 +16,6 @@ import { OrderDTO } from '../model/shared-dto.model';
 import { AbstractController, ParseSingleResponse } from './abstract.controller';
 
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
-import { APPLICATION_TYPES } from '../../../app/application.types';
 import {
     TokenPayload,
     TokenPort
@@ -33,7 +23,6 @@ import {
 import { User, UserPort } from '../../../app/authentication/model/user.model';
 import { getTokenFromHeader } from '../middleware/token-validator.middleware';
 import { AppServerConfiguration } from '../ports';
-import { SERVER_TYPES } from '../server.types';
 import { DefaultServerErrorDTO } from '../model/response.model';
 
 moment.locale('de');
@@ -45,27 +34,19 @@ enum RESOURCE_VIEW_TYPE {
 
 type RESOURCE_VIEW_TYPE_STRING = 'xml' | 'json';
 
-enum SAMPLES_ROUTE {
-    ROOT = '/samples',
-    VALIDATED = '/validated',
-    SUBMITTED = '/submitted'
-}
-
 type ParseFileRequest = {
     type: RESOURCE_VIEW_TYPE_STRING;
     filename: string;
     data: string;
 };
-@controller(API_ROUTE.V2 + SAMPLES_ROUTE.ROOT)
 export class DefaultSamplesController
     extends AbstractController
     implements SamplesController
 {
     private redirectionTarget: AxiosInstance;
     constructor(
-        @inject(APPLICATION_TYPES.TokenService) private tokenService: TokenPort,
-        @inject(APPLICATION_TYPES.UserService) private userService: UserPort,
-        @inject(SERVER_TYPES.AppServerConfiguration)
+        private tokenService: TokenPort,
+        private userService: UserPort,
         configuration: AppServerConfiguration
     ) {
         super();
@@ -75,8 +56,7 @@ export class DefaultSamplesController
         });
     }
 
-    @httpPut('/', SERVER_TYPES.MulterMW)
-    async putSamples(@request() req: Request, @response() res: Response) {
+    async putSamples(req: Request, res: Response) {
         logger.info(
             `${this.constructor.name}.${this.putSamples.name}, Request received`
         );
@@ -92,8 +72,7 @@ export class DefaultSamplesController
             this.handleError(res, error);
         }
     }
-    @httpPut(SAMPLES_ROUTE.VALIDATED)
-    async putValidated(@request() req: Request, @response() res: Response) {
+    async putValidated(req: Request, res: Response) {
         logger.info(
             `${this.constructor.name}.${this.putValidated.name}, Request received`
         );
@@ -129,8 +108,7 @@ export class DefaultSamplesController
         }
     }
 
-    @httpPost(SAMPLES_ROUTE.SUBMITTED)
-    async postSubmitted(@request() req: Request, @response() res: Response) {
+    async postSubmitted(req: Request, res: Response) {
         logger.info(
             `${this.constructor.name}.${this.postSubmitted.name}, Request received`
         );

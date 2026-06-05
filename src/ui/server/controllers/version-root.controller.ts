@@ -2,35 +2,26 @@ import { Response } from 'express';
 import _ from 'lodash';
 import { logger } from '../../../aspects';
 import { VersionRootController } from '../model/controller.model';
-import { API_ROUTE } from '../model/enums';
 import { AbstractController } from './abstract.controller';
 import { AppServerConfiguration } from '../model/server.model';
-import { controller, response, httpGet } from 'inversify-express-utils';
-import { inject } from 'inversify';
-import { SERVER_TYPES } from '../server.types';
 import openAPI from './../doc/openapi_v2.json';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare type APIDefinition = any;
 
-@controller(API_ROUTE.V2)
 export class DefaultVersionRootController
     extends AbstractController
     implements VersionRootController
 {
     private publicAPI: APIDefinition;
-    constructor(
-        @inject(SERVER_TYPES.AppServerConfiguration)
-        configuration: AppServerConfiguration
-    ) {
+    constructor(configuration: AppServerConfiguration) {
         super();
         this.publicAPI = this.documentationRevealer(
             openAPI,
             configuration.publicAPIDoc
         );
     }
-    @httpGet('/')
-    getAPIDefinition(@response() res: Response) {
+    getAPIDefinition(res: Response) {
         logger.info(
             `${this.constructor.name}.${this.getAPIDefinition.name}, Request received`
         );

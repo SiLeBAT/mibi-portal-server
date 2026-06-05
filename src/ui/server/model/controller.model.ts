@@ -24,6 +24,7 @@ export interface ClientDashboardController extends Controller {
 
 export interface ZomoPlanFilesController extends Controller {
     getZomoPlanFileInfo(req: Request, res: Response): Promise<void>;
+    downloadZomoPlanFile(req: Request, res: Response): Promise<void>;
 }
 
 export interface NRLsController extends Controller {

@@ -8,26 +8,20 @@ import readFilePromise from 'fs-readfile-promise';
 // local
 import { logger } from './../../aspects';
 import { NotificationType } from '../../app/ports';
-import { injectable, inject } from 'inversify';
 import {
     MailService,
     MailConfiguration,
     EmailData,
     MailOptions
 } from './mail.model';
-import { MAIL_TYPES } from './mail.types';
 
-@injectable()
 export class DefaultMailService implements MailService {
     private host = 'localhost';
     private port = 25;
 
     private viewsDir = __dirname + '/views/de/';
 
-    constructor(
-        @inject(MAIL_TYPES.MailConfiguration)
-        private mailConfiguration: MailConfiguration
-    ) {}
+    constructor(private mailConfiguration: MailConfiguration) {}
 
     getMailHandler() {
         return async (data: EmailData) => {

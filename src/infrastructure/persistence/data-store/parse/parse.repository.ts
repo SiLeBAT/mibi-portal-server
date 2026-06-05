@@ -1,9 +1,7 @@
-import { injectable } from 'inversify';
 import * as Parse from 'parse/node';
 
-@injectable()
 export class ParseRepositoryBase<T extends Parse.Object<Parse.Attributes>> {
-    private _className: string;
+    private _className!: string;
 
     protected setClassName(className: string) {
         this._className = className;

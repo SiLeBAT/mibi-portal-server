@@ -1,4 +1,3 @@
-import { inject, injectable } from 'inversify';
 import { logger } from '../../../aspects';
 import { NotificationType } from '../../core/domain/enums';
 import { ConfigurationService } from '../../core/model/configuration.model';
@@ -26,25 +25,18 @@ import {
 } from '../model/registration.model';
 import { TokenService } from '../model/token.model';
 import { User, UserService, UserToken } from '../model/user.model';
-import { APPLICATION_TYPES } from './../../application.types';
 
-@injectable()
 export class DefaultRegistrationService implements RegistrationService {
     private appName: string;
     private clientUrl: string;
     private supportContact: string;
     private legacySystemURL: string = 'https://nolar-dev.bfr.berlin/';
     constructor(
-        @inject(APPLICATION_TYPES.NotificationService)
         private notificationService: NotificationService,
-        @inject(APPLICATION_TYPES.TokenService)
         private tokenService: TokenService,
-        @inject(APPLICATION_TYPES.ConfigurationService)
         private configurationService: ConfigurationService,
-        @inject(APPLICATION_TYPES.UserService) private userService: UserService,
-        @inject(APPLICATION_TYPES.InstituteService)
+        private userService: UserService,
         private instituteService: InstituteService,
-        @inject(APPLICATION_TYPES.ParseInstituteRepository)
         private parseInstituteRepository: ParseInstituteRepository
     ) {
         this.appName =

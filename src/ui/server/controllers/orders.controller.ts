@@ -1,21 +1,12 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { Request, Response } from 'express';
-import { inject } from 'inversify';
-import {
-    controller,
-    httpGet,
-    request,
-    response
-} from 'inversify-express-utils';
 import { logger } from '../../../aspects';
 import { OrdersController } from '../model/controller.model';
-import { API_ROUTE, SERVER_ERROR_CODE } from '../model/enums';
+import { SERVER_ERROR_CODE } from '../model/enums';
 import { RedirectedCreateOrderListRequestDTO } from '../model/request.model';
 import { OrderCollectionDTO } from '../model/response.model';
 import { AppServerConfiguration } from '../ports';
-import { SERVER_TYPES } from '../server.types';
 import { AbstractController, ParseSingleResponse } from './abstract.controller';
-import { APPLICATION_TYPES } from '../../../app/application.types';
 import {
     TokenPayload,
     TokenPort
@@ -24,20 +15,14 @@ import { User, UserPort } from '../../../app/authentication/model/user.model';
 import { getTokenFromHeader } from '../middleware/token-validator.middleware';
 import '../middleware/session.augment';
 
-enum ORDER_ROUTE {
-    ROOT = '/orders'
-}
-
-@controller(API_ROUTE.V2 + ORDER_ROUTE.ROOT)
 export class DefaultOrdersController
     extends AbstractController
     implements OrdersController
 {
     private redirectionTarget!: AxiosInstance;
     constructor(
-        @inject(APPLICATION_TYPES.TokenService) private tokenService: TokenPort,
-        @inject(APPLICATION_TYPES.UserService) private userService: UserPort,
-        @inject(SERVER_TYPES.AppServerConfiguration)
+        private tokenService: TokenPort,
+        private userService: UserPort,
         configuration: AppServerConfiguration
     ) {
         super();
@@ -46,8 +31,7 @@ export class DefaultOrdersController
             headers: { 'X-Parse-Application-Id': configuration.appId }
         });
     }
-    @httpGet('/')
-    async getOrders(@request() req: Request, @response() res: Response) {
+    async getOrders(req: Request, res: Response) {
         logger.info(
             `${this.constructor.name}.${this.getOrders.name}, Request received`
         );

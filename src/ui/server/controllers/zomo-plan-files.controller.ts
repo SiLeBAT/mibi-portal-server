@@ -1,18 +1,8 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { Request, Response } from 'express';
-import { inject } from 'inversify';
-import {
-    controller,
-    httpGet,
-    httpPut,
-    request,
-    response
-} from 'inversify-express-utils';
 import { logger } from '../../../aspects';
 import { ZomoPlanFilesController } from '../model/controller.model';
-import { API_ROUTE } from '../model/enums';
 import { AppServerConfiguration } from '../ports';
-import { SERVER_TYPES } from '../server.types';
 import {
     AbstractController,
     ParseCollectionResponse,
@@ -23,11 +13,6 @@ import {
     ZomoPlanFileInfoDTO,
     DefaultServerErrorDTO
 } from '../model/response.model';
-
-enum ZOMO_PLAN_FILE_ROUTE {
-    ROOT = '/zomo-plan-file',
-    DOWNLOAD = '/download'
-}
 
 interface ParseZomoPlanFileDTO extends ParseEntityDTO {
     zomoPlanFile: ZomoPlanFile;
@@ -40,16 +25,12 @@ interface ZomoPlanFile {
     url: string;
 }
 
-@controller(API_ROUTE.V2 + ZOMO_PLAN_FILE_ROUTE.ROOT)
 export class DefaultZomoPlanFilesController
     extends AbstractController
     implements ZomoPlanFilesController
 {
     private redirectionTarget: AxiosInstance;
-    constructor(
-        @inject(SERVER_TYPES.AppServerConfiguration)
-        configuration: AppServerConfiguration
-    ) {
+    constructor(configuration: AppServerConfiguration) {
         super();
         this.redirectionTarget = axios.create({
             baseURL: configuration.parseAPI,
@@ -57,10 +38,9 @@ export class DefaultZomoPlanFilesController
         });
     }
 
-    @httpGet('/')
     async getZomoPlanFileInfo(
-        @request() req: Request,
-        @response() res: Response
+        req: Request,
+        res: Response
     ) {
         logger.info(
             `${this.constructor.name}.${this.getZomoPlanFileInfo.name}, Request received`
@@ -96,10 +76,9 @@ export class DefaultZomoPlanFilesController
         }
     }
 
-    @httpPut(ZOMO_PLAN_FILE_ROUTE.DOWNLOAD)
     async downloadZomoPlanFile(
-        @request() req: Request,
-        @response() res: Response
+        req: Request,
+        res: Response
     ) {
         logger.info(
             `${this.constructor.name}.${this.downloadZomoPlanFile.name}, Request received`

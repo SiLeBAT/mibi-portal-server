@@ -1,7 +1,7 @@
 import { logger } from './aspects';
 import { configurationService } from './configuratioin.service';
 import { startParseServer } from './infrastructure/parse';
-import { initialiseContainer } from './ui/server/container.setup';
+import { initialiseServices } from './ui/server/composition-root';
 import { initialiseExpress } from './ui/server/express.setup';
 async function init() {
     await startParseServer();
@@ -10,8 +10,8 @@ async function init() {
 
     logger.info(`Starting MiBi-Portal. appName=${appConfiguration.appName}`);
 
-    const container = await initialiseContainer();
-    initialiseExpress(container);
+    const composition = await initialiseServices();
+    initialiseExpress(composition);
 }
 
 init().catch(error => {
