@@ -5,6 +5,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import swaggerUi from 'swagger-ui-express';
+import { createProxyMiddleware } from 'http-proxy-middleware';
 import { logger } from '../../aspects';
 import { validateToken } from './ports';
 import { buildControllerRouter } from './routes';
@@ -69,6 +70,17 @@ export function startHttpServer(config: HttpServerConfiguration): void {
     app.use(cors());
     app.use(compression());
     app.use(express.json({ limit: '50mb' }));
+
+    const cmsProxy = createProxyMiddleware({
+        pathFilter: '/cms',
+        target: 'https://fg43-support.bfr.berlin',
+        changeOrigin: true
+    });
+    // Wrap in a sync handler so Express sees a void-returning RequestHandler
+    app.use((req, res, next) => {
+        cmsProxy(req, res, next).catch(next);
+    });
+
     app.use(morgan(mapLevelToMorganFormat(config.logLevel)));
     app.use(express.static(config.publicDir));
 
