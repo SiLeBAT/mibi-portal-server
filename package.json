@@ -6,6 +6,7 @@
   "type": "commonjs",
   "scripts": {
     "start": "node ./lib/main.js",
+    "start:proxy": "npx pm2 start pm2.config.js --only mibi-parse-proxy",
     "serve": "nodemon -e ts --exec \"npm run serve:pipe\"",
     "debug": "nodemon -e ts --exec \"npm run debug:pipe\"",
     "serve:pipe": "npm run build && node ./lib/main.js",
