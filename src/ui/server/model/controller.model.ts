@@ -46,6 +46,7 @@ export interface UsersController extends Controller {
     patchVerification(token: string, res: Response): Promise<void>;
     patchActivation(token: string, res: Response): Promise<void>;
     postLogin(req: Request, res: Response): Promise<void>;
+    patchConsent(req: Request, res: Response): Promise<void>;
 }
 
 export interface SystemInfoController extends Controller {
@@ -55,7 +56,7 @@ export interface SystemInfoController extends Controller {
 export interface KeycloakAuthController extends Controller {
     getLogin(req: Request, res: Response): Promise<void>;
     getCallback(req: Request, res: Response): Promise<void>;
-    getMe(req: Request, res: Response): void;
+    getMe(req: Request, res: Response): Promise<void>;
     postLogout(req: Request, res: Response): Promise<void>;
 }
 

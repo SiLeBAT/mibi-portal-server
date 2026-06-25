@@ -72,7 +72,7 @@ describe('KeycloakAuthController', () => {
             expect(res.statusCode).toBe(401);
         });
 
-        it('returns 200 with sub, email, preferred_username when session user present', () => {
+        it('returns 200 with sub, email, preferred_username and consent flags when session user present', async () => {
             const controller = buildController(container!);
             const req = new mockReq({
                 session: {
@@ -86,14 +86,16 @@ describe('KeycloakAuthController', () => {
             });
             const res = new mockRes();
 
-            controller.getMe(req, res);
+            await controller.getMe(req, res);
 
             expect(res.statusCode).toBe(200);
             const body = res._getJSON();
             expect(body).toEqual({
                 sub: 'abc-123',
                 email: 'alice@example.com',
-                preferred_username: 'alice'
+                preferred_username: 'alice',
+                dataSaveAgreed: false,
+                dataSaveViewed: false
             });
             expect(body.id_token).toBeUndefined();
         });

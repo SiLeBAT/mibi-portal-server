@@ -12,8 +12,10 @@ import { DefaultLoginService } from './authentication/application/login.service'
 import { DefaultPasswordService } from './authentication/application/password.service';
 import { DefaultRegistrationService } from './authentication/application/registration.service';
 import { DefaultTokenService } from './authentication/application/token.service';
+import { DefaultUserConsentService } from './authentication/application/user-consent.service';
 import { DefaultUserService } from './authentication/application/user.service';
 import { ActorContextService } from './authentication/model/actor.model';
+import { UserConsentService } from './authentication/model/consent.model';
 import { InstituteService } from './authentication/model/institute.model';
 import { LoginService, PasswordService } from './authentication/model/login.model';
 import { RegistrationService } from './authentication/model/registration.model';
@@ -30,6 +32,7 @@ export interface ApplicationServices {
     passwordService: PasswordService;
     loginService: LoginService;
     actorContextService: ActorContextService;
+    userConsentService: UserConsentService;
 }
 
 /**
@@ -101,6 +104,10 @@ export function createApplicationServices(
         overrides.actorContextService ??
         new DefaultActorContextService(repositories.actorRepository);
 
+    const userConsentService =
+        overrides.userConsentService ??
+        new DefaultUserConsentService(repositories.userConsentRepository);
+
     return {
         configurationService,
         notificationService,
@@ -110,6 +117,7 @@ export function createApplicationServices(
         registrationService,
         passwordService,
         loginService,
-        actorContextService
+        actorContextService,
+        userConsentService
     };
 }

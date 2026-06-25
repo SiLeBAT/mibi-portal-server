@@ -29,7 +29,10 @@ module.exports = {
     '@typescript-eslint/no-confusing-void-expression': 'error',
     '@typescript-eslint/restrict-plus-operands': 'error',
     '@typescript-eslint/require-await': 'error',
-    '@typescript-eslint/no-misused-promises': 'error',
+    // Express 5 route handlers are intentionally async (rejected promises are
+    // forwarded to the error middleware), so allow promise-returning functions
+    // as arguments while keeping the rest of the rule active.
+    '@typescript-eslint/no-misused-promises': ['error', { checksVoidReturn: { arguments: false } }],
     '@typescript-eslint/no-invalid-void-type': ['error', { allowInGenericTypeArguments: true }],
     '@typescript-eslint/explicit-member-accessibility': ['error', { accessibility: 'no-public' }],
     '@typescript-eslint/consistent-type-assertions': ['error', { assertionStyle: 'as', objectLiteralTypeAssertions: 'never' }]

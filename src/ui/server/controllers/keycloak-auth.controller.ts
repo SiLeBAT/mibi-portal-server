@@ -1,8 +1,10 @@
 import { Request, Response } from 'express';
+import { UserConsentPort } from '../../../app/authentication/model/consent.model';
 import { KeycloakOidcPort } from '../../../app/authentication/model/oidc.model';
 import { logger } from '../../../aspects';
 import { KeycloakAuthController } from '../model/controller.model';
 import { SERVER_ERROR_CODE } from '../model/enums';
+import { MeResponseDTO } from '../model/response.model';
 import { AppServerConfiguration } from '../model/server.model';
 import { AbstractController } from './abstract.controller';
 import '../middleware/session.augment';
@@ -13,6 +15,7 @@ export class DefaultKeycloakAuthController
 {
     constructor(
         private oidcService: KeycloakOidcPort,
+        private userConsentService: UserConsentPort,
         private configuration: AppServerConfiguration
     ) {
         super();
@@ -63,7 +66,7 @@ export class DefaultKeycloakAuthController
         }
     }
 
-    getMe(req: Request, res: Response) {
+    async getMe(req: Request, res: Response) {
         if (!req.session?.user) {
             this.unauthorized(res, {
                 code: SERVER_ERROR_CODE.AUTHORIZATION_ERROR,
@@ -71,11 +74,17 @@ export class DefaultKeycloakAuthController
             });
             return;
         }
-        this.ok(res, {
+        const consent = await this.userConsentService.getConsentByEmail(
+            req.session.user.email
+        );
+        const dto: MeResponseDTO = {
             sub: req.session.user.sub,
             email: req.session.user.email,
-            preferred_username: req.session.user.preferred_username
-        });
+            preferred_username: req.session.user.preferred_username,
+            dataSaveAgreed: consent.dataSaveAgreed,
+            dataSaveViewed: consent.dataSaveViewed
+        };
+        this.ok(res, dto);
     }
 
     async postLogout(req: Request, res: Response) {
