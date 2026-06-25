@@ -73,6 +73,21 @@ export interface TokenizedUserDTO {
     email: string;
     token: string;
     instituteId: string;
+    dataSaveAgreed: boolean;
+    dataSaveViewed: boolean;
+}
+
+export interface UserConsentResponseDTO {
+    dataSaveAgreed: boolean;
+    dataSaveViewed: boolean;
+}
+
+export interface MeResponseDTO {
+    sub: string;
+    email: string;
+    preferred_username: string;
+    dataSaveAgreed: boolean;
+    dataSaveViewed: boolean;
 }
 
 export interface SystemInformationDTO {

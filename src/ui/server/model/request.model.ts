@@ -20,6 +20,10 @@ export interface RegistrationDetailsDTO {
     readonly host?: string;
 }
 
+export interface UserConsentRequestDTO {
+    readonly dataSaveAgreed: boolean;
+}
+
 export interface PutSamplesJSONRequestDTO {
     readonly order: OrderDTO;
 }

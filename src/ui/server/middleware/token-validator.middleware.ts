@@ -13,6 +13,9 @@ function validateToken(apiRoute: string, secret: string) {
         apiRoute + '/users/login',
         apiRoute + '/users/registration',
         apiRoute + '/users/reset-password-request',
+        // Consent is authenticated inside the controller (JWT or Keycloak
+        // session), so it bypasses the blanket expressjwt guard like /orders.
+        apiRoute + '/users/consent',
         apiRoute + '/samples/validated',
         apiRoute + '/samples',
         apiRoute + '/orders',

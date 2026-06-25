@@ -70,10 +70,14 @@ export function createControllers(
             appServices.passwordService,
             appServices.loginService,
             appServices.registrationService,
+            appServices.tokenService,
+            appServices.userService,
+            appServices.userConsentService,
             serverConfig
         ),
         keycloakAuth: new DefaultKeycloakAuthController(
             keycloakServices.keycloakOidcService,
+            appServices.userConsentService,
             serverConfig
         ),
         keycloakAdmin: new DefaultKeycloakAdminController(

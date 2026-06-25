@@ -103,6 +103,9 @@ export function buildControllerRouter(controllers: Controllers): Router {
     router.post('/v2/users/registration', (req, res) => {
         users.postRegistration(req, res);
     });
+    router.patch('/v2/users/consent', async (req, res) => {
+        await users.patchConsent(req, res);
+    });
 
     // Keycloak admin
     router.get('/v2/admin/actors/pending', async (req, res) => {
@@ -122,8 +125,8 @@ export function buildControllerRouter(controllers: Controllers): Router {
     router.get('/v2/auth/callback', async (req, res) => {
         await keycloakAuth.getCallback(req, res);
     });
-    router.get('/v2/auth/me', (req, res) => {
-        keycloakAuth.getMe(req, res);
+    router.get('/v2/auth/me', async (req, res) => {
+        await keycloakAuth.getMe(req, res);
     });
     router.post('/v2/auth/logout', async (req, res) => {
         await keycloakAuth.postLogout(req, res);

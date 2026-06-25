@@ -8,17 +8,24 @@ import {
     LoginResponse,
     PasswordPort,
     RegistrationPort,
+    TokenPayload,
+    TokenPort,
+    UserConsent,
+    UserConsentPort,
     UserLoginInformation,
+    UserPort,
     UserRegistration
 } from '../../../app/ports';
 import { logger } from '../../../aspects';
 import { UsersController } from '../model/controller.model';
 import { MalformedRequestError } from '../model/domain.error';
 import { SERVER_ERROR_CODE } from '../model/enums';
+import { getTokenFromHeader } from '../middleware/token-validator.middleware';
 import {
     NewPasswordRequestDTO,
     RegistrationDetailsDTO,
-    ResetRequestDTO
+    ResetRequestDTO,
+    UserConsentRequestDTO
 } from '../model/request.model';
 import {
     ActivationResponseDTO,
@@ -26,10 +33,12 @@ import {
     PasswordResetRequestResponseDTO,
     PasswordResetResponseDTO,
     RegistrationRequestResponseDTO,
-    TokenizedUserDTO
+    TokenizedUserDTO,
+    UserConsentResponseDTO
 } from '../model/response.model';
 import { AppServerConfiguration } from '../ports';
 import { AbstractController, ParseSingleResponse } from './abstract.controller';
+import '../middleware/session.augment';
 
 export class DefaultUsersController
     extends AbstractController
@@ -40,6 +49,9 @@ export class DefaultUsersController
         private passwordService: PasswordPort,
         private loginService: LoginPort,
         private registrationService: RegistrationPort,
+        private tokenService: TokenPort,
+        private userService: UserPort,
+        private userConsentService: UserConsentPort,
         configuration: AppServerConfiguration
     ) {
         super();
@@ -128,8 +140,15 @@ export class DefaultUsersController
                 userLoginInfo
             );
 
-            const dto: TokenizedUserDTO =
-                this.fromLoginResponseToResponseDTO(response);
+            const consent: UserConsent =
+                await this.userConsentService.getConsentByEmail(
+                    response.user.email
+                );
+
+            const dto: TokenizedUserDTO = this.fromLoginResponseToResponseDTO(
+                response,
+                consent
+            );
             logger.info(
                 `${this.constructor.name}.${this.postLogin.name}, Response sent`
             );
@@ -323,14 +342,75 @@ export class DefaultUsersController
         };
     }
     private fromLoginResponseToResponseDTO(
-        response: LoginResponse
+        response: LoginResponse,
+        consent: UserConsent
     ): TokenizedUserDTO {
         return {
             firstName: response.user.firstName,
             lastName: response.user.lastName,
             email: response.user.email,
             token: response.token,
-            instituteId: response.user.institution.uniqueId
+            instituteId: response.user.institution.uniqueId,
+            dataSaveAgreed: consent.dataSaveAgreed,
+            dataSaveViewed: consent.dataSaveViewed
         };
+    }
+
+    async patchConsent(req: Request, res: Response) {
+        logger.info(
+            `${this.constructor.name}.${this.patchConsent.name}, Request received`
+        );
+        try {
+            const email = await this.resolveAuthenticatedEmail(req);
+            if (!email) {
+                this.unauthorized(res, {
+                    code: SERVER_ERROR_CODE.AUTHORIZATION_ERROR,
+                    message: 'Not authenticated'
+                });
+                return;
+            }
+            const consentRequest: UserConsentRequestDTO = req.body;
+            if (typeof consentRequest.dataSaveAgreed !== 'boolean') {
+                throw new MalformedRequestError(
+                    'Consent choice (dataSaveAgreed) not supplied'
+                );
+            }
+            const consent: UserConsent =
+                await this.userConsentService.saveConsentByEmail(
+                    email,
+                    consentRequest.dataSaveAgreed
+                );
+            const dto: UserConsentResponseDTO = {
+                dataSaveAgreed: consent.dataSaveAgreed,
+                dataSaveViewed: consent.dataSaveViewed
+            };
+            logger.info(
+                `${this.constructor.name}.${this.patchConsent.name}, Response sent`
+            );
+            this.ok(res, dto);
+        } catch (error) {
+            logger.info(
+                `${this.constructor.name}.${this.patchConsent.name} has thrown an error. ${error}`
+            );
+            this.handleError(res, error);
+        }
+    }
+
+    // Resolves the acting user's email in an auth-mode-agnostic way: a Keycloak
+    // BFF session carries the user directly, the legacy flow carries a JWT.
+    private async resolveAuthenticatedEmail(
+        req: Request
+    ): Promise<string | undefined> {
+        const sessionEmail = req.session?.user?.email;
+        if (sessionEmail) {
+            return sessionEmail;
+        }
+        const token = getTokenFromHeader(req);
+        if (!token) {
+            return undefined;
+        }
+        const payload: TokenPayload = this.tokenService.verifyToken(token);
+        const user = await this.userService.getUserById(payload.sub);
+        return user.email;
     }
 }

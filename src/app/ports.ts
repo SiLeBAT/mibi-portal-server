@@ -62,3 +62,9 @@ export {
     ActorRepository,
     ActorContextService
 } from './authentication/model/actor.model';
+
+export {
+    UserConsent,
+    UserConsentPort,
+    UserConsentService
+} from './authentication/model/consent.model';
