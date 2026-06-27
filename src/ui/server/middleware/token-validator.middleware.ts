@@ -16,6 +16,7 @@ function validateToken(apiRoute: string, secret: string) {
         apiRoute + '/samples/validated',
         apiRoute + '/samples',
         apiRoute + '/orders',
+        apiRoute + '/orders/samples-with-results',
         // Keycloak session-based auth routes (no JWT required)
         apiRoute + '/auth/login',
         apiRoute + '/auth/callback',

@@ -3,8 +3,14 @@ import { Request, Response } from 'express';
 import { logger } from '../../../aspects';
 import { OrdersController } from '../model/controller.model';
 import { SERVER_ERROR_CODE } from '../model/enums';
-import { RedirectedCreateOrderListRequestDTO } from '../model/request.model';
-import { OrderCollectionDTO } from '../model/response.model';
+import {
+    RedirectedCreateOrderListRequestDTO,
+    RedirectedGetSamplesWithResultsRequestDTO
+} from '../model/request.model';
+import {
+    OrderCollectionDTO,
+    SamplesWithResultsCollectionDTO
+} from '../model/response.model';
 import { AppServerConfiguration } from '../ports';
 import { AbstractController, ParseSingleResponse } from './abstract.controller';
 import {
@@ -62,6 +68,46 @@ export class DefaultOrdersController
         } catch (error) {
             logger.info(
                 `${this.constructor.name}.${this.getOrders.name} has thrown an error. ${error}`
+            );
+            this.fail(res);
+        }
+    }
+
+    async getSamplesWithResults(req: Request, res: Response) {
+        logger.info(
+            `${this.constructor.name}.${this.getSamplesWithResults.name}, Request received`
+        );
+
+        try {
+            const token = getTokenFromHeader(req);
+            if (!token) {
+                this.unauthorized(res, {
+                    code: SERVER_ERROR_CODE.AUTHORIZATION_ERROR,
+                    message: 'Not authenticated'
+                });
+                return;
+            }
+            const user: User = await this.getUserFromToken(token);
+            const orderId = String(req.body.orderId);
+
+            const parseResponse = await this.redirectionTarget.post<
+                ParseSingleResponse<SamplesWithResultsCollectionDTO>,
+                AxiosResponse<
+                    ParseSingleResponse<SamplesWithResultsCollectionDTO>
+                >,
+                RedirectedGetSamplesWithResultsRequestDTO
+            >('functions/getSamplesWithResults', {
+                orderId,
+                userEmail: user.email
+            });
+
+            logger.info(
+                `${this.constructor.name}.${this.getSamplesWithResults.name}, Response sent`
+            );
+            this.ok(res, parseResponse.data.result);
+        } catch (error) {
+            logger.info(
+                `${this.constructor.name}.${this.getSamplesWithResults.name} has thrown an error. ${error}`
             );
             this.fail(res);
         }

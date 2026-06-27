@@ -47,3 +47,8 @@ export interface RedirectedPutValidatedRequestDTO
 export interface RedirectedCreateOrderListRequestDTO {
     readonly userEmail: string;
 }
+
+export interface RedirectedGetSamplesWithResultsRequestDTO {
+    readonly orderId: string;
+    readonly userEmail: string;
+}
