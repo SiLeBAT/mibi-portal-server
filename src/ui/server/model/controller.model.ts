@@ -33,6 +33,7 @@ export interface NRLsController extends Controller {
 
 export interface OrdersController extends Controller {
     getOrders(req: Request, res: Response): Promise<void>;
+    getSamplesWithResults(req: Request, res: Response): Promise<void>;
 }
 
 export interface UsersController extends Controller {

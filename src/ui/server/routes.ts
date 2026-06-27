@@ -56,6 +56,9 @@ export function buildControllerRouter(controllers: Controllers): Router {
     router.get('/v2/orders', async (req, res) => {
         await orders.getOrders(req, res);
     });
+    router.post('/v2/orders/samples-with-results', async (req, res) => {
+        await orders.getSamplesWithResults(req, res);
+    });
 
     // Tokens
     router.post('/v2/tokens', (req, res) => {

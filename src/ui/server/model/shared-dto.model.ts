@@ -42,6 +42,7 @@ export interface SampleDataEntryDTO {
     errors?: SampleValidationErrorDTO[];
     correctionOffer?: string[];
     oldValue?: string;
+    nrlData?: string;
 }
 export interface SampleDataDTO {
     [key: string]: SampleDataEntryDTO;

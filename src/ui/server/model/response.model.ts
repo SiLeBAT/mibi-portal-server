@@ -1,4 +1,4 @@
-import { OrderDTO } from './shared-dto.model';
+import { OrderDTO, SampleDataDTO, SampleMetaDTO } from './shared-dto.model';
 
 interface ExcelFileInfo {
     data: string;
@@ -134,4 +134,25 @@ export interface OrderEntryDTO {
     nrls: string[];
     pathogens: string[];
     results: string;
+}
+
+export type ResultDataDTO = Record<string, string>;
+
+export interface ResultDTO {
+    id: string;
+    position: number;
+    resultData: ResultDataDTO;
+}
+
+export interface SampleWithResultsDTO {
+    id: string;
+    position: number;
+    sampleData: SampleDataDTO;
+    sampleMeta: SampleMetaDTO;
+    results: ResultDTO[];
+}
+
+export interface SamplesWithResultsCollectionDTO {
+    orderId: string;
+    samples: SampleWithResultsDTO[];
 }
