@@ -1,3 +1,4 @@
+import { EmailNotificationSettings } from '../../../app/ports';
 import { OrderDTO, SampleDataDTO, SampleMetaDTO } from './shared-dto.model';
 
 interface ExcelFileInfo {
@@ -75,6 +76,7 @@ export interface TokenizedUserDTO {
     instituteId: string;
     dataSaveAgreed: boolean;
     dataSaveViewed: boolean;
+    emailNotificationSettings: EmailNotificationSettings;
 }
 
 export interface UserConsentResponseDTO {
@@ -82,12 +84,15 @@ export interface UserConsentResponseDTO {
     dataSaveViewed: boolean;
 }
 
+export type UserEmailNotificationResponseDTO = EmailNotificationSettings;
+
 export interface MeResponseDTO {
     sub: string;
     email: string;
     preferred_username: string;
     dataSaveAgreed: boolean;
     dataSaveViewed: boolean;
+    emailNotificationSettings: EmailNotificationSettings;
 }
 
 export interface SystemInformationDTO {

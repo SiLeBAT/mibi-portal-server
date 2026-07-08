@@ -68,3 +68,9 @@ export {
     UserConsentPort,
     UserConsentService
 } from './authentication/model/consent.model';
+
+export {
+    EmailNotificationSettings,
+    UserEmailNotificationPort,
+    UserEmailNotificationService
+} from './authentication/model/email-notification.model';

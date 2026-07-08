@@ -106,6 +106,9 @@ export function buildControllerRouter(controllers: Controllers): Router {
     router.patch('/v2/users/consent', async (req, res) => {
         await users.patchConsent(req, res);
     });
+    router.patch('/v2/users/email-notifications', async (req, res) => {
+        await users.patchEmailNotificationSettings(req, res);
+    });
 
     // Keycloak admin
     router.get('/v2/admin/actors/pending', async (req, res) => {

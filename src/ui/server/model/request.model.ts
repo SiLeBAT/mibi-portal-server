@@ -1,3 +1,4 @@
+import { EmailNotificationSettings } from '../../../app/ports';
 import { OrderDTO } from './shared-dto.model';
 
 export interface ResetRequestDTO {
@@ -23,6 +24,8 @@ export interface RegistrationDetailsDTO {
 export interface UserConsentRequestDTO {
     readonly dataSaveAgreed: boolean;
 }
+
+export type UserEmailNotificationRequestDTO = EmailNotificationSettings;
 
 export interface PutSamplesJSONRequestDTO {
     readonly order: OrderDTO;
