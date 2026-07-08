@@ -48,6 +48,10 @@ export interface UsersController extends Controller {
     patchActivation(token: string, res: Response): Promise<void>;
     postLogin(req: Request, res: Response): Promise<void>;
     patchConsent(req: Request, res: Response): Promise<void>;
+    patchEmailNotificationSettings(
+        req: Request,
+        res: Response
+    ): Promise<void>;
 }
 
 export interface SystemInfoController extends Controller {

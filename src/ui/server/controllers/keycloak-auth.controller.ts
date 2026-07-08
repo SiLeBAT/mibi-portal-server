@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { UserConsentPort } from '../../../app/authentication/model/consent.model';
+import { UserEmailNotificationPort } from '../../../app/authentication/model/email-notification.model';
 import { KeycloakOidcPort } from '../../../app/authentication/model/oidc.model';
 import { logger } from '../../../aspects';
 import { KeycloakAuthController } from '../model/controller.model';
@@ -16,6 +17,7 @@ export class DefaultKeycloakAuthController
     constructor(
         private oidcService: KeycloakOidcPort,
         private userConsentService: UserConsentPort,
+        private userEmailNotificationService: UserEmailNotificationPort,
         private configuration: AppServerConfiguration
     ) {
         super();
@@ -77,12 +79,17 @@ export class DefaultKeycloakAuthController
         const consent = await this.userConsentService.getConsentByEmail(
             req.session.user.email
         );
+        const emailNotificationSettings =
+            await this.userEmailNotificationService.getEmailNotificationSettingsByEmail(
+                req.session.user.email
+            );
         const dto: MeResponseDTO = {
             sub: req.session.user.sub,
             email: req.session.user.email,
             preferred_username: req.session.user.preferred_username,
             dataSaveAgreed: consent.dataSaveAgreed,
-            dataSaveViewed: consent.dataSaveViewed
+            dataSaveViewed: consent.dataSaveViewed,
+            emailNotificationSettings
         };
         this.ok(res, dto);
     }

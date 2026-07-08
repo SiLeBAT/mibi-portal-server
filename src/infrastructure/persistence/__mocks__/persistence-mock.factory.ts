@@ -3,6 +3,7 @@ import { getMockActorRepository } from './actor.repository';
 import { getMockInstituteRepository } from './institute.repository';
 import { getMockTokenRepository } from './token.repository';
 import { getMockUserConsentRepository } from './user-consent.repository';
+import { getMockUserEmailNotificationRepository } from './user-email-notification.repository';
 import { getMockUserRepository } from './user.repository';
 
 export function createMockPersistenceRepositories(): PersistenceRepositories {
@@ -11,6 +12,8 @@ export function createMockPersistenceRepositories(): PersistenceRepositories {
         instituteRepository: getMockInstituteRepository(),
         tokenRepository: getMockTokenRepository(),
         actorRepository: getMockActorRepository(),
-        userConsentRepository: getMockUserConsentRepository()
+        userConsentRepository: getMockUserConsentRepository(),
+        userEmailNotificationRepository:
+            getMockUserEmailNotificationRepository()
     };
 }

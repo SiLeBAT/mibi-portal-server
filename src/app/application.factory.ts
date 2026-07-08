@@ -13,9 +13,11 @@ import { DefaultPasswordService } from './authentication/application/password.se
 import { DefaultRegistrationService } from './authentication/application/registration.service';
 import { DefaultTokenService } from './authentication/application/token.service';
 import { DefaultUserConsentService } from './authentication/application/user-consent.service';
+import { DefaultUserEmailNotificationService } from './authentication/application/user-email-notification.service';
 import { DefaultUserService } from './authentication/application/user.service';
 import { ActorContextService } from './authentication/model/actor.model';
 import { UserConsentService } from './authentication/model/consent.model';
+import { UserEmailNotificationService } from './authentication/model/email-notification.model';
 import { InstituteService } from './authentication/model/institute.model';
 import { LoginService, PasswordService } from './authentication/model/login.model';
 import { RegistrationService } from './authentication/model/registration.model';
@@ -33,6 +35,7 @@ export interface ApplicationServices {
     loginService: LoginService;
     actorContextService: ActorContextService;
     userConsentService: UserConsentService;
+    userEmailNotificationService: UserEmailNotificationService;
 }
 
 /**
@@ -108,6 +111,12 @@ export function createApplicationServices(
         overrides.userConsentService ??
         new DefaultUserConsentService(repositories.userConsentRepository);
 
+    const userEmailNotificationService =
+        overrides.userEmailNotificationService ??
+        new DefaultUserEmailNotificationService(
+            repositories.userEmailNotificationRepository
+        );
+
     return {
         configurationService,
         notificationService,
@@ -118,6 +127,7 @@ export function createApplicationServices(
         passwordService,
         loginService,
         actorContextService,
-        userConsentService
+        userConsentService,
+        userEmailNotificationService
     };
 }

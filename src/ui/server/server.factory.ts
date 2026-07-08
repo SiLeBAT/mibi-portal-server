@@ -73,11 +73,13 @@ export function createControllers(
             appServices.tokenService,
             appServices.userService,
             appServices.userConsentService,
+            appServices.userEmailNotificationService,
             serverConfig
         ),
         keycloakAuth: new DefaultKeycloakAuthController(
             keycloakServices.keycloakOidcService,
             appServices.userConsentService,
+            appServices.userEmailNotificationService,
             serverConfig
         ),
         keycloakAdmin: new DefaultKeycloakAdminController(

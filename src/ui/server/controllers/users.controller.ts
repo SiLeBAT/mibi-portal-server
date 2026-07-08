@@ -4,6 +4,7 @@ import { JsonWebTokenError } from 'jsonwebtoken';
 import * as Parse from 'parse/node';
 import {
     AuthorizationError,
+    EmailNotificationSettings,
     LoginPort,
     LoginResponse,
     PasswordPort,
@@ -12,6 +13,7 @@ import {
     TokenPort,
     UserConsent,
     UserConsentPort,
+    UserEmailNotificationPort,
     UserLoginInformation,
     UserPort,
     UserRegistration
@@ -25,7 +27,8 @@ import {
     NewPasswordRequestDTO,
     RegistrationDetailsDTO,
     ResetRequestDTO,
-    UserConsentRequestDTO
+    UserConsentRequestDTO,
+    UserEmailNotificationRequestDTO
 } from '../model/request.model';
 import {
     ActivationResponseDTO,
@@ -34,7 +37,8 @@ import {
     PasswordResetResponseDTO,
     RegistrationRequestResponseDTO,
     TokenizedUserDTO,
-    UserConsentResponseDTO
+    UserConsentResponseDTO,
+    UserEmailNotificationResponseDTO
 } from '../model/response.model';
 import { AppServerConfiguration } from '../ports';
 import { AbstractController, ParseSingleResponse } from './abstract.controller';
@@ -52,6 +56,7 @@ export class DefaultUsersController
         private tokenService: TokenPort,
         private userService: UserPort,
         private userConsentService: UserConsentPort,
+        private userEmailNotificationService: UserEmailNotificationPort,
         configuration: AppServerConfiguration
     ) {
         super();
@@ -145,9 +150,15 @@ export class DefaultUsersController
                     response.user.email
                 );
 
+            const emailNotificationSettings: EmailNotificationSettings =
+                await this.userEmailNotificationService.getEmailNotificationSettingsByEmail(
+                    response.user.email
+                );
+
             const dto: TokenizedUserDTO = this.fromLoginResponseToResponseDTO(
                 response,
-                consent
+                consent,
+                emailNotificationSettings
             );
             logger.info(
                 `${this.constructor.name}.${this.postLogin.name}, Response sent`
@@ -343,7 +354,8 @@ export class DefaultUsersController
     }
     private fromLoginResponseToResponseDTO(
         response: LoginResponse,
-        consent: UserConsent
+        consent: UserConsent,
+        emailNotificationSettings: EmailNotificationSettings
     ): TokenizedUserDTO {
         return {
             firstName: response.user.firstName,
@@ -352,7 +364,8 @@ export class DefaultUsersController
             token: response.token,
             instituteId: response.user.institution.uniqueId,
             dataSaveAgreed: consent.dataSaveAgreed,
-            dataSaveViewed: consent.dataSaveViewed
+            dataSaveViewed: consent.dataSaveViewed,
+            emailNotificationSettings
         };
     }
 
@@ -394,6 +407,70 @@ export class DefaultUsersController
             );
             this.handleError(res, error);
         }
+    }
+
+    async patchEmailNotificationSettings(req: Request, res: Response) {
+        logger.info(
+            `${this.constructor.name}.${this.patchEmailNotificationSettings.name}, Request received`
+        );
+        try {
+            const email = await this.resolveAuthenticatedEmail(req);
+            if (!email) {
+                this.unauthorized(res, {
+                    code: SERVER_ERROR_CODE.AUTHORIZATION_ERROR,
+                    message: 'Not authenticated'
+                });
+                return;
+            }
+            const settings = this.parseEmailNotificationRequest(req.body);
+            const saved =
+                await this.userEmailNotificationService.saveEmailNotificationSettingsByEmail(
+                    email,
+                    settings
+                );
+            const dto: UserEmailNotificationResponseDTO = saved;
+            logger.info(
+                `${this.constructor.name}.${this.patchEmailNotificationSettings.name}, Response sent`
+            );
+            this.ok(res, dto);
+        } catch (error) {
+            logger.info(
+                `${this.constructor.name}.${this.patchEmailNotificationSettings.name} has thrown an error. ${error}`
+            );
+            this.handleError(res, error);
+        }
+    }
+
+    private parseEmailNotificationRequest(
+        body: UserEmailNotificationRequestDTO
+    ): EmailNotificationSettings {
+        const FREQUENCIES = ['daily', 'weekly', 'monthly'];
+        const WEEKDAYS = [
+            'monday',
+            'tuesday',
+            'wednesday',
+            'thursday',
+            'friday'
+        ];
+        const WEEKS_OF_MONTH = ['1', '2', '3', '4', 'last'];
+
+        if (
+            !body ||
+            typeof body.enabled !== 'boolean' ||
+            !FREQUENCIES.includes(body.frequency) ||
+            !WEEKDAYS.includes(body.weekday) ||
+            !WEEKS_OF_MONTH.includes(body.weekOfMonth)
+        ) {
+            throw new MalformedRequestError(
+                'Invalid email notification settings supplied'
+            );
+        }
+        return {
+            enabled: body.enabled,
+            frequency: body.frequency,
+            weekday: body.weekday,
+            weekOfMonth: body.weekOfMonth
+        };
     }
 
     // Resolves the acting user's email in an auth-mode-agnostic way: a Keycloak

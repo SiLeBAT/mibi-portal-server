@@ -95,7 +95,13 @@ describe('KeycloakAuthController', () => {
                 email: 'alice@example.com',
                 preferred_username: 'alice',
                 dataSaveAgreed: false,
-                dataSaveViewed: false
+                dataSaveViewed: false,
+                emailNotificationSettings: {
+                    enabled: false,
+                    frequency: 'daily',
+                    weekday: 'monday',
+                    weekOfMonth: '1'
+                }
             });
             expect(body.id_token).toBeUndefined();
         });
