@@ -1,12 +1,15 @@
 import { TokenType } from '../../domain/enums';
 
-export function getMockTokenService() {
+// The stored token's type drives the type check in verifyUser/activateUser, so
+// callers can pick which type getUserTokenByJWT/saveToken report (defaults to
+// ACTIVATE, the type used by the verification flow).
+export function getMockTokenService(tokenType: TokenType = TokenType.ACTIVATE) {
     return {
         generateToken: jest.fn(),
         saveToken: jest.fn(() =>
             Promise.resolve({
                 token: 'test',
-                type: TokenType.ACTIVATE,
+                type: tokenType,
                 userId: 'test'
             })
         ),
@@ -16,7 +19,7 @@ export function getMockTokenService() {
         getUserTokenByJWT: jest.fn(() =>
             Promise.resolve({
                 token: 'test',
-                type: TokenType.ACTIVATE,
+                type: tokenType,
                 userId: 'test'
             })
         ),

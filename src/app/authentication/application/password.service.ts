@@ -1,3 +1,4 @@
+import { JsonWebTokenError } from 'jsonwebtoken';
 import { NotificationType } from '../../core/domain/enums';
 import { ConfigurationService } from '../../core/model/configuration.model';
 import {
@@ -78,6 +79,12 @@ export class DefaultPasswordService implements PasswordService {
         legacySystem = false
     ): Promise<void> {
         const userToken = await this.tokenService.getUserTokenByJWT(token);
+        // A validly-signed token is not enough: only a password-reset token may
+        // reset a password, otherwise an activation/admin token could be
+        // replayed against this action (MPS-341).
+        if (userToken.type !== TokenType.RESET) {
+            throw new JsonWebTokenError('Token type does not match the action');
+        }
         const userId = userToken.userId;
         this.tokenService.verifyTokenWithUser(token, String(userId));
         const user = await this.userService.getUserById(userId);

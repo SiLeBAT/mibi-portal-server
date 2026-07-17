@@ -6,6 +6,7 @@ import {
 } from '../../../../__mocks__/test-container';
 import { APPLICATION_TYPES } from '../../../application.types';
 import { getMockNotificationService } from '../../../core/application/__mocks__/notification.service';
+import { TokenType } from '../../domain/enums';
 import { RegistrationService } from '../../model/registration.model';
 import { getMockTokenService } from '../__mocks__/token.service';
 import { getMockUserService } from '../__mocks__/user.service';
@@ -38,12 +39,15 @@ describe('Activate User Use Case', () => {
     });
     it('should return a promise', () => {
         const result = service.activateUser(token);
-        // tslint:disable-next-line: no-floating-promises
         expect(result).toBeInstanceOf(Promise);
+        // The container-backed token repository yields an activation token,
+        // which activateUser now rejects; swallow it so the floating promise
+        // does not surface as an unhandled rejection.
+        return result.catch(() => undefined);
     });
 
     it('should call token repository to retrieve userId', () => {
-        const mockTokenService = getMockTokenService();
+        const mockTokenService = getMockTokenService(TokenType.ADMIN);
         service = rebindMocks<RegistrationService>(
             container,
             APPLICATION_TYPES.RegistrationService,
@@ -64,7 +68,7 @@ describe('Activate User Use Case', () => {
             );
     });
     it('should verify the token against the retrieved userId', () => {
-        const mockTokenService = getMockTokenService();
+        const mockTokenService = getMockTokenService(TokenType.ADMIN);
         service = rebindMocks<RegistrationService>(
             container,
             APPLICATION_TYPES.RegistrationService,
@@ -86,7 +90,7 @@ describe('Activate User Use Case', () => {
     });
     it('should activate the user', () => {
         const mockUserService = getMockUserService();
-        const mockTokenService = getMockTokenService();
+        const mockTokenService = getMockTokenService(TokenType.ADMIN);
         service = rebindMocks<RegistrationService>(
             container,
             APPLICATION_TYPES.RegistrationService,
@@ -111,7 +115,7 @@ describe('Activate User Use Case', () => {
             .then(result => expect(isActivated.mock.calls.length).toBe(1));
     });
     it('should call the token Repository to delete the token', () => {
-        const mockTokenService = getMockTokenService();
+        const mockTokenService = getMockTokenService(TokenType.ADMIN);
         service = rebindMocks<RegistrationService>(
             container,
             APPLICATION_TYPES.RegistrationService,
@@ -133,7 +137,7 @@ describe('Activate User Use Case', () => {
     });
     it('should be throw an error because user is faulty', () => {
         const mockUserService = getMockUserService();
-        const mockTokenService = getMockTokenService();
+        const mockTokenService = getMockTokenService(TokenType.ADMIN);
         service = rebindMocks<RegistrationService>(
             container,
             APPLICATION_TYPES.RegistrationService,
@@ -160,9 +164,44 @@ describe('Activate User Use Case', () => {
             err => expect(err).toBeTruthy()
         );
     });
+    it('should reject an activation (non-admin) token and not activate the user (MPS-341)', () => {
+        const mockUserService = getMockUserService();
+        const mockTokenService = getMockTokenService(TokenType.ACTIVATE);
+        service = rebindMocks<RegistrationService>(
+            container,
+            APPLICATION_TYPES.RegistrationService,
+            [
+                {
+                    id: APPLICATION_TYPES.TokenService,
+                    instance: mockTokenService
+                },
+                {
+                    id: APPLICATION_TYPES.UserService,
+                    instance: mockUserService
+                }
+            ]
+        );
+        const isActivated = jest.fn();
+        (mockUserService.getUserById as jest.Mock).mockReturnValue({
+            isActivated
+        });
+        expect.assertions(3);
+        return service.activateUser(token).then(
+            () => {
+                throw new Error('expected activateUser to reject');
+            },
+            err => {
+                expect(err).toBeTruthy();
+                expect(isActivated.mock.calls.length).toBe(0);
+                expect(
+                    mockTokenService.deleteTokenForUser.mock.calls.length
+                ).toBe(0);
+            }
+        );
+    });
     it('should trigger notification: sendNotification', () => {
         const mockNotificationService = getMockNotificationService();
-        const mockTokenService = getMockTokenService();
+        const mockTokenService = getMockTokenService(TokenType.ADMIN);
         service = rebindMocks<RegistrationService>(
             container,
             APPLICATION_TYPES.RegistrationService,
