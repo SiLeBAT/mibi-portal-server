@@ -6,6 +6,7 @@ import {
 } from '../../../../__mocks__/test-container';
 import { APPLICATION_TYPES } from '../../../application.types';
 import { getMockNotificationService } from '../../../core/application/__mocks__/notification.service';
+import { TokenType } from '../../domain/enums';
 import { PasswordService } from '../../model/login.model';
 import { getMockTokenService } from '../__mocks__/token.service';
 import { getMockUserService } from '../__mocks__/user.service';
@@ -43,12 +44,15 @@ describe('Reset Password Use Case', () => {
 
     it('should return a promise', () => {
         const result = service.resetPassword(token, password);
-        // tslint:disable-next-line: no-floating-promises
         expect(result).toBeInstanceOf(Promise);
+        // The container-backed token repository yields an activation token,
+        // which resetPassword now rejects; swallow it so the floating promise
+        // does not surface as an unhandled rejection.
+        return result.catch(() => undefined);
     });
 
     it('should update the user password', () => {
-        const mockTokenService = getMockTokenService();
+        const mockTokenService = getMockTokenService(TokenType.RESET);
         const mockUserService = getMockUserService();
 
         service = rebindMocks<PasswordService>(
@@ -76,7 +80,7 @@ describe('Reset Password Use Case', () => {
             .then(result => expect(updatePassword.mock.calls.length).toBe(1));
     });
     it('should call the user Repository to update the user', () => {
-        const mockTokenService = getMockTokenService();
+        const mockTokenService = getMockTokenService(TokenType.RESET);
         const mockUserService = getMockUserService();
 
         service = rebindMocks<PasswordService>(
@@ -103,7 +107,7 @@ describe('Reset Password Use Case', () => {
             );
     });
     it('should call the token Repository to delete the token', () => {
-        const mockTokenService = getMockTokenService();
+        const mockTokenService = getMockTokenService(TokenType.RESET);
         service = rebindMocks<PasswordService>(
             container,
             APPLICATION_TYPES.PasswordService,
@@ -125,7 +129,7 @@ describe('Reset Password Use Case', () => {
             );
     });
     it('should call the notification Service with a new notification', () => {
-        const mockTokenService = getMockTokenService();
+        const mockTokenService = getMockTokenService(TokenType.RESET);
         const mockNotificationService = getMockNotificationService();
 
         service = rebindMocks<PasswordService>(
@@ -152,8 +156,45 @@ describe('Reset Password Use Case', () => {
                 ).toBe(1)
             );
     });
+    it('should reject a non-reset token and not change the password (MPS-341)', () => {
+        const mockTokenService = getMockTokenService(TokenType.ACTIVATE);
+        const mockUserService = getMockUserService();
+
+        service = rebindMocks<PasswordService>(
+            container,
+            APPLICATION_TYPES.PasswordService,
+            [
+                {
+                    id: APPLICATION_TYPES.TokenService,
+                    instance: mockTokenService
+                },
+                {
+                    id: APPLICATION_TYPES.UserService,
+                    instance: mockUserService
+                }
+            ]
+        );
+        const updatePassword = jest.fn();
+        (mockUserService.getUserById as jest.Mock).mockReturnValue({
+            updatePassword
+        });
+        expect.assertions(3);
+        return service.resetPassword(token, password).then(
+            () => {
+                throw new Error('expected resetPassword to reject');
+            },
+            err => {
+                expect(err).toBeTruthy();
+                expect(updatePassword.mock.calls.length).toBe(0);
+                expect(
+                    (mockTokenService.deleteTokenForUser as jest.Mock).mock.calls
+                        .length
+                ).toBe(0);
+            }
+        );
+    });
     it('should be throw an error because user is faulty', () => {
-        const mockTokenService = getMockTokenService();
+        const mockTokenService = getMockTokenService(TokenType.RESET);
         const mockNotificationService = getMockNotificationService();
         const mockUserService = getMockUserService();
 

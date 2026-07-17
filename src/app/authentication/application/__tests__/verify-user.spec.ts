@@ -5,6 +5,7 @@ import {
     createTestContainer
 } from '../../../../__mocks__/test-container';
 import { APPLICATION_TYPES } from '../../../application.types';
+import { TokenType } from '../../domain/enums';
 import { RegistrationService } from '../../model/registration.model';
 import { User } from '../../model/user.model';
 import { getMockTokenService } from '../__mocks__/token.service';
@@ -160,6 +161,43 @@ describe('Verify User Use Case', () => {
                     mockTokenService.deleteTokenForUser.mock.calls.length
                 ).toBe(2)
             );
+    });
+    it('should reject an admin token used for verification and not verify the user (MPS-341)', () => {
+        const mockUserService = getMockUserService();
+        const mockTokenService = getMockTokenService(TokenType.ADMIN);
+        service = rebindMocks<RegistrationService>(
+            container,
+            APPLICATION_TYPES.RegistrationService,
+            [
+                {
+                    id: APPLICATION_TYPES.TokenService,
+                    instance: mockTokenService
+                },
+                {
+                    id: APPLICATION_TYPES.UserService,
+                    instance: mockUserService
+                }
+            ]
+        );
+        const isVerified = jest.fn();
+        (mockUserService.getUserById as jest.Mock).mockReturnValue({
+            ...user,
+            ...{ isVerified }
+        });
+        mockTokenService.deleteTokenForUser.mockReset();
+        expect.assertions(3);
+        return service.verifyUser(token).then(
+            () => {
+                throw new Error('expected verifyUser to reject');
+            },
+            err => {
+                expect(err).toBeTruthy();
+                expect(isVerified.mock.calls.length).toBe(0);
+                expect(
+                    mockTokenService.deleteTokenForUser.mock.calls.length
+                ).toBe(0);
+            }
+        );
     });
     it('should throw an error because user is faulty', () => {
         const mockUserService = getMockUserService();

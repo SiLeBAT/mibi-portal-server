@@ -1,3 +1,4 @@
+import { JsonWebTokenError } from 'jsonwebtoken';
 import { logger } from '../../../aspects';
 import { NotificationType } from '../../core/domain/enums';
 import { ConfigurationService } from '../../core/model/configuration.model';
@@ -49,6 +50,7 @@ export class DefaultRegistrationService implements RegistrationService {
 
     async verifyUser(token: string): Promise<string> {
         const userToken = await this.tokenService.getUserTokenByJWT(token);
+        this.assertTokenType(userToken, TokenType.ACTIVATE);
         const userId = userToken.userId;
         this.tokenService.verifyTokenWithUser(token, String(userId));
         const user = await this.userService.getUserById(userId);
@@ -66,6 +68,7 @@ export class DefaultRegistrationService implements RegistrationService {
         const userAdminToken = await this.tokenService.getUserTokenByJWT(
             adminToken
         );
+        this.assertTokenType(userAdminToken, TokenType.ADMIN);
         const userId = userAdminToken.userId;
         this.tokenService.verifyTokenWithUser(adminToken, String(userId));
         const user = await this.userService.getUserById(userId);
@@ -80,6 +83,20 @@ export class DefaultRegistrationService implements RegistrationService {
             `${this.constructor.name}.${this.activateUser.name}, User activation successful.`
         );
         return userName;
+    }
+
+    // Rejects a token whose stored type does not match the action being
+    // performed. The JWT signature alone is not enough: an activation token and
+    // an admin-activation token are both validly signed, so without this check a
+    // user could admin-activate their own account by replaying the activation
+    // token against the admin-activation endpoint (MPS-341).
+    private assertTokenType(userToken: UserToken, expected: TokenType): void {
+        if (userToken.type !== expected) {
+            logger.warn(
+                `${this.constructor.name}.${this.assertTokenType.name}, rejected token with mismatched type. expected=${TokenType[expected]} actual=${TokenType[userToken.type]}`
+            );
+            throw new JsonWebTokenError('Token type does not match the action');
+        }
     }
 
     async registerUser(credentials: UserRegistration): Promise<void> {
