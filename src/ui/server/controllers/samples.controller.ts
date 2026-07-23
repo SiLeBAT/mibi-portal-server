@@ -32,7 +32,7 @@ enum RESOURCE_VIEW_TYPE {
     XLSX
 }
 
-type RESOURCE_VIEW_TYPE_STRING = 'xml' | 'json';
+type RESOURCE_VIEW_TYPE_STRING = 'xml' | 'json' | 'parsedsheet';
 
 type ParseFileRequest = {
     type: RESOURCE_VIEW_TYPE_STRING;
@@ -191,29 +191,43 @@ export class DefaultSamplesController
         return this.userService.getUserById(userId);
     }
 
-    // N.B. This functionality will probably move to the FE
     private putSamplesTransformInput(
         req: Request,
         _res: Response
     ): ParseFileRequest {
         const contype = req.headers['content-type'];
         const type = this.getResourceViewType(contype);
-        let typeAsString: RESOURCE_VIEW_TYPE_STRING = 'xml';
+        let typeAsString: RESOURCE_VIEW_TYPE_STRING = 'json';
         let data = '';
         let filename = `${Date.now()}`;
 
         switch (type) {
             case RESOURCE_VIEW_TYPE.JSON: {
-                typeAsString = 'json';
-                filename = req.body.order.sampleSet.meta.fileName;
-                data = Buffer.from(JSON.stringify(req.body)).toString('base64');
+                if (req.body.parsedSampleSheet) {
+                    // MPS-312: the client parsed the .xlsx into JSON in the browser
+                    // and sent that JSON; only the NRL enrichment runs server-side.
+                    typeAsString = 'parsedsheet';
+                    filename = req.body.parsedSampleSheet.meta.fileName;
+                    data = Buffer.from(
+                        JSON.stringify(req.body.parsedSampleSheet)
+                    ).toString('base64');
+                } else {
+                    // JSON order -> xlsx/pdf marshalling path.
+                    typeAsString = 'json';
+                    filename = req.body.order.sampleSet.meta.fileName;
+                    data = Buffer.from(JSON.stringify(req.body)).toString(
+                        'base64'
+                    );
+                }
                 break;
             }
             case RESOURCE_VIEW_TYPE.XLSX:
             default: {
-                typeAsString = 'xml';
-                filename = decodeURIComponent(req.file!.originalname);
-                data = req.file!.buffer.toString('base64');
+                // MPS-312: raw excel uploads are no longer accepted by the API.
+                // Excel must be converted to JSON on the client before sending.
+                throw new MalformedRequestError(
+                    'Raw excel uploads are no longer supported; send parsed JSON instead.'
+                );
             }
         }
         return {
