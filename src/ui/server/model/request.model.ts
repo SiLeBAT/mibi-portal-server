@@ -59,3 +59,7 @@ export interface RedirectedGetSamplesWithResultsRequestDTO {
     readonly orderId: string;
     readonly userEmail: string;
 }
+
+export interface RedirectedDeleteOrdersRequestDTO {
+    readonly userEmail: string;
+}

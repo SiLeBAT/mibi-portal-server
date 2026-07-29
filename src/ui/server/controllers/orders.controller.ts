@@ -5,10 +5,12 @@ import { OrdersController } from '../model/controller.model';
 import { SERVER_ERROR_CODE } from '../model/enums';
 import {
     RedirectedCreateOrderListRequestDTO,
+    RedirectedDeleteOrdersRequestDTO,
     RedirectedGetSamplesWithResultsRequestDTO
 } from '../model/request.model';
 import {
     OrderCollectionDTO,
+    OrderDeletionResultDTO,
     SamplesWithResultsCollectionDTO
 } from '../model/response.model';
 import { AppServerConfiguration } from '../ports';
@@ -108,6 +110,42 @@ export class DefaultOrdersController
         } catch (error) {
             logger.info(
                 `${this.constructor.name}.${this.getSamplesWithResults.name} has thrown an error. ${error}`
+            );
+            this.fail(res);
+        }
+    }
+
+    async deleteOrders(req: Request, res: Response) {
+        logger.info(
+            `${this.constructor.name}.${this.deleteOrders.name}, Request received`
+        );
+
+        try {
+            const token = getTokenFromHeader(req);
+            if (!token) {
+                this.unauthorized(res, {
+                    code: SERVER_ERROR_CODE.AUTHORIZATION_ERROR,
+                    message: 'Not authenticated'
+                });
+                return;
+            }
+            const user: User = await this.getUserFromToken(token);
+
+            const parseResponse = await this.redirectionTarget.post<
+                ParseSingleResponse<OrderDeletionResultDTO>,
+                AxiosResponse<ParseSingleResponse<OrderDeletionResultDTO>>,
+                RedirectedDeleteOrdersRequestDTO
+            >('functions/deleteOrdersByUser', {
+                userEmail: user.email
+            });
+
+            logger.info(
+                `${this.constructor.name}.${this.deleteOrders.name}, Response sent`
+            );
+            this.ok(res, parseResponse.data.result);
+        } catch (error) {
+            logger.info(
+                `${this.constructor.name}.${this.deleteOrders.name} has thrown an error. ${error}`
             );
             this.fail(res);
         }

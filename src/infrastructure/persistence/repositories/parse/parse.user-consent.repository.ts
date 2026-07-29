@@ -7,9 +7,6 @@ import { logger } from '../../../../aspects';
 
 const DATA_SAVE_AGREED = 'dataSaveAgreed';
 const DATA_SAVE_VIEWED = 'dataSaveViewed';
-const ORDER_CLASS = 'Order';
-const MARKED_FOR_DELETION = 'markedForDeletion';
-const MARKED_FOR_DELETION_AT = 'markedForDeletionAt';
 
 export class ParseDefaultUserConsentRepository
     implements UserConsentRepository
@@ -44,13 +41,6 @@ export class ParseDefaultUserConsentRepository
         userInfo.set(DATA_SAVE_VIEWED, true);
         const saved = await userInfo.save(null, { useMasterKey: true });
 
-        // Withdrawing consent marks the user's already-stored orders for
-        // deletion: they are hidden from the user's order list and surfaced in
-        // the dashboard for removal.
-        if (!dataSaveAgreed) {
-            await this.markOrdersForDeletion(user);
-        }
-
         return toConsent(saved);
     }
 
@@ -73,26 +63,6 @@ export class ParseDefaultUserConsentRepository
         return new Parse.Query('User_Info')
             .equalTo('user', user)
             .first({ useMasterKey: true });
-    }
-
-    private async markOrdersForDeletion(user: Parse.User): Promise<void> {
-        const orders = await new Parse.Query(ORDER_CLASS)
-            .equalTo('user', user)
-            .notEqualTo(MARKED_FOR_DELETION, true)
-            .limit(10000)
-            .find({ useMasterKey: true });
-        if (orders.length === 0) {
-            return;
-        }
-        const now = new Date();
-        orders.forEach(order => {
-            order.set(MARKED_FOR_DELETION, true);
-            order.set(MARKED_FOR_DELETION_AT, now);
-        });
-        await Parse.Object.saveAll(orders, { useMasterKey: true });
-        logger.info(
-            `${ParseDefaultUserConsentRepository.name}.markOrdersForDeletion, marked ${orders.length} order(s) for deletion for user ${user.id}`
-        );
     }
 }
 

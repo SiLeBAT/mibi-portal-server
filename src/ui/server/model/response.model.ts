@@ -178,3 +178,7 @@ export interface SamplesWithResultsCollectionDTO {
     orderId: string;
     samples: SampleWithResultsDTO[];
 }
+
+export interface OrderDeletionResultDTO {
+    deletedOrderCount: number;
+}

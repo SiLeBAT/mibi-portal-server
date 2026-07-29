@@ -1,6 +1,4 @@
 const mockFirst = jest.fn();
-const mockFind = jest.fn();
-const mockSaveAll = jest.fn();
 
 jest.mock('parse/node', () => {
     class User {}
@@ -12,20 +10,11 @@ jest.mock('parse/node', () => {
         equalTo() {
             return this;
         }
-        notEqualTo() {
-            return this;
-        }
-        limit() {
-            return this;
-        }
         first() {
             return mockFirst(this.target);
         }
-        find() {
-            return mockFind(this.target);
-        }
     }
-    return { __esModule: true, User, Query, Object: { saveAll: mockSaveAll } };
+    return { __esModule: true, User, Query };
 });
 
 import * as Parse from 'parse/node';
@@ -35,8 +24,6 @@ describe('ParseDefaultUserConsentRepository.saveConsentByEmail', () => {
     const user = { id: 'user-1' };
     let userInfoSet: jest.Mock;
     let userInfo: { set: jest.Mock; save: jest.Mock };
-    let orderSet: jest.Mock;
-    let orders: { set: jest.Mock }[];
 
     beforeEach(() => {
         jest.clearAllMocks();
@@ -47,8 +34,6 @@ describe('ParseDefaultUserConsentRepository.saveConsentByEmail', () => {
                 get: (key: string) => (key === 'dataSaveViewed' ? true : false)
             })
         };
-        orderSet = jest.fn();
-        orders = [{ set: orderSet }, { set: orderSet }];
 
         mockFirst.mockImplementation((target: unknown) =>
             Promise.resolve(
@@ -59,34 +44,25 @@ describe('ParseDefaultUserConsentRepository.saveConsentByEmail', () => {
                       : undefined
             )
         );
-        mockFind.mockImplementation((target: unknown) =>
-            Promise.resolve(target === 'Order' ? orders : [])
-        );
-        mockSaveAll.mockResolvedValue(orders);
     });
 
-    it("marks the user's stored orders for deletion when consent is withdrawn", async () => {
+    it('persists the withdrawn consent flag', async () => {
         const repo = new ParseDefaultUserConsentRepository();
 
-        await repo.saveConsentByEmail('user@example.com', false);
+        const result = await repo.saveConsentByEmail('user@example.com', false);
 
         expect(userInfoSet).toHaveBeenCalledWith('dataSaveAgreed', false);
         expect(userInfoSet).toHaveBeenCalledWith('dataSaveViewed', true);
-        expect(orderSet).toHaveBeenCalledWith('markedForDeletion', true);
-        expect(orderSet).toHaveBeenCalledWith(
-            'markedForDeletionAt',
-            expect.any(Date)
-        );
-        expect(mockSaveAll).toHaveBeenCalledTimes(1);
+        expect(userInfo.save).toHaveBeenCalledTimes(1);
+        expect(result.dataSaveViewed).toBe(true);
     });
 
-    it('does not touch orders when consent is granted', async () => {
+    it('persists the granted consent flag', async () => {
         const repo = new ParseDefaultUserConsentRepository();
 
         await repo.saveConsentByEmail('user@example.com', true);
 
         expect(userInfoSet).toHaveBeenCalledWith('dataSaveAgreed', true);
-        expect(orderSet).not.toHaveBeenCalled();
-        expect(mockSaveAll).not.toHaveBeenCalled();
+        expect(userInfoSet).toHaveBeenCalledWith('dataSaveViewed', true);
     });
 });
