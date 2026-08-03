@@ -1,0 +1,328 @@
+{
+    "order": {
+        "sampleSet": {
+            "samples": [
+                {
+                    "sampleData": {
+                        "sample_id": {
+                            "errors": [],
+                            "correctionOffer": [],
+                            "value": "1"
+                        },
+                        "sample_id_avv": {
+                            "errors": [],
+                            "correctionOffer": [],
+                            "value": "1-ABC"
+                        },
+                        "partial_sample_id": {
+                            "errors": [],
+                            "correctionOffer": [],
+                            "value": ""
+                        },
+                        "pathogen_avv": {
+                            "errors": [],
+                            "correctionOffer": [],
+                            "value": "Escherichia coli"
+                        },
+                        "pathogen_text": {
+                            "errors": [],
+                            "correctionOffer": [],
+                            "value": ""
+                        },
+                        "sequence_id": {
+                            "value": "",
+                            "errors": [],
+                            "correctionOffer": []
+                        },
+                        "sequence_status": {
+                            "value": "",
+                            "errors": [],
+                            "correctionOffer": []
+                        },
+                        "sampling_date": {
+                            "errors": [],
+                            "correctionOffer": [],
+                            "value": "01.01.2019"
+                        },
+                        "isolation_date": {
+                            "errors": [],
+                            "correctionOffer": [],
+                            "value": "02.01.2019"
+                        },
+                        "sampling_location_avv": {
+                            "errors": [],
+                            "correctionOffer": [],
+                            "value": "45398|173159|"
+                        },
+                        "sampling_location_zip": {
+                            "errors": [],
+                            "correctionOffer": [],
+                            "value": "10178"
+                        },
+                        "sampling_location_text": {
+                            "errors": [],
+                            "correctionOffer": [],
+                            "value": "Berlin"
+                        },
+                        "animal_avv": {
+                            "errors": [],
+                            "correctionOffer": [],
+                            "value": "2464|186528|"
+                        },
+                        "matrix_avv": {
+                            "errors": [],
+                            "correctionOffer": [],
+                            "value": "182336|184855|183670-2296,185085-6986"
+                        },
+                        "animal_matrix_text": {
+                            "errors": [],
+                            "correctionOffer": [],
+                            "value": "Fleischteilstück roh; Pflanze/Tier/Stoff/relevante Zutat - Fleisch; Produktmerkmal - Roh"
+                        },
+                        "additional_marks_avv": {
+                            "value": "",
+                            "errors": [],
+                            "correctionOffer": []
+                        },
+                        "control_program_avv": {
+                            "errors": [],
+                            "correctionOffer": [],
+                            "value": "70555|59517|"
+                        },
+                        "sampling_reason_avv": {
+                            "errors": [
+                                {
+                                    "code": 95,
+                                    "level": 1,
+                                    "message": "Planproben sind normalerweise nicht für das NRL Antibiotikaresistenz bestimmt."
+                                }
+                            ],
+                            "correctionOffer": [],
+                            "value": "22562|126354|"
+                        },
+                        "program_reason_text": {
+                            "errors": [],
+                            "correctionOffer": [],
+                            "value": "Amtliche Kontrolle in Betrieben, Planprobe"
+                        },
+                        "operations_mode_avv": {
+                            "errors": [],
+                            "correctionOffer": [],
+                            "value": "62727|57609|2-2464,63421-1512"
+                        },
+                        "operations_mode_text": {
+                            "errors": [],
+                            "correctionOffer": [],
+                            "value": "Tierhaltung; Tiere - Hühner; Nutzungs- und Produktionsrichtung - Zur Mast"
+                        },
+                        "vvvo": {
+                            "errors": [],
+                            "correctionOffer": [],
+                            "value": ""
+                        },
+                        "program_avv": {
+                            "errors": [],
+                            "correctionOffer": [],
+                            "value": ""
+                        },
+                        "comment": {
+                            "errors": [],
+                            "correctionOffer": [],
+                            "value": ""
+                        }
+                    },
+                    "sampleMeta": {
+                        "nrl": "NRL-AR",
+                        "analysis": {
+                            "species": false,
+                            "serological": false,
+                            "resistance": true,
+                            "vaccination": false,
+                            "molecularTyping": false,
+                            "toxin": false,
+                            "esblAmpCCarbapenemasen": true,
+                            "sample": false,
+                            "other": "",
+                            "compareHuman": {
+                                "value": "",
+                                "active": false
+                            }
+                        },
+                        "urgency": "NORMAL"
+                    }
+                },
+                {
+                    "sampleData": {
+                        "sample_id": {
+                            "errors": [],
+                            "correctionOffer": [],
+                            "value": "2"
+                        },
+                        "sample_id_avv": {
+                            "errors": [],
+                            "correctionOffer": [],
+                            "value": "2-ABC"
+                        },
+                        "partial_sample_id": {
+                            "errors": [],
+                            "correctionOffer": [],
+                            "value": ""
+                        },
+                        "pathogen_avv": {
+                            "errors": [
+                                {
+                                    "code": 88,
+                                    "level": 4,
+                                    "message": "Erreger erkannt. Eingegebener Code wurde durch Text aus AVV DatA-Katalog Nr. 324 ersetzt."
+                                }
+                            ],
+                            "correctionOffer": [],
+                            "value": "Escherichia coli Carbapenemase-bildend",
+                            "oldValue": "66684|57386|"
+                        },
+                        "pathogen_text": {
+                            "errors": [],
+                            "correctionOffer": [],
+                            "value": ""
+                        },
+                        "sequence_id": {
+                            "value": "",
+                            "errors": [],
+                            "correctionOffer": []
+                        },
+                        "sequence_status": {
+                            "value": "",
+                            "errors": [],
+                            "correctionOffer": []
+                        },
+                        "sampling_date": {
+                            "errors": [],
+                            "correctionOffer": [],
+                            "value": "31.12.2018"
+                        },
+                        "isolation_date": {
+                            "errors": [],
+                            "correctionOffer": [],
+                            "value": "01.01.2019"
+                        },
+                        "sampling_location_avv": {
+                            "errors": [],
+                            "correctionOffer": [],
+                            "value": "45398|173159|"
+                        },
+                        "sampling_location_zip": {
+                            "errors": [],
+                            "correctionOffer": [],
+                            "value": "10178"
+                        },
+                        "sampling_location_text": {
+                            "errors": [],
+                            "correctionOffer": [],
+                            "value": "Berlin"
+                        },
+                        "animal_avv": {
+                            "errors": [],
+                            "correctionOffer": [],
+                            "value": "1566|57806|"
+                        },
+                        "matrix_avv": {
+                            "errors": [],
+                            "correctionOffer": [],
+                            "value": "182272|184169|6843-6909,183670-2296,185085-6986"
+                        },
+                        "animal_matrix_text": {
+                            "errors": [],
+                            "correctionOffer": [],
+                            "value": "Rohschinken; Be- und Verarbeitung - Gepökelt; Pflanze/Tier/Stoff/relevante Zutat - Fleisch; Produktmerkmal - Roh"
+                        },
+                        "additional_marks_avv": {
+                            "value": "",
+                            "errors": [],
+                            "correctionOffer": []
+                        },
+                        "control_program_avv": {
+                            "errors": [],
+                            "correctionOffer": [],
+                            "value": "70555|59517|"
+                        },
+                        "sampling_reason_avv": {
+                            "errors": [
+                                {
+                                    "code": 95,
+                                    "level": 1,
+                                    "message": "Planproben sind normalerweise nicht für das NRL Antibiotikaresistenz bestimmt."
+                                }
+                            ],
+                            "correctionOffer": [],
+                            "value": "22562|126354|"
+                        },
+                        "program_reason_text": {
+                            "errors": [],
+                            "correctionOffer": [],
+                            "value": "Amtliche Kontrolle in Betrieben, Planprobe"
+                        },
+                        "operations_mode_avv": {
+                            "errors": [],
+                            "correctionOffer": [],
+                            "value": "62727|57609|2-1566,63421-1512"
+                        },
+                        "operations_mode_text": {
+                            "errors": [],
+                            "correctionOffer": [],
+                            "value": "Tierhaltung; Tiere - Schweine; Nutzungs- und Produktionsrichtung - Zur Mast"
+                        },
+                        "vvvo": {
+                            "errors": [],
+                            "correctionOffer": [],
+                            "value": ""
+                        },
+                        "program_avv": {
+                            "errors": [],
+                            "correctionOffer": [],
+                            "value": ""
+                        },
+                        "comment": {
+                            "errors": [],
+                            "correctionOffer": [],
+                            "value": ""
+                        }
+                    },
+                    "sampleMeta": {
+                        "nrl": "NRL-AR",
+                        "analysis": {
+                            "species": false,
+                            "serological": false,
+                            "resistance": true,
+                            "vaccination": false,
+                            "molecularTyping": false,
+                            "toxin": false,
+                            "esblAmpCCarbapenemasen": true,
+                            "sample": false,
+                            "other": "",
+                            "compareHuman": {
+                                "value": "",
+                                "active": false
+                            }
+                        },
+                        "urgency": "NORMAL"
+                    }
+                }
+            ],
+            "meta": {
+                "sender": {
+                    "instituteName": "",
+                    "department": "",
+                    "street": "",
+                    "zipCity": "",
+                    "contactPerson": "",
+                    "telephone": "",
+                    "email": "test@test.de"
+                },
+                "fileName": "mps155_timezone_bug_v18.xlsx",
+                "customerRefNumber": "",
+                "signatureDate": "",
+                "version": "18"
+            }
+        }
+    }
+}

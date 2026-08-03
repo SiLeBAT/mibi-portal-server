@@ -1,4 +1,5 @@
 {
+    "apiUrl": "MIBI_API_URL",
     "application": {
         "jobRecipient": "MIBI_JOB_RECIPIENT",
         "clientUrl": "MIBI_CLIENT_URL"

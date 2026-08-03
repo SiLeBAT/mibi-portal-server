@@ -1,4 +1,6 @@
 {
+    "_comment_apiUrl": "Base URL the integration test suite (test/api.ts) points at. It lives here rather than only in the gitignored config/local-test.json so `npm run test:integration` works from a bare checkout, e.g. in CI. Override with MIBI_API_URL.",
+    "apiUrl": "http://localhost:3000",
     "application": {
         "appName": "MiBi-Portal",
         "jobRecipient": "",

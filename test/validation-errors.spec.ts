@@ -1,74 +1,82 @@
-import { PutValidatedRequestDTO } from '../src/ui/server/model/request.model';
 import fs from 'fs';
 import path from 'path';
-import _ from 'lodash';
 import { logger } from '../src/aspects';
+import { PutValidatedRequestDTO } from '../src/ui/server/model/request.model';
 import {
+    ParsedSampleSheetDTO,
     SampleDTO,
     SampleValidationErrorDTO
 } from '../src/ui/server/model/shared-dto.model';
 import { Api } from './api';
-import { promisify } from 'util';
+import { listParsedSheets, VALIDATION_DATA_DIR } from './fixtures';
 
-const DATA_DIR = 'test/data/validation';
 const deactivatedFiles: string[] = [];
 
 describe('Test validation errors', () => {
     it('should give correct error codes', async () => {
-        const fileNames = getFilesToTest(DATA_DIR);
-        const requests = await Promise.all(fileNames.map((fileName) => getRequestDTOFromFile(fileName)));
+        const fileNames = getFilesToTest(VALIDATION_DATA_DIR);
+        const requests = await Promise.all(
+            fileNames.map(fileName => getRequestDTOFromFile(fileName))
+        );
         let count = 0;
-        requests.map(req => count += req.order.sampleSet.samples.length);
+        requests.map(req => (count += req.order.sampleSet.samples.length));
         logger.info(`${count} samples are to be tested`);
         expect.assertions(count);
 
-        return Promise.all(requests.map(async (request) => {
-            const response = await Api.putValidated(request);
-            response.order.sampleSet.samples.forEach((sample: SampleDTO, index) => {
-                const receivedCodes = getReceivedCodes(sample).sort((a, b) => a - b);
-                const expectedCodes = getExpectedCodes(sample).sort((a, b) => a - b);
-                const meta = {
-                    sample: index + 1,
-                    file: request.order.sampleSet.meta.fileName
-                }
+        return Promise.all(
+            requests.map(async request => {
+                const response = await Api.putValidated(request);
+                response.order.sampleSet.samples.forEach(
+                    (sample: SampleDTO, index) => {
+                        const receivedCodes = getReceivedCodes(sample).sort(
+                            (a, b) => a - b
+                        );
+                        const expectedCodes = getExpectedCodes(sample).sort(
+                            (a, b) => a - b
+                        );
+                        const meta = {
+                            sample: index + 1,
+                            file: request.order.sampleSet.meta.fileName
+                        };
 
-                expect({ ...meta, codes: receivedCodes }).toEqual({ ...meta, codes: expectedCodes });
-            });
-        }))
+                        expect({ ...meta, codes: receivedCodes }).toEqual({
+                            ...meta,
+                            codes: expectedCodes
+                        });
+                    }
+                );
+            })
+        );
     }, 1000 * 60);
 });
 
 function getFilesToTest(dataDir: string): string[] {
-    let fileNames: string[] = [];
-
-    fs.readdirSync(path.join('.', dataDir)).forEach(file => {
-        if (deactivatedFiles.find(f => f === file)) {
+    // MPS-312: the fixtures are the browser-parsed JSON sheets, not the .xlsx files
+    // they were generated from — the API no longer accepts excel uploads.
+    return listParsedSheets(dataDir).filter(file => {
+        if (deactivatedFiles.find(f => f === path.basename(file))) {
             logger.info(`Deactivated ${file}`);
-            return;
+            return false;
         }
-
-        file = path.join('.', dataDir, file);
-
-        if (path.extname(file) === '.xlsx') {
-            fileNames.push(file);
-        }
-
+        return true;
     });
-    logger.info(`${fileNames.length} datafiles in directory ${dataDir} are to be tested`);
-
-    return fileNames;
 }
 
-async function getRequestDTOFromFile(fileName: string): Promise<PutValidatedRequestDTO> {
-    const file: Buffer = await promisify(fs.readFile)(fileName);
-    const putSamplesJSONResponseDTO = await Api.putSamplesXLSX(file, fileName);
+async function getRequestDTOFromFile(
+    fileName: string
+): Promise<PutValidatedRequestDTO> {
+    const parsedSampleSheet: ParsedSampleSheetDTO = JSON.parse(
+        fs.readFileSync(fileName, 'utf8')
+    );
 
-    return putSamplesJSONResponseDTO;
+    // Round-trip through the samples endpoint first so the samples carry the
+    // server-side NRL enrichment, exactly as the client does before validating.
+    return Api.putSamplesParsedSheet(parsedSampleSheet);
 }
 
 function getReceivedCodes(sample: SampleDTO): number[] {
     const receivedCodes: number[] = [];
-    for (let key of Object.keys(sample.sampleData)) {
+    for (const key of Object.keys(sample.sampleData)) {
         const ary = sample.sampleData[key].errors || [];
         receivedCodes.push(...ary.map((e: SampleValidationErrorDTO) => e.code));
     }
@@ -78,7 +86,9 @@ function getReceivedCodes(sample: SampleDTO): number[] {
 function getExpectedCodes(sample: SampleDTO): number[] {
     let expectedCodes: number[] = [];
     if (sample.sampleData.comment.value) {
-        expectedCodes = sample.sampleData.comment.value.split(',').map((str: string) => parseInt(str.trim(), 10));
+        expectedCodes = sample.sampleData.comment.value
+            .split(',')
+            .map((str: string) => parseInt(str.trim(), 10));
     }
     return expectedCodes;
 }

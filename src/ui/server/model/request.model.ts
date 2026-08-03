@@ -1,5 +1,5 @@
 import { EmailNotificationSettings } from '../../../app/ports';
-import { OrderDTO } from './shared-dto.model';
+import { OrderDTO, ParsedSampleSheetDTO } from './shared-dto.model';
 
 export interface ResetRequestDTO {
     readonly email: string;
@@ -29,6 +29,14 @@ export type UserEmailNotificationRequestDTO = EmailNotificationSettings;
 
 export interface PutSamplesJSONRequestDTO {
     readonly order: OrderDTO;
+}
+
+/**
+ * MPS-312: body of PUT /v2/samples when the client sends the browser-parsed sample
+ * sheet. Raw .xlsx uploads are rejected by DefaultSamplesController.
+ */
+export interface PutSamplesParsedSheetRequestDTO {
+    readonly parsedSampleSheet: ParsedSampleSheetDTO;
 }
 
 export interface PostSubmittedRequestDTO {
