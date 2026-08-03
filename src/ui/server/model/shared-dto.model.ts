@@ -67,3 +67,43 @@ export interface SampleSetDTO {
 export interface OrderDTO {
     sampleSet: SampleSetDTO;
 }
+
+/**
+ * MPS-312: the sample sheet as parsed by the browser and sent to PUT /v2/samples
+ * instead of a raw .xlsx upload. Mirrors mibi-portal-client's `ParsedSampleSheet`.
+ * Deliberately carries no per-sample meta (nrl/analysis/urgency) — the cloud fills
+ * those in during NRL enrichment, which needs database-backed data.
+ */
+export interface ParsedSampleSheetAnalysisDTO {
+    species: number;
+    serological: number;
+    resistance: number;
+    vaccination: number;
+    molecularTyping: number;
+    toxin: number;
+    esblAmpCCarbapenemasen: number;
+    other: number;
+    otherText: string;
+    compareHuman: number;
+    compareHumanText: string;
+}
+
+export interface ParsedSampleSheetMetaDTO {
+    nrl: string;
+    urgency: string;
+    sender: AddressDTO;
+    analysis: ParsedSampleSheetAnalysisDTO;
+    fileName: string;
+    customerRefNumber: string;
+    signatureDate: string;
+    version: string;
+}
+
+export interface ParsedSampleDTO {
+    data: SampleDataDTO;
+}
+
+export interface ParsedSampleSheetDTO {
+    samples: ParsedSampleDTO[];
+    meta: ParsedSampleSheetMetaDTO;
+}
