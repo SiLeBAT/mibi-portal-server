@@ -1,7 +1,6 @@
 import config from 'config';
 import {
     PutSamplesJSONRequestDTO,
-    PutSamplesParsedSheetRequestDTO,
     PutValidatedRequestDTO
 } from '../src/ui/server/model/request.model';
 import {
@@ -9,7 +8,10 @@ import {
     PutSamplesXLSXResponseDTO,
     PutValidatedResponseDTO
 } from '../src/ui/server/model/response.model';
-import { ParsedSampleSheetDTO } from '../src/ui/server/model/shared-dto.model';
+import {
+    ParsedSampleSheetDTO,
+    PutSamplesParsedSheetRequestDTO
+} from './parsed-sample-sheet.model';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { API_ROUTE } from '../src/ui/server/model/enums';
 

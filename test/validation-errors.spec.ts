@@ -3,12 +3,12 @@ import path from 'path';
 import { logger } from '../src/aspects';
 import { PutValidatedRequestDTO } from '../src/ui/server/model/request.model';
 import {
-    ParsedSampleSheetDTO,
     SampleDTO,
     SampleValidationErrorDTO
 } from '../src/ui/server/model/shared-dto.model';
 import { Api } from './api';
 import { listParsedSheets, VALIDATION_DATA_DIR } from './fixtures';
+import { ParsedSampleSheetDTO } from './parsed-sample-sheet.model';
 
 const deactivatedFiles: string[] = [];
 

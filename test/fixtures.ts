@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { logger } from '../src/aspects';
-import { ParsedSampleSheetDTO } from '../src/ui/server/model/shared-dto.model';
+import { ParsedSampleSheetDTO } from './parsed-sample-sheet.model';
 
 export const DATA_DIR = 'test/data/';
 export const VALIDATION_DATA_DIR = 'test/data/validation';
