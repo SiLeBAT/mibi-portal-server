@@ -25,7 +25,11 @@ import { loadParsedSheet } from './fixtures';
  * `should actually be enforcing the state AVV formats` is the guard against that.
  */
 
+// The id does not match any state format at all.
 const STATE_REGEX_ERROR_CODE = 72;
+// MPC-291: the id matches a state format, but for a different year than the
+// sampling (or isolation) date.
+const YEAR_MISMATCH_ERROR_CODE = 127;
 
 // Matches none of the seeded state formats, for any year.
 const INVALID_AVV_ID = 'XX-INVALID-ID';
@@ -35,17 +39,20 @@ const SAMPLING_DATE = '01.01.2019';
 
 async function validateWithAvvId(
     avvId: string,
-    samplingDate: string = SAMPLING_DATE
+    samplingDate: string = SAMPLING_DATE,
+    isolationDate?: string
 ): Promise<SampleDTO> {
     // Start from a known-good sheet so every unrelated field stays valid, then
-    // override just the AVV id and the sampling date the year placeholder resolves
-    // against.
+    // override just the AVV id and the dates the year placeholder resolves against.
     const parsedSampleSheet = _.cloneDeep(
         loadParsedSheet('mps155_timezone_bug_v18.parsedsheet.json')
     );
     parsedSampleSheet.samples = parsedSampleSheet.samples.slice(0, 1);
     parsedSampleSheet.samples[0].data.sample_id_avv.value = avvId;
     parsedSampleSheet.samples[0].data.sampling_date.value = samplingDate;
+    if (isolationDate !== undefined) {
+        parsedSampleSheet.samples[0].data.isolation_date.value = isolationDate;
+    }
 
     const parsed = await Api.putSamplesParsedSheet(parsedSampleSheet);
     const request: PutValidatedRequestDTO = { order: parsed.order };
@@ -90,14 +97,32 @@ describe('Test state AVV id formats', () => {
     });
 
     it('should resolve the year placeholder against the sampling date', async () => {
-        expect.assertions(1);
+        expect.assertions(2);
 
         // Same id, sampled four years later: `yy` no longer resolves to 19, and the
         // rule only tolerates the sampling year +/- 1.
         const sample = await validateWithAvvId(VALID_AVV_ID, '01.01.2023');
+        const codes = codesFor(sample, 'sample_id_avv');
 
-        expect(codesFor(sample, 'sample_id_avv')).toContain(
-            STATE_REGEX_ERROR_CODE
+        // MPC-291: the format is a valid state format, only the year disagrees with
+        // the sampling date — so this must be the year message, not the misleading
+        // "the format seems incorrect" one.
+        expect(codes).toContain(YEAR_MISMATCH_ERROR_CODE);
+        expect(codes).not.toContain(STATE_REGEX_ERROR_CODE);
+    });
+
+    it('should use the isolation date when no sampling date is given', async () => {
+        expect.assertions(2);
+
+        // MPC-291: with no sampling date the year comes from the isolation date.
+        const mismatched = await validateWithAvvId(VALID_AVV_ID, '', '01.01.2023');
+        expect(codesFor(mismatched, 'sample_id_avv')).toContain(
+            YEAR_MISMATCH_ERROR_CODE
+        );
+
+        const matched = await validateWithAvvId(VALID_AVV_ID, '', '01.01.2019');
+        expect(codesFor(matched, 'sample_id_avv')).not.toContain(
+            YEAR_MISMATCH_ERROR_CODE
         );
     });
 
