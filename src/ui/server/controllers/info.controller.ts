@@ -5,6 +5,7 @@ import { SystemInformationDTO } from '../model/response.model';
 import { AbstractController } from './abstract.controller';
 import { AppServerConfiguration } from '../model/server.model';
 import { UnknownPackageConfigurationError } from '../model/domain.error';
+import { readClientVersion } from '../client-version';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const pjson = require('../../../../package.json');
 
@@ -14,10 +15,14 @@ export class DefaultSystemInfoController
 {
     private supportContact = '';
     private keycloakEnabled = false;
+    // Read once: the deploy pipeline unpacks the client bundle and only then
+    // restarts the server, so the deployed version cannot change while we run.
+    private clientVersion = '';
     constructor(configuration: AppServerConfiguration) {
         super();
         this.supportContact = configuration.supportContact;
         this.keycloakEnabled = configuration.keycloak?.enabled ?? false;
+        this.clientVersion = readClientVersion();
     }
 
     getSystemInfo(res: Response) {
@@ -34,7 +39,8 @@ export class DefaultSystemInfoController
                 version: pjson.version,
                 lastChange: pjson.mibiConfig.lastChange,
                 supportContact: this.supportContact,
-                keycloakEnabled: this.keycloakEnabled
+                keycloakEnabled: this.keycloakEnabled,
+                clientVersion: this.clientVersion
             };
             logger.info(
                 `${this.constructor.name}.${this.getSystemInfo.name}, Response sent`

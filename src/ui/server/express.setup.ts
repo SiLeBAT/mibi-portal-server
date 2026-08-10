@@ -1,4 +1,3 @@
-import path from 'path';
 import { logger } from '../../aspects';
 import { GeneralConfiguration, ServerConfiguration } from '../../main.model';
 import { API_ROUTE } from './ports';
@@ -12,6 +11,7 @@ import { resolveActorContext } from './middleware/actor-context.middleware';
 import { configurationService } from '../../configuratioin.service';
 import { startHttpServer } from './http-server';
 import { AppComposition } from './composition-root';
+import { PUBLIC_DIR } from './client-version';
 
 export function initialiseExpress(composition: AppComposition) {
     const serverConfig: ServerConfiguration =
@@ -99,7 +99,7 @@ export function initialiseExpress(composition: AppComposition) {
         port: serverConfig.port,
         logLevel: generalConfig.logLevel,
         jwtSecret: generalConfig.jwtSecret,
-        publicDir: path.join(__dirname + '/public/de')
+        publicDir: PUBLIC_DIR
     });
 
     process.on('uncaughtException', error => {

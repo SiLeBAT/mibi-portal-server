@@ -99,6 +99,11 @@ export interface SystemInformationDTO {
     version: string;
     lastChange: string;
     supportContact: string;
+    // Version of the client bundle deployed with this server. A tab that was
+    // opened before a release still runs the old client; comparing its own
+    // version against this one is how it detects that it has to reload. Empty
+    // when no bundle is deployed (development), which disables the check.
+    clientVersion: string;
     // Mirrors the server's keycloak.enabled flag so the SPA can pick the legacy
     // login form vs. the Keycloak SSO redirect at runtime, without a rebuild.
     keycloakEnabled: boolean;
