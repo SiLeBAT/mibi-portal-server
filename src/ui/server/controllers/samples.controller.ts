@@ -137,7 +137,18 @@ export class DefaultSamplesController
                 `${this.constructor.name}.${this.postSubmitted.name}, Response sent`
             );
             logger.verbose('Response:', parseResponse.data.result);
-            this.ok(res, parseResponse.data.result);
+
+            // The cloud function reports a rejected order by *returning* an
+            // error DTO, which Parse hands back with a 200. Passing that on as
+            // a 200 makes a refused submission look successful to an API user;
+            // answer with 422 as the other sample endpoints do.
+            const result = parseResponse.data
+                .result as unknown as DefaultServerErrorDTO;
+            if (this.isDefaultServerErrorDTO(result)) {
+                this.axiosError(res, result);
+            } else {
+                this.ok(res, parseResponse.data.result);
+            }
         } catch (error) {
             logger.info(
                 `${this.constructor.name}.${this.postSubmitted.name} has thrown an error. ${error}`

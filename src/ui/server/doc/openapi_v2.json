@@ -454,14 +454,21 @@
       },
       "ErrorCode": {
         "type": "number",
-        "description": "- 1: Unknown error\n- 2: Authorization error\n- 3: Authentication error\n- 4: Input error\n- 5: Invalid input\n- 6: Autocorrected input",
+        "description": "- 1: Unknown error\n- 2: Authorization error\n- 3: Authentication error\n- 4: Input error\n- 5: Invalid input\n- 6: Autocorrected input\n- 7: Invalid version\n- 8: Invalid email\n- 9: Order could not be saved\n- 10: Order could not be submitted\n- 11: Order not found\n- 12: Access to the order is forbidden\n- 13: Invalid analysis data",
         "enum": [
           1,
           2,
           3,
           4,
           5,
-          6
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
         ]
       },
       "SystemInformation": {
