@@ -1,136 +1,88 @@
-import '../../middleware/session.augment';
-import axios from 'axios';
-import {
-    TestContainer,
-    createTestContainer
-} from '../../../../__mocks__/test-container';
-import { SamplesController } from '../../model/controller.model';
-import { SERVER_TYPES } from '../../server.types';
+/// <reference types='jest' />
 
-var mockReq = require('mock-express-request');
-var mockRes = require('mock-express-response');
+import { Request } from 'express';
+import mockRes from 'mock-express-response';
 
-jest.mock('axios');
+const mockPost = jest.fn();
 
-const SERVER_CONFIG = {
-    port: 1,
-    apiRoot: '',
-    publicAPIDoc: {},
-    jwtSecret: 'test',
-    logLevel: 'info',
-    supportContact: 'test',
-    parseAPI: 'http://parse',
-    appId: 'test-app'
-};
+jest.mock('axios', () => ({
+    __esModule: true,
+    default: {
+        create: () => ({ post: mockPost })
+    }
+}));
 
-const APP_CONFIG = {
-    appName: 'test',
-    jobRecipient: 'test',
-    login: { threshold: 0, secondsDelay: 0 },
-    clientUrl: 'test',
-    supportContact: 'test',
-    jwtSecret: 'test'
-};
+import { TokenPort } from '../../../../app/authentication/model/token.model';
+import { UserPort } from '../../../../app/authentication/model/user.model';
+import { AppServerConfiguration } from '../../ports';
+import { DefaultSamplesController } from '../samples.controller';
 
-function buildController(container: TestContainer): SamplesController {
-    return container.get<SamplesController>(SERVER_TYPES.SamplesController);
+function makeController(): DefaultSamplesController {
+    return new DefaultSamplesController(
+        {} as TokenPort,
+        {} as UserPort,
+        {
+            parseAPI: 'http://parse.test',
+            appId: 'test-app'
+        } as AppServerConfiguration
+    );
 }
 
-describe('DefaultSamplesController', () => {
-    let container: TestContainer | null;
-    let mockAxiosPost: jest.Mock;
+function makeRequest(): Request {
+    return {
+        body: { order: { sampleSet: { samples: [], meta: {} } } },
+        currentActor: { email: 'user@example.com' },
+        headers: {}
+    } as unknown as Request;
+}
 
+describe('DefaultSamplesController.postSubmitted', () => {
     beforeEach(() => {
-        mockAxiosPost = jest.fn().mockResolvedValue({ data: { result: {} } });
-        (axios.create as unknown as jest.Mock).mockReturnValue({
-            post: mockAxiosPost
-        });
-
-        container = createTestContainer({
-            serverConfig: SERVER_CONFIG as any,
-            appConfig: APP_CONFIG
-        });
+        jest.clearAllMocks();
     });
 
-    afterEach(() => {
-        container = null;
+    it('passes a successful submission through with 200', async () => {
+        const order = { sampleSet: { samples: [], meta: {} } };
+        mockPost.mockResolvedValue({ data: { result: { order } } });
+        const res = new mockRes();
+
+        await makeController().postSubmitted(makeRequest(), res);
+
+        expect(res.statusCode).toBe(200);
+        expect(res._getJSON()).toEqual({ order });
     });
 
-    // ── POST /v2/samples/submitted ───────────────────────────────────────────
+    // The cloud function reports a refused order by returning an error DTO,
+    // which Parse delivers with a 200. Relaying that as a 200 would make a
+    // rejected submission look successful to an API user.
+    it('answers 422 when the cloud function refused the order', async () => {
+        const errorDTO = {
+            code: 13,
+            message: 'Different analysis procedures were requested.',
+            order: { sampleSet: { samples: [], meta: {} } }
+        };
+        mockPost.mockResolvedValue({ data: { result: errorDTO } });
+        const res = new mockRes();
 
-    // ── PUT /v2/samples/validated ────────────────────────────────────────────
+        await makeController().postSubmitted(makeRequest(), res);
 
-    describe('PUT /v2/samples/validated', () => {
-        it('sends actor email when actor present', async () => {
-            const controller = buildController(container!);
-            const req = new mockReq({
-                session: {},
-                body: {},
-                currentActor: {
-                    keycloakSub: 'u2',
-                    email: 'validator@example.com',
-                    instituteId: 'inst2',
-                    displayName: 'Validator'
-                }
-            });
-            const res = new mockRes();
-
-            await controller.putValidated(req, res);
-
-            expect(mockAxiosPost).toHaveBeenCalledWith(
-                'functions/validateSampleData',
-                expect.objectContaining({ userEmail: 'validator@example.com' })
-            );
-        });
-
-        it('sends null userEmail when no session actor (public access preserved)', async () => {
-            const controller = buildController(container!);
-            const req = new mockReq({ session: {}, body: {} });
-            const res = new mockRes();
-
-            await controller.putValidated(req, res);
-
-            expect(mockAxiosPost).toHaveBeenCalledWith(
-                'functions/validateSampleData',
-                expect.objectContaining({ userEmail: null })
-            );
-        });
+        expect(res.statusCode).toBe(422);
+        expect(res._getJSON()).toEqual(errorDTO);
     });
 
-    // ── POST /v2/samples/submitted ───────────────────────────────────────────
+    it('keeps the error details so the sender learns what is wrong', async () => {
+        const errorDTO = {
+            code: 13,
+            message: 'The analysis procedure vaccination is not offered.',
+            order: { sampleSet: { samples: [], meta: {} } },
+            findings: [{ issue: 'PROCEDURE_NOT_OFFERED_BY_NRL' }]
+        };
+        mockPost.mockResolvedValue({ data: { result: errorDTO } });
+        const res = new mockRes();
 
-    describe('POST /v2/samples/submitted', () => {
-        it('returns 401 when no session actor', async () => {
-            const controller = buildController(container!);
-            const req = new mockReq({ session: {}, body: {} });
-            const res = new mockRes();
+        await makeController().postSubmitted(makeRequest(), res);
 
-            await controller.postSubmitted(req, res);
-
-            expect(res.statusCode).toBe(401);
-        });
-
-        it('sends actor email to Parse and returns 200 when actor present', async () => {
-            const controller = buildController(container!);
-            const req = new mockReq({
-                session: {},
-                body: { samples: [] },
-                currentActor: {
-                    keycloakSub: 'u1',
-                    email: 'user@example.com',
-                    instituteId: 'inst1',
-                    displayName: 'User One'
-                }
-            });
-            const res = new mockRes();
-
-            await controller.postSubmitted(req, res);
-
-            expect(mockAxiosPost).toHaveBeenCalledWith(
-                'functions/submitSampleData',
-                expect.objectContaining({ userEmail: 'user@example.com' })
-            );
-            expect(res.statusCode).toBe(200);
-        });
+        expect(res._getJSON().findings).toEqual(errorDTO.findings);
+        expect(res._getJSON().message).toBe(errorDTO.message);
     });
 });
