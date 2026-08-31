@@ -475,13 +475,18 @@
         "required": [
           "lastChange",
           "version",
-          "supportContact"
+          "supportContact",
+          "clientVersion"
         ],
         "type": "object",
         "properties": {
           "version": {
             "type": "string",
             "description": "Server version number"
+          },
+          "clientVersion": {
+            "type": "string",
+            "description": "Version number of the client bundle deployed with this server; empty if no bundle is deployed"
           },
           "supportContact": {
             "type": "string",

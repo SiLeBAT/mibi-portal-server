@@ -47,7 +47,7 @@ describe('Info controller', () => {
 
     it('should respond with JSON', function () {
         const res = new mockRes();
-        expect.assertions(5);
+        expect.assertions(6);
         controller.getSystemInfo(res);
         expect(res.statusCode).toBe(200);
         const body = res._getJSON();
@@ -55,6 +55,13 @@ describe('Info controller', () => {
         expect(body).toHaveProperty('supportContact');
         expect(body).toHaveProperty('lastChange');
         expect(body).toHaveProperty('keycloakEnabled');
+        expect(body).toHaveProperty('clientVersion');
+    });
+
+    it('reports an empty client version when no client bundle is deployed', function () {
+        const res = new mockRes();
+        controller.getSystemInfo(res);
+        expect(res._getJSON().clientVersion).toBe('');
     });
 
     it('defaults keycloakEnabled to false when no keycloak config is present', function () {
