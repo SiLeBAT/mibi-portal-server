@@ -10,7 +10,9 @@ import { logger } from '../../aspects';
 export const PUBLIC_DIR = path.join(__dirname, 'public', 'de');
 
 // Written into the bundle by the client's build (see the client's
-// scripts/write-version.js).
+// scripts/write-version.js), so the full path is e.g.
+// lib/ui/server/public/de/assets/version.json and its content is
+// { "version": "<the client's package.json version>" }.
 const CLIENT_VERSION_FILE = path.join('assets', 'version.json');
 
 /**
@@ -19,6 +21,11 @@ const CLIENT_VERSION_FILE = path.join('assets', 'version.json');
  * A browser tab that stays open across a release keeps running the client it
  * loaded originally. Reporting the deployed version lets such a tab notice that
  * it is stale and force a reload before it talks to an API it no longer matches.
+ *
+ * The server only reads and reports the version, it never decides anything:
+ * DefaultSystemInfoController puts the value into GET /v2/info as
+ * `clientVersion`, and the client compares it against the version compiled into
+ * its own bundle (VersionCheckService in mibi-portal-client).
  *
  * Returns an empty string when no bundle is deployed - e.g. during development,
  * where the client is served by `ng serve` instead. The client treats that as
