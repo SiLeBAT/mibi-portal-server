@@ -8,6 +8,24 @@ import {
 import { SystemInfoController } from '../../model/controller.model';
 import { SERVER_TYPES } from '../../server.types';
 
+// Answers a system info request with the given date of last change in package.json.
+function readLastChangeFrom(lastChange: string) {
+    let res = new mockRes();
+    jest.isolateModules(() => {
+        jest.doMock('../../../../../package.json', () => ({
+            version: '1.0.0',
+            mibiConfig: { lastChange }
+        }));
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const { DefaultSystemInfoController } = require('../info.controller');
+        res = new mockRes();
+        new DefaultSystemInfoController({
+            supportContact: 'test'
+        }).getSystemInfo(res);
+    });
+    return { statusCode: res.statusCode, body: res._getJSON() };
+}
+
 // tslint:disable
 describe('Info controller', () => {
     let controller: SystemInfoController;
@@ -55,6 +73,27 @@ describe('Info controller', () => {
         expect(body).toHaveProperty('supportContact');
         expect(body).toHaveProperty('lastChange');
         expect(body).toHaveProperty('keycloakEnabled');
+    });
+
+    it('sends the date of last change as ISO 8601 in UTC', function () {
+        const res = new mockRes();
+        controller.getSystemInfo(res);
+        const lastChange = res._getJSON().lastChange;
+        expect(lastChange).toMatch(
+            /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
+        );
+        expect(new Date(lastChange).toISOString()).toBe(lastChange);
+    });
+
+    it('converts the package.json format including its offset', function () {
+        const lastChange = readLastChangeFrom('2019-04-16 11:25:17 +0200');
+        expect(lastChange.statusCode).toBe(200);
+        expect(lastChange.body.lastChange).toBe('2019-04-16T09:25:17.000Z');
+    });
+
+    it('fails when the date of last change cannot be read', function () {
+        const lastChange = readLastChangeFrom('16.04.2019');
+        expect(lastChange.statusCode).toBe(500);
     });
 
     it('defaults keycloakEnabled to false when no keycloak config is present', function () {

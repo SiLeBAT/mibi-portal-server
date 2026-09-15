@@ -1,4 +1,5 @@
 import { Response } from 'express';
+import moment from 'moment';
 import { logger } from '../../../aspects';
 import { SystemInfoController } from '../model/controller.model';
 import { SystemInformationDTO } from '../model/response.model';
@@ -7,6 +8,10 @@ import { AppServerConfiguration } from '../model/server.model';
 import { UnknownPackageConfigurationError } from '../model/domain.error';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const pjson = require('../../../../package.json');
+
+// package.json keeps the date of last change as "2019-04-16 11:25:17 +0200".
+// It is sent as ISO 8601 in UTC, the date-time format the API documents.
+const LAST_CHANGE_FORMATS = [moment.ISO_8601, 'YYYY-MM-DD HH:mm:ss ZZ'];
 
 export class DefaultSystemInfoController
     extends AbstractController
@@ -30,9 +35,19 @@ export class DefaultSystemInfoController
                     "Version number or date of last change can't be determined."
                 );
             }
+            const lastChange = moment(
+                pjson.mibiConfig.lastChange,
+                LAST_CHANGE_FORMATS,
+                true
+            );
+            if (!lastChange.isValid()) {
+                throw new UnknownPackageConfigurationError(
+                    `Unreadable date of last change: ${pjson.mibiConfig.lastChange}`
+                );
+            }
             const dto: SystemInformationDTO = {
                 version: pjson.version,
-                lastChange: pjson.mibiConfig.lastChange,
+                lastChange: lastChange.toISOString(),
                 supportContact: this.supportContact,
                 keycloakEnabled: this.keycloakEnabled
             };
