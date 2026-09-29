@@ -8,6 +8,7 @@ import cookieParser from 'cookie-parser';
 import { doubleCsrf } from 'csrf-csrf';
 import { ParseSessionStore } from './middleware/parse-session.store';
 import { resolveActorContext } from './middleware/actor-context.middleware';
+import { ensureCsrfCookie } from './middleware/csrf-cookie.middleware';
 import { configurationService } from '../../configuratioin.service';
 import { startHttpServer } from './http-server';
 import { AppComposition } from './composition-root';
@@ -55,13 +56,9 @@ export function initialiseExpress(composition: AppComposition) {
         })
     );
 
-    // Set XSRF-TOKEN cookie on every GET so Angular can read it
-    customApp.use((req, res, next) => {
-        if (req.method === 'GET') {
-            generateToken(req, res, true);
-        }
-        next();
-    });
+    // Gives Angular an XSRF-TOKEN cookie to read, without rotating it under
+    // in-flight requests - see the middleware for why that matters.
+    customApp.use(ensureCsrfCookie(generateToken));
 
     customApp.use(doubleCsrfProtection);
 
