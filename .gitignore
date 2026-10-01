@@ -64,3 +64,8 @@ server-patch.patch
 AGENTS.md
 CLAUDE.md
 CONTEXT.md
+
+# API client secrets - never commit.
+# Both hold MIBI_RESULTS_API_KEY; bruno/.env.example is the committed template.
+/bruno/.env
+/scripts/.env

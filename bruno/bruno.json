@@ -1,0 +1,6 @@
+{
+  "version": "1",
+  "name": "mibi-portal-server",
+  "type": "collection",
+  "defaultEnvironment": "Local"
+}

@@ -1,0 +1,99 @@
+[
+  {
+    "snPlXS7wIY": {
+      "Citrat": "kW",
+      "H2S": "-",
+      "Indol": "+",
+      "Lactose": "+",
+      "O-AG": "166",
+      "e-hly": "+",
+      "eae": "-",
+      "stx1": "+",
+      "stx2": "-",
+      "CHL": "8",
+      "CIP": "0,015",
+      "COL": "<=2",
+      "GEN": "<=0,25"
+    }
+  },
+  {
+    "yQRDBvDI08": {
+      "Citrat": "kW",
+      "H2S": "-",
+      "Indol": "+",
+      "Lactose": "+",
+      "O-AG": "4",
+      "e-hly": "+",
+      "eae": "-",
+      "stx1": "+",
+      "stx2": "-",
+      "CHL": "",
+      "CIP": "",
+      "COL": "",
+      "GEN": ""
+    }
+  },
+  {
+    "QcNGRyZBNz": {
+      "Citrat": "kW",
+      "H2S": "-",
+      "Indol": "+",
+      "Lactose": "+",
+      "O-AG": "157",
+      "e-hly": "+",
+      "eae": "-",
+      "stx1": "+",
+      "stx2": "-",
+      "CHL": "16",
+      "CIP": "0,030",
+      "COL": "4",
+      "GEN": "0,5"
+    }
+  },
+  {
+    "WxsV5nPzkC": {
+      "Citrat": "kW",
+      "H2S": "-",
+      "Indol": "+",
+      "Lactose": "+",
+      "O-AG": "7",
+      "e-hly": "+",
+      "eae": "-",
+      "stx1": "+",
+      "stx2": "-",
+      "CHL": "4",
+      "CIP": "0,015",
+      "COL": "8",
+      "GEN": "0,5"
+    }
+  },
+  {
+    "8ANdKEePm3": {
+      "Citrat": "kW",
+      "H2S": "-",
+      "Indol": "+",
+      "Lactose": "+",
+      "O-AG": "104",
+      "e-hly": "+",
+      "eae": "-",
+      "stx1": "+",
+      "stx2": "-",
+      "CHL": "2",
+      "CIP": "0,015",
+      "COL": "4",
+      "GEN": "0,75"
+    }
+  },
+  {
+    "y4NvFfFNdg": {
+      "Serovar": "S. Typhimurium",
+      "Seroformel": "(1), 4, 12:i:1,2"
+    }
+  },
+  {
+    "y4NvFfFNdg": {
+      "Serovar": "S. Brandenburg",
+      "Seroformel": "4,12:i:1,2"
+    }
+  }
+]

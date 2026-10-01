@@ -1,3 +1,6 @@
+> Looking for the **BfR results import**? That is documented separately in
+> [import-results.md](import-results.md).
+
 # Keycloak user migration
 
 One-shot migration of legacy `mibi-portal-server` users from the Mongo `users`

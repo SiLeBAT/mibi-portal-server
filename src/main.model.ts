@@ -25,6 +25,11 @@ export interface GeneralConfiguration {
     jwtSecret: string;
     logLevel: string;
     supportContact: string;
+    // Shared secret guarding POST /v2/orders/results, the machine-to-machine
+    // route used to import BfR analysis results. Empty means the route rejects
+    // every request: it must fail closed, because behind it sits a write path
+    // that runs with the Parse master key.
+    resultsApiKey: string;
 }
 
 export interface AppConfiguration {

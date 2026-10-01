@@ -21,7 +21,8 @@ class DefaultConfigurationService implements SystemConfigurationService {
     private generalConfigurationDefaults: GeneralConfiguration = {
         logLevel: 'info',
         supportContact: '',
-        jwtSecret: ''
+        jwtSecret: '',
+        resultsApiKey: ''
     };
 
     getServerConfiguration(): ServerConfiguration {
@@ -83,13 +84,23 @@ class DefaultConfigurationService implements SystemConfigurationService {
                 logLevel: this.generalConfigurationDefaults.logLevel,
                 supportContact:
                     this.generalConfigurationDefaults.supportContact,
-                jwtSecret: this.generalConfigurationDefaults.jwtSecret
+                jwtSecret: this.generalConfigurationDefaults.jwtSecret,
+                resultsApiKey:
+                    this.generalConfigurationDefaults.resultsApiKey
             };
         }
 
         if (!config.has('general.logLevel')) {
             generalConfiguration.logLevel =
                 this.generalConfigurationDefaults.logLevel;
+        }
+
+        // An older deployment's config file predates this key. Default it to
+        // the empty string so the results route fails closed rather than
+        // handing `undefined` to the comparison.
+        if (!config.has('general.resultsApiKey')) {
+            generalConfiguration.resultsApiKey =
+                this.generalConfigurationDefaults.resultsApiKey;
         }
 
         return generalConfiguration;

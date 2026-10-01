@@ -36,10 +36,12 @@
         "fromAddress": "",
         "replyToAddress": ""
     },
+    "_comment_resultsApiKey": "Shared secret for POST /v2/orders/results. Empty by default so the route fails closed; set it per environment via MIBI_RESULTS_API_KEY.",
     "general": {
         "supportContact": "",
         "logLevel": "trace",
-        "jwtSecret": "0"
+        "jwtSecret": "0",
+        "resultsApiKey": ""
     },
     "keycloak": {
         "enabled": false,

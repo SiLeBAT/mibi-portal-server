@@ -63,3 +63,21 @@ export interface RedirectedGetSamplesWithResultsRequestDTO {
 export interface RedirectedDeleteOrdersRequestDTO {
     readonly userEmail: string;
 }
+
+/**
+ * Body of POST /v2/orders/results: an array in which each element is one
+ * result, keyed by the Parse objectId of the sample it belongs to.
+ *
+ * An array rather than an object keyed by sample id, because a sample may have
+ * more than one result and a JSON object cannot hold the same key twice —
+ * duplicate keys are silently dropped when the body is parsed.
+ */
+export type StoreResultsRequestDTO = Record<string, Record<string, string>>[];
+
+/**
+ * Parse cloud function parameters are always an object, so the array is sent
+ * wrapped rather than as the top-level value.
+ */
+export interface RedirectedStoreResultsRequestDTO {
+    readonly results: StoreResultsRequestDTO;
+}

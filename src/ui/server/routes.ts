@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { requireApiKey } from './middleware/api-key.middleware';
 import { uploadToMemory } from './middleware/file-upload.middleware';
 import { Controllers } from './server.factory';
 
@@ -8,8 +9,14 @@ import { Controllers } from './server.factory';
  * Handlers forward to the controller methods. Express 5 forwards both
  * synchronous throws and rejected promises returned by async handlers to the
  * error middleware, so no explicit try/catch wrapper is required here.
+ *
+ * `resultsApiKey` guards the machine-to-machine results import; an empty value
+ * makes that single route reject everything (see requireApiKey).
  */
-export function buildControllerRouter(controllers: Controllers): Router {
+export function buildControllerRouter(
+    controllers: Controllers,
+    resultsApiKey: string
+): Router {
     const router = Router();
 
     const {
@@ -59,6 +66,15 @@ export function buildControllerRouter(controllers: Controllers): Router {
     router.post('/v2/orders/samples-with-results', async (req, res) => {
         await orders.getSamplesWithResults(req, res);
     });
+    // Machine-to-machine: authenticated by a shared API key rather than by a
+    // user token, so the guard is mounted here on the route itself.
+    router.post(
+        '/v2/orders/results',
+        requireApiKey(resultsApiKey),
+        async (req, res) => {
+            await orders.postResults(req, res);
+        }
+    );
     router.delete('/v2/orders', async (req, res) => {
         await orders.deleteOrders(req, res);
     });
