@@ -123,6 +123,7 @@ export interface NRLCollectionDTO {
 }
 export interface NRLDTO {
     id: string;
+    selector: string[];
     standardProcedures: AnalysisProcedureDTO[];
     optionalProcedures: AnalysisProcedureDTO[];
 }
