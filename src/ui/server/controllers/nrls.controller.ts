@@ -13,6 +13,8 @@ import {
 interface ParseNRLDTO extends ParseEntityDTO {
     readonly name: string;
     readonly selector: string[];
+    readonly full_name: string;
+    readonly pathogen: string;
     readonly standardProcedures: ParseAnalysisProceduresDTO[];
     readonly optionalProcedures: ParseAnalysisProceduresDTO[];
 }
@@ -61,6 +63,8 @@ export class DefaultNRLsController
                 dto.nrls.push({
                     id: element.name,
                     selector: element.selector,
+                    full_name: element.full_name,
+                    pathogen: element.pathogen,
                     standardProcedures: element.standardProcedures.map(
                         procedure => ({
                             value: procedure.value,
