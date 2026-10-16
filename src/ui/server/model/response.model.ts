@@ -124,6 +124,8 @@ export interface NRLCollectionDTO {
 export interface NRLDTO {
     id: string;
     selector: string[];
+    full_name: string;
+    pathogen: string;
     standardProcedures: AnalysisProcedureDTO[];
     optionalProcedures: AnalysisProcedureDTO[];
 }
