@@ -16,55 +16,40 @@ export class DefaultKeycloakAdminController
     }
 
     async getPendingActors(req: Request, res: Response) {
-        if (!this.isMibiAdmin(req)) {
-            this.forbidden(res);
-            return;
-        }
-        try {
+        await this.handleRequest(res, this.getPendingActors.name, async () => {
+            if (!this.isMibiAdmin(req)) {
+                this.forbidden(res);
+                return;
+            }
             const actors = await this.actorsService.listPendingActors();
             this.ok(res, actors);
-        } catch (error) {
-            logger.error(
-                `${this.constructor.name}.getPendingActors error: ${error}`
-            );
-            this.fail(res);
-        }
+        });
     }
 
     async postEnableActor(req: Request, res: Response) {
-        if (!this.isMibiAdmin(req)) {
-            this.forbidden(res);
-            return;
-        }
-        const sub = String(req.params.sub);
-        try {
+        await this.handleRequest(res, this.postEnableActor.name, async () => {
+            if (!this.isMibiAdmin(req)) {
+                this.forbidden(res);
+                return;
+            }
+            const sub = String(req.params.sub);
             await this.actorsService.activateActor(sub);
             logger.info(`admin=${req.session.user!.sub} enabled actor=${sub}`);
             this.ok(res);
-        } catch (error) {
-            logger.error(
-                `${this.constructor.name}.postEnableActor error: ${error}`
-            );
-            this.fail(res);
-        }
+        });
     }
 
     async postDisableActor(req: Request, res: Response) {
-        if (!this.isMibiAdmin(req)) {
-            this.forbidden(res);
-            return;
-        }
-        const sub = String(req.params.sub);
-        try {
+        await this.handleRequest(res, this.postDisableActor.name, async () => {
+            if (!this.isMibiAdmin(req)) {
+                this.forbidden(res);
+                return;
+            }
+            const sub = String(req.params.sub);
             await this.actorsService.disableActor(sub);
             logger.info(`admin=${req.session.user!.sub} disabled actor=${sub}`);
             this.ok(res);
-        } catch (error) {
-            logger.error(
-                `${this.constructor.name}.postDisableActor error: ${error}`
-            );
-            this.fail(res);
-        }
+        });
     }
 
     private isMibiAdmin(req: Request): boolean {

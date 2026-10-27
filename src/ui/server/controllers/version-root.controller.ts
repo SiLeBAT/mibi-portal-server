@@ -1,6 +1,5 @@
 import { Response } from 'express';
 import _ from 'lodash';
-import { logger } from '../../../aspects';
 import { VersionRootController } from '../model/controller.model';
 import { AbstractController } from './abstract.controller';
 import { AppServerConfiguration } from '../model/server.model';
@@ -21,24 +20,13 @@ export class DefaultVersionRootController
             configuration.publicAPIDoc
         );
     }
-    getAPIDefinition(res: Response) {
-        logger.info(
-            `${this.constructor.name}.${this.getAPIDefinition.name}, Request received`
-        );
-        try {
-            logger.info(
-                `${this.constructor.name}.${this.getAPIDefinition.name}, Response sent`
-            );
+    async getAPIDefinition(res: Response) {
+        await this.handleRequest(res, this.getAPIDefinition.name, () => {
             this.ok(res, this.publicAPI);
-        } catch (error) {
-            logger.info(
-                `${this.constructor.name}.${this.getAPIDefinition.name} has thrown an error. ${error}`
-            );
-            this.handleError(res, error);
-        }
+        });
     }
 
-    private handleError(res: Response, _error: unknown) {
+    protected handleError(res: Response) {
         this.fail(res, 'Unable to retrieve documentation');
     }
 

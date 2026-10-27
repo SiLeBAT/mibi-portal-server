@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import { UserConsentPort } from '../../../app/authentication/model/consent.model';
 import { UserEmailNotificationPort } from '../../../app/authentication/model/email-notification.model';
 import { KeycloakOidcPort } from '../../../app/authentication/model/oidc.model';
-import { logger } from '../../../aspects';
 import { KeycloakAuthController } from '../model/controller.model';
 import { SERVER_ERROR_CODE } from '../model/enums';
 import { MeResponseDTO } from '../model/response.model';
@@ -24,22 +23,17 @@ export class DefaultKeycloakAuthController
     }
 
     async getLogin(req: Request, res: Response) {
-        logger.info(`${this.constructor.name}.getLogin, Request received`);
-        try {
+        await this.handleRequest(res, this.getLogin.name, async () => {
             const { authorizationUrl, state, codeVerifier } =
                 await this.oidcService.buildAuthorizationUrl();
             req.session.oidcState = state;
             req.session.codeVerifier = codeVerifier;
             res.redirect(authorizationUrl);
-        } catch (error) {
-            logger.error(`${this.constructor.name}.getLogin error: ${error}`);
-            this.fail(res);
-        }
+        });
     }
 
     async getCallback(req: Request, res: Response) {
-        logger.info(`${this.constructor.name}.getCallback, Request received`);
-        try {
+        await this.handleRequest(res, this.getCallback.name, async () => {
             const { code, state, iss } = req.query as {
                 code?: string;
                 state?: string;
@@ -60,43 +54,39 @@ export class DefaultKeycloakAuthController
             req.session.codeVerifier = undefined;
             req.session.user = user;
             res.redirect(this.configuration.clientUrl || '/');
-        } catch (error) {
-            logger.error(
-                `${this.constructor.name}.getCallback error: ${error}`
-            );
-            this.fail(res);
-        }
+        });
     }
 
     async getMe(req: Request, res: Response) {
-        if (!req.session?.user) {
-            this.unauthorized(res, {
-                code: SERVER_ERROR_CODE.AUTHORIZATION_ERROR,
-                message: 'Not authenticated'
-            });
-            return;
-        }
-        const consent = await this.userConsentService.getConsentByEmail(
-            req.session.user.email
-        );
-        const emailNotificationSettings =
-            await this.userEmailNotificationService.getEmailNotificationSettingsByEmail(
+        await this.handleRequest(res, this.getMe.name, async () => {
+            if (!req.session?.user) {
+                this.unauthorized(res, {
+                    code: SERVER_ERROR_CODE.AUTHORIZATION_ERROR,
+                    message: 'Not authenticated'
+                });
+                return;
+            }
+            const consent = await this.userConsentService.getConsentByEmail(
                 req.session.user.email
             );
-        const dto: MeResponseDTO = {
-            sub: req.session.user.sub,
-            email: req.session.user.email,
-            preferred_username: req.session.user.preferred_username,
-            dataSaveAgreed: consent.dataSaveAgreed,
-            dataSaveViewed: consent.dataSaveViewed,
-            emailNotificationSettings
-        };
-        this.ok(res, dto);
+            const emailNotificationSettings =
+                await this.userEmailNotificationService.getEmailNotificationSettingsByEmail(
+                    req.session.user.email
+                );
+            const dto: MeResponseDTO = {
+                sub: req.session.user.sub,
+                email: req.session.user.email,
+                preferred_username: req.session.user.preferred_username,
+                dataSaveAgreed: consent.dataSaveAgreed,
+                dataSaveViewed: consent.dataSaveViewed,
+                emailNotificationSettings
+            };
+            this.ok(res, dto);
+        });
     }
 
     async postLogout(req: Request, res: Response) {
-        logger.info(`${this.constructor.name}.postLogout, Request received`);
-        try {
+        await this.handleRequest(res, this.postLogout.name, async () => {
             const idToken = req.session.user?.id_token;
             const endSessionUrl = this.oidcService.getEndSessionUrl(idToken);
             await new Promise<void>((resolve, reject) => {
@@ -109,9 +99,6 @@ export class DefaultKeycloakAuthController
                 });
             });
             this.ok(res, { endSessionUrl });
-        } catch (error) {
-            logger.error(`${this.constructor.name}.postLogout error: ${error}`);
-            this.fail(res);
-        }
+        });
     }
 }

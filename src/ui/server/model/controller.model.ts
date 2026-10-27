@@ -7,11 +7,11 @@ export interface ControllerFactory {
 }
 
 export interface VersionRootController extends Controller {
-    getAPIDefinition(res: Response): void;
+    getAPIDefinition(res: Response): Promise<void>;
 }
 
 export interface TokensController extends Controller {
-    postTokens(req: Request, res: Response): void;
+    postTokens(req: Request, res: Response): Promise<void>;
 }
 
 export interface InstitutesController extends Controller {
@@ -50,14 +50,11 @@ export interface UsersController extends Controller {
     patchActivation(token: string, res: Response): Promise<void>;
     postLogin(req: Request, res: Response): Promise<void>;
     patchConsent(req: Request, res: Response): Promise<void>;
-    patchEmailNotificationSettings(
-        req: Request,
-        res: Response
-    ): Promise<void>;
+    patchEmailNotificationSettings(req: Request, res: Response): Promise<void>;
 }
 
 export interface SystemInfoController extends Controller {
-    getSystemInfo(res: Response): void;
+    getSystemInfo(res: Response): Promise<void>;
 }
 
 export interface KeycloakAuthController extends Controller {

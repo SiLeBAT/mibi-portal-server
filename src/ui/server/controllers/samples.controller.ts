@@ -57,26 +57,15 @@ export class DefaultSamplesController
     }
 
     async putSamples(req: Request, res: Response) {
-        logger.info(
-            `${this.constructor.name}.${this.putSamples.name}, Request received`
-        );
-        try {
+        await this.handleRequest(res, this.putSamples.name, async () => {
             const parseRequest: ParseFileRequest =
-                await this.putSamplesTransformInput(req, res);
+                this.putSamplesTransformInput(req, res);
 
             await this.putSamplesSendResponse(req, res, parseRequest);
-        } catch (error) {
-            logger.info(
-                `${this.constructor.name}.${this.putSamples.name} has thrown an error. ${error}`
-            );
-            this.handleError(res, error);
-        }
+        });
     }
     async putValidated(req: Request, res: Response) {
-        logger.info(
-            `${this.constructor.name}.${this.putValidated.name}, Request received`
-        );
-        try {
+        await this.handleRequest(res, this.putValidated.name, async () => {
             const requestDTO: PutValidatedRequestDTO = req.body;
             let userEmail = req.currentActor?.email ?? null;
             if (!userEmail) {
@@ -95,24 +84,13 @@ export class DefaultSamplesController
                 ...requestDTO,
                 userEmail
             });
-            logger.info(
-                `${this.constructor.name}.${this.putValidated.name}, Response sent`
-            );
             logger.verbose('Response:', parseResponse.data.result);
             this.ok(res, parseResponse.data.result);
-        } catch (error) {
-            logger.info(
-                `${this.constructor.name}.${this.putValidated.name} has thrown an error. ${error}`
-            );
-            this.handleError(res, error);
-        }
+        });
     }
 
     async postSubmitted(req: Request, res: Response) {
-        logger.info(
-            `${this.constructor.name}.${this.postSubmitted.name}, Request received`
-        );
-        try {
+        await this.handleRequest(res, this.postSubmitted.name, async () => {
             const requestDTO: PostSubmittedRequestDTO = req.body;
             let userEmail = req.currentActor?.email ?? null;
             if (!userEmail) {
@@ -133,9 +111,6 @@ export class DefaultSamplesController
                 userEmail
             });
 
-            logger.info(
-                `${this.constructor.name}.${this.postSubmitted.name}, Response sent`
-            );
             logger.verbose('Response:', parseResponse.data.result);
 
             // The cloud function reports a rejected order by *returning* an
@@ -149,12 +124,7 @@ export class DefaultSamplesController
             } else {
                 this.ok(res, parseResponse.data.result);
             }
-        } catch (error) {
-            logger.info(
-                `${this.constructor.name}.${this.postSubmitted.name} has thrown an error. ${error}`
-            );
-            this.handleError(res, error);
-        }
+        });
     }
 
     private async putSamplesSendResponse(
@@ -163,36 +133,27 @@ export class DefaultSamplesController
         parseRequest: ParseFileRequest
     ) {
         const accept = req.headers['accept'];
-        try {
-            const parseResponse = await this.redirectionTarget.post<
-                ParseSingleResponse<OrderDTO>,
-                AxiosResponse<ParseSingleResponse<OrderDTO>>,
-                ParseFileRequest
-            >('functions/parseSampleData', parseRequest, {
-                headers: {
-                    Accept: accept
-                }
-            });
-
-            if (
-                this.isDefaultServerErrorDTO(
-                    parseResponse.data
-                        .result as unknown as DefaultServerErrorDTO
-                )
-            ) {
-                this.axiosError(
-                    res,
-                    parseResponse.data
-                        .result as unknown as DefaultServerErrorDTO
-                );
-            } else {
-                this.ok(res, parseResponse.data.result);
+        const parseResponse = await this.redirectionTarget.post<
+            ParseSingleResponse<OrderDTO>,
+            AxiosResponse<ParseSingleResponse<OrderDTO>>,
+            ParseFileRequest
+        >('functions/parseSampleData', parseRequest, {
+            headers: {
+                Accept: accept
             }
-        } catch (error) {
-            logger.info(
-                `${this.constructor.name}.${this.putSamples.name} has thrown an error. ${error}`
+        });
+
+        if (
+            this.isDefaultServerErrorDTO(
+                parseResponse.data.result as unknown as DefaultServerErrorDTO
+            )
+        ) {
+            this.axiosError(
+                res,
+                parseResponse.data.result as unknown as DefaultServerErrorDTO
             );
-            this.handleError(res, error);
+        } else {
+            this.ok(res, parseResponse.data.result);
         }
     }
 
@@ -266,7 +227,7 @@ export class DefaultSamplesController
         return returnType;
     }
 
-    private handleError(res: Response, error: Error) {
+    protected handleError(res: Response, error: unknown) {
         if (error instanceof MalformedRequestError) {
             this.clientError(res);
         } else if (error instanceof TokenNotFoundError) {

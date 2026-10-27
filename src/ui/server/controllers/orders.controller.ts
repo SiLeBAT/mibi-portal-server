@@ -1,6 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { Request, Response } from 'express';
-import { logger } from '../../../aspects';
 import { OrdersController } from '../model/controller.model';
 import { SERVER_ERROR_CODE } from '../model/enums';
 import {
@@ -45,12 +44,8 @@ export class DefaultOrdersController
         });
     }
     async getOrders(req: Request, res: Response) {
-        logger.info(
-            `${this.constructor.name}.${this.getOrders.name}, Request received`
-        );
-
-        try {
-           const token = getTokenFromHeader(req);
+        await this.handleRequest(res, this.getOrders.name, async () => {
+            const token = getTokenFromHeader(req);
             if (!token) {
                 this.unauthorized(res, {
                     code: SERVER_ERROR_CODE.AUTHORIZATION_ERROR,
@@ -68,56 +63,40 @@ export class DefaultOrdersController
                 userEmail: user.email
             });
 
-            logger.info(
-                `${this.constructor.name}.${this.getOrders.name}, Response sent`
-            );
             this.ok(res, parseResponse.data.result);
-        } catch (error) {
-            logger.info(
-                `${this.constructor.name}.${this.getOrders.name} has thrown an error. ${error}`
-            );
-            this.fail(res);
-        }
+        });
     }
 
     async getSamplesWithResults(req: Request, res: Response) {
-        logger.info(
-            `${this.constructor.name}.${this.getSamplesWithResults.name}, Request received`
-        );
+        await this.handleRequest(
+            res,
+            this.getSamplesWithResults.name,
+            async () => {
+                const token = getTokenFromHeader(req);
+                if (!token) {
+                    this.unauthorized(res, {
+                        code: SERVER_ERROR_CODE.AUTHORIZATION_ERROR,
+                        message: 'Not authenticated'
+                    });
+                    return;
+                }
+                const user: User = await this.getUserFromToken(token);
+                const orderId = String(req.body.orderId);
 
-        try {
-            const token = getTokenFromHeader(req);
-            if (!token) {
-                this.unauthorized(res, {
-                    code: SERVER_ERROR_CODE.AUTHORIZATION_ERROR,
-                    message: 'Not authenticated'
+                const parseResponse = await this.redirectionTarget.post<
+                    ParseSingleResponse<SamplesWithResultsCollectionDTO>,
+                    AxiosResponse<
+                        ParseSingleResponse<SamplesWithResultsCollectionDTO>
+                    >,
+                    RedirectedGetSamplesWithResultsRequestDTO
+                >('functions/getSamplesWithResults', {
+                    orderId,
+                    userEmail: user.email
                 });
-                return;
+
+                this.ok(res, parseResponse.data.result);
             }
-            const user: User = await this.getUserFromToken(token);
-            const orderId = String(req.body.orderId);
-
-            const parseResponse = await this.redirectionTarget.post<
-                ParseSingleResponse<SamplesWithResultsCollectionDTO>,
-                AxiosResponse<
-                    ParseSingleResponse<SamplesWithResultsCollectionDTO>
-                >,
-                RedirectedGetSamplesWithResultsRequestDTO
-            >('functions/getSamplesWithResults', {
-                orderId,
-                userEmail: user.email
-            });
-
-            logger.info(
-                `${this.constructor.name}.${this.getSamplesWithResults.name}, Response sent`
-            );
-            this.ok(res, parseResponse.data.result);
-        } catch (error) {
-            logger.info(
-                `${this.constructor.name}.${this.getSamplesWithResults.name} has thrown an error. ${error}`
-            );
-            this.fail(res);
-        }
+        );
     }
 
     /**
@@ -194,11 +173,7 @@ export class DefaultOrdersController
     }
 
     async deleteOrders(req: Request, res: Response) {
-        logger.info(
-            `${this.constructor.name}.${this.deleteOrders.name}, Request received`
-        );
-
-        try {
+        await this.handleRequest(res, this.deleteOrders.name, async () => {
             const token = getTokenFromHeader(req);
             if (!token) {
                 this.unauthorized(res, {
@@ -217,16 +192,8 @@ export class DefaultOrdersController
                 userEmail: user.email
             });
 
-            logger.info(
-                `${this.constructor.name}.${this.deleteOrders.name}, Response sent`
-            );
             this.ok(res, parseResponse.data.result);
-        } catch (error) {
-            logger.info(
-                `${this.constructor.name}.${this.deleteOrders.name} has thrown an error. ${error}`
-            );
-            this.fail(res);
-        }
+        });
     }
 
     private async getUserFromToken(token: string): Promise<User> {
@@ -234,5 +201,4 @@ export class DefaultOrdersController
         const userId = payload.sub;
         return this.userService.getUserById(userId);
     }
-
 }
