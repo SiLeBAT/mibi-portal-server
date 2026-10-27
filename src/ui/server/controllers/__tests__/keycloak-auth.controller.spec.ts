@@ -8,6 +8,7 @@ import { APPLICATION_TYPES } from '../../../../app/application.types';
 import { getMockKeycloakOidcService } from '../../../../app/authentication/application/__mocks__/keycloak-oidc.service';
 import { KeycloakAuthController } from '../../model/controller.model';
 import { SERVER_TYPES } from '../../server.types';
+import { DefaultKeycloakAuthController } from '../keycloak-auth.controller';
 
 var mockReq = require('mock-express-request');
 var mockRes = require('mock-express-response');
@@ -104,6 +105,41 @@ describe('KeycloakAuthController', () => {
                 }
             });
             expect(body.id_token).toBeUndefined();
+        });
+
+        it('returns 500 when the consent of the session user cannot be loaded', async () => {
+            const controller = new DefaultKeycloakAuthController(
+                getMockKeycloakOidcService(),
+                {
+                    getConsentByEmail: jest
+                        .fn()
+                        .mockRejectedValue(new Error('Parse down')),
+                    saveConsentByEmail: jest.fn()
+                },
+                {
+                    getEmailNotificationSettingsByEmail: jest.fn(),
+                    saveEmailNotificationSettingsByEmail: jest.fn()
+                },
+                SERVER_CONFIG as any
+            );
+            const req = new mockReq({
+                session: {
+                    user: {
+                        sub: 'abc-123',
+                        email: 'alice@example.com',
+                        preferred_username: 'alice',
+                        groups: [],
+                        roles: [],
+                        id_token: 'secret-id-token'
+                    }
+                }
+            });
+            const res = new mockRes();
+
+            await controller.getMe(req, res);
+
+            expect(res.statusCode).toBe(500);
+            expect(res._getJSON().email).toBeUndefined();
         });
     });
 
