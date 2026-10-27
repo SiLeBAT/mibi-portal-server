@@ -1,6 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { Request, Response } from 'express';
-import { logger } from '../../../aspects';
 import { ZomoPlanFilesController } from '../model/controller.model';
 import { AppServerConfiguration } from '../ports';
 import {
@@ -38,120 +37,102 @@ export class DefaultZomoPlanFilesController
         });
     }
 
-    async getZomoPlanFileInfo(
-        req: Request,
-        res: Response
-    ) {
-        logger.info(
-            `${this.constructor.name}.${this.getZomoPlanFileInfo.name}, Request received`
-        );
+    async getZomoPlanFileInfo(req: Request, res: Response) {
+        await this.handleRequest(
+            res,
+            this.getZomoPlanFileInfo.name,
+            async () => {
+                const parseResponse = await this.redirectionTarget.get<
+                    ParseCollectionResponse<ParseZomoPlanFileDTO>,
+                    AxiosResponse<
+                        ParseCollectionResponse<ParseZomoPlanFileDTO>
+                    >,
+                    ParseZomoPlanFileDTO
+                >('classes/Zomo_Plan_File');
 
-        try {
-            const parseResponse = await this.redirectionTarget.get<
-                ParseCollectionResponse<ParseZomoPlanFileDTO>,
-                AxiosResponse<ParseCollectionResponse<ParseZomoPlanFileDTO>>,
-                ParseZomoPlanFileDTO
-            >('classes/Zomo_Plan_File');
+                const zomoPlanFiles: ParseZomoPlanFileDTO[] =
+                    parseResponse.data.results;
+                const dto: ZomoPlanFileCollectionDTO = { zomoPlanFiles: [] };
 
-            const zomoPlanFiles: ParseZomoPlanFileDTO[] =
-                parseResponse.data.results;
-            const dto: ZomoPlanFileCollectionDTO = { zomoPlanFiles: [] };
+                for (let index = 0; index < zomoPlanFiles.length; index++) {
+                    const element = zomoPlanFiles[index];
 
-            for (let index = 0; index < zomoPlanFiles.length; index++) {
-                const element = zomoPlanFiles[index];
-
-                const dtoObj: ZomoPlanFileInfoDTO = {
-                    id: element.objectId,
-                    year: element.year
-                };
-                dto.zomoPlanFiles.push(dtoObj);
-            }
-
-            this.ok(res, dto);
-        } catch (error) {
-            logger.info(
-                `${this.constructor.name}.${this.getZomoPlanFileInfo.name} has thrown an error. ${error}`
-            );
-            this.handleError(res);
-        }
-    }
-
-    async downloadZomoPlanFile(
-        req: Request,
-        res: Response
-    ) {
-        logger.info(
-            `${this.constructor.name}.${this.downloadZomoPlanFile.name}, Request received`
-        );
-
-        try {
-            const requestDTO: ZomoPlanFileInfoDTO = req.body;
-            const parseResponse = await this.redirectionTarget.get<
-                ParseCollectionResponse<ParseZomoPlanFileDTO>
-            >('classes/Zomo_Plan_File', {
-                params: {
-                    where: JSON.stringify({
-                        objectId: requestDTO.id
-                    })
+                    const dtoObj: ZomoPlanFileInfoDTO = {
+                        id: element.objectId,
+                        year: element.year
+                    };
+                    dto.zomoPlanFiles.push(dtoObj);
                 }
-            });
-            const results = parseResponse.data.results;
 
-            if (!results || results.length === 0) {
-                const error: DefaultServerErrorDTO = {
-                    code: 4,
-                    message: `No Zomo Plan File found for id ${requestDTO.id}`
-                };
-                this.axiosError(res, error);
+                this.ok(res, dto);
             }
-
-            const zomoPlanFileEntry = results[0];
-            const fileUrl = zomoPlanFileEntry.zomoPlanFile.url;
-            const fileName = zomoPlanFileEntry.zomoPlanFile.name;
-            const fileResponse = await axios.get(fileUrl, {
-                responseType: 'stream'
-            });
-            const rawContentType = fileResponse.headers['content-type'];
-            const contentType =
-                typeof rawContentType === 'string'
-                    ? rawContentType
-                    : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-            res.setHeader('Content-Type', contentType);
-            res.setHeader(
-                'Content-Disposition',
-                `attachment; filename="${encodeURIComponent(fileName)}"`
-            );
-
-            const rawContentLength = fileResponse.headers['content-length'];
-            if (
-                typeof rawContentLength === 'string' ||
-                typeof rawContentLength === 'number'
-            ) {
-                res.setHeader('Content-Length', rawContentLength);
-            }
-
-            await new Promise<void>((resolve, reject) => {
-                fileResponse.data.pipe(res);
-
-                fileResponse.data.on('end', () => {
-                    resolve();
-                });
-                fileResponse.data.on('error', (err: Error) => {
-                    reject(err);
-                });
-                res.on('error', (err: Error) => {
-                    reject(err);
-                });
-            });
-        } catch (error) {
-            logger.info(
-                `${this.constructor.name}.${this.downloadZomoPlanFile.name} has thrown an error. ${error}`
-            );
-            this.handleError(res);
-        }
+        );
     }
 
-    private handleError(res: Response) {
-        this.fail(res);
+    async downloadZomoPlanFile(req: Request, res: Response) {
+        await this.handleRequest(
+            res,
+            this.downloadZomoPlanFile.name,
+            async () => {
+                const requestDTO: ZomoPlanFileInfoDTO = req.body;
+                const parseResponse = await this.redirectionTarget.get<
+                    ParseCollectionResponse<ParseZomoPlanFileDTO>
+                >('classes/Zomo_Plan_File', {
+                    params: {
+                        where: JSON.stringify({
+                            objectId: requestDTO.id
+                        })
+                    }
+                });
+                const results = parseResponse.data.results;
+
+                if (!results || results.length === 0) {
+                    const error: DefaultServerErrorDTO = {
+                        code: 4,
+                        message: `No Zomo Plan File found for id ${requestDTO.id}`
+                    };
+                    this.axiosError(res, error);
+                }
+
+                const zomoPlanFileEntry = results[0];
+                const fileUrl = zomoPlanFileEntry.zomoPlanFile.url;
+                const fileName = zomoPlanFileEntry.zomoPlanFile.name;
+                const fileResponse = await axios.get(fileUrl, {
+                    responseType: 'stream'
+                });
+                const rawContentType = fileResponse.headers['content-type'];
+                const contentType =
+                    typeof rawContentType === 'string'
+                        ? rawContentType
+                        : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+                res.setHeader('Content-Type', contentType);
+                res.setHeader(
+                    'Content-Disposition',
+                    `attachment; filename="${encodeURIComponent(fileName)}"`
+                );
+
+                const rawContentLength = fileResponse.headers['content-length'];
+                if (
+                    typeof rawContentLength === 'string' ||
+                    typeof rawContentLength === 'number'
+                ) {
+                    res.setHeader('Content-Length', rawContentLength);
+                }
+
+                await new Promise<void>((resolve, reject) => {
+                    fileResponse.data.pipe(res);
+
+                    fileResponse.data.on('end', () => {
+                        resolve();
+                    });
+                    fileResponse.data.on('error', (err: Error) => {
+                        reject(err);
+                    });
+                    res.on('error', (err: Error) => {
+                        reject(err);
+                    });
+                });
+            }
+        );
     }
 }

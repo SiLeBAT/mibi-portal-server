@@ -65,80 +65,56 @@ export class DefaultUsersController
             headers: { 'X-Parse-Application-Id': configuration.appId }
         });
     }
-    async putResetPasswordRequest(
-        req: Request,
-        res: Response
-    ) {
-        logger.info(
-            `${this.constructor.name}.${this.putResetPasswordRequest.name}, Request received`
-        );
-        try {
-            const resetRequest: ResetRequestDTO = req.body;
-            if (!resetRequest.email) {
-                throw new MalformedRequestError(
-                    'Email for password reset not supplied'
-                );
+    async putResetPasswordRequest(req: Request, res: Response) {
+        await this.handleRequest(
+            res,
+            this.putResetPasswordRequest.name,
+            async () => {
+                const resetRequest: ResetRequestDTO = req.body;
+                if (!resetRequest.email) {
+                    throw new MalformedRequestError(
+                        'Email for password reset not supplied'
+                    );
+                }
+                await this.passwordService.requestPasswordReset({
+                    email: resetRequest.email,
+                    host: req.headers['host'] as string,
+                    userAgent: req.headers['user-agent'] as string,
+                    legacySystem: resetRequest.legacySystem
+                });
+                const dto: PasswordResetRequestResponseDTO = {
+                    passwordResetRequest: true,
+                    email: resetRequest.email
+                };
+                this.ok(res, dto);
             }
-            await this.passwordService.requestPasswordReset({
-                email: resetRequest.email,
-                host: req.headers['host'] as string,
-                userAgent: req.headers['user-agent'] as string,
-                legacySystem: resetRequest.legacySystem
-            });
-            const dto: PasswordResetRequestResponseDTO = {
-                passwordResetRequest: true,
-                email: resetRequest.email
-            };
-            logger.info(
-                `${this.constructor.name}.${this.putResetPasswordRequest.name}, Response sent`
-            );
-            this.ok(res, dto);
-        } catch (error) {
-            logger.info(
-                `${this.constructor.name}.${this.putResetPasswordRequest.name} has thrown an error. ${error}`
-            );
-            this.handleError(res, error);
-        }
+        );
     }
-    async patchResetPassword(
-        token: string,
-        req: Request,
-        res: Response
-    ) {
-        logger.info(
-            `${this.constructor.name}.${this.patchResetPassword.name}, Request received`
-        );
-        try {
-            const newPasswordRequest: NewPasswordRequestDTO = req.body;
-            if (!newPasswordRequest.password) {
-                throw new MalformedRequestError(
-                    'New password or token not supplied'
+    async patchResetPassword(token: string, req: Request, res: Response) {
+        await this.handleRequest(
+            res,
+            this.patchResetPassword.name,
+            async () => {
+                const newPasswordRequest: NewPasswordRequestDTO = req.body;
+                if (!newPasswordRequest.password) {
+                    throw new MalformedRequestError(
+                        'New password or token not supplied'
+                    );
+                }
+                await this.passwordService.resetPassword(
+                    token,
+                    newPasswordRequest.password,
+                    newPasswordRequest.legacySystem
                 );
+                const dto: PasswordResetResponseDTO = {
+                    passwordReset: true
+                };
+                this.ok(res, dto);
             }
-            await this.passwordService.resetPassword(
-                token,
-                newPasswordRequest.password,
-                newPasswordRequest.legacySystem
-            );
-            const dto: PasswordResetResponseDTO = {
-                passwordReset: true
-            };
-            logger.info(
-                `${this.constructor.name}.${this.patchResetPassword.name}, Response sent`
-            );
-            this.ok(res, dto);
-        } catch (error) {
-            logger.info(
-                `${this.constructor.name}.${this.patchResetPassword.name} has thrown an error. ${error}`
-            );
-            this.handleError(res, error);
-        }
+        );
     }
     async postLogin(req: Request, res: Response) {
-        logger.info(
-            `${this.constructor.name}.${this.postLogin.name}, Request received`
-        );
-        try {
+        await this.handleRequest(res, this.postLogin.name, async () => {
             const userLoginInfo: UserLoginInformation =
                 this.mapRequestDTOToUserLoginInfo(req);
             const response: LoginResponse = await this.loginService.loginUser(
@@ -160,9 +136,6 @@ export class DefaultUsersController
                 consent,
                 emailNotificationSettings
             );
-            logger.info(
-                `${this.constructor.name}.${this.postLogin.name}, Response sent`
-            );
 
             try {
                 await Parse.User.signUp(
@@ -177,68 +150,32 @@ export class DefaultUsersController
             } finally {
                 this.ok(res, dto);
             }
-        } catch (error) {
-            logger.info(
-                `${this.constructor.name}.${this.postLogin.name} has thrown an error. ${error}`
-            );
-            this.handleError(res, error);
-        }
+        });
     }
 
-    async patchVerification(
-        token: string,
-        res: Response
-    ) {
-        logger.info(
-            `${this.constructor.name}.${this.patchVerification.name}, Request received`
-        );
-        try {
+    async patchVerification(token: string, res: Response) {
+        await this.handleRequest(res, this.patchVerification.name, async () => {
             const username = await this.registrationService.verifyUser(token);
             const dto: ActivationResponseDTO = {
                 activation: true,
                 username
             };
-            logger.info(
-                `${this.constructor.name}.${this.patchVerification.name}, Response sent`
-            );
             this.ok(res, dto);
-        } catch (error) {
-            logger.info(
-                `${this.constructor.name}.${this.patchVerification.name} has thrown an error. ${error}`
-            );
-            this.handleError(res, error);
-        }
+        });
     }
-    async patchActivation(
-        token: string,
-        res: Response
-    ) {
-        logger.info(
-            `${this.constructor.name}.${this.patchActivation.name}, Request received`
-        );
-        try {
+    async patchActivation(token: string, res: Response) {
+        await this.handleRequest(res, this.patchActivation.name, async () => {
             const username = await this.registrationService.activateUser(token);
             const dto: ActivationResponseDTO = {
                 activation: true,
                 username
             };
-            logger.info(
-                `${this.constructor.name}.${this.patchActivation.name}, Response sent`
-            );
             this.ok(res, dto);
-        } catch (error) {
-            logger.info(
-                `${this.constructor.name}.${this.patchActivation.name} has thrown an error. ${error}`
-            );
-            this.handleError(res, error);
-        }
+        });
     }
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     async postRegistration(req: Request, res: Response) {
-        logger.info(
-            `${this.constructor.name}.${this.postRegistration.name}, Request received`
-        );
-        try {
+        await this.handleRequest(res, this.postRegistration.name, async () => {
             const credentials: UserRegistration =
                 this.fromRequestToUserRegistration(req);
             await this.registrationService.registerUser(credentials);
@@ -246,10 +183,6 @@ export class DefaultUsersController
                 registerRequest: true,
                 email: credentials.email
             };
-
-            logger.info(
-                `${this.constructor.name}.${this.postRegistration.name}, Response sent`
-            );
 
             await this.redirectionTarget.post<
                 ParseSingleResponse<unknown>,
@@ -270,16 +203,11 @@ export class DefaultUsersController
                 lastName: credentials.lastName,
                 institution: credentials.institution
             });
-            return this.ok(res, dto);
-        } catch (error) {
-            logger.info(
-                `${this.constructor.name}.${this.postRegistration.name} has thrown an error. ${error}`
-            );
-            this.handleError(res, error);
-        }
+            this.ok(res, dto);
+        });
     }
 
-    private handleError(res: Response, error: Error) {
+    protected handleError(res: Response, error: unknown) {
         if (error instanceof MalformedRequestError) {
             this.clientError(res);
         } else if (error instanceof JsonWebTokenError) {
@@ -370,10 +298,7 @@ export class DefaultUsersController
     }
 
     async patchConsent(req: Request, res: Response) {
-        logger.info(
-            `${this.constructor.name}.${this.patchConsent.name}, Request received`
-        );
-        try {
+        await this.handleRequest(res, this.patchConsent.name, async () => {
             const email = await this.resolveAuthenticatedEmail(req);
             if (!email) {
                 this.unauthorized(res, {
@@ -397,48 +322,33 @@ export class DefaultUsersController
                 dataSaveAgreed: consent.dataSaveAgreed,
                 dataSaveViewed: consent.dataSaveViewed
             };
-            logger.info(
-                `${this.constructor.name}.${this.patchConsent.name}, Response sent`
-            );
             this.ok(res, dto);
-        } catch (error) {
-            logger.info(
-                `${this.constructor.name}.${this.patchConsent.name} has thrown an error. ${error}`
-            );
-            this.handleError(res, error);
-        }
+        });
     }
 
     async patchEmailNotificationSettings(req: Request, res: Response) {
-        logger.info(
-            `${this.constructor.name}.${this.patchEmailNotificationSettings.name}, Request received`
-        );
-        try {
-            const email = await this.resolveAuthenticatedEmail(req);
-            if (!email) {
-                this.unauthorized(res, {
-                    code: SERVER_ERROR_CODE.AUTHORIZATION_ERROR,
-                    message: 'Not authenticated'
-                });
-                return;
+        await this.handleRequest(
+            res,
+            this.patchEmailNotificationSettings.name,
+            async () => {
+                const email = await this.resolveAuthenticatedEmail(req);
+                if (!email) {
+                    this.unauthorized(res, {
+                        code: SERVER_ERROR_CODE.AUTHORIZATION_ERROR,
+                        message: 'Not authenticated'
+                    });
+                    return;
+                }
+                const settings = this.parseEmailNotificationRequest(req.body);
+                const saved =
+                    await this.userEmailNotificationService.saveEmailNotificationSettingsByEmail(
+                        email,
+                        settings
+                    );
+                const dto: UserEmailNotificationResponseDTO = saved;
+                this.ok(res, dto);
             }
-            const settings = this.parseEmailNotificationRequest(req.body);
-            const saved =
-                await this.userEmailNotificationService.saveEmailNotificationSettingsByEmail(
-                    email,
-                    settings
-                );
-            const dto: UserEmailNotificationResponseDTO = saved;
-            logger.info(
-                `${this.constructor.name}.${this.patchEmailNotificationSettings.name}, Response sent`
-            );
-            this.ok(res, dto);
-        } catch (error) {
-            logger.info(
-                `${this.constructor.name}.${this.patchEmailNotificationSettings.name} has thrown an error. ${error}`
-            );
-            this.handleError(res, error);
-        }
+        );
     }
 
     private parseEmailNotificationRequest(

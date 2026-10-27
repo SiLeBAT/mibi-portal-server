@@ -1,6 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { Request, Response } from 'express';
-import { logger } from '../../../aspects';
 import { ClientDashboardController } from '../model/controller.model';
 import { AppServerConfiguration } from '../ports';
 import {
@@ -29,11 +28,7 @@ export class DefaultClientDashboardController
     }
 
     async getDashboardInfo(req: Request, res: Response) {
-        logger.info(
-            `${this.constructor.name}.${this.getDashboardInfo.name}, Request received`
-        );
-
-        try {
+        await this.handleRequest(res, this.getDashboardInfo.name, async () => {
             const parseResponse = await this.redirectionTarget.get<
                 ParseCollectionResponse<ParseClientDashboardDTO>,
                 AxiosResponse<ParseCollectionResponse<ParseClientDashboardDTO>>,
@@ -52,15 +47,6 @@ export class DefaultClientDashboardController
                     : { name: 'Alternative welcome page', isActive: false };
 
             this.ok(res, { clientDashboardInfo: dto });
-        } catch (error) {
-            logger.info(
-                `${this.constructor.name}.${this.getDashboardInfo.name} has thrown an error. ${error}`
-            );
-            this.handleError(res);
-        }
-    }
-
-    private handleError(res: Response) {
-        this.fail(res);
+        });
     }
 }

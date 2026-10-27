@@ -1,6 +1,5 @@
 import { Response } from 'express';
 import moment from 'moment';
-import { logger } from '../../../aspects';
 import { SystemInfoController } from '../model/controller.model';
 import { SystemInformationDTO } from '../model/response.model';
 import { AbstractController } from './abstract.controller';
@@ -30,11 +29,8 @@ export class DefaultSystemInfoController
         this.clientVersion = readClientVersion();
     }
 
-    getSystemInfo(res: Response) {
-        logger.info(
-            `${this.constructor.name}.${this.getSystemInfo.name}, Request received`
-        );
-        try {
+    async getSystemInfo(res: Response) {
+        await this.handleRequest(res, this.getSystemInfo.name, () => {
             if (!(pjson.version && pjson.mibiConfig.lastChange)) {
                 throw new UnknownPackageConfigurationError(
                     "Version number or date of last change can't be determined."
@@ -57,19 +53,11 @@ export class DefaultSystemInfoController
                 keycloakEnabled: this.keycloakEnabled,
                 clientVersion: this.clientVersion
             };
-            logger.info(
-                `${this.constructor.name}.${this.getSystemInfo.name}, Response sent`
-            );
             this.ok(res, dto);
-        } catch (error) {
-            logger.info(
-                `${this.constructor.name}.${this.getSystemInfo.name} has thrown an error. ${error}`
-            );
-            this.handleError(res);
-        }
+        });
     }
 
-    private handleError(res: Response) {
+    protected handleError(res: Response) {
         this.fail(res, 'Unable to retrieve system information');
     }
 }

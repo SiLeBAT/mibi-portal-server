@@ -1,6 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { Request, Response } from 'express';
-import { logger } from '../../../aspects';
 import { InstitutesController } from '../model/controller.model';
 import { AppServerConfiguration } from '../ports';
 import {
@@ -35,11 +34,7 @@ export class DefaultInstituteController
     }
 
     async getInstitutes(req: Request, res: Response) {
-        logger.info(
-            `${this.constructor.name}.${this.getInstitutes.name}, Request received`
-        );
-
-        try {
+        await this.handleRequest(res, this.getInstitutes.name, async () => {
             const parseResponse = await this.redirectionTarget.get<
                 ParseCollectionResponse<ParseInstitutionDTO>,
                 AxiosResponse<ParseCollectionResponse<ParseInstitutionDTO>>,
@@ -62,15 +57,6 @@ export class DefaultInstituteController
             }));
 
             this.ok(res, { institutes: instituteDTOCollection });
-        } catch (error) {
-            logger.info(
-                `${this.constructor.name}.${this.getInstitutes.name} has thrown an error. ${error}`
-            );
-            this.handleError(res);
-        }
-    }
-
-    private handleError(res: Response) {
-        this.fail(res);
+        });
     }
 }

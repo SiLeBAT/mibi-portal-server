@@ -5,7 +5,6 @@ import {
     TokenPayload,
     TokenPort
 } from '../../../app/ports';
-import { logger } from '../../../aspects';
 import { getTokenFromHeader } from '../middleware/token-validator.middleware';
 import { TokensController } from '../model/controller.model';
 import { SERVER_ERROR_CODE } from '../model/enums';
@@ -20,11 +19,8 @@ export class DefaultTokensController
         super();
     }
 
-    postTokens(req: Request, res: Response) {
-        logger.info(
-            `${this.constructor.name}.${this.postTokens.name}, Request received`
-        );
-        try {
+    async postTokens(req: Request, res: Response) {
+        await this.handleRequest(res, this.postTokens.name, () => {
             const oldToken: string | null = getTokenFromHeader(req);
             if (!oldToken) {
                 throw new AuthorizationError('Invalid token');
@@ -36,19 +32,11 @@ export class DefaultTokensController
                 refresh: true,
                 token: token
             };
-            logger.info(
-                `${this.constructor.name}.${this.postTokens.name}, Response sent`
-            );
             this.ok(res, dto);
-        } catch (error) {
-            logger.info(
-                `${this.constructor.name}.${this.postTokens.name} has thrown an error. ${error}`
-            );
-            this.handleError(res, error);
-        }
+        });
     }
 
-    private handleError(res: Response, error: Error) {
+    protected handleError(res: Response, error: unknown) {
         if (
             error instanceof AuthorizationError ||
             error instanceof JsonWebTokenError

@@ -1,6 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { Request, Response } from 'express';
-import { logger } from '../../../aspects';
 import { NRLsController } from '../model/controller.model';
 import { NRLCollectionDTO } from '../model/response.model';
 import { AppServerConfiguration } from '../ports';
@@ -37,11 +36,7 @@ export class DefaultNRLsController
         });
     }
     async getNRLs(req: Request, res: Response) {
-        logger.info(
-            `${this.constructor.name}.${this.getNRLs.name}, Request received`
-        );
-
-        try {
+        await this.handleRequest(res, this.getNRLs.name, async () => {
             const params = {
                 params: {
                     include: ['standardProcedures', 'optionalProcedures']
@@ -81,15 +76,6 @@ export class DefaultNRLsController
             }
 
             this.ok(res, dto);
-        } catch (error) {
-            logger.info(
-                `${this.constructor.name}.${this.getNRLs.name} has thrown an error. ${error}`
-            );
-            this.handleError(res);
-        }
-    }
-
-    private handleError(res: Response) {
-        this.fail(res);
+        });
     }
 }

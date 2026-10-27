@@ -35,13 +35,13 @@ export function buildControllerRouter(
     } = controllers;
 
     // Version root
-    router.get('/v2', (req, res) => {
-        versionRoot.getAPIDefinition(res);
+    router.get('/v2', async (req, res) => {
+        await versionRoot.getAPIDefinition(res);
     });
 
     // System info
-    router.get('/v2/info', (req, res) => {
-        systemInfo.getSystemInfo(res);
+    router.get('/v2/info', async (req, res) => {
+        await systemInfo.getSystemInfo(res);
     });
 
     // Institutes
@@ -80,8 +80,8 @@ export function buildControllerRouter(
     });
 
     // Tokens
-    router.post('/v2/tokens', (req, res) => {
-        tokens.postTokens(req, res);
+    router.post('/v2/tokens', async (req, res) => {
+        await tokens.postTokens(req, res);
     });
 
     // Zomo plan files

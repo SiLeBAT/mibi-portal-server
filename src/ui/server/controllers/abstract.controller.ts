@@ -1,4 +1,5 @@
 import { Response } from 'express';
+import { logger } from '../../../aspects';
 import { Controller } from '../model/controller.model';
 import { MalformedRequestError } from '../model/domain.error';
 import { SERVER_ERROR_CODE } from '../model/enums';
@@ -18,6 +19,34 @@ export interface ParseEntityDTO {
 }
 
 export abstract class AbstractController implements Controller {
+    /**
+     * Runs the logic of an endpoint with the logging and error handling every
+     * endpoint shares. Errors thrown by the operation are passed to
+     * handleError, which concrete controllers can override.
+     *
+     * The operation runs synchronously up to its first await, so a synchronous
+     * operation responds before the returned promise settles.
+     */
+    protected async handleRequest(
+        res: Response,
+        operationName: string,
+        operation: () => void | Promise<void>
+    ): Promise<void> {
+        const context = `${this.constructor.name}.${operationName}`;
+        logger.info(`${context}, Request received`);
+        try {
+            await operation();
+            logger.info(`${context}, Response sent`);
+        } catch (error) {
+            logger.info(`${context} has thrown an error. ${error}`);
+            this.handleError(res, error);
+        }
+    }
+
+    protected handleError(res: Response, _error: unknown): void {
+        this.fail(res);
+    }
+
     protected jsonResponse<T>(
         response: Response,
         code: number,
