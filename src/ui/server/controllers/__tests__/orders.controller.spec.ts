@@ -1,10 +1,25 @@
 import '../../middleware/session.augment';
 import axios from 'axios';
 import {
+    bearer,
+    expiredTestToken,
+    signTestToken,
+    tamperedTestToken,
+    unsignedTestToken
+} from '../../../../__mocks__/jwt';
+import {
     TestContainer,
     createTestContainer
 } from '../../../../__mocks__/test-container';
+import { rebindMocks } from '../../../../__mocks__/util';
+import { APPLICATION_TYPES } from '../../../../app/application.types';
+import {
+    genericUser,
+    getMockUserService
+} from '../../../../app/authentication/application/__mocks__/user.service';
+import { UserService } from '../../../../app/authentication/model/user.model';
 import { OrdersController } from '../../model/controller.model';
+import { SERVER_ERROR_CODE } from '../../model/enums';
 import { SERVER_TYPES } from '../../server.types';
 
 var mockReq = require('mock-express-request');
@@ -213,6 +228,200 @@ describe('DefaultOrdersController', () => {
             await controller.postResults(req, res);
 
             expect(res.statusCode).toBe(500);
+        });
+    });
+});
+
+const USER = { ...genericUser, uniqueId: 'user-1', email: 'owner@lab.de' };
+
+type Endpoint = 'getOrders' | 'getSamplesWithResults' | 'deleteOrders';
+
+// The /orders routes are on the JWT middleware whitelist, so the controller
+// is the only place that authenticates these requests.
+const ENDPOINTS: [Endpoint, string][] = [
+    ['getOrders', 'functions/createOrderList'],
+    ['getSamplesWithResults', 'functions/getSamplesWithResults'],
+    ['deleteOrders', 'functions/deleteOrdersByUser']
+];
+
+describe('DefaultOrdersController authorization', () => {
+    let container: TestContainer | null;
+    let controller: OrdersController;
+    let userService: UserService;
+    let mockAxiosPost: jest.Mock;
+
+    beforeEach(() => {
+        mockAxiosPost = jest
+            .fn()
+            .mockResolvedValue({ data: { result: { parse: 'result' } } });
+        (axios.create as unknown as jest.Mock).mockReturnValue({
+            post: mockAxiosPost
+        });
+
+        container = createTestContainer({
+            serverConfig: SERVER_CONFIG as any,
+            appConfig: APP_CONFIG
+        });
+        userService = getMockUserService();
+        (userService.getUserById as jest.Mock).mockImplementation(
+            (id: string) =>
+                id === USER.uniqueId
+                    ? Promise.resolve(USER)
+                    : Promise.reject(new Error(`No user with id ${id}`))
+        );
+        controller = rebindMocks<OrdersController>(
+            container,
+            SERVER_TYPES.OrdersController,
+            [{ id: APPLICATION_TYPES.UserService, instance: userService }]
+        );
+    });
+
+    afterEach(() => {
+        container = null;
+    });
+
+    async function call(
+        endpoint: Endpoint,
+        authorization?: string,
+        body: object = {}
+    ) {
+        const req = new mockReq({
+            session: {},
+            headers: authorization ? { authorization } : {},
+            body
+        });
+        const res = new mockRes();
+        await controller[endpoint](req, res);
+        return res;
+    }
+
+    describe.each(ENDPOINTS)('%s', (endpoint, cloudFunction) => {
+        describe('without a token', () => {
+            it.each([
+                ['no Authorization header', undefined],
+                ['a non-Bearer scheme', `Basic ${signTestToken('user-1')}`],
+                ['a Bearer scheme without a token', 'Bearer']
+            ])(
+                'answers 401 and does not call Parse for %s',
+                async (_case, authorization) => {
+                    const res = await call(endpoint, authorization);
+
+                    expect(res.statusCode).toBe(401);
+                    expect(res._getJSON()).toEqual({
+                        code: SERVER_ERROR_CODE.AUTHORIZATION_ERROR,
+                        message: 'Not authenticated'
+                    });
+                    expect(mockAxiosPost).not.toHaveBeenCalled();
+                }
+            );
+
+            it('does not accept a user email from the request body instead', async () => {
+                const res = await call(endpoint, undefined, {
+                    userEmail: 'owner@lab.de'
+                });
+
+                expect(res.statusCode).toBe(401);
+                expect(mockAxiosPost).not.toHaveBeenCalled();
+            });
+        });
+
+        describe('with an invalid token', () => {
+            // These reach the generic error handler and answer 500, not 401.
+            // What matters for security is that nothing reaches Parse.
+            it.each([
+                ['a token that is not a JWT', 'not-a-jwt'],
+                [
+                    'a token signed with another secret',
+                    signTestToken('user-1', {}, 'other-secret')
+                ],
+                ['an expired token', expiredTestToken('user-1')],
+                ['an unsigned (alg=none) token', unsignedTestToken('user-1')],
+                ['a token with a tampered payload', tamperedTestToken('user-1')]
+            ])('rejects %s and does not call Parse', async (_case, token) => {
+                const res = await call(endpoint, bearer(token));
+
+                expect(res.statusCode).toBe(500);
+                expect(res._getJSON().code).toBe(
+                    SERVER_ERROR_CODE.UNKNOWN_ERROR
+                );
+                expect(userService.getUserById).not.toHaveBeenCalled();
+                expect(mockAxiosPost).not.toHaveBeenCalled();
+            });
+
+            it('rejects a valid token of a user that does not exist', async () => {
+                const res = await call(
+                    endpoint,
+                    bearer(signTestToken('deleted-user'))
+                );
+
+                expect(res.statusCode).toBe(500);
+                expect(mockAxiosPost).not.toHaveBeenCalled();
+            });
+        });
+
+        describe('with a valid token', () => {
+            it('looks the user up by the token subject', async () => {
+                await call(endpoint, bearer(signTestToken('user-1')));
+
+                expect(userService.getUserById).toHaveBeenCalledWith('user-1');
+            });
+
+            it(`calls ${cloudFunction} with the email of the token's user`, async () => {
+                await call(endpoint, bearer(signTestToken('user-1')));
+
+                expect(mockAxiosPost).toHaveBeenCalledWith(
+                    cloudFunction,
+                    expect.objectContaining({ userEmail: 'owner@lab.de' })
+                );
+            });
+
+            it('ignores a different user email in the request body', async () => {
+                await call(endpoint, bearer(signTestToken('user-1')), {
+                    orderId: 'order-1',
+                    userEmail: 'someone-else@lab.de'
+                });
+
+                const [, payload] = mockAxiosPost.mock.calls[0];
+                expect(payload.userEmail).toBe('owner@lab.de');
+            });
+
+            it('answers 200 with the Parse result', async () => {
+                const res = await call(
+                    endpoint,
+                    bearer(signTestToken('user-1'))
+                );
+
+                expect(res.statusCode).toBe(200);
+                expect(res._getJSON()).toEqual({ parse: 'result' });
+            });
+
+            it('answers 500 when Parse fails', async () => {
+                mockAxiosPost.mockRejectedValue(new Error('Parse down'));
+
+                const res = await call(
+                    endpoint,
+                    bearer(signTestToken('user-1'))
+                );
+
+                expect(res.statusCode).toBe(500);
+            });
+        });
+    });
+
+    describe('getSamplesWithResults', () => {
+        it('passes the requested order id on to Parse', async () => {
+            await call(
+                'getSamplesWithResults',
+                bearer(signTestToken('user-1')),
+                {
+                    orderId: 'order-7'
+                }
+            );
+
+            expect(mockAxiosPost).toHaveBeenCalledWith(
+                'functions/getSamplesWithResults',
+                { orderId: 'order-7', userEmail: 'owner@lab.de' }
+            );
         });
     });
 });
