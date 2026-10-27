@@ -20,6 +20,9 @@ function validateToken(apiRoute: string, secret: string) {
         apiRoute + '/samples',
         apiRoute + '/orders',
         apiRoute + '/orders/samples-with-results',
+        // Authenticated by a shared API key in the api-key middleware, not by
+        // a user JWT, so it bypasses the blanket expressjwt guard.
+        apiRoute + '/orders/results',
         // Keycloak session-based auth routes (no JWT required)
         apiRoute + '/auth/login',
         apiRoute + '/auth/callback',

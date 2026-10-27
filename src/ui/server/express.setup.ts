@@ -14,12 +14,30 @@ import { startHttpServer } from './http-server';
 import { AppComposition } from './composition-root';
 import { PUBLIC_DIR } from './client-version';
 
+/**
+ * Decides which requests bypass CSRF protection.
+ *
+ * Only the machine-to-machine results import does. It authenticates with a
+ * secret the caller sends explicitly, not with an ambient browser credential,
+ * so there is nothing for a cross-site request to ride on: no browser attaches
+ * X-MiBi-Api-Key on its own, and a custom header forces a CORS preflight
+ * anyway. Double-submit protection would only block the legitimate script and
+ * KNIME callers.
+ *
+ * Matched exactly, never by prefix, so the exemption cannot widen to the
+ * cookie-authenticated routes. Exported so that stays regression-tested.
+ */
+export function isCsrfExemptPath(apiRoot: string, path: string): boolean {
+    return path === apiRoot + API_ROUTE.V2 + '/orders/results';
+}
+
 export function initialiseExpress(composition: AppComposition) {
     const serverConfig: ServerConfiguration =
         configurationService.getServerConfiguration();
     const generalConfig: GeneralConfiguration =
         configurationService.getGeneralConfiguration();
     const sessionConfig = configurationService.getSessionConfiguration();
+
     const { doubleCsrfProtection, generateToken } = doubleCsrf({
         getSecret: () => sessionConfig.secret,
         cookieName: 'XSRF-TOKEN',
@@ -34,7 +52,9 @@ export function initialiseExpress(composition: AppComposition) {
         getTokenFromRequest: req => {
             const header = req.headers['x-xsrf-token'] as string | undefined;
             return header ? header.split('|')[0] : '';
-        }
+        },
+        skipCsrfProtection: req =>
+            isCsrfExemptPath(serverConfig.apiRoot, req.path)
     });
 
     const customApp = express();
@@ -96,6 +116,7 @@ export function initialiseExpress(composition: AppComposition) {
         port: serverConfig.port,
         logLevel: generalConfig.logLevel,
         jwtSecret: generalConfig.jwtSecret,
+        resultsApiKey: generalConfig.resultsApiKey,
         publicDir: PUBLIC_DIR
     });
 
