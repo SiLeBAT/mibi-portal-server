@@ -34,6 +34,7 @@ export interface NRLsController extends Controller {
 export interface OrdersController extends Controller {
     getOrders(req: Request, res: Response): Promise<void>;
     getSamplesWithResults(req: Request, res: Response): Promise<void>;
+    postResults(req: Request, res: Response): Promise<void>;
     deleteOrders(req: Request, res: Response): Promise<void>;
 }
 

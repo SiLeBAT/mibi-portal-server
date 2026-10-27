@@ -21,6 +21,9 @@ export interface HttpServerConfiguration {
     port: number;
     logLevel: string;
     jwtSecret: string;
+    // Shared secret guarding POST /v2/orders/results. Empty makes that route
+    // reject every request.
+    resultsApiKey: string;
     publicDir: string;
 }
 
@@ -101,7 +104,10 @@ export function startHttpServer(config: HttpServerConfiguration): void {
     });
 
     // Controller routes
-    app.use(config.apiRoot || '/', buildControllerRouter(config.controllers));
+    app.use(
+        config.apiRoot || '/',
+        buildControllerRouter(config.controllers, config.resultsApiKey)
+    );
 
     app.use(
         (

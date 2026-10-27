@@ -1,5 +1,10 @@
 import { EmailNotificationSettings } from '../../../app/ports';
-import { OrderDTO, SampleDataDTO, SampleMetaDTO } from './shared-dto.model';
+import {
+    OrderDTO,
+    ResultDataValueDTO,
+    SampleDataDTO,
+    SampleMetaDTO
+} from './shared-dto.model';
 
 interface ExcelFileInfo {
     data: string;
@@ -166,7 +171,7 @@ export interface OrderEntryDTO {
     results: string;
 }
 
-export type ResultDataDTO = Record<string, string>;
+export type ResultDataDTO = Record<string, ResultDataValueDTO>;
 
 export interface ResultDTO {
     id: string;
@@ -189,4 +194,25 @@ export interface SamplesWithResultsCollectionDTO {
 
 export interface OrderDeletionResultDTO {
     deletedOrderCount: number;
+}
+
+/** One Result row created by POST /v2/orders/results. */
+export interface StoredResultDTO {
+    objectId: string;
+    sampleObjectId: string;
+    position: number;
+}
+
+/** Counter of an order affected by an import, as shown in the order list. */
+export interface StoredResultsOrderDTO {
+    orderId: string;
+    results: string;
+}
+
+export interface StoreResultsCollectionDTO {
+    storedResultCount: number;
+    orders: StoredResultsOrderDTO[];
+    // Every row created, so a caller can report exactly what it inserted and
+    // remove it again by objectId while the data is still hand-made.
+    created: StoredResultDTO[];
 }

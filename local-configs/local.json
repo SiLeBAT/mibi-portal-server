@@ -37,6 +37,7 @@
   "general": {
     "supportContact": "",
     "logLevel": "trace",
-    "jwtSecret": "localSecret"
+    "jwtSecret": "localSecret",
+    "resultsApiKey": "localResultsApiKey"
   }
 }

@@ -67,3 +67,13 @@ export interface SampleSetDTO {
 export interface OrderDTO {
     sampleSet: SampleSetDTO;
 }
+
+/**
+ * A single analysis result value.
+ *
+ * The LIMS delivers result values as JSON as they are: text, but also numbers
+ * (e.g. "Biotyp": 4, "MHK CIP": 0.5) and null for an empty measurement. The
+ * server passes them through untouched in both directions, so the type is
+ * shared by the import request and the results response.
+ */
+export type ResultDataValueDTO = string | number | boolean | null;
