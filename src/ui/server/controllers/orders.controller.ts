@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { Request, Response } from 'express';
+import { logger } from '../../../aspects';
 import { OrdersController } from '../model/controller.model';
 import { SERVER_ERROR_CODE } from '../model/enums';
 import {
@@ -164,7 +165,7 @@ export class DefaultOrdersController
         return body as StoreResultsRequestDTO;
     }
 
-    private handleError(res: Response, error: Error) {
+    protected handleError(res: Response, error: unknown) {
         if (error instanceof MalformedRequestError) {
             this.clientError(res);
         } else {
