@@ -217,13 +217,6 @@ export class DefaultSamplesController
         if (typeString.includes('multipart/form-data')) {
             returnType = RESOURCE_VIEW_TYPE.XLSX;
         }
-        if (
-            typeString.includes(
-                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-            )
-        ) {
-            returnType = RESOURCE_VIEW_TYPE.XLSX;
-        }
         return returnType;
     }
 

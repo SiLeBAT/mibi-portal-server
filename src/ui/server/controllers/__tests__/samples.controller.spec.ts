@@ -401,8 +401,7 @@ describe('DefaultSamplesController', () => {
             const controller = buildController(container!);
             const req = new mockReq({
                 headers: {
-                    'content-type':
-                        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                    'content-type': 'multipart/form-data; boundary=x'
                 },
                 body: {}
             });
