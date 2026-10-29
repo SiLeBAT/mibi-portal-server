@@ -23,19 +23,6 @@ export function loadParsedSheet(fileName: string): ParsedSampleSheetDTO {
     return JSON.parse(fs.readFileSync(filePath, 'utf8'));
 }
 
-export function listParsedSheets(dataDir: string): string[] {
-    const fileNames = fs
-        .readdirSync(path.join('.', dataDir))
-        .filter(file => file.endsWith('.parsedsheet.json'))
-        .map(file => path.join('.', dataDir, file));
-
-    logger.info(
-        `${fileNames.length} parsed sample sheets in directory ${dataDir} are to be tested`
-    );
-
-    return fileNames;
-}
-
 /**
  * Golden-file helper. Returns the stored expectation so the caller can assert
  * `expect(actual).toEqual(matchGolden(name, actual))`. Under UPDATE_FIXTURES the

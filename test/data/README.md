@@ -64,9 +64,36 @@ The V17 originals are kept alongside for reference and are not used by any test.
 
 ## The `validation/` directory
 
-`MiBi-TEST_Error-Codes_A_v18.xlsx` encodes its own expectations: each row's
-**comment** column lists the validation error codes that row must produce. The spec
-compares that list against what the API returns.
+Since **MPS-167** the validation test data is plain JSON with no excel behind it.
+Edit these files by hand. `validation-errors.spec.ts` picks up every
+`<name>.validation.json` in this directory:
+
+```json
+{
+    "testTitle": "Validation error codes A",
+    "testDescription": "What this file covers",
+    "samples": [
+        {
+            "description": "Why this sample must produce these codes",
+            "sampleData": { "sample_id": "1", "pathogen_avv": "Escherichia coli" },
+            "expectedErrorCodes": [3]
+        }
+    ]
+}
+```
+
+- `sampleData` lists only the non-empty V18 columns (field names as in the
+  _V18 migration_ table above); the spec sends every other column as `''`. An unknown
+  field name fails the test.
+- `expectedErrorCodes: []` means the sample must validate without errors.
+- The sheet meta (sender, analysis, version 18) is the same for all files and lives
+  in the spec.
+- Each file is sent as **one** sheet, so cross-sample rules (e.g. code 3, identical
+  sample id and pathogen) only apply within a file.
+
+`error-codes-a.validation.json` was converted from the former
+`MiBi-TEST_Error-Codes_A_v18.xlsx`. There, the **comment** column held the
+expected codes and the **vvvo** column held the description.
 
 Two rows changed during the V18 migration:
 

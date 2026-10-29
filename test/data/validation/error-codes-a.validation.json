@@ -1,0 +1,1210 @@
+{
+  "testTitle": "Validation error codes A",
+  "testDescription": "Each sample triggers the listed validation error codes (an empty list means the sample must validate cleanly). Migrated from MiBi-TEST_Error-Codes_A_v18.xlsx.",
+  "samples": [
+    {
+      "description": "Code 3, weil \"Ihre Probenummer\" identisch bei identischem Erreger",
+      "sampleData": {
+        "sample_id": "1",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "3",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Probe-Nr"
+      },
+      "expectedErrorCodes": [3]
+    },
+    {
+      "description": "Code 3, weil \"Ihre Probenummer\" identisch bei identischem Erreger",
+      "sampleData": {
+        "sample_id": "1",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "3",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Probe-Nr"
+      },
+      "expectedErrorCodes": [3]
+    },
+    {
+      "description": "Keine Warnung; \"Ihre Probenummer\" identisch bei unterschiedlichen Erregern",
+      "sampleData": {
+        "sample_id": "2",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "-",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Probe-Nr"
+      },
+      "expectedErrorCodes": []
+    },
+    {
+      "description": "Keine Warnung; \"Ihre Probenummer\" identisch bei unterschiedlichen Erregern",
+      "sampleData": {
+        "sample_id": "2",
+        "pathogen_avv": "Salmonella Agona",
+        "pathogen_text": "-",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Probe-Nr"
+      },
+      "expectedErrorCodes": []
+    },
+    {
+      "description": "Code 6, weil \"Probenummer nach AVV DatA\" identisch bei identischem Erreger; zusätzlich Code 68",
+      "sampleData": {
+        "sample_id_avv": "25-1234567-900",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "6, 68",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Probe-Nr"
+      },
+      "expectedErrorCodes": [68, 6]
+    },
+    {
+      "description": "Code 6, weil \"Probenummer nach AVV DatA\" identisch bei identischem Erreger; zusätzlich Code 68",
+      "sampleData": {
+        "sample_id_avv": "25-1234567-900",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "6, 68",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Probe-Nr"
+      },
+      "expectedErrorCodes": [68, 6]
+    },
+    {
+      "description": "\"Probenummer nach AVV DatA\" identisch bei unterschiedlichen Erregern; nur Code 68",
+      "sampleData": {
+        "sample_id_avv": "25-1234567-901",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "68",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Probe-Nr"
+      },
+      "expectedErrorCodes": [68]
+    },
+    {
+      "description": "\"Probenummer nach AVV DatA\" identisch bei unterschiedlichen Erregern; nur Code 68",
+      "sampleData": {
+        "sample_id_avv": "25-1234567-901",
+        "pathogen_avv": "Salmonella Agona",
+        "pathogen_text": "68",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Probe-Nr"
+      },
+      "expectedErrorCodes": [68]
+    },
+    {
+      "description": "Code 120 \"Ihre Probenummer\" identisch bei identischem Erreger und identischer Teilprobennummer; Code 3 nicht anzeigen",
+      "sampleData": {
+        "sample_id": "3",
+        "partial_sample_id": "1",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "120",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Probe-Nr"
+      },
+      "expectedErrorCodes": [120, 120]
+    },
+    {
+      "description": "Code 120 \"Ihre Probenummer\" identisch bei identischem Erreger und identischer Teilprobennummer; Code 3 nicht anzeigen",
+      "sampleData": {
+        "sample_id": "3",
+        "partial_sample_id": "1",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "120",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Probe-Nr"
+      },
+      "expectedErrorCodes": [120, 120]
+    },
+    {
+      "description": "Keine Warnung anzeigen! \"Ihre Probenummer\" identisch bei identischem Erreger und unterschiedlicher Teilprobennummer",
+      "sampleData": {
+        "sample_id": "4",
+        "partial_sample_id": "1",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "-",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Probe-Nr"
+      },
+      "expectedErrorCodes": []
+    },
+    {
+      "description": "Keine Warnung anzeigen! \"Ihre Probenummer\" identisch bei identischem Erreger und unterschiedlicher Teilprobennummer",
+      "sampleData": {
+        "sample_id": "4",
+        "partial_sample_id": "2",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "-",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Probe-Nr"
+      },
+      "expectedErrorCodes": []
+    },
+    {
+      "description": "\"Ihre Probenummer\" identisch bei unterschiedlichen Erregern und identischer Teilprobennummer",
+      "sampleData": {
+        "sample_id": "5",
+        "partial_sample_id": "1",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "-",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Probe-Nr"
+      },
+      "expectedErrorCodes": []
+    },
+    {
+      "description": "\"Ihre Probenummer\" identisch bei unterschiedlichen Erregern und identischer Teilprobennummer",
+      "sampleData": {
+        "sample_id": "5",
+        "partial_sample_id": "1",
+        "pathogen_avv": "Salmonella Agona",
+        "pathogen_text": "-",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Probe-Nr"
+      },
+      "expectedErrorCodes": []
+    },
+    {
+      "description": "Code 121 \"Probenummer nach AVV DatA\" identisch bei identischem Erreger und identischer Teilprobennummer; zusätzlich Code 68; Code 6 nicht anzeigen",
+      "sampleData": {
+        "sample_id_avv": "25-1234567-902",
+        "partial_sample_id": "1",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "121, 68",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Probe-Nr"
+      },
+      "expectedErrorCodes": [68, 121, 121]
+    },
+    {
+      "description": "Code 121 \"Probenummer nach AVV DatA\" identisch bei identischem Erreger und identischer Teilprobennummer; zusätzlich Code 68; Code 6 nicht anzeigen",
+      "sampleData": {
+        "sample_id_avv": "25-1234567-902",
+        "partial_sample_id": "1",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "121, 68",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Probe-Nr"
+      },
+      "expectedErrorCodes": [68, 121, 121]
+    },
+    {
+      "description": "nur Code 68 anzeigen; \"Probenummer nach AVV DatA\" identisch bei identischem Erreger und unterschiedlicher Teilprobennummer",
+      "sampleData": {
+        "sample_id_avv": "25-1234567-903",
+        "partial_sample_id": "1",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "68",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Probe-Nr"
+      },
+      "expectedErrorCodes": [68]
+    },
+    {
+      "description": "nur Code 68 anzeigen; \"Probenummer nach AVV DatA\" identisch bei identischem Erreger und unterschiedlicher Teilprobennummer",
+      "sampleData": {
+        "sample_id_avv": "25-1234567-903",
+        "partial_sample_id": "2",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "68",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Probe-Nr"
+      },
+      "expectedErrorCodes": [68]
+    },
+    {
+      "description": "nur Code 68 anzeigen; \"Probenummer nach AVV DatA\" identisch bei unterschiedlichen Erregern und identischer Teilprobennummer",
+      "sampleData": {
+        "sample_id_avv": "25-1234567-904",
+        "partial_sample_id": "1",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "68",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Probe-Nr"
+      },
+      "expectedErrorCodes": [68]
+    },
+    {
+      "description": "nur Code 68 anzeigen; \"Probenummer nach AVV DatA\" identisch bei unterschiedlichen Erregern und identischer Teilprobennummer",
+      "sampleData": {
+        "sample_id_avv": "25-1234567-904",
+        "partial_sample_id": "1",
+        "pathogen_avv": "Salmonella Agona",
+        "pathogen_text": "68",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Probe-Nr"
+      },
+      "expectedErrorCodes": [68]
+    },
+    {
+      "description": "Code 122 anzeigen; Code 3, 6, 120 und 121 nicht anzeigen",
+      "sampleData": {
+        "sample_id": "6",
+        "sample_id_avv": "25-1234567-905",
+        "partial_sample_id": "1",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "122",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Probe-Nr"
+      },
+      "expectedErrorCodes": [122, 122, 122]
+    },
+    {
+      "description": "Code 122 anzeigen; Code 3, 6, 120 und 121 nicht anzeigen",
+      "sampleData": {
+        "sample_id": "6",
+        "sample_id_avv": "25-1234567-905",
+        "partial_sample_id": "1",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "122",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Probe-Nr"
+      },
+      "expectedErrorCodes": [122, 122, 122]
+    },
+    {
+      "description": "Keine Warnung anzeigen!",
+      "sampleData": {
+        "sample_id": "7",
+        "sample_id_avv": "25-1234567-906",
+        "partial_sample_id": "1",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "-",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Probe-Nr"
+      },
+      "expectedErrorCodes": []
+    },
+    {
+      "description": "Keine Warnung anzeigen!",
+      "sampleData": {
+        "sample_id": "7",
+        "sample_id_avv": "25-1234567-906",
+        "partial_sample_id": "2",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "-",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Probe-Nr"
+      },
+      "expectedErrorCodes": []
+    },
+    {
+      "description": "Keine Warnung",
+      "sampleData": {
+        "sample_id": "8",
+        "sample_id_avv": "25-1234567-907",
+        "partial_sample_id": "1",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "-",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Probe-Nr"
+      },
+      "expectedErrorCodes": []
+    },
+    {
+      "description": "Keine Warnung",
+      "sampleData": {
+        "sample_id": "8",
+        "sample_id_avv": "25-1234567-907",
+        "partial_sample_id": "1",
+        "pathogen_avv": "Salmonella Agona",
+        "pathogen_text": "-",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Probe-Nr"
+      },
+      "expectedErrorCodes": []
+    },
+    {
+      "description": "Keine Probenummer angegeben.",
+      "sampleData": {
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "69",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Probe-Nr"
+      },
+      "expectedErrorCodes": [69, 68, 69]
+    },
+    {
+      "description": "Das Format der Probenummer nach AVV DatA scheint nicht korrekt zu sein.",
+      "sampleData": {
+        "sample_id": "9",
+        "sample_id_avv": "XY12345-031",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "72",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Probe-Nr"
+      },
+      "expectedErrorCodes": [72]
+    },
+    {
+      "description": "Das Format der AVV DatA Teilproben-Nr. scheint nicht korrekt zu sein.",
+      "sampleData": {
+        "sample_id": "10",
+        "sample_id_avv": "25-1234567-110",
+        "partial_sample_id": "N",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "102",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Probe-Nr"
+      },
+      "expectedErrorCodes": [102]
+    },
+    {
+      "description": "Erreger nicht erkannt. Bitte korrigieren oder hier klicken und einen Eintrag auswählen.",
+      "sampleData": {
+        "sample_id": "11",
+        "sample_id_avv": "25-1234567-111",
+        "pathogen_avv": "E.coli",
+        "pathogen_text": "8",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Erreger"
+      },
+      "expectedErrorCodes": [8, 98, 96]
+    },
+    {
+      "description": "Kein Erreger eingetragen.",
+      "sampleData": {
+        "sample_id": "12",
+        "sample_id_avv": "25-1234567-112",
+        "pathogen_text": "10",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Erreger"
+      },
+      "expectedErrorCodes": [10, 96]
+    },
+    {
+      "description": "Erreger erkannt. Eingegebener Code wurde durch Text aus AVV DatA-Katalog Nr. 324 ersetzt.",
+      "sampleData": {
+        "sample_id": "13",
+        "sample_id_avv": "25-1234567-113",
+        "pathogen_avv": "10807|186333|",
+        "pathogen_text": "88",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Erreger"
+      },
+      "expectedErrorCodes": [88]
+    },
+    {
+      "description": "Dieser Erreger wird von keinem BfR-Labor untersucht.",
+      "sampleData": {
+        "sample_id": "14",
+        "sample_id_avv": "25-1234567-114",
+        "pathogen_avv": "Mycobacterium avium",
+        "pathogen_text": "96",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Erreger"
+      },
+      "expectedErrorCodes": [96]
+    },
+    {
+      "description": "Ungültiger Code. Code ist nicht im AVV DatA-Katalog Nr. 324 enthalten.",
+      "sampleData": {
+        "sample_id": "15",
+        "sample_id_avv": "25-1234567-115",
+        "pathogen_avv": "000|000|",
+        "pathogen_text": "98",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Erreger"
+      },
+      "expectedErrorCodes": [8, 98, 96]
+    },
+    {
+      "description": "Datum fehlt. Leerzeichen in Erregertext sollten nicht herausgelöscht werden.",
+      "sampleData": {
+        "sample_id": "16",
+        "sample_id_avv": "25-1234567-116",
+        "pathogen_avv": "Clostridium perfringens-Toxin E",
+        "pathogen_text": "11",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Datum"
+      },
+      "expectedErrorCodes": [11]
+    },
+    {
+      "description": "Dieses Datum gibt es nicht.",
+      "sampleData": {
+        "sample_id": "17",
+        "sample_id_avv": "25-1234567-117",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "12",
+        "sampling_date": "00.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Datum"
+      },
+      "expectedErrorCodes": [12]
+    },
+    {
+      "description": "Datum liegt in der Zukunft.",
+      "sampleData": {
+        "sample_id": "18",
+        "sample_id_avv": "50-1234567-118",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "13",
+        "sampling_date": "01.01.2050",
+        "isolation_date": "02.01.2050",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Datum"
+      },
+      "expectedErrorCodes": [13, 17]
+    },
+    {
+      "description": "Datum fehlt.",
+      "sampleData": {
+        "sample_id": "19",
+        "sample_id_avv": "25-1234567-119",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "15",
+        "sampling_date": "01.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Datum"
+      },
+      "expectedErrorCodes": [15]
+    },
+    {
+      "description": "Dieses Datum gibt es nicht.",
+      "sampleData": {
+        "sample_id": "20",
+        "sample_id_avv": "25-1234567-120",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "16",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "32.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Datum"
+      },
+      "expectedErrorCodes": [16]
+    },
+    {
+      "description": "Datum liegt in der Zukunft.",
+      "sampleData": {
+        "sample_id": "21",
+        "sample_id_avv": "25-1234567-121",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "17",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2050",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Datum"
+      },
+      "expectedErrorCodes": [61, 17, 61]
+    },
+    {
+      "description": "Entweder das Probenahme- oder das Isolationsdatum muss angegeben sein.",
+      "sampleData": {
+        "sample_id": "22",
+        "sample_id_avv": "25-1234567-122",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "19",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Datum"
+      },
+      "expectedErrorCodes": [11, 19, 19, 15]
+    },
+    {
+      "description": "Probenahme erfolgte nach der Isolierung?",
+      "sampleData": {
+        "sample_id": "23",
+        "sample_id_avv": "25-1234567-123",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "20",
+        "sampling_date": "02.01.2025",
+        "isolation_date": "01.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Datum"
+      },
+      "expectedErrorCodes": [20, 20]
+    },
+    {
+      "description": "War die Isolierung wirklich über 1 Jahr nach der Probennahme?",
+      "sampleData": {
+        "sample_id": "24",
+        "sample_id_avv": "24-1234567-124",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "61",
+        "sampling_date": "01.01.2024",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Datum"
+      },
+      "expectedErrorCodes": [61, 61]
+    },
+    {
+      "description": "Datum liegt über 10 Jahre zurück.",
+      "sampleData": {
+        "sample_id": "25",
+        "sample_id_avv": "14-1234567-125",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "62",
+        "sampling_date": "01.01.2014",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Datum"
+      },
+      "expectedErrorCodes": [61, 62, 61]
+    },
+    {
+      "description": "Datum liegt über 10 Jahre zurück.",
+      "sampleData": {
+        "sample_id": "26",
+        "sample_id_avv": "14-1234567-126",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "63",
+        "sampling_date": "01.01.2014",
+        "isolation_date": "02.01.2014",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Datum"
+      },
+      "expectedErrorCodes": [62, 63]
+    },
+    {
+      "description": "Ungültiger Code. Code ist nicht im AVV DatA-Katalog Nr. 313 enthalten.",
+      "sampleData": {
+        "sample_id": "27",
+        "sample_id_avv": "25-1234567-127",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "24",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_avv": "000|000|",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Ort"
+      },
+      "expectedErrorCodes": [24]
+    },
+    {
+      "description": "Ortsname ohne PLZ angegeben.",
+      "sampleData": {
+        "sample_id": "28",
+        "sample_id_avv": "25-1234567-128",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "25",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_text": "Ortsname",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Ort"
+      },
+      "expectedErrorCodes": [25, 25]
+    },
+    {
+      "description": "Keine Postleitzahl. Postleitzahlen bestehen aus 5 Ziffern.",
+      "sampleData": {
+        "sample_id": "29",
+        "sample_id_avv": "25-1234567-129",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "27",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "PLZ",
+        "sampling_location_text": "Test",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Ort"
+      },
+      "expectedErrorCodes": [27, 75]
+    },
+    {
+      "description": "PLZ ohne Ortsname angegeben.",
+      "sampleData": {
+        "sample_id": "30",
+        "sample_id_avv": "25-1234567-130",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "28",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Ort"
+      },
+      "expectedErrorCodes": [28, 28]
+    },
+    {
+      "description": "Ortsangabe fehlt.",
+      "sampleData": {
+        "sample_id": "31",
+        "sample_id_avv": "25-1234567-131",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "64",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Ort"
+      },
+      "expectedErrorCodes": [64, 64, 64]
+    },
+    {
+      "description": "Keine gültige Postleitzahl.",
+      "sampleData": {
+        "sample_id": "32",
+        "sample_id_avv": "25-1234567-132",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "75",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "PLZ",
+        "sampling_location_text": "Test",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Ort"
+      },
+      "expectedErrorCodes": [27, 75]
+    },
+    {
+      "description": "Ungültiger Code. Code ist nicht im AVV DatA-Katalog Nr. 319 enthalten.",
+      "sampleData": {
+        "sample_id": "33",
+        "sample_id_avv": "25-1234567-133",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "33",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "matrix_avv": "000|000|",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Matrix"
+      },
+      "expectedErrorCodes": [33]
+    },
+    {
+      "description": "Bitte geben Sie eine Matrix, ein Tier oder beides an (Code oder Text)!",
+      "sampleData": {
+        "sample_id": "34",
+        "sample_id_avv": "25-1234567-134",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "37",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Matrix"
+      },
+      "expectedErrorCodes": [37, 37, 37]
+    },
+    {
+      "description": "Ungültiger Code. Code ist nicht im AVV DatA-Katalog Nr. 339 enthalten.",
+      "sampleData": {
+        "sample_id": "35",
+        "sample_id_avv": "25-1234567-135",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "99",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_avv": "000|000|",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Matrix"
+      },
+      "expectedErrorCodes": [99]
+    },
+    {
+      "description": "Ungültiger Code. Code ist nicht im AVV DatA-Katalog Nr. 337 enthalten.",
+      "sampleData": {
+        "sample_id": "36",
+        "sample_id_avv": "25-1234567-136",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "100",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "additional_marks_avv": "000|000|",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Matrix"
+      },
+      "expectedErrorCodes": [125]
+    },
+    {
+      "description": "Dieser Code enthält mehrere Facettenwerte einer Facette, obwohl nur ein Facettenwert erlaubt ist.",
+      "sampleData": {
+        "sample_id": "37",
+        "sample_id_avv": "25-1234567-137",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "109",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_avv": "1566|57806|1212-1101,1499-710:1500,63421-1508",
+        "animal_matrix_text": "Schweine; Art/ Quelle/ Stoff - Wildschwein; Kulturform - Wildtier:Haustier; Nutzungs- und Produktionsrichtung - Nutztier",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Matrix"
+      },
+      "expectedErrorCodes": [109]
+    },
+    {
+      "description": "Dies ist ein Hierarchieeintrag. Er ist korrekt, aber so allgemein, dass er nur einen geringen informativen Nutzen hat. Bitte verwenden Sie möglichst einen Basiseintrag plus Facetten.",
+      "sampleData": {
+        "sample_id": "38",
+        "sample_id_avv": "25-1234567-138",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "110",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "matrix_avv": "1945|184709|",
+        "animal_matrix_text": "Eier",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Matrix"
+      },
+      "expectedErrorCodes": [110]
+    },
+    {
+      "description": "Dies ist ein Hierarchieeintrag. Er ist korrekt, aber so allgemein, dass er nur einen geringen informativen Nutzen hat. Bitte verwenden Sie möglichst einen Basiseintrag plus Facetten.",
+      "sampleData": {
+        "sample_id": "39",
+        "sample_id_avv": "25-1234567-139",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "110",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_avv": "1521|57718|",
+        "animal_matrix_text": "Hasenartige",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Matrix"
+      },
+      "expectedErrorCodes": [110]
+    },
+    {
+      "description": "Dies ist ein Basiseintrag, der allerdings noch Facetten benötigt, damit es ein gültiger AVV DatA-Code wird. Bitte ergänzen Sie Facetten. \"Zur Einnahme\" nicht codiert",
+      "sampleData": {
+        "sample_id": "40",
+        "sample_id_avv": "25-1234567-140",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "112",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "matrix_avv": "8952|187520|",
+        "animal_matrix_text": "Fütterungsarzneimittel",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Matrix"
+      },
+      "expectedErrorCodes": [112]
+    },
+    {
+      "description": "Dies ist ein Basiseintrag, der allerdings noch Facetten benötigt, damit es ein gültiger AVV DatA-Code wird. Bitte ergänzen Sie Facetten. \"Ei\" nicht codiert UND Basiscode ohne Facetten",
+      "sampleData": {
+        "sample_id": "41",
+        "sample_id_avv": "25-1234567-141",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "112",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "matrix_avv": "183308|185168|",
+        "animal_matrix_text": "Salat eibasiert",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Matrix"
+      },
+      "expectedErrorCodes": [112]
+    },
+    {
+      "description": "Dies ist ein Basiseintrag, der allerdings noch Facetten benötigt, damit es ein gültiger AVV DatA-Code wird. Bitte ergänzen Sie Facetten. \"Ei\" nicht codiert",
+      "sampleData": {
+        "sample_id": "42",
+        "sample_id_avv": "25-1234567-142",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "112",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "matrix_avv": "183308|185168|7027-7028",
+        "animal_matrix_text": "Salat eibasiert; Besondere Ernährungsform - Aufbaunahrung",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Matrix"
+      },
+      "expectedErrorCodes": [112]
+    },
+    {
+      "description": "Ungültiger Code. Code ist nicht im AVV DatA-Katalog Nr. 322 enthalten.",
+      "sampleData": {
+        "sample_id": "43",
+        "sample_id_avv": "25-1234567-143",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "42",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "control_program_avv": "000|000|",
+        "operations_mode_text": "Grund"
+      },
+      "expectedErrorCodes": [42]
+    },
+    {
+      "description": "Bitte geben Sie einen Probenahmegrund an!",
+      "sampleData": {
+        "sample_id": "44",
+        "sample_id_avv": "25-1234567-144",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "44",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "operations_mode_text": "Grund"
+      },
+      "expectedErrorCodes": [44, 44, 44]
+    },
+    {
+      "description": "Planproben sind normalerweise nicht für das NRL Antibiotikaresistenz bestimmt.",
+      "sampleData": {
+        "sample_id": "45",
+        "sample_id_avv": "25-1234567-145",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "95",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "sampling_reason_avv": "22562|126354|",
+        "operations_mode_text": "Grund"
+      },
+      "expectedErrorCodes": [95]
+    },
+    {
+      "description": "Ungültiger Code. Code ist nicht im AVV DatA-Katalog Nr. 326 enthalten.",
+      "sampleData": {
+        "sample_id": "46",
+        "sample_id_avv": "25-1234567-146",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "101",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "sampling_reason_avv": "000|000|",
+        "operations_mode_text": "Grund"
+      },
+      "expectedErrorCodes": [101]
+    },
+    {
+      "description": "Dies ist ein Hierarchieeintrag. Er ist korrekt, aber so allgemein, dass er nur einen geringen informativen Nutzen hat. Bitte verwenden Sie möglichst einen Basiseintrag.",
+      "sampleData": {
+        "sample_id": "47",
+        "sample_id_avv": "25-1234567-147",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "111",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "sampling_reason_avv": "76037|126364|",
+        "program_reason_text": "Kontrolluntersuchungen",
+        "operations_mode_text": "Grund"
+      },
+      "expectedErrorCodes": [111]
+    },
+    {
+      "description": "Ungültiger Code. Code ist nicht im AVV DatA-Katalog Nr. 328 enthalten.",
+      "sampleData": {
+        "sample_id": "48",
+        "sample_id_avv": "25-1234567-148",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "104",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Test",
+        "operations_mode_text": "Programm",
+        "program_avv": "000|000|"
+      },
+      "expectedErrorCodes": [104]
+    },
+    {
+      "description": "Zeile mit Leerzeichen und Zeilenumbrüchen, darf keinen Fehler erzeugen",
+      "sampleData": {
+        "sample_id": "49",
+        "sample_id_avv": "25-1234567-149",
+        "pathogen_avv": "114 3\n3|2 09\n5|",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_avv": "42342 \n|175490|",
+        "animal_avv": "1566 \n|57806|1\n 212-1019,1334-1342,14\n 57-1459,1473-1002,14 \n99-1500,1585-1593,63421-1512",
+        "matrix_avv": "1946|184733|1582-7022,6843-6892:6952\n:1833 81,14341-7597,183486-6 842,183551-183616,183670-942,1 85085-7678",
+        "control_program_avv": "705 58\n|595 20|",
+        "sampling_reason_avv": "2256 2|1\n2635 4|",
+        "operations_mode_avv": "6272 4|57624|2\n-1453,14 99-710,\n63419-\n63525\n,63420-63452,63422-10474:63445:\n635 59,63423-10566:6343  4:67204",
+        "operations_mode_text": "Alle Codes",
+        "program_avv": "19149 6|\n1896 2\n3|"
+      },
+      "expectedErrorCodes": [88]
+    },
+    {
+      "description": "Ungültiger Code. Code ist nicht im AVV DatA-Katalog Nr. 303 enthalten.",
+      "sampleData": {
+        "sample_id": "50",
+        "sample_id_avv": "25-1234567-150",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "46",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Betriebsart",
+        "operations_mode_avv": "000|000|"
+      },
+      "expectedErrorCodes": [46]
+    },
+    {
+      "description": "Bitte tragen Sie eine Betriebsart ein!",
+      "sampleData": {
+        "sample_id": "51",
+        "sample_id_avv": "25-1234567-151",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "71",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Betriebsart"
+      },
+      "expectedErrorCodes": [71, 71]
+    },
+    {
+      "description": "Männlich UND weiblich",
+      "sampleData": {
+        "sample_id": "52",
+        "sample_id_avv": "25-1234567-152",
+        "pathogen_avv": "Escherichia coli",
+        "pathogen_text": "109",
+        "sampling_date": "01.01.2025",
+        "isolation_date": "02.01.2025",
+        "sampling_location_zip": "12277",
+        "sampling_location_text": "Berlin",
+        "animal_matrix_text": "Test",
+        "program_reason_text": "Betriebsart",
+        "operations_mode_avv": "62727|57609|2-67178,1457-1458:1459,63421-1513",
+        "operations_mode_text": "Tierhaltung; Tiere - Enten; Geschlecht - Männlich, weiblich; Nutzungs- und Produktionsrichtung - Zur Zucht"
+      },
+      "expectedErrorCodes": [109]
+    }
+  ]
+}
