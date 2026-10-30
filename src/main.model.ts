@@ -3,6 +3,8 @@ import { APIDocConfig } from './ui/server/ports';
 export interface ServerConfiguration {
     port: number;
     apiRoot: string;
+    // Version segment of every API route, without slashes: 'v2' -> /v2/info.
+    apiVersion: string;
     publicAPIDoc: APIDocConfig;
 }
 

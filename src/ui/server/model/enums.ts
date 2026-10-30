@@ -8,7 +8,3 @@ export enum SERVER_ERROR_CODE {
     INVALID_VERSION = 7,
     INVALID_EMAIL = 8
 }
-
-export enum API_ROUTE {
-    V2 = '/v2'
-}

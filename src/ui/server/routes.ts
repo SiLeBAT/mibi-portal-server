@@ -15,8 +15,11 @@ import { Controllers } from './server.factory';
  */
 export function buildControllerRouter(
     controllers: Controllers,
-    resultsApiKey: string
+    resultsApiKey: string,
+    apiVersionRoute: string
 ): Router {
+    // Routes are declared without the version and mounted below the configured
+    // one, so a version change only touches the configuration.
     const router = Router();
 
     const {
@@ -35,124 +38,124 @@ export function buildControllerRouter(
     } = controllers;
 
     // Version root
-    router.get('/v2', async (req, res) => {
+    router.get('/', async (req, res) => {
         await versionRoot.getAPIDefinition(res);
     });
 
     // System info
-    router.get('/v2/info', async (req, res) => {
+    router.get('/info', async (req, res) => {
         await systemInfo.getSystemInfo(res);
     });
 
     // Institutes
-    router.get('/v2/institutes', async (req, res) => {
+    router.get('/institutes', async (req, res) => {
         await institutes.getInstitutes(req, res);
     });
 
     // Client dashboard
-    router.get('/v2/client-dashboard-info', async (req, res) => {
+    router.get('/client-dashboard-info', async (req, res) => {
         await clientDashboard.getDashboardInfo(req, res);
     });
 
     // NRLs
-    router.get('/v2/nrls', async (req, res) => {
+    router.get('/nrls', async (req, res) => {
         await nrls.getNRLs(req, res);
     });
 
     // Orders
-    router.get('/v2/orders', async (req, res) => {
+    router.get('/orders', async (req, res) => {
         await orders.getOrders(req, res);
     });
-    router.post('/v2/orders/samples-with-results', async (req, res) => {
+    router.post('/orders/samples-with-results', async (req, res) => {
         await orders.getSamplesWithResults(req, res);
     });
     // Machine-to-machine: authenticated by a shared API key rather than by a
     // user token, so the guard is mounted here on the route itself.
     router.post(
-        '/v2/orders/results',
+        '/orders/results',
         requireApiKey(resultsApiKey),
         async (req, res) => {
             await orders.postResults(req, res);
         }
     );
-    router.delete('/v2/orders', async (req, res) => {
+    router.delete('/orders', async (req, res) => {
         await orders.deleteOrders(req, res);
     });
 
     // Tokens
-    router.post('/v2/tokens', async (req, res) => {
+    router.post('/tokens', async (req, res) => {
         await tokens.postTokens(req, res);
     });
 
     // Zomo plan files
-    router.get('/v2/zomo-plan-file', async (req, res) => {
+    router.get('/zomo-plan-file', async (req, res) => {
         await zomoPlanFiles.getZomoPlanFileInfo(req, res);
     });
-    router.put('/v2/zomo-plan-file/download', async (req, res) => {
+    router.put('/zomo-plan-file/download', async (req, res) => {
         await zomoPlanFiles.downloadZomoPlanFile(req, res);
     });
 
     // Samples
-    router.put('/v2/samples', uploadToMemory, async (req, res) => {
+    router.put('/samples', uploadToMemory, async (req, res) => {
         await samples.putSamples(req, res);
     });
-    router.put('/v2/samples/validated', async (req, res) => {
+    router.put('/samples/validated', async (req, res) => {
         await samples.putValidated(req, res);
     });
-    router.post('/v2/samples/submitted', async (req, res) => {
+    router.post('/samples/submitted', async (req, res) => {
         await samples.postSubmitted(req, res);
     });
 
     // Users
-    router.put('/v2/users/reset-password-request', async (req, res) => {
+    router.put('/users/reset-password-request', async (req, res) => {
         await users.putResetPasswordRequest(req, res);
     });
-    router.patch('/v2/users/reset-password/:token', async (req, res) => {
+    router.patch('/users/reset-password/:token', async (req, res) => {
         await users.patchResetPassword(String(req.params.token), req, res);
     });
-    router.post('/v2/users/login', async (req, res) => {
+    router.post('/users/login', async (req, res) => {
         await users.postLogin(req, res);
     });
-    router.patch('/v2/users/verification/:token', async (req, res) => {
+    router.patch('/users/verification/:token', async (req, res) => {
         await users.patchVerification(String(req.params.token), res);
     });
-    router.patch('/v2/users/activation/:token', async (req, res) => {
+    router.patch('/users/activation/:token', async (req, res) => {
         await users.patchActivation(String(req.params.token), res);
     });
-    router.post('/v2/users/registration', (req, res) => {
+    router.post('/users/registration', (req, res) => {
         users.postRegistration(req, res);
     });
-    router.patch('/v2/users/consent', async (req, res) => {
+    router.patch('/users/consent', async (req, res) => {
         await users.patchConsent(req, res);
     });
-    router.patch('/v2/users/email-notifications', async (req, res) => {
+    router.patch('/users/email-notifications', async (req, res) => {
         await users.patchEmailNotificationSettings(req, res);
     });
 
     // Keycloak admin
-    router.get('/v2/admin/actors/pending', async (req, res) => {
+    router.get('/admin/actors/pending', async (req, res) => {
         await keycloakAdmin.getPendingActors(req, res);
     });
-    router.post('/v2/admin/actors/:sub/enable', async (req, res) => {
+    router.post('/admin/actors/:sub/enable', async (req, res) => {
         await keycloakAdmin.postEnableActor(req, res);
     });
-    router.post('/v2/admin/actors/:sub/disable', async (req, res) => {
+    router.post('/admin/actors/:sub/disable', async (req, res) => {
         await keycloakAdmin.postDisableActor(req, res);
     });
 
     // Keycloak auth
-    router.get('/v2/auth/login', async (req, res) => {
+    router.get('/auth/login', async (req, res) => {
         await keycloakAuth.getLogin(req, res);
     });
-    router.get('/v2/auth/callback', async (req, res) => {
+    router.get('/auth/callback', async (req, res) => {
         await keycloakAuth.getCallback(req, res);
     });
-    router.get('/v2/auth/me', async (req, res) => {
+    router.get('/auth/me', async (req, res) => {
         await keycloakAuth.getMe(req, res);
     });
-    router.post('/v2/auth/logout', async (req, res) => {
+    router.post('/auth/logout', async (req, res) => {
         await keycloakAuth.postLogout(req, res);
     });
 
-    return router;
+    return Router().use(apiVersionRoute, router);
 }

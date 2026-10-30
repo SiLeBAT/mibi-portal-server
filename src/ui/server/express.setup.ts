@@ -1,6 +1,5 @@
 import { logger } from '../../aspects';
 import { GeneralConfiguration, ServerConfiguration } from '../../main.model';
-import { API_ROUTE } from './ports';
 
 import express from 'express';
 import session from 'express-session';
@@ -27,8 +26,12 @@ import { PUBLIC_DIR } from './client-version';
  * Matched exactly, never by prefix, so the exemption cannot widen to the
  * cookie-authenticated routes. Exported so that stays regression-tested.
  */
-export function isCsrfExemptPath(apiRoot: string, path: string): boolean {
-    return path === apiRoot + API_ROUTE.V2 + '/orders/results';
+export function isCsrfExemptPath(
+    apiRoot: string,
+    apiVersionRoute: string,
+    path: string
+): boolean {
+    return path === apiRoot + apiVersionRoute + '/orders/results';
 }
 
 export function initialiseExpress(composition: AppComposition) {
@@ -37,6 +40,7 @@ export function initialiseExpress(composition: AppComposition) {
     const generalConfig: GeneralConfiguration =
         configurationService.getGeneralConfiguration();
     const sessionConfig = configurationService.getSessionConfiguration();
+    const apiVersionRoute = '/' + serverConfig.apiVersion;
 
     const { doubleCsrfProtection, generateToken } = doubleCsrf({
         getSecret: () => sessionConfig.secret,
@@ -54,7 +58,7 @@ export function initialiseExpress(composition: AppComposition) {
             return header ? header.split('|')[0] : '';
         },
         skipCsrfProtection: req =>
-            isCsrfExemptPath(serverConfig.apiRoot, req.path)
+            isCsrfExemptPath(serverConfig.apiRoot, apiVersionRoute, req.path)
     });
 
     const customApp = express();
@@ -106,13 +110,15 @@ export function initialiseExpress(composition: AppComposition) {
         }
     );
 
-    customApp.use(resolveActorContext(composition.actorContextService));
+    customApp.use(
+        resolveActorContext(composition.actorContextService, apiVersionRoute)
+    );
 
     startHttpServer({
         controllers: composition.controllers,
         customApp,
         apiRoot: serverConfig.apiRoot,
-        apiVersion: API_ROUTE.V2,
+        apiVersionRoute,
         port: serverConfig.port,
         logLevel: generalConfig.logLevel,
         jwtSecret: generalConfig.jwtSecret,
