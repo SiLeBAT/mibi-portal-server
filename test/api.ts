@@ -13,9 +13,9 @@ import {
     PutSamplesParsedSheetRequestDTO
 } from './parsed-sample-sheet.model';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { API_ROUTE } from '../src/ui/server/model/enums';
 
 const API_URL = config.get('apiUrl');
+const API_VERSION_ROUTE = '/' + config.get<string>('server.apiVersion');
 
 /**
  * CSRF bootstrap.
@@ -35,7 +35,7 @@ async function getCsrfSession(): Promise<{ cookie: string; token: string }> {
 
     const response = await axios.request({
         method: 'GET',
-        url: API_URL + API_ROUTE.V2 + '/info',
+        url: API_URL + API_VERSION_ROUTE + '/info',
         validateStatus: () => true
     });
 
@@ -45,7 +45,7 @@ async function getCsrfSession(): Promise<{ cookie: string; token: string }> {
 
     if (!xsrf) {
         throw new Error(
-            `No XSRF-TOKEN cookie returned by GET ${API_ROUTE.V2}/info ` +
+            `No XSRF-TOKEN cookie returned by GET ${API_VERSION_ROUTE}/info ` +
                 `(status ${response.status}). The API is unreachable or no longer ` +
                 `issues CSRF tokens — check the stack is up at ${API_URL}.`
         );
@@ -73,8 +73,8 @@ async function csrfHeaders(): Promise<Record<string, string>> {
 }
 
 export class Api {
-    static readonly SAMPLES_ENDPOINT = API_ROUTE.V2 + '/samples';
-    static readonly SAMPLES_VALIDATED_ENDPOINT = API_ROUTE.V2 + '/samples/validated';
+    static readonly SAMPLES_ENDPOINT = API_VERSION_ROUTE + '/samples';
+    static readonly SAMPLES_VALIDATED_ENDPOINT = API_VERSION_ROUTE + '/samples/validated';
 
     /**
      * PUT /v2/samples with the browser-parsed sample sheet (MPS-312).

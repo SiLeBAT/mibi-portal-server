@@ -34,7 +34,7 @@ describe('resolveActorContext middleware', () => {
         const res = mockResponse();
         const next: NextFunction = jest.fn();
 
-        await resolveActorContext(svc)(req, res, next);
+        await resolveActorContext(svc, '/v2')(req, res, next);
 
         expect(svc.resolveActor).not.toHaveBeenCalled();
         expect(next).toHaveBeenCalledWith();
@@ -57,7 +57,7 @@ describe('resolveActorContext middleware', () => {
         const res = mockResponse();
         const next: NextFunction = jest.fn();
 
-        await resolveActorContext(svc)(req, res, next);
+        await resolveActorContext(svc, '/v2')(req, res, next);
 
         expect(req.currentActor).toEqual(ALICE);
         expect(req.session.actor).toEqual(ALICE);
@@ -84,7 +84,7 @@ describe('resolveActorContext middleware', () => {
         const res = mockResponse();
         const next: NextFunction = jest.fn();
 
-        await resolveActorContext(svc)(req, res, next);
+        await resolveActorContext(svc, '/v2')(req, res, next);
 
         expect(res.status).toHaveBeenCalledWith(500);
         expect(res.json).toHaveBeenCalledWith(
@@ -115,7 +115,7 @@ describe('resolveActorContext middleware', () => {
         const res = mockResponse();
         const next: NextFunction = jest.fn();
 
-        await resolveActorContext(svc)(req, res, next);
+        await resolveActorContext(svc, '/v2')(req, res, next);
 
         expect(svc.resolveActor).not.toHaveBeenCalled();
         expect(next).toHaveBeenCalledWith();

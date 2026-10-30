@@ -17,7 +17,8 @@ export interface HttpServerConfiguration {
     // CSRF, actor context) wired up in express.setup.ts.
     customApp: Application;
     apiRoot: string;
-    apiVersion: string;
+    // The configured API version as a route segment, e.g. '/v2'.
+    apiVersionRoute: string;
     port: number;
     logLevel: string;
     jwtSecret: string;
@@ -87,9 +88,9 @@ export function startHttpServer(config: HttpServerConfiguration): void {
     app.use(morgan(mapLevelToMorganFormat(config.logLevel)));
     app.use(express.static(config.publicDir));
 
-    const apiPath = config.apiRoot + config.apiVersion;
+    const apiPath = config.apiRoot + config.apiVersionRoute;
     app.use(
-        config.apiRoot + '/' + config.apiVersion,
+        config.apiRoot + '/' + config.apiVersionRoute,
         swaggerUi.serve,
         swaggerUi.setup(undefined, {
             swaggerUrl: apiPath
@@ -106,7 +107,11 @@ export function startHttpServer(config: HttpServerConfiguration): void {
     // Controller routes
     app.use(
         config.apiRoot || '/',
-        buildControllerRouter(config.controllers, config.resultsApiKey)
+        buildControllerRouter(
+            config.controllers,
+            config.resultsApiKey,
+            config.apiVersionRoute
+        )
     );
 
     app.use(
