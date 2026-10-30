@@ -2,12 +2,16 @@ import { isCsrfExemptPath } from '../express.setup';
 
 describe('isCsrfExemptPath', () => {
     it('exempts the machine-to-machine results import', () => {
-        expect(isCsrfExemptPath('', '/v2/orders/results')).toBe(true);
+        expect(isCsrfExemptPath('', '/v2', '/v2/orders/results')).toBe(true);
     });
 
     it('honours a configured api root', () => {
-        expect(isCsrfExemptPath('/api', '/api/v2/orders/results')).toBe(true);
-        expect(isCsrfExemptPath('/api', '/v2/orders/results')).toBe(false);
+        expect(isCsrfExemptPath('/api', '/v2', '/api/v2/orders/results')).toBe(
+            true
+        );
+        expect(isCsrfExemptPath('/api', '/v2', '/v2/orders/results')).toBe(
+            false
+        );
     });
 
     it.each([
@@ -21,14 +25,21 @@ describe('isCsrfExemptPath', () => {
         '/v2/auth/logout',
         '/v2/tokens'
     ])('does not exempt %s', path => {
-        expect(isCsrfExemptPath('', path)).toBe(false);
+        expect(isCsrfExemptPath('', '/v2', path)).toBe(false);
+    });
+
+    it('honours the configured api version', () => {
+        expect(isCsrfExemptPath('', '/v3', '/v3/orders/results')).toBe(true);
+        expect(isCsrfExemptPath('', '/v3', '/v2/orders/results')).toBe(false);
     });
 
     it('matches exactly, so the exemption cannot widen by prefix', () => {
         // A startsWith-style predicate would hand CSRF exemption to anything
         // nested under the results path.
-        expect(isCsrfExemptPath('', '/v2/orders/results/extra')).toBe(false);
-        expect(isCsrfExemptPath('', '/v2/orders/results2')).toBe(false);
-        expect(isCsrfExemptPath('', '/v2/orders/result')).toBe(false);
+        expect(isCsrfExemptPath('', '/v2', '/v2/orders/results/extra')).toBe(
+            false
+        );
+        expect(isCsrfExemptPath('', '/v2', '/v2/orders/results2')).toBe(false);
+        expect(isCsrfExemptPath('', '/v2', '/v2/orders/result')).toBe(false);
     });
 });

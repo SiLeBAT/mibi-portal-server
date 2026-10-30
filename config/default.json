@@ -13,6 +13,8 @@
     "server": {
         "port": 3000,
         "apiRoot": "",
+        "_comment_apiVersion": "Version segment of every API route, e.g. v2 -> /v2/info. Change it here, not in the code.",
+        "apiVersion": "v2",
         "publicAPIDoc": {
             "/info": ["get"],
             "/samples/submitted": ["post"],

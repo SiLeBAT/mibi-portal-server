@@ -4,13 +4,14 @@ import { logger } from '../../../aspects';
 import './session.augment';
 
 export function resolveActorContext(
-    actorContextService: ActorContextService
+    actorContextService: ActorContextService,
+    apiVersionRoute: string
 ): RequestHandler {
     const handler = async (req: Request, res: Response, next: NextFunction) => {
         // Auth endpoints must remain reachable even when actor resolution fails,
         // otherwise a bad session permanently locks the user out — login and
         // logout would both 500 before their controllers run.
-        if (req.path?.startsWith('/v2/auth/')) {
+        if (req.path?.startsWith(apiVersionRoute + '/auth/')) {
             next();
             return;
         }
