@@ -95,7 +95,8 @@ export class DefaultOrdersController
                     userEmail: user.email
                 });
 
-                this.ok(res, parseResponse.data.result);
+                // Not through ok(): result values are passed on untouched.
+                this.jsonResponse(res, 200, parseResponse.data.result);
             }
         );
     }

@@ -22,6 +22,10 @@ class TestController extends AbstractController {
     respondOk(res: Response) {
         this.ok(res, { done: true });
     }
+
+    respondOkWith(res: Response, dto: object) {
+        this.ok(res, dto);
+    }
 }
 
 class OverridingController extends TestController {
@@ -48,6 +52,20 @@ describe('AbstractController.handleRequest', () => {
 
         expect(res.statusCode).toBe(200);
         expect(res._getJSON()).toEqual({ done: true });
+    });
+
+    it('sends trimmed strings in an ok response', () => {
+        const res = new mockRes();
+
+        controller.respondOkWith(res, {
+            firstName: ' Max\n',
+            sample_id: { value: ' 1 ', oldValue: ' 1 ' }
+        });
+
+        expect(res._getJSON()).toEqual({
+            firstName: 'Max',
+            sample_id: { value: '1', oldValue: ' 1 ' }
+        });
     });
 
     it('awaits an asynchronous operation before resolving', async () => {

@@ -4,6 +4,7 @@ import { Controller } from '../model/controller.model';
 import { MalformedRequestError } from '../model/domain.error';
 import { SERVER_ERROR_CODE } from '../model/enums';
 import { DefaultServerErrorDTO } from '../model/response.model';
+import { trimStrings } from '../trim-strings';
 
 export interface ParseCollectionResponse<T> {
     results: T[];
@@ -57,7 +58,7 @@ export abstract class AbstractController implements Controller {
 
     protected ok<T>(response: Response, dto?: T): Response {
         if (dto) {
-            return this.jsonResponse<T>(response, 200, dto);
+            return this.jsonResponse<T>(response, 200, trimStrings(dto));
         } else {
             return response.sendStatus(200);
         }
