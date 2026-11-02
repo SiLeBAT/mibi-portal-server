@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { requireApiKey } from './middleware/api-key.middleware';
 import { uploadToMemory } from './middleware/file-upload.middleware';
+import { trimRequestBody } from './middleware/trim-request-body.middleware';
 import { Controllers } from './server.factory';
 
 /**
@@ -37,6 +38,19 @@ export function buildControllerRouter(
         keycloakAdmin
     } = controllers;
 
+    // Machine-to-machine: authenticated by a shared API key rather than by a
+    // user token, so the guard is mounted here on the route itself. Registered
+    // ahead of trimRequestBody because result values are forwarded untouched.
+    router.post(
+        '/orders/results',
+        requireApiKey(resultsApiKey),
+        async (req, res) => {
+            await orders.postResults(req, res);
+        }
+    );
+
+    router.use(trimRequestBody);
+
     // Version root
     router.get('/', async (req, res) => {
         await versionRoot.getAPIDefinition(res);
@@ -69,15 +83,6 @@ export function buildControllerRouter(
     router.post('/orders/samples-with-results', async (req, res) => {
         await orders.getSamplesWithResults(req, res);
     });
-    // Machine-to-machine: authenticated by a shared API key rather than by a
-    // user token, so the guard is mounted here on the route itself.
-    router.post(
-        '/orders/results',
-        requireApiKey(resultsApiKey),
-        async (req, res) => {
-            await orders.postResults(req, res);
-        }
-    );
     router.delete('/orders', async (req, res) => {
         await orders.deleteOrders(req, res);
     });

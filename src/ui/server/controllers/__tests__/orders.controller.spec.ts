@@ -423,5 +423,19 @@ describe('DefaultOrdersController authorization', () => {
                 { orderId: 'order-7', userEmail: 'owner@lab.de' }
             );
         });
+
+        it('passes result values on untouched', async () => {
+            const result = { samples: [{ results: { Biotyp: ' 4 \n' } }] };
+            mockAxiosPost.mockResolvedValueOnce({ data: { result } });
+
+            const res = await call(
+                'getSamplesWithResults',
+                bearer(signTestToken('user-1')),
+                { orderId: 'order-7' }
+            );
+
+            expect(res.statusCode).toBe(200);
+            expect(res._getJSON()).toEqual(result);
+        });
     });
 });
