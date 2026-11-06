@@ -2,7 +2,7 @@
   "openapi": "3.0.2",
   "info": {
     "title": "MiBi-Portal Server",
-    "description": "This is the api of the MiBi-Portal server",
+    "description": "This is the api of the MiBi-Portal server.\n\n**CSRF protection.** Every request other than GET, HEAD and OPTIONS needs a CSRF token, except `POST /orders/results`. Any GET answers with an `XSRF-TOKEN` cookie; send that cookie back together with its value in the `X-XSRF-TOKEN` header. A missing or wrong token is answered with 403.\n\n**Whitespace.** The server removes leading and trailing whitespace and line breaks from every string of a request body and of a successful response. Exceptions: `password` and `oldValue` are kept as sent, and the result values of `POST /orders/results` and `POST /orders/samples-with-results` are passed on untouched.",
     "contact": {
       "email": "mibi-portal@bfr.bund.de"
     },
@@ -10,7 +10,7 @@
       "name": "MIT",
       "url": "https://opensource.org/licenses/MIT"
     },
-    "version": "2.1.0"
+    "version": "2.2.0"
   },
   "externalDocs": {
     "description": "Find out more about the MiBi-Portal",
@@ -18,7 +18,7 @@
   },
   "servers": [
     {
-      "url": "https://mibi-portal.bfr.bund.de/v2"
+      "url": "/v2"
     }
   ],
   "tags": [
@@ -49,6 +49,26 @@
     {
       "name": "Token",
       "description": "Operations on tokens"
+    },
+    {
+      "name": "NRL",
+      "description": "National reference laboratories"
+    },
+    {
+      "name": "Order",
+      "description": "Orders of the logged-in user and their analysis results"
+    },
+    {
+      "name": "ZoMo",
+      "description": "ZoMo plan files"
+    },
+    {
+      "name": "Auth",
+      "description": "Keycloak login (session cookie)"
+    },
+    {
+      "name": "Admin",
+      "description": "Administration of Keycloak accounts; needs the mibi-admin role"
     }
   ],
   "paths": {
@@ -83,8 +103,8 @@
         "tags": [
           "Sample"
         ],
-        "summary": "Convert a sample set JSON to an Einsendebogen excel or vice versa",
-        "description": "- JSON to Excel = application/json to multipart/form-data \n- Excel to JSON = multipart/form-data to application/json",
+        "summary": "Convert a sample set to an Einsendebogen excel file or enrich a parsed sample sheet",
+        "description": "The request body is JSON in one of two forms:\n- `parsedSampleSheet`: an Einsendebogen that was already read into JSON. The server assigns each sample its NRL and default analysis and answers with the order.\n- `order`: an order, to be converted into an Einsendebogen excel file.\n\nRaw excel uploads (`multipart/form-data`) are no longer accepted and are answered with 400.\n\nThe `Accept` header selects the answer: `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` returns the Einsendebogen as a base64 encoded file, anything else returns the order as JSON.",
         "requestBody": {
           "$ref": "#/components/requestBodies/PutSamplesRequest"
         },
@@ -94,18 +114,37 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PutSamplesJSONResponseData"
-                }
-              },
-              "multipart/form-data": {
-                "schema": {
-                  "$ref": "#/components/schemas/PutSamplesXLSXResponseData"
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/PutSamplesJSONResponseData"
+                    },
+                    {
+                      "$ref": "#/components/schemas/PutSamplesXLSXResponseData"
+                    }
+                  ]
                 }
               }
             }
           },
           "400": {
             "$ref": "#/components/responses/Standard400ErrorResponse"
+          },
+          "422": {
+            "description": "The Einsendebogen has an outdated version (code 7) or an invalid email address (code 8)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/InvalidVersionError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Error"
+                    }
+                  ]
+                }
+              }
+            }
           },
           "500": {
             "$ref": "#/components/responses/Standard500ErrorResponse"
@@ -157,7 +196,7 @@
     "/samples/validated": {
       "put": {
         "operationId": "putValidated",
-        "description": "A user token can be supplied to aid in the validation process.",
+        "description": "Can be called without a token. With a valid token the validation also checks the data against the user.",
         "tags": [
           "Sample"
         ],
@@ -182,7 +221,13 @@
           "500": {
             "$ref": "#/components/responses/Standard500ErrorResponse"
           }
-        }
+        },
+        "security": [
+          {},
+          {
+            "BearerAuth": []
+          }
+        ]
       }
     },
     "/users/login": {
@@ -433,6 +478,660 @@
           }
         ]
       }
+    },
+    "/": {
+      "get": {
+        "tags": [
+          "Util"
+        ],
+        "summary": "Get this API definition",
+        "operationId": "getAPIDefinition",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "OpenAPI document"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/Standard500ErrorResponse"
+          }
+        }
+      }
+    },
+    "/client-dashboard-info": {
+      "get": {
+        "tags": [
+          "Util"
+        ],
+        "summary": "Get the welcome page shown by the client",
+        "operationId": "getDashboardInfo",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientDashboardInfoContainer"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/Standard500ErrorResponse"
+          }
+        }
+      }
+    },
+    "/nrls": {
+      "get": {
+        "tags": [
+          "NRL"
+        ],
+        "summary": "Get all NRLs with their analysis procedures",
+        "operationId": "getNRLs",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NRLContainer"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/Standard500ErrorResponse"
+          }
+        }
+      }
+    },
+    "/orders": {
+      "get": {
+        "tags": [
+          "Order"
+        ],
+        "summary": "Get the orders of the logged-in user",
+        "operationId": "getOrders",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderCollection"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedErrorResponse"
+          },
+          "500": {
+            "$ref": "#/components/responses/Standard500ErrorResponse"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Order"
+        ],
+        "summary": "Delete all orders of the logged-in user",
+        "operationId": "deleteOrders",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderDeletionResult"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedErrorResponse"
+          },
+          "500": {
+            "$ref": "#/components/responses/Standard500ErrorResponse"
+          }
+        }
+      }
+    },
+    "/orders/samples-with-results": {
+      "post": {
+        "tags": [
+          "Order"
+        ],
+        "summary": "Get the samples of an order together with their results",
+        "operationId": "getSamplesWithResults",
+        "description": "The result values are passed on untouched.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "The order to read",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "orderId"
+                ],
+                "properties": {
+                  "orderId": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SamplesWithResultsCollection"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedErrorResponse"
+          },
+          "500": {
+            "$ref": "#/components/responses/Standard500ErrorResponse"
+          }
+        }
+      }
+    },
+    "/orders/results": {
+      "post": {
+        "tags": [
+          "Order"
+        ],
+        "summary": "Store analysis results of the BfR",
+        "operationId": "postResults",
+        "description": "Machine-to-machine import. Needs the API key instead of a user token and no CSRF token. The values are stored as sent; whitespace is not removed.",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "The results to store",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StoreResultsRequestData"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StoreResultsCollection"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Standard400ErrorResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedErrorResponse"
+          },
+          "422": {
+            "$ref": "#/components/responses/Standard422ErrorResponse"
+          },
+          "500": {
+            "$ref": "#/components/responses/Standard500ErrorResponse"
+          }
+        }
+      }
+    },
+    "/zomo-plan-file": {
+      "get": {
+        "tags": [
+          "ZoMo"
+        ],
+        "summary": "List the available ZoMo plan files",
+        "operationId": "getZomoPlanFileInfo",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ZomoPlanFileContainer"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/Standard500ErrorResponse"
+          }
+        }
+      }
+    },
+    "/zomo-plan-file/download": {
+      "put": {
+        "tags": [
+          "ZoMo"
+        ],
+        "summary": "Download a ZoMo plan file",
+        "operationId": "downloadZomoPlanFile",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "The file to download, as listed by GET /zomo-plan-file",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "id"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The file; its name is given in the Content-Disposition header",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedErrorResponse"
+          },
+          "422": {
+            "$ref": "#/components/responses/Standard422ErrorResponse"
+          },
+          "500": {
+            "$ref": "#/components/responses/Standard500ErrorResponse"
+          }
+        }
+      }
+    },
+    "/users/consent": {
+      "patch": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Save whether the user agreed to the data storage",
+        "operationId": "patchConsent",
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "SessionCookie": []
+          }
+        ],
+        "requestBody": {
+          "description": "The choice of the user",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "dataSaveAgreed"
+                ],
+                "properties": {
+                  "dataSaveAgreed": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserConsent"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Standard400ErrorResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedErrorResponse"
+          },
+          "500": {
+            "$ref": "#/components/responses/Standard500ErrorResponse"
+          }
+        }
+      }
+    },
+    "/users/email-notifications": {
+      "patch": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Save the email notification settings of the user",
+        "operationId": "patchEmailNotificationSettings",
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "SessionCookie": []
+          }
+        ],
+        "requestBody": {
+          "description": "The new settings",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailNotificationSettings"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailNotificationSettings"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Standard400ErrorResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedErrorResponse"
+          },
+          "500": {
+            "$ref": "#/components/responses/Standard500ErrorResponse"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Start the Keycloak login",
+        "operationId": "getLogin",
+        "responses": {
+          "302": {
+            "description": "Redirect to the Keycloak login page"
+          },
+          "500": {
+            "$ref": "#/components/responses/Standard500ErrorResponse"
+          }
+        }
+      }
+    },
+    "/auth/callback": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Finish the Keycloak login",
+        "operationId": "getCallback",
+        "description": "Called by Keycloak after the login, not by API users.",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "iss",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "302": {
+            "description": "Redirect to the client; the session cookie is set"
+          },
+          "400": {
+            "$ref": "#/components/responses/Standard400ErrorResponse"
+          },
+          "500": {
+            "$ref": "#/components/responses/Standard500ErrorResponse"
+          }
+        }
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Get the user of the current session",
+        "operationId": "getMe",
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Me"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedErrorResponse"
+          },
+          "500": {
+            "$ref": "#/components/responses/Standard500ErrorResponse"
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "End the session",
+        "operationId": "postLogout",
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogoutConfirmation"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/Standard500ErrorResponse"
+          }
+        }
+      }
+    },
+    "/admin/actors/pending": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "List the accounts waiting for activation",
+        "operationId": "getPendingActors",
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Actor"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "$ref": "#/components/responses/Standard403ErrorResponse"
+          },
+          "500": {
+            "$ref": "#/components/responses/Standard500ErrorResponse"
+          }
+        }
+      }
+    },
+    "/admin/actors/{sub}/enable": {
+      "post": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Enable an account",
+        "operationId": "postEnableActor",
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "sub",
+            "in": "path",
+            "required": true,
+            "description": "Keycloak id of the account",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          },
+          "403": {
+            "$ref": "#/components/responses/Standard403ErrorResponse"
+          },
+          "500": {
+            "$ref": "#/components/responses/Standard500ErrorResponse"
+          }
+        }
+      }
+    },
+    "/admin/actors/{sub}/disable": {
+      "post": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Disable an account",
+        "operationId": "postDisableActor",
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "sub",
+            "in": "path",
+            "required": true,
+            "description": "Keycloak id of the account",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          },
+          "403": {
+            "$ref": "#/components/responses/Standard403ErrorResponse"
+          },
+          "500": {
+            "$ref": "#/components/responses/Standard500ErrorResponse"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -476,7 +1175,8 @@
           "lastChange",
           "version",
           "supportContact",
-          "clientVersion"
+          "clientVersion",
+          "keycloakEnabled"
         ],
         "type": "object",
         "properties": {
@@ -496,6 +1196,10 @@
             "type": "string",
             "description": "Date of last code change",
             "format": "date-time"
+          },
+          "keycloakEnabled": {
+            "type": "boolean",
+            "description": "Whether the login runs through Keycloak instead of the legacy login form"
           }
         }
       },
@@ -527,19 +1231,6 @@
           },
           "fileName": {
             "type": "string"
-          }
-        }
-      },
-      "PutSamplesXLSXRequestData": {
-        "type": "object",
-        "required": [
-          "file"
-        ],
-        "properties": {
-          "file": {
-            "description": "Microsoft Excel-Arbeitsblatt (.xlsx)",
-            "type": "string",
-            "format": "binary"
           }
         }
       },
@@ -698,11 +1389,9 @@
           "street": {
             "type": "string"
           },
-          "zip": {
-            "type": "string"
-          },
-          "city": {
-            "type": "string"
+          "zipCity": {
+            "type": "string",
+            "description": "Zip code and city, e.g. \"10589 Berlin\""
           },
           "contactPerson": {
             "type": "string"
@@ -1200,6 +1889,9 @@
           },
           "oldValue": {
             "type": "string"
+          },
+          "nrlData": {
+            "type": "string"
           }
         }
       },
@@ -1249,11 +1941,14 @@
       "TokenizedUser": {
         "type": "object",
         "required": [
-          "firstname",
+          "firstName",
           "lastName",
           "email",
           "token",
-          "instituteId"
+          "instituteId",
+          "dataSaveAgreed",
+          "dataSaveViewed",
+          "emailNotificationSettings"
         ],
         "properties": {
           "firstName": {
@@ -1270,6 +1965,15 @@
           },
           "instituteId": {
             "type": "string"
+          },
+          "dataSaveAgreed": {
+            "type": "boolean"
+          },
+          "dataSaveViewed": {
+            "type": "boolean"
+          },
+          "emailNotificationSettings": {
+            "$ref": "#/components/schemas/EmailNotificationSettings"
           }
         }
       },
@@ -1479,13 +2183,695 @@
             "$ref": "#/components/schemas/UserToken"
           }
         }
+      },
+      "EmailNotificationSettings": {
+        "type": "object",
+        "required": [
+          "enabled",
+          "frequency",
+          "weekday",
+          "weekOfMonth"
+        ],
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "frequency": {
+            "type": "string",
+            "enum": [
+              "daily",
+              "weekly",
+              "monthly"
+            ]
+          },
+          "weekday": {
+            "type": "string",
+            "enum": [
+              "monday",
+              "tuesday",
+              "wednesday",
+              "thursday",
+              "friday"
+            ]
+          },
+          "weekOfMonth": {
+            "type": "string",
+            "enum": [
+              "1",
+              "2",
+              "3",
+              "4",
+              "last"
+            ]
+          }
+        }
+      },
+      "ParsedSampleSheetAnalysis": {
+        "type": "object",
+        "description": "Analysis options as read from the sheet: 1 = selected, 0 = not selected",
+        "properties": {
+          "species": {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ]
+          },
+          "serological": {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ]
+          },
+          "resistance": {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ]
+          },
+          "vaccination": {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ]
+          },
+          "molecularTyping": {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ]
+          },
+          "toxin": {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ]
+          },
+          "esblAmpCCarbapenemasen": {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ]
+          },
+          "other": {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ]
+          },
+          "compareHuman": {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ]
+          },
+          "otherText": {
+            "type": "string"
+          },
+          "compareHumanText": {
+            "type": "string"
+          }
+        }
+      },
+      "ParsedSampleSheetMeta": {
+        "type": "object",
+        "required": [
+          "nrl",
+          "urgency",
+          "sender",
+          "analysis",
+          "fileName",
+          "version"
+        ],
+        "properties": {
+          "nrl": {
+            "type": "string",
+            "description": "NRL as written in the sheet; checked by the server"
+          },
+          "urgency": {
+            "type": "string",
+            "enum": [
+              "NORMAL",
+              "EILT"
+            ]
+          },
+          "sender": {
+            "$ref": "#/components/schemas/Sender"
+          },
+          "analysis": {
+            "$ref": "#/components/schemas/ParsedSampleSheetAnalysis"
+          },
+          "fileName": {
+            "type": "string"
+          },
+          "customerRefNumber": {
+            "type": "string"
+          },
+          "signatureDate": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string",
+            "description": "Version of the Einsendebogen, e.g. \"18\""
+          }
+        }
+      },
+      "ParsedSampleSheet": {
+        "type": "object",
+        "required": [
+          "samples",
+          "meta"
+        ],
+        "properties": {
+          "samples": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "data"
+              ],
+              "properties": {
+                "data": {
+                  "$ref": "#/components/schemas/SampleData"
+                }
+              }
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ParsedSampleSheetMeta"
+          }
+        }
+      },
+      "PutSamplesParsedSheetRequestData": {
+        "type": "object",
+        "required": [
+          "parsedSampleSheet"
+        ],
+        "properties": {
+          "parsedSampleSheet": {
+            "$ref": "#/components/schemas/ParsedSampleSheet"
+          }
+        }
+      },
+      "InvalidVersionError": {
+        "type": "object",
+        "required": [
+          "code",
+          "message",
+          "version",
+          "currentVersions"
+        ],
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "code": {
+            "$ref": "#/components/schemas/ErrorCode"
+          },
+          "version": {
+            "type": "string",
+            "description": "Version of the sent Einsendebogen"
+          },
+          "currentVersions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Versions the server accepts"
+          }
+        }
+      },
+      "AnalysisProcedure": {
+        "type": "object",
+        "required": [
+          "value",
+          "key"
+        ],
+        "properties": {
+          "value": {
+            "type": "string"
+          },
+          "key": {
+            "type": "integer"
+          }
+        }
+      },
+      "NRL": {
+        "type": "object",
+        "required": [
+          "id",
+          "selector",
+          "full_name",
+          "pathogen",
+          "standardProcedures",
+          "optionalProcedures"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Short name, e.g. \"NRL-Salm\""
+          },
+          "selector": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Patterns of the pathogens this NRL is responsible for"
+          },
+          "full_name": {
+            "type": "string"
+          },
+          "pathogen": {
+            "type": "string"
+          },
+          "standardProcedures": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AnalysisProcedure"
+            }
+          },
+          "optionalProcedures": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AnalysisProcedure"
+            }
+          }
+        }
+      },
+      "NRLContainer": {
+        "type": "object",
+        "required": [
+          "nrls"
+        ],
+        "properties": {
+          "nrls": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NRL"
+            }
+          }
+        }
+      },
+      "ClientDashboardInfoContainer": {
+        "type": "object",
+        "required": [
+          "clientDashboardInfo"
+        ],
+        "properties": {
+          "clientDashboardInfo": {
+            "type": "object",
+            "required": [
+              "name",
+              "isActive"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "isActive": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      },
+      "OrderEntry": {
+        "type": "object",
+        "required": [
+          "id",
+          "createdAt",
+          "sampleCount",
+          "version",
+          "fileName",
+          "nrls",
+          "pathogens",
+          "sampleIds",
+          "sampleIdsAVV",
+          "results"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "sampleCount": {
+            "type": "integer"
+          },
+          "version": {
+            "type": "string"
+          },
+          "fileName": {
+            "type": "string"
+          },
+          "nrls": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "pathogens": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "sampleIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "sampleIdsAVV": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "results": {
+            "type": "string",
+            "description": "Result counter as shown in the order list, e.g. \"2 / 5\""
+          }
+        }
+      },
+      "OrderCollection": {
+        "type": "object",
+        "required": [
+          "orders"
+        ],
+        "properties": {
+          "orders": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderEntry"
+            }
+          }
+        }
+      },
+      "OrderDeletionResult": {
+        "type": "object",
+        "required": [
+          "deletedOrderCount"
+        ],
+        "properties": {
+          "deletedOrderCount": {
+            "type": "integer"
+          }
+        }
+      },
+      "ResultDataValue": {
+        "description": "A result value as delivered by the laboratory: text, a number, a boolean or null",
+        "nullable": true,
+        "oneOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "number"
+          },
+          {
+            "type": "boolean"
+          }
+        ]
+      },
+      "ResultData": {
+        "type": "object",
+        "description": "Result values keyed by result field, e.g. {\"Biotyp\": 4}",
+        "additionalProperties": {
+          "$ref": "#/components/schemas/ResultDataValue"
+        }
+      },
+      "Result": {
+        "type": "object",
+        "required": [
+          "id",
+          "position",
+          "resultData"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "position": {
+            "type": "integer"
+          },
+          "resultData": {
+            "$ref": "#/components/schemas/ResultData"
+          }
+        }
+      },
+      "SampleWithResults": {
+        "type": "object",
+        "required": [
+          "id",
+          "position",
+          "sampleData",
+          "sampleMeta",
+          "results"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "position": {
+            "type": "integer"
+          },
+          "sampleData": {
+            "$ref": "#/components/schemas/ValidatedSampleData"
+          },
+          "sampleMeta": {
+            "$ref": "#/components/schemas/SampleMetaInformation"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Result"
+            }
+          }
+        }
+      },
+      "SamplesWithResultsCollection": {
+        "type": "object",
+        "required": [
+          "orderId",
+          "samples"
+        ],
+        "properties": {
+          "orderId": {
+            "type": "string"
+          },
+          "samples": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SampleWithResults"
+            }
+          }
+        }
+      },
+      "StoreResultsRequestData": {
+        "type": "array",
+        "minItems": 1,
+        "description": "One element per result, keyed by the Parse objectId of its sample. A sample can have more than one result.",
+        "items": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/components/schemas/ResultData"
+          }
+        },
+        "example": [
+          {
+            "Xk7a9QpR2m": {
+              "Biotyp": 4,
+              "MHK CIP": 0.5,
+              "Kommentar": null
+            }
+          }
+        ]
+      },
+      "StoredResult": {
+        "type": "object",
+        "required": [
+          "objectId",
+          "sampleObjectId",
+          "position"
+        ],
+        "properties": {
+          "objectId": {
+            "type": "string"
+          },
+          "sampleObjectId": {
+            "type": "string"
+          },
+          "position": {
+            "type": "integer"
+          }
+        }
+      },
+      "StoreResultsCollection": {
+        "type": "object",
+        "required": [
+          "storedResultCount",
+          "orders",
+          "created"
+        ],
+        "properties": {
+          "storedResultCount": {
+            "type": "integer"
+          },
+          "orders": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "orderId",
+                "results"
+              ],
+              "properties": {
+                "orderId": {
+                  "type": "string"
+                },
+                "results": {
+                  "type": "string",
+                  "description": "New result counter of the order"
+                }
+              }
+            }
+          },
+          "created": {
+            "type": "array",
+            "description": "Every result row that was created",
+            "items": {
+              "$ref": "#/components/schemas/StoredResult"
+            }
+          }
+        }
+      },
+      "ZomoPlanFileInfo": {
+        "type": "object",
+        "required": [
+          "id",
+          "year"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "year": {
+            "type": "string"
+          }
+        }
+      },
+      "ZomoPlanFileContainer": {
+        "type": "object",
+        "required": [
+          "zomoPlanFiles"
+        ],
+        "properties": {
+          "zomoPlanFiles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ZomoPlanFileInfo"
+            }
+          }
+        }
+      },
+      "UserConsent": {
+        "type": "object",
+        "required": [
+          "dataSaveAgreed",
+          "dataSaveViewed"
+        ],
+        "properties": {
+          "dataSaveAgreed": {
+            "type": "boolean"
+          },
+          "dataSaveViewed": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Actor": {
+        "type": "object",
+        "required": [
+          "keycloakSub",
+          "instituteId",
+          "email",
+          "displayName"
+        ],
+        "properties": {
+          "keycloakSub": {
+            "type": "string"
+          },
+          "instituteId": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "displayName": {
+            "type": "string"
+          }
+        }
+      },
+      "Me": {
+        "type": "object",
+        "required": [
+          "sub",
+          "email",
+          "preferred_username",
+          "dataSaveAgreed",
+          "dataSaveViewed",
+          "emailNotificationSettings"
+        ],
+        "properties": {
+          "sub": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "preferred_username": {
+            "type": "string"
+          },
+          "dataSaveAgreed": {
+            "type": "boolean"
+          },
+          "dataSaveViewed": {
+            "type": "boolean"
+          },
+          "emailNotificationSettings": {
+            "$ref": "#/components/schemas/EmailNotificationSettings"
+          }
+        }
+      },
+      "LogoutConfirmation": {
+        "type": "object",
+        "required": [
+          "endSessionUrl"
+        ],
+        "properties": {
+          "endSessionUrl": {
+            "type": "string",
+            "description": "Keycloak URL that ends the single sign-on session"
+          }
+        }
       }
     },
     "responses": {
       "InvalidInputErrorResponse": {
         "description": "The supplied sample contains validation errors or autocorrections",
         "content": {
-          "application/json:": {
+          "application/json": {
             "schema": {
               "$ref": "#/components/schemas/SampleDataError"
             }
@@ -1495,7 +2881,7 @@
       "UnauthorizedErrorResponse": {
         "description": "Token is missing or invalid",
         "content": {
-          "application/json:": {
+          "application/json": {
             "schema": {
               "$ref": "#/components/schemas/Error"
             }
@@ -1528,6 +2914,26 @@
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/TokenizedUser"
+            }
+          }
+        }
+      },
+      "Standard403ErrorResponse": {
+        "description": "Forbidden",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "Standard422ErrorResponse": {
+        "description": "The request was understood but refused",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
             }
           }
         }
@@ -1568,12 +2974,14 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/PutSamplesJSONRequestData"
-            }
-          },
-          "multipart/form-data": {
-            "schema": {
-              "$ref": "#/components/schemas/PutSamplesXLSXRequestData"
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/PutSamplesParsedSheetRequestData"
+                },
+                {
+                  "$ref": "#/components/schemas/PutSamplesJSONRequestData"
+                }
+              ]
             }
           }
         },
@@ -1650,6 +3058,18 @@
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT"
+      },
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-MiBi-Api-Key",
+        "description": "Shared secret for machine-to-machine calls"
+      },
+      "SessionCookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "connect.sid",
+        "description": "Session cookie set by the Keycloak login (`GET /auth/login`)"
       }
     }
   }

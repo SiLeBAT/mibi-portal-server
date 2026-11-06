@@ -21,6 +21,7 @@ var mockRes = require('mock-express-response');
 const SERVER_CONFIG = {
     port: 1,
     apiRoot: '',
+    apiVersion: 'v2',
     publicAPIDoc: {},
     jwtSecret: TEST_JWT_SECRET,
     logLevel: 'info',

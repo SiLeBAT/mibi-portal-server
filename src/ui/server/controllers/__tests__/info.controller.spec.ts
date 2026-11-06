@@ -36,6 +36,7 @@ describe('Info controller', () => {
             serverConfig: {
                 port: 1,
                 apiRoot: '',
+                apiVersion: 'v2',
                 publicAPIDoc: {},
                 jwtSecret: 'test',
                 logLevel: 'info',
@@ -114,6 +115,7 @@ describe('Info controller', () => {
             serverConfig: {
                 port: 1,
                 apiRoot: '',
+                apiVersion: 'v2',
                 publicAPIDoc: {},
                 jwtSecret: 'test',
                 logLevel: 'info',

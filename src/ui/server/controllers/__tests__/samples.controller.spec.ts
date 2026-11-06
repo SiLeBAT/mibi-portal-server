@@ -29,6 +29,7 @@ jest.mock('axios');
 const SERVER_CONFIG = {
     port: 1,
     apiRoot: '',
+    apiVersion: 'v2',
     publicAPIDoc: {},
     jwtSecret: 'test',
     logLevel: 'info',

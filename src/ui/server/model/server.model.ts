@@ -16,6 +16,8 @@ export interface KeycloakServerConfig {
 export interface AppServerConfiguration {
     port: number;
     apiRoot: string;
+    // Version segment of every API route, without slashes: 'v2' -> /v2/info.
+    apiVersion: string;
     publicAPIDoc: APIDocConfig;
     jwtSecret: string;
     logLevel: string;
