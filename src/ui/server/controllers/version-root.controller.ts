@@ -15,8 +15,14 @@ export class DefaultVersionRootController
     private publicAPI: APIDefinition;
     constructor(configuration: AppServerConfiguration) {
         super();
+        // A copy, as the revealer deletes from the definition it is given.
+        const definition = _.cloneDeep(openAPI);
+        // The routes follow the configuration, so the documented base URL does too.
+        definition.servers = [
+            { url: `${configuration.apiRoot}/${configuration.apiVersion}` }
+        ];
         this.publicAPI = this.documentationRevealer(
-            openAPI,
+            definition,
             configuration.publicAPIDoc
         );
     }
@@ -36,7 +42,7 @@ export class DefaultVersionRootController
                 found.push(object[key]);
                 return found;
             }
-            if (typeof object[key] === 'object') {
+            if (typeof object[key] === 'object' && object[key] !== null) {
                 this.search(term, object[key], found);
             }
         });
@@ -65,6 +71,7 @@ export class DefaultVersionRootController
         // Parse remaining document & note left-over tags and refs
         let remainingTags: string[] = [];
         let remainingRefs: Set<string>;
+        const remainingSecuritySchemes = new Set<string>();
         for (const path of Object.keys(definition.paths)) {
             for (const operation of Object.keys(definition.paths[path])) {
                 if (definition.paths[path][operation].tags) {
@@ -72,6 +79,22 @@ export class DefaultVersionRootController
                         definition.paths[path][operation].tags
                     );
                 }
+                for (const requirement of definition.paths[path][operation]
+                    .security ?? []) {
+                    Object.keys(requirement).forEach(scheme =>
+                        remainingSecuritySchemes.add(scheme)
+                    );
+                }
+            }
+        }
+
+        // remove security schemes no longer needed. They are referenced by
+        // name in `security`, never by $ref.
+        for (const scheme of Object.keys(
+            definition.components.securitySchemes
+        )) {
+            if (!remainingSecuritySchemes.has(scheme)) {
+                delete definition.components.securitySchemes[scheme];
             }
         }
         remainingRefs = new Set<string>(this.search('$ref', definition));
@@ -97,8 +120,11 @@ export class DefaultVersionRootController
         const refString = '#/components';
         while (currentRemainingRefs !== lastRemainingRefs) {
             lastRemainingRefs = currentRemainingRefs;
-            // remove refs
+            // remove refs. Security schemes were handled above.
             for (const component of Object.keys(definition.components)) {
+                if (component === 'securitySchemes') {
+                    continue;
+                }
                 for (const ref of Object.keys(
                     definition.components[component]
                 )) {
