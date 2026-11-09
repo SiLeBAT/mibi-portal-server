@@ -1,5 +1,6 @@
 import config from 'config';
 import {
+    PostSubmittedRequestDTO,
     PutSamplesJSONRequestDTO,
     PutValidatedRequestDTO
 } from '../src/ui/server/model/request.model';
@@ -75,6 +76,8 @@ async function csrfHeaders(): Promise<Record<string, string>> {
 export class Api {
     static readonly SAMPLES_ENDPOINT = API_VERSION_ROUTE + '/samples';
     static readonly SAMPLES_VALIDATED_ENDPOINT = API_VERSION_ROUTE + '/samples/validated';
+    static readonly SAMPLES_SUBMITTED_ENDPOINT = API_VERSION_ROUTE + '/samples/submitted';
+    static readonly USERS_LOGIN_ENDPOINT = API_VERSION_ROUTE + '/users/login';
 
     /**
      * PUT /v2/samples with the browser-parsed sample sheet (MPS-312).
@@ -146,6 +149,46 @@ export class Api {
         const response = await axios.request(axiosConfig);
 
         return response.data;
+    }
+
+    /** POST /v2/users/login; returns the JWT the protected endpoints expect. */
+    static async login(email: string, password: string): Promise<string> {
+        const response = await this.freeRequest(
+            this.USERS_LOGIN_ENDPOINT,
+            'POST',
+            { 'content-type': 'application/json' },
+            { email, password }
+        );
+
+        if (response.status !== 200 || !response.data?.token) {
+            throw new Error(
+                `Login as ${email} failed (status ${response.status}): ` +
+                    `${JSON.stringify(response.data)}. Is the user seeded ` +
+                    `(mibi-portal-client/e2e/seed/seed-users.js)?`
+            );
+        }
+
+        return response.data.token;
+    }
+
+    /**
+     * POST /v2/samples/submitted. Returns the raw response so a spec can assert on
+     * the status: a refused order comes back as 422, not as a thrown error.
+     */
+    static async postSubmitted(
+        body: PostSubmittedRequestDTO,
+        token: string
+    ): Promise<AxiosResponse> {
+        return this.freeRequest(
+            this.SAMPLES_SUBMITTED_ENDPOINT,
+            'POST',
+            {
+                authorization: `Bearer ${token}`,
+                'content-type': 'application/json',
+                accept: 'application/json'
+            },
+            body
+        );
     }
 
     static async freeRequest(
