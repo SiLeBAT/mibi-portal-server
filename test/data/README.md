@@ -107,6 +107,31 @@ Two rows changed during the V18 migration:
   repointed at the V18 equivalent: `additional_marks_avv = "000|000|"` against
   catalogue **avv337**, expecting **125**. Same intent, current field.
 
+## Send samples and the mail attachments (`submit-samples.spec.ts`)
+
+`POST /v2/samples/submitted` is tested with `mps155_timezone_bug_v18_validated.json`.
+Without a token the endpoint must answer 401; that spec always runs.
+
+The submission itself is **opt-in**, because it sends real mail: one mail per NRL the
+order is split across (or to `application.jobRecipient` when that is set), each with
+that NRL's samples as `<file>_<NRL>_validated.xlsx`, and a copy to the sender's
+institute with one `<file>_<NRL>_validated.pdf` per NRL. The spec catches these
+mails with an in-process SMTP server (`test/mail-catcher.ts`) and checks the
+subjects, file names, content types, that the PDFs and the excel are well formed, and
+that each excel contains its samples.
+
+```bash
+MIBI_TEST_SUBMIT=1 npm run test:integration -- --runInBand
+```
+
+- mibi-parse-cloud sends to a hardcoded `localhost:25`, so the server has to run as a
+  plain process **on the same machine** as jest, and port 25 has to be free (it is
+  privileged on Linux/macOS). It does not work against the docker e2e stack, whose
+  server container answers :25 with its own sink.
+- It logs in as `user1@test.com` from the e2e seed (`seed-users.js`); override with
+  `MIBI_TEST_USER_EMAIL` / `MIBI_TEST_USER_PASSWORD`.
+- Every run stores and submits one order.
+
 ## Prerequisite: seeded `states`
 
 `state-regex.spec.ts` and sample 28 above need the `states` collection populated, or
