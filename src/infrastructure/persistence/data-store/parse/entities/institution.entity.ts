@@ -1,5 +1,4 @@
 import * as Parse from 'parse/node';
-import { logger } from './../../../../../aspects';
 
 export const SCHEMA_FIELDS = {
     className: 'institutions',
@@ -12,57 +11,6 @@ export const SCHEMA_FIELDS = {
     fax: 'fax',
     email: 'email'
 } as const;
-
-async function createSchema(): Promise<boolean> {
-    const institutionSchema = new Parse.Schema(SCHEMA_FIELDS.className);
-
-    try {
-        await institutionSchema.get();
-        return true;
-    } catch (error) {
-        if (
-            error.message.includes(
-                `Class ${SCHEMA_FIELDS.className} does not exist`
-            )
-        ) {
-            return institutionSchema
-                .addField(SCHEMA_FIELDS.state_short, 'String', {
-                    required: true
-                })
-                .addField(SCHEMA_FIELDS.name1, 'String', {
-                    required: true
-                })
-                .addField(SCHEMA_FIELDS.name2, 'String')
-                .addField(SCHEMA_FIELDS.zip, 'String')
-                .addField(SCHEMA_FIELDS.city, 'String')
-                .addField(SCHEMA_FIELDS.phone, 'String', {
-                    required: true
-                })
-                .addArray(SCHEMA_FIELDS.email)
-                .addField(SCHEMA_FIELDS.fax, 'String')
-                .save()
-                .then(
-                    () => {
-                        logger.info(`${SCHEMA_FIELDS.className} schema saved`);
-                        return true;
-                    },
-                    error => {
-                        logger.error(
-                            `error saving ${SCHEMA_FIELDS.className} schema: `,
-                            error
-                        );
-                        return false;
-                    }
-                );
-        } else {
-            logger.error(
-                `error creating ${SCHEMA_FIELDS.className} schema: `,
-                error
-            );
-            return false;
-        }
-    }
-}
 
 export interface IInstitution extends Parse.Attributes {
     state_short: string;
@@ -149,7 +97,6 @@ export class Institution extends Parse.Object<IInstitution> {
     }
 }
 
-export async function registerParseClass() {
-    await createSchema();
+export function registerParseClass() {
     Parse.Object.registerSubclass(SCHEMA_FIELDS.className, Institution);
 }

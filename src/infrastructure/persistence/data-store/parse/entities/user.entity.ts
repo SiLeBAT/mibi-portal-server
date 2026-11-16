@@ -1,9 +1,5 @@
 import * as Parse from 'parse/node';
-import { logger } from './../../../../../aspects';
-import {
-    Institution,
-    SCHEMA_FIELDS as INSTITUTION_FIELDS
-} from './institution';
+import { Institution } from './institution.entity';
 
 export const SCHEMA_FIELDS = {
     className: 'users',
@@ -21,77 +17,6 @@ export const SCHEMA_FIELDS = {
     sub: 'sub',
     instituteId: 'instituteId'
 } as const;
-
-async function createSchema(): Promise<boolean> {
-    const userSchema = new Parse.Schema(SCHEMA_FIELDS.className);
-
-    try {
-        await userSchema.get();
-        return true;
-    } catch (error) {
-        if (
-            error.message.includes(
-                `Class ${SCHEMA_FIELDS.className} does not exist`
-            )
-        ) {
-            return userSchema
-                .addField(SCHEMA_FIELDS.firstName, 'String', {
-                    required: true
-                })
-                .addField(SCHEMA_FIELDS.lastName, 'String', {
-                    required: true
-                })
-                .addField(SCHEMA_FIELDS.email, 'String', {
-                    required: true
-                })
-                .addField(SCHEMA_FIELDS.password, 'String', {
-                    required: true
-                })
-                .addField(SCHEMA_FIELDS.enabled, 'Boolean', {
-                    required: true,
-                    defaultValue: false
-                })
-                .addField(SCHEMA_FIELDS.adminEnabled, 'Boolean', {
-                    required: true,
-                    defaultValue: false
-                })
-                .addField(SCHEMA_FIELDS.numAttempt, 'Number', {
-                    required: true,
-                    defaultValue: 0
-                })
-                .addField(SCHEMA_FIELDS.lastAttempt, 'Number', {
-                    required: true,
-                    defaultValue: Date.now()
-                })
-                .addPointer(
-                    SCHEMA_FIELDS.institution,
-                    INSTITUTION_FIELDS.className
-                )
-                .addField(SCHEMA_FIELDS.oriCreatedAt, 'Date')
-                .addField(SCHEMA_FIELDS.oriUpdatedAt, 'Date')
-                .save()
-                .then(
-                    () => {
-                        logger.info(`${SCHEMA_FIELDS.className} schema saved`);
-                        return true;
-                    },
-                    error => {
-                        logger.error(
-                            `error saving ${SCHEMA_FIELDS.className} schema: `,
-                            error
-                        );
-                        return false;
-                    }
-                );
-        } else {
-            logger.error(
-                `error creating ${SCHEMA_FIELDS.className} schema: `,
-                error
-            );
-            return false;
-        }
-    }
-}
 
 export interface IUser extends Parse.Attributes {
     password: string;
@@ -216,7 +141,6 @@ export class User extends Parse.Object<IUser> {
     }
 }
 
-export async function registerParseClass() {
-    await createSchema();
+export function registerParseClass() {
     Parse.Object.registerSubclass(SCHEMA_FIELDS.className, User);
 }

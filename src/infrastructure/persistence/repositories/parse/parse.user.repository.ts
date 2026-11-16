@@ -1,14 +1,14 @@
 import { escapeRegExp } from 'lodash';
 import { ParseUserRepository, User, createUser } from '../../../../app/ports';
-import { ParseRepositoryBase } from '../../data-store/parse/parse.repository';
+import { ParseRepositoryBase } from './parse-base.repository';
 import {
     SCHEMA_FIELDS as INSTITUTION_FIELDS,
     Institution
-} from '../../data-store/parse/schema/institution';
+} from '../../data-store/parse/entities/institution.entity';
 import {
     User as ParseUser,
     SCHEMA_FIELDS as USER_FIELDS
-} from '../../data-store/parse/schema/user';
+} from '../../data-store/parse/entities/user.entity';
 import { UserNotFoundError, UserUpdateError } from '../../model/domain.error';
 import { mapToUser } from './data-mappers';
 

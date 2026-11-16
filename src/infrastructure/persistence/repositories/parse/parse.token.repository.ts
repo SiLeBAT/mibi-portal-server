@@ -1,12 +1,12 @@
-import { ParseRepositoryBase } from '../../data-store/parse/parse.repository';
+import { ParseRepositoryBase } from './parse-base.repository';
 import {
     Token as ParseToken,
     SCHEMA_FIELDS as TOKEN_FIELDS
-} from '../../data-store/parse/schema/resettoken';
+} from '../../data-store/parse/entities/reset-token.entity';
 import {
     User as ParseUser,
     SCHEMA_FIELDS as USER_FIELDS
-} from '../../data-store/parse/schema/user';
+} from '../../data-store/parse/entities/user.entity';
 import { JsonWebTokenError } from 'jsonwebtoken';
 import {
     ParseTokenRepository,

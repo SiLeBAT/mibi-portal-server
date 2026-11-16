@@ -1,7 +1,8 @@
 import ParseDefault, * as Parse from 'parse/node';
 import { DataStore } from '../../model/data-store.model';
 import { logger } from './../../../../aspects';
-import { initSchema } from './schema/init-schema';
+import { registerEntities } from './entities';
+import { createUniqueIndexes } from './unique-indexes';
 
 export interface ParseConnectionInfo {
     serverURL: string;
@@ -51,6 +52,7 @@ export async function createDataStore(
 ): Promise<DataStore> {
     logger.info('Creating parse datastore');
     const dataStore = new ParseDataStore(parseConnectionInfo);
-    await initSchema(parseConnectionInfo);
+    registerEntities();
+    await createUniqueIndexes(parseConnectionInfo);
     return dataStore;
 }

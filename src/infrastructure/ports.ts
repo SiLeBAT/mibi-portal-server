@@ -5,7 +5,7 @@ export { createMailService } from './mail/mail.factory';
 
 // Persistence
 
-export { createDataStore as createParseDataStore } from './persistence/data-store/parse/parse';
+export { createDataStore as createParseDataStore } from './persistence/data-store/parse/parse-data-store';
 export { UserNotFoundError } from './persistence/model/domain.error';
 export {
     createPersistenceRepositories,
