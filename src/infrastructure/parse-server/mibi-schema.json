@@ -1,0 +1,557 @@
+[
+  {
+    "className": "_User",
+    "fields": {
+      "username": { "type": "String" },
+      "password": { "type": "String" },
+      "email": { "type": "String" },
+      "emailVerified": { "type": "Boolean" },
+      "authData": { "type": "Object" }
+    },
+    "classLevelPermissions": {
+      "find": { "*": true },
+      "count": { "*": true },
+      "get": { "*": true },
+      "create": { "*": true },
+      "update": { "*": true },
+      "delete": { "*": true },
+      "addField": {},
+      "protectedFields": { "*": [] },
+      "ACL": { "*": { "read": true, "write": true } }
+    }
+  },
+  {
+    "className": "_Role",
+    "fields": {
+      "name": { "type": "String" },
+      "users": { "type": "Relation", "targetClass": "_User" },
+      "roles": { "type": "Relation", "targetClass": "_Role" }
+    },
+    "classLevelPermissions": {
+      "find": { "*": true },
+      "count": { "*": true },
+      "get": { "*": true },
+      "create": { "*": true },
+      "update": { "*": true },
+      "delete": { "*": true },
+      "addField": {},
+      "protectedFields": { "*": [] },
+      "ACL": { "*": { "read": true, "write": true } }
+    }
+  },
+  {
+    "className": "dbversioninfos",
+    "fields": {
+      "updateFunctionIndex": {
+        "type": "Number",
+        "required": true,
+        "defaultValue": 0
+      },
+      "dbName": {
+        "type": "String",
+        "required": true,
+        "defaultValue": "mibiportal"
+      }
+    },
+    "classLevelPermissions": {
+      "find": { "*": true },
+      "count": { "*": true },
+      "get": { "*": true },
+      "create": { "*": true },
+      "update": { "*": true },
+      "delete": { "*": true },
+      "addField": {},
+      "protectedFields": { "*": [] }
+    },
+    "indexes": {
+      "dbName_idx": { "dbName": 1 }
+    }
+  },
+  {
+    "className": "states",
+    "fields": {
+      "short": { "type": "String", "required": true },
+      "name": { "type": "String", "required": true },
+      "AVV": { "type": "Array" }
+    },
+    "classLevelPermissions": {
+      "find": { "*": true },
+      "count": { "*": true },
+      "get": { "*": true },
+      "create": { "*": true },
+      "update": { "*": true },
+      "delete": { "*": true },
+      "addField": {},
+      "protectedFields": { "*": [] }
+    }
+  },
+  {
+    "className": "institutions",
+    "fields": {
+      "state_short": { "type": "String", "required": true },
+      "name1": { "type": "String", "required": true },
+      "name2": { "type": "String" },
+      "zip": { "type": "String" },
+      "city": { "type": "String" },
+      "phone": { "type": "String", "required": true },
+      "email": { "type": "Array" },
+      "fax": { "type": "String" },
+      "address1": { "type": "Object" },
+      "address2": { "type": "Object" }
+    },
+    "classLevelPermissions": {
+      "find": { "*": true },
+      "count": { "*": true },
+      "get": { "*": true },
+      "create": {},
+      "update": {},
+      "delete": {},
+      "addField": {},
+      "protectedFields": { "*": [] }
+    }
+  },
+  {
+    "className": "resettokens",
+    "fields": {
+      "token": { "type": "String", "required": true },
+      "type": { "type": "String", "required": true },
+      "user": {
+        "type": "Pointer",
+        "targetClass": "users",
+        "required": true
+      },
+      "oriCreatedAt": { "type": "Date" },
+      "oriUpdatedAt": { "type": "Date" }
+    },
+    "classLevelPermissions": {
+      "find": { "*": true },
+      "count": { "*": true },
+      "get": { "*": true },
+      "create": { "*": true },
+      "update": { "*": true },
+      "delete": { "*": true },
+      "addField": {},
+      "protectedFields": { "*": [] }
+    }
+  },
+  {
+    "className": "validationerrors",
+    "fields": {
+      "code": { "type": "Number", "required": true },
+      "level": { "type": "Number", "required": true },
+      "message": { "type": "String", "required": true }
+    },
+    "classLevelPermissions": {
+      "find": { "*": true },
+      "count": { "*": true },
+      "get": { "*": true },
+      "create": { "*": true },
+      "update": { "*": true },
+      "delete": { "*": true },
+      "addField": {},
+      "protectedFields": { "*": [] }
+    }
+  },
+  {
+    "className": "analysisprocedures",
+    "fields": {
+      "key": { "type": "Number", "required": true },
+      "value": { "type": "String", "required": true }
+    },
+    "classLevelPermissions": {
+      "find": { "*": true },
+      "count": { "*": true },
+      "get": { "*": true },
+      "create": { "*": true },
+      "update": { "*": true },
+      "delete": { "*": true },
+      "addField": {},
+      "protectedFields": { "*": [] }
+    },
+    "indexes": {
+      "key_idx": { "key": 1 }
+    }
+  },
+  {
+    "className": "users",
+    "fields": {
+      "firstName": { "type": "String", "required": true },
+      "lastName": { "type": "String", "required": true },
+      "email": { "type": "String", "required": true },
+      "password": { "type": "String", "required": true },
+      "enabled": {
+        "type": "Boolean",
+        "required": true,
+        "defaultValue": false
+      },
+      "adminEnabled": {
+        "type": "Boolean",
+        "required": true,
+        "defaultValue": false
+      },
+      "numAttempt": {
+        "type": "Number",
+        "required": true,
+        "defaultValue": 0
+      },
+      "lastAttempt": {
+        "type": "Number",
+        "required": true,
+        "defaultValue": 1697736692824
+      },
+      "institution": { "type": "Pointer", "targetClass": "institutions" },
+      "oriCreatedAt": { "type": "Date" },
+      "oriUpdatedAt": { "type": "Date" },
+      "legacySystem": { "type": "Boolean" }
+    },
+    "classLevelPermissions": {
+      "find": { "*": true },
+      "count": { "*": true },
+      "get": { "*": true },
+      "create": { "*": true },
+      "update": { "*": true },
+      "delete": { "*": true },
+      "addField": {},
+      "protectedFields": { "*": [] }
+    }
+  },
+  {
+    "className": "_Session",
+    "fields": {
+      "user": { "type": "Pointer", "targetClass": "_User" },
+      "installationId": { "type": "String" },
+      "sessionToken": { "type": "String" },
+      "expiresAt": { "type": "Date" },
+      "createdWith": { "type": "Object" }
+    },
+    "classLevelPermissions": {
+      "find": { "*": true },
+      "count": { "*": true },
+      "get": { "*": true },
+      "create": { "*": true },
+      "update": { "*": true },
+      "delete": { "*": true },
+      "addField": {},
+      "protectedFields": { "*": [] },
+      "ACL": { "*": { "read": true, "write": true } }
+    }
+  },
+  {
+    "className": "Analysis_Procedure",
+    "fields": {
+      "value": { "type": "String", "required": true },
+      "key": { "type": "Number", "required": true }
+    },
+    "classLevelPermissions": {
+      "find": { "*": true },
+      "count": { "*": true },
+      "get": { "*": true },
+      "create": { "*": true },
+      "update": { "*": true },
+      "delete": { "*": true },
+      "addField": {},
+      "protectedFields": { "*": [] }
+    }
+  },
+  {
+    "className": "NRL",
+    "fields": {
+      "name": { "type": "String", "required": true },
+      "email": { "type": "String", "required": true },
+      "selector": { "type": "Array", "required": true },
+      "standardProcedures": { "type": "Array", "required": false },
+      "optionalProcedures": { "type": "Array", "required": false },
+      "full_name": { "type": "String", "required": false },
+      "pathogen": { "type": "String", "required": false }
+    },
+    "classLevelPermissions": {
+      "find": { "*": true },
+      "count": { "*": true },
+      "get": { "*": true },
+      "create": { "*": true },
+      "update": { "*": true },
+      "delete": { "*": true },
+      "addField": {},
+      "protectedFields": { "*": [] }
+    }
+  },
+  {
+    "className": "Additional_Pathogens",
+    "fields": {
+      "pathogen": { "type": "String", "required": true }
+    },
+    "classLevelPermissions": {
+      "find": { "*": true },
+      "count": { "*": true },
+      "get": { "*": true },
+      "create": { "*": true },
+      "update": { "*": true },
+      "delete": { "*": true },
+      "addField": {},
+      "protectedFields": { "*": [] }
+    }
+  },
+  {
+    "className": "User_Info",
+    "fields": {
+      "user": { "type": "Pointer", "targetClass": "_User" },
+      "institute": { "type": "Pointer", "targetClass": "institutions" },
+      "lastName": { "type": "String", "required": true },
+      "firstName": { "type": "String", "required": true },
+      "dataSaveAgreed": {
+        "type": "Boolean",
+        "required": true,
+        "defaultValue": false
+      },
+      "dataSaveViewed": {
+        "type": "Boolean",
+        "required": true,
+        "defaultValue": false
+      },
+      "emailNotificationsEnabled": {
+        "type": "Boolean",
+        "required": true,
+        "defaultValue": false
+      },
+      "emailNotificationFrequency": {
+        "type": "String",
+        "required": true,
+        "defaultValue": "daily"
+      },
+      "emailNotificationWeekday": {
+        "type": "String",
+        "required": true,
+        "defaultValue": "monday"
+      },
+      "emailNotificationWeekOfMonth": {
+        "type": "String",
+        "required": true,
+        "defaultValue": "1"
+      }
+    },
+    "classLevelPermissions": {
+      "find": { "*": true },
+      "count": { "*": true },
+      "get": { "*": true },
+      "create": { "*": true },
+      "update": { "*": true },
+      "delete": { "*": true },
+      "addField": {},
+      "protectedFields": { "*": [] },
+      "ACL": { "*": { "read": true, "write": true } }
+    }
+  },
+  {
+    "className": "Template_File",
+    "fields": {
+      "templateFile": { "type": "File", "required": true },
+      "key": { "type": "String" },
+      "version": { "type": "String" }
+    },
+    "classLevelPermissions": {
+      "find": { "*": true },
+      "count": { "*": true },
+      "get": { "*": true },
+      "create": { "*": true },
+      "update": { "*": true },
+      "delete": { "*": true },
+      "addField": {},
+      "protectedFields": { "*": [] }
+    }
+  },
+  {
+    "className": "Allowed_PLZ",
+    "fields": {
+      "plz": { "type": "String", "required": true }
+    },
+    "classLevelPermissions": {
+      "find": { "*": true },
+      "count": { "*": true },
+      "get": { "*": true },
+      "create": { "*": true },
+      "update": { "*": true },
+      "delete": { "*": true },
+      "addField": {},
+      "protectedFields": { "*": [] }
+    },
+    "indexes": {
+      "plz_index": { "plz": 1 }
+    }
+  },
+  {
+    "className": "Search_Alias",
+    "fields": {
+      "catalog": { "type": "String" },
+      "token": { "type": "String", "required": true },
+      "alias": { "type": "Array", "required": true }
+    },
+    "classLevelPermissions": {
+      "find": {},
+      "count": {},
+      "get": {},
+      "create": {},
+      "update": {},
+      "delete": {},
+      "addField": {},
+      "protectedFields": { "*": [] }
+    },
+    "indexes": {
+      "token_index": { "token": 1 }
+    }
+  },
+  {
+    "className": "AVV_Catalog",
+    "fields": {
+      "catalogFile": { "type": "File", "required": true },
+      "catalogCode": { "type": "String" },
+      "version": { "type": "String" },
+      "validFrom": { "type": "Date" },
+      "catalogData": { "type": "String" },
+      "uploadWarning": { "type": "String", "required": false }
+    },
+    "classLevelPermissions": {
+      "find": { "*": true },
+      "count": { "*": true },
+      "get": { "*": true },
+      "create": { "*": true },
+      "update": { "*": true },
+      "delete": { "*": true },
+      "addField": {},
+      "protectedFields": { "*": [] }
+    }
+  },
+  {
+    "className": "Client_Dashboard",
+    "fields": {
+      "name": {
+        "type": "String",
+        "required": true,
+        "defaultValue": "Alternative welcome page"
+      },
+      "isActive": {
+        "type": "Boolean",
+        "required": true,
+        "defaultValue": false
+      }
+    },
+    "classLevelPermissions": {
+      "find": { "*": true },
+      "count": { "*": true },
+      "get": { "*": true },
+      "create": {},
+      "update": {},
+      "delete": {},
+      "addField": {},
+      "protectedFields": { "*": [] }
+    }
+  },
+  {
+    "className": "Zomo_Plan",
+    "fields": {
+      "zomoFile": { "type": "File", "required": true },
+      "zomoData": { "type": "String" },
+      "year": { "type": "String" }
+    },
+    "classLevelPermissions": {
+      "find": { "*": true, "requiresAuthentication": true },
+      "count": { "*": true, "requiresAuthentication": true },
+      "get": { "*": true, "requiresAuthentication": true },
+      "create": { "*": true, "requiresAuthentication": true },
+      "update": { "*": true, "requiresAuthentication": true },
+      "delete": { "*": true, "requiresAuthentication": true },
+      "addField": { "*": true, "requiresAuthentication": true },
+      "protectedFields": { "*": [] }
+    }
+  },
+  {
+    "className": "Zomo_Plan_File",
+    "fields": {
+      "zomoPlanFile": { "type": "File", "required": true },
+      "year": { "type": "String", "required": true }
+    },
+    "classLevelPermissions": {
+      "find": { "*": true },
+      "count": { "*": true },
+      "get": { "*": true },
+      "create": {},
+      "update": {},
+      "delete": {},
+      "addField": {},
+      "protectedFields": { "*": [] }
+    }
+  },
+  {
+    "className": "Sample",
+    "fields": {
+      "order": {
+        "type": "Pointer",
+        "targetClass": "Order",
+        "required": true
+      },
+      "position": { "type": "Number", "required": true },
+      "sampleData": { "type": "String" },
+      "sampleMeta": { "type": "String" }
+    },
+    "classLevelPermissions": {
+      "find": { "*": true },
+      "count": { "*": true },
+      "get": { "*": true },
+      "create": {},
+      "update": {},
+      "delete": {},
+      "addField": {},
+      "protectedFields": { "*": [] }
+    }
+  },
+  {
+    "className": "Order",
+    "fields": {
+      "user": {
+        "type": "Pointer",
+        "targetClass": "_User",
+        "required": true
+      },
+      "fileName": { "type": "String" },
+      "pathogens": { "type": "Array" },
+      "nrls": { "type": "Array" },
+      "sampleCount": { "type": "Number" },
+      "results": { "type": "String" },
+      "meta": { "type": "String" },
+      "sampleIds": { "type": "Array", "required": false },
+      "sampleIdsAVV": { "type": "Array", "required": false },
+      "customerCopyFailed": { "type": "Boolean", "required": false }
+    },
+    "classLevelPermissions": {
+      "find": { "*": true },
+      "count": { "*": true },
+      "get": { "*": true },
+      "create": {},
+      "update": {},
+      "delete": {},
+      "addField": {},
+      "protectedFields": { "*": [] }
+    }
+  },
+  {
+    "className": "Result",
+    "fields": {
+      "sample": {
+        "type": "Pointer",
+        "targetClass": "Sample",
+        "required": true
+      },
+      "position": { "type": "Number", "required": true },
+      "resultData": { "type": "String" }
+    },
+    "classLevelPermissions": {
+      "find": { "*": true },
+      "count": { "*": true },
+      "get": { "*": true },
+      "create": {},
+      "update": {},
+      "delete": {},
+      "addField": {},
+      "protectedFields": { "*": [] }
+    }
+  }
+]

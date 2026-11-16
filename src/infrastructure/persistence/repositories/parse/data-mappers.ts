@@ -5,9 +5,9 @@ import {
     createInstitution,
     createUser
 } from '../../../../app/ports';
-import { Institution } from '../../data-store/parse/schema/institution';
-import { Token } from '../../data-store/parse/schema/resettoken';
-import { User as ParseUser } from '../../data-store/parse/schema/user';
+import { Institution } from '../../data-store/parse/entities/institution.entity';
+import { Token } from '../../data-store/parse/entities/reset-token.entity';
+import { User as ParseUser } from '../../data-store/parse/entities/user.entity';
 
 export function mapToInstitution(institution: Institution): Institute {
     const inst = createInstitution(institution.getId() ?? '');

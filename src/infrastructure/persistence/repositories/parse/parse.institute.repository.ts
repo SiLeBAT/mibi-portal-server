@@ -1,8 +1,8 @@
-import { ParseRepositoryBase } from '../../data-store/parse/parse.repository';
+import { ParseRepositoryBase } from './parse-base.repository';
 import {
     Institution,
     SCHEMA_FIELDS
-} from '../../data-store/parse/schema/institution';
+} from '../../data-store/parse/entities/institution.entity';
 import {
     ParseInstituteRepository,
     Institute,

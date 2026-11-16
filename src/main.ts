@@ -1,6 +1,6 @@
 import { logger } from './aspects';
 import { configurationService } from './configuratioin.service';
-import { startParseServer } from './infrastructure/parse';
+import { startParseServer } from './infrastructure/parse-server';
 import { initialiseServices } from './ui/server/composition-root';
 import { initialiseExpress } from './ui/server/express.setup';
 async function init() {
