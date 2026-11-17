@@ -1,15 +1,13 @@
 # Importing BfR results
 
-Posts a JSON file of analysis results to `POST /v2/orders/results`. Each result
+Posts a JSON array of analysis results to `POST /v2/orders/results`. Each result
 is stored as one `Result` row in the database, linked to an existing `Sample`
 by its Parse objectId.
 
-This is the interim path for hand-made test data. Later a KNIME workflow will
-push real LIMS results at the same endpoint.
-
-There are four ways to send the request — a Bash script, a PowerShell script, a
-raw `curl` command, and a Bruno collection. All four send exactly the same
-request and read the key from the **same environment variable**.
+The endpoint is called with `curl` by hand for test data, and from a KNIME
+workflow for the real LIMS results. Both send exactly the same request: one
+HTTP POST, two headers, the JSON array as the body. No login, no session, no
+cookies.
 
 ## Payload format
 
@@ -48,8 +46,8 @@ sends unquoted arrives as a number.
 > **It must be an array, not an object.**
 > A JSON *object* keyed by sample id cannot carry two results for the same
 > sample: duplicate keys are silently dropped by every JSON parser, so one of
-> the two results disappears before the file is even sent. Both scripts refuse
-> a file whose top-level value is an object.
+> the two results disappears before the file is even sent. The server refuses a
+> payload whose top-level value is an object, with `400 Malformed request`.
 
 `scripts/data/results.example.json` is a complete working example.
 
@@ -67,25 +65,20 @@ curl --silent -X POST "${MIBI_API_URL}/v2/orders/samples-with-results" \
 
 ## The API key
 
-Authentication is a shared key sent in the `X-MiBi-Api-Key` header. It is the
-value of `general.resultsApiKey` on the server you are posting to.
+Authentication is a shared key sent in the `X-MiBi-Api-Key` header. Its value is
+`general.resultsApiKey` on the server you are posting to — in local development
+that is `config/local.json`.
 
-**The key is never committed and never passed as an argument.** Neither script
-accepts a `--key` flag: command-line arguments are visible to every user on the
-host via `ps` and are written to the shell history.
+The server **fails closed**: an environment with no key configured rejects every
+request, so it can never be written to by accident.
 
-Set it in your shell:
+You can either paste the key into the command or export it and reference the
+variable. Referencing it keeps the key out of your shell history and out of the
+process list, where command-line arguments are visible to other users on the
+host:
 
 ```bash
 export MIBI_RESULTS_API_KEY='<the key>'
-```
-
-Or, on a shared host where an exported variable can be read from
-`/proc/<pid>/environ`, point at a file that contains only the key:
-
-```bash
-export MIBI_RESULTS_API_KEY_FILE="$HOME/.mibi-results-api-key"
-chmod 600 "$HOME/.mibi-results-api-key"
 ```
 
 ## Configuration
@@ -93,48 +86,15 @@ chmod 600 "$HOME/.mibi-results-api-key"
 | Variable | Default | Purpose |
 |---|---|---|
 | `MIBI_API_URL` | `http://localhost:3000` | Portal base URL. The same variable the integration tests use. |
-| `MIBI_RESULTS_API_KEY` | *(required)* | The API key. |
-| `MIBI_RESULTS_API_KEY_FILE` | — | Alternative: path to a file holding only the key. |
+| `MIBI_RESULTS_API_KEY` | — | The API key, when you reference it instead of pasting it. |
 
 Host URLs: qa is `https://epilab-dev.bfr.berlin`, production is
 `https://mibi-portal.bfr.bund.de`.
 
-## Bash
+## Sending the request with curl
 
-```bash
-export MIBI_RESULTS_API_KEY='<the key>'
-
-# Validate the file and show the request without sending it
-scripts/import-results.sh --file scripts/data/results.example.json --dry-run
-
-# Send it
-scripts/import-results.sh --file scripts/data/results.example.json
-
-# Against another environment
-scripts/import-results.sh --file my-results.json --url https://epilab-dev.bfr.berlin
-```
-
-| Flag | Meaning |
-|---|---|
-| `--file <path>` | The results JSON file. Required. |
-| `--url <base>` | Portal base URL. Overrides `MIBI_API_URL`. |
-| `--dry-run` | Validate and print the equivalent curl with the key redacted. Sends nothing. |
-| `--help` | Usage. |
-
-## PowerShell
-
-```powershell
-$env:MIBI_RESULTS_API_KEY = '<the key>'
-
-./scripts/import-results.ps1 -File scripts/data/results.example.json -DryRun
-./scripts/import-results.ps1 -File scripts/data/results.example.json
-./scripts/import-results.ps1 -File my-results.json -Url https://epilab-dev.bfr.berlin
-```
-
-Same flags as the Bash script (`-File`, `-Url`, `-DryRun`) and the same exit
-codes.
-
-## Raw curl
+Three variants of the same request. They differ only in where the key and the
+payload come from.
 
 ```bash
 export MIBI_RESULTS_API_KEY='<the key>'
@@ -218,49 +178,208 @@ curl --show-error --silent \
 JSON
 ```
 
+The third variant is abridged — the `...` stands for the remaining entries, and
+the array has to be replaced with the data you actually want to import.
 
+### What the command does, piece by piece
 
-Two details worth keeping:
+The second variant is the shortest complete one, so it serves as the walk-through.
+Each line is explained below.
 
-- Reference `$MIBI_RESULTS_API_KEY` rather than pasting the key, so it stays out
-  of `~/.bash_history`.
-- Use `--data-binary`, not `-d`. `-d` strips newlines, which is harmless for
-  JSON but makes the request unreadable in a proxy log.
+**`curl`** — the program that sends the HTTP request.
 
-`--dry-run` on the Bash script prints this exact command for whatever file and
-URL you gave it, with the key redacted.
+**`--show-error --silent`** — a pair that belongs together.
 
-## Bruno
+- `--silent` suppresses the progress meter *and* error messages. Without it, curl
+  draws a progress bar that clutters the output.
+- `--show-error` puts the error messages back. Without it, a failure such as "the
+  server is not running" produces **no output at all**, which looks deceptively
+  like success.
 
-The collection lives in [`bruno/`](../bruno) at the repository root.
+**`-X POST`** — the HTTP method. It is in fact **redundant** here: `--data-binary`
+already makes curl use POST. It does no harm and documents the intent, so it can
+stay.
 
-1. Open the `bruno/` folder as a collection in Bruno.
-2. Copy `bruno/.env.example` to `bruno/.env` and fill in `MIBI_RESULTS_API_KEY`.
-   `.env` is gitignored.
-3. Pick the `Local` or `QA` environment and run **Store Results**.
+**`"http://localhost:3000/v2/orders/results"`** — the address. `http://localhost:3000`
+is the local development server; `/v2/orders/results` is this endpoint. The double
+quotes are not strictly needed for this URL, but they are a good habit: an URL
+containing `&` would otherwise be cut in two by the shell.
 
-The request reads the key as `{{process.env.MIBI_RESULTS_API_KEY}}`, so the
-collection itself contains no secret and can be committed and reviewed like any
-other file. It is the same variable the scripts use, so one `export` covers
-everything.
+**`-H 'Content-Type: application/json'`** — tells the server that the body is JSON.
+**Do not leave this out.** Without it curl announces the body as
+`application/x-www-form-urlencoded`, the server does not parse it, and the request
+is answered with `400 Malformed request` — which looks like a problem with the JSON
+when in truth the body was never read. This is the first thing to check whenever a
+400 makes no sense.
 
-## Exit codes
+**`-H "X-MiBi-Api-Key: <the key>"`** — the shared secret that authorises the call,
+as described under [The API key](#the-api-key). Missing or wrong gives `401`.
 
-| Code | Meaning |
+Note the quoting difference between the two header lines. Single quotes mean "pass
+this through unchanged"; double quotes let the shell substitute variables, which is
+why the first variant needs them for `${MIBI_RESULTS_API_KEY}`. With a literal
+value either kind works.
+
+**`--data-binary @scripts/data/results.example.json`** — the body, and three things
+at once:
+
+- The **`@`** means "read the body from this file". Without it, curl would send the
+  file *name* as the body.
+- The path is **relative to the directory you are standing in** — hence the note
+  above the command. An absolute path removes that constraint.
+- **`--data-binary`, not `-d`.** When `-d` reads from a file it strips newlines. The
+  JSON stays valid, but the request becomes one unreadable line in every log.
+  `--data-binary` sends the bytes exactly as they are.
+
+**The trailing `\`** on each line continues the command on the next line. It must be
+the very last character — a single space after it breaks the command in a way that
+is hard to see.
+
+### How the three variants differ
+
+| | Key comes from | Payload comes from |
+|---|---|---|
+| 1 | `$MIBI_RESULTS_API_KEY` (exported beforehand) | the example file |
+| 2 | typed into the command | the example file |
+| 3 | typed into the command | typed into the command |
+
+The third uses **`--data-binary @-`**, where `-` means "read the body from standard
+input", and a *here-document* supplies it: everything between `<<'JSON'` and the
+closing `JSON` becomes the body. Two details matter there:
+
+- The delimiter is **quoted** (`<<'JSON'`, not `<<JSON`). That stops the shell
+  interpreting `$`, backticks and backslashes inside the data. Unquoted, a `$` in a
+  result value would silently vanish.
+- The closing `JSON` must stand alone at the beginning of its own line.
+
+A practical difference: a value containing a **single quote** would break the
+single-quoted parts of variants 1 and 2, but not the here-document.
+
+### Seeing what happened
+
+curl prints only the response body, and `--silent` hides everything else — so by
+default you do not see the HTTP status code. For testing, ask for it:
+
+```bash
+curl --show-error --silent -w '\nstatus=%{http_code}\n' ...   # just the status code
+curl --show-error --silent -i ...                             # full response headers
+curl -v ...                                                   # also the headers sent
+```
+
+`-v` is the one to reach for when you suspect the key is not arriving: it shows the
+request headers that actually went out.
+
+A successful import answers `200` with a summary:
+
+```json
+{
+  "storedResultCount": 7,
+  "orders": [ { "orderId": "D9iQERFiCb", "results": "6/12" } ],
+  "created": [
+    { "objectId": "Rst001", "sampleObjectId": "snPlXS7wIY", "position": 1 }
+  ]
+}
+```
+
+`storedResultCount` is the number of `Result` rows created, `orders` carries each
+affected order's recalculated progress counter, and `created` lists every new row —
+which is what lets you delete exactly what an import inserted.
+
+## Doing the same in a KNIME workflow
+
+The endpoint is an ordinary HTTP POST, so a **POST Request** node can call it
+directly. This section assumes the results are already available as a JSON array —
+producing that array from the LIMS view is a separate part of the workflow and not
+described here.
+
+### The curl command mapped onto the node
+
+| In the curl command | In the POST Request node |
 |---|---|
-| `0` | Success, or a completed dry run. |
-| `1` | Usage problem: missing/unknown flag, file not found, file is not a usable results array. |
-| `2` | Configuration problem: no API key available. |
-| `3` | The request failed — either it could not be sent, or the server answered `>= 400`. |
+| `-X POST` | nothing to set — the node *is* the POST |
+| the URL | the connection settings: a constant URL, e.g. `https://epilab-dev.bfr.berlin/v2/orders/results` |
+| `-H 'Content-Type: application/json'` | a custom request header |
+| `-H "X-MiBi-Api-Key: …"` | a custom request header |
+| `--data-binary @file` / `@-` | the request body: the JSON array as a String |
+| *(nothing)* | authentication: leave it at **None** |
+
+Four points decide whether this works on the first try.
+
+### 1. One row is one request
+
+The node sends **one request per row** of its input table. The whole JSON array is
+*one* payload, so it has to sit in **one cell of one row** — typically a single
+String column with exactly one row.
+
+If the workflow instead produces one row per sample and feeds that in, the node
+fires one import per row. With 23 samples that is 23 separate imports, each
+containing a fraction of the data, and each appending its own `Result` rows.
+
+### 2. Both headers must be added explicitly
+
+Add two custom request headers:
+
+| Header | Value |
+|---|---|
+| `Content-Type` | `application/json` |
+| `X-MiBi-Api-Key` | the API key |
+
+Sending a String body does **not** imply a JSON content type. If `Content-Type` is
+missing, the server does not parse the body and answers `400 Malformed request` —
+the same trap described for curl above.
+
+### 3. The API token is a header, not HTTP authentication
+
+Leave the node's authentication setting at **None**. The token is a custom header,
+not HTTP authentication: choosing BASIC or DIGEST there makes KNIME send an
+`Authorization` header, which this endpoint ignores, so the call fails with `401`
+while the dialog looks correctly filled in.
+
+For the header value, prefer a **flow variable or a credential** over typing the key
+into the dialog. A constant header value is saved inside the workflow's settings, so
+the secret travels with the workflow whenever it is exported, shared or checked in.
+A credential or a flow variable supplied at run time keeps it out of the file.
+
+### 4. Let the node show you the response
+
+Configure the node's error handling so that it **outputs the response body and
+status code** instead of failing on an HTTP error. The body is where this endpoint
+explains itself:
+
+- `422` names either the malformed element (with its index and the offending key) or
+  every unknown sample objectId.
+- `401` means the key was missing, wrong, or not configured on the server.
+
+If the node simply fails on error, that message is lost and all you see is that the
+node turned red.
+
+On success the response body is the summary shown earlier
+(`storedResultCount`, `orders`, `created`), which is worth keeping in the workflow
+output as a record of what was imported.
+
+### What you do not need
+
+No cookies, no session, no login call and no CSRF token. This route is deliberately
+exempt from the portal's CSRF protection so that a machine client can post with a
+single header — which is also why the key must be treated as a real secret.
+
+### A note on the dialog labels
+
+The settings above are named as they are usually labelled (connection settings,
+authentication, request headers, request body, error handling), but the exact tab
+and field names differ slightly between KNIME builds. What has to be configured —
+the URL, the two headers, the one-row body, authentication off, error handling on —
+is the same in every version.
 
 ## Troubleshooting
 
 | Symptom | Cause |
 |---|---|
 | `HTTP 401` | Wrong key, missing header, or the server has no `general.resultsApiKey` configured — it fails closed, so an unconfigured server rejects every request. |
-| `HTTP 400` `Malformed request` | The body is not an array, or is an empty array. Refused by the portal server before it reaches the database. |
+| `HTTP 400` `Malformed request` | The body is not an array, or is an empty array — or `Content-Type: application/json` is missing, so the body was never parsed. |
 | `HTTP 422` `code 14` naming an element | That element is malformed: not an object, not exactly one sample objectId, its result data is not an object, or a value is an array or a nested object. The message names the element index and the offending key. |
-| `HTTP 422` `code 15` naming unknown sample objectIds | One or more sample objectIds do not exist. Nothing was written; the import is all-or-nothing. Fix the file and re-run. |
+| `HTTP 422` `code 15` naming unknown sample objectIds | One or more sample objectIds do not exist. Nothing was written; the import is all-or-nothing. Fix the payload and re-run. |
 | `HTTP 403` `Invalid CSRF token` | The route lost its CSRF exemption in `express.setup.ts`. |
 | `HTTP 404` | The endpoint is not deployed on that server yet. |
-| A result silently missing | The file is a JSON object instead of an array — see the warning above. |
+| A result silently missing | The payload is a JSON object instead of an array — see the warning under [Payload format](#payload-format). |
+| No output at all | `--silent` without `--show-error`. The request failed and curl was told to keep quiet about it. |
