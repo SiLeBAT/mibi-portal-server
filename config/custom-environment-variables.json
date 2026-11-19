@@ -19,7 +19,8 @@
         "supportContact": "MIBI_SUPPORT_CONTACT",
         "logLevel": "MIBI_LOG_LEVEL",
         "jwtSecret": "MIBI_JWT_SECRET",
-        "resultsApiKey": "MIBI_RESULTS_API_KEY"
+        "resultsApiKey": "MIBI_RESULTS_API_KEY",
+        "dataEncryptionKey": "MIBI_DATA_ENCRYPTION_KEY"
     },
     "keycloak": {
         "enabled": {

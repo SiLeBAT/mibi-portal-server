@@ -114,14 +114,16 @@ export class ParseDefaultUserRepository
 
                 return await super._update(parseUser, updatedUser);
             })
-            .then((parseUser: ParseUser) => {
+            .then(async (parseUser: ParseUser) => {
                 if (!parseUser) {
                     throw new UserUpdateError(
                         ` Updated user not found. id=${user.uniqueId}`
                     );
                 }
 
-                return mapToUser(parseUser);
+                // Reload instead of mapping the save response: it carries the
+                // names as stored, i.e. still encrypted by the cloud code.
+                return this.findByUserId(user.uniqueId);
             })
             .catch(error => {
                 throw error;
