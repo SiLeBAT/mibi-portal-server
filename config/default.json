@@ -43,8 +43,10 @@
         "supportContact": "",
         "logLevel": "trace",
         "jwtSecret": "0",
-        "resultsApiKey": ""
+        "resultsApiKey": "",
+        "dataEncryptionKey": ""
     },
+    "_comment_dataEncryptionKey": "Base64 32-byte AES key the parse cloud code uses to encrypt sensitive fields (Order, Sample, Result, User_Info, users). Empty by default so saves fail closed; set it per environment via MIBI_DATA_ENCRYPTION_KEY and never change or lose it, or stored data becomes unreadable.",
     "keycloak": {
         "enabled": false,
         "issuerUrl": "",
